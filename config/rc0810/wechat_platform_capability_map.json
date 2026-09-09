@@ -8,7 +8,7 @@
     },
     "api_client": {
       "path": "apps/miniprogram/services/api.js",
-      "sha256": "2242ba9e392ed46c33f13f746e4f723bd42e1b244eff1af8fa9febbc07d431be"
+      "sha256": "b160ab8f0635a999cd56ac23f84e653f0e66dd8f43524dcbf9bc9bc97da1789d"
     },
     "registered_pages_count": 53,
     "registered_pages_sha256": "2156f9a04788bef886f1d8d5d791c2c15f1941fd1e6a2136763893f8c49b2a78"

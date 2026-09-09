@@ -30,6 +30,12 @@ EXPLICIT_PROFILES = {
 }
 
 
+def _source_sha256(path: Path) -> str:
+    raw = path.read_bytes()
+    normalized = raw.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(normalized).hexdigest()
+
+
 def _environment_name(node: ast.AST) -> str:
     if isinstance(node, ast.Constant) and isinstance(node.value, str):
         return node.value
@@ -72,7 +78,7 @@ def build_inventory() -> dict:
         if not items:
             continue
         profile = "cli_profile" if relative.startswith("backend/scripts/") else EXPLICIT_PROFILES.get(relative)
-        source_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+        source_hash = _source_sha256(path)
         record = {"file": relative, "profile": profile, "source_sha256": source_hash, "reads": items}
         reads.append(record)
         if profile is None:

@@ -23,17 +23,26 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
-from run_rc0810 import collect_git_snapshot, load_registry  # noqa: E402
+from run_rc0810 import load_registry  # noqa: E402
 
 
 POLICY_PATH = ROOT / "config" / "rc0810" / "security_gate_policy.json"
 EXCEPTIONS_PATH = ROOT / "config" / "rc0810" / "security_exception_registry.json"
+SECRET_BASELINE_PATH = ROOT / "config" / "rc0810" / "detect_secrets.baseline.json"
 BASELINE_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22a_security_baseline.json"
 BASELINE_RELATIVE = BASELINE_PATH.relative_to(ROOT).as_posix()
 F22B_GATE_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22b_security_gate.json"
 SECURITY_REPORT_RELATIVES = (
     BASELINE_RELATIVE,
     F22B_GATE_PATH.relative_to(ROOT).as_posix(),
+    "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+    "docs/02_专项进度与验收/rc0810_f25a_platform_baseline_current.json",
+    "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
+    "docs/02_专项进度与验收/rc0810_f26_final_rc.json",
+    "docs/02_专项进度与验收/rc0810_f26_final_rc.md",
+    "docs/02_专项进度与验收/rc0810_required_ci_evidence.json",
+    "docs/02_专项进度与验收/rc0810_wave_c_review_packet.json",
+    "docs/02_专项进度与验收/rc0810_wave_c_review_decision.json",
 )
 DEFAULT_TOOLS = ROOT / ".codex_tmp" / "rc0810" / "security-tools"
 DEFAULT_RUNTIME = ROOT / ".codex_tmp" / "rc0810" / "security" / "f22a"
@@ -52,6 +61,11 @@ def sha256_file(path: Path) -> str:
     return sha256_bytes(path.read_bytes())
 
 
+def sha256_git_blob(tree: str, relative: str) -> str:
+    """Hash tracked bytes so Windows and Linux validate the same input."""
+    return sha256_bytes(git("cat-file", "blob", f"{tree}:{relative}"))
+
+
 def canonical(value: Any) -> bytes:
     return json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
@@ -67,13 +81,18 @@ def git(*args: str, env: dict[str, str] | None = None) -> bytes:
 
 def security_source_snapshot() -> dict[str, str]:
     """Return a real Git tree excluding self-referential tracked reports."""
-    registry = load_registry()
-    current = collect_git_snapshot(registry)["git"]
+    # F22 must also work in the shallow checkout used by GitHub Actions, where
+    # origin/main is intentionally unavailable. Freeze HEAD plus the current
+    # worktree in a temporary index without invoking the broader Harness
+    # snapshot, whose release metadata requires that remote-tracking ref.
+    head = git("rev-parse", "HEAD").decode("ascii").strip()
+    head_tree = git("rev-parse", "HEAD^{tree}").decode("ascii").strip()
     with tempfile.TemporaryDirectory(prefix="rc0810-f22-index-") as directory:
         index = Path(directory) / "index"
         env = os.environ.copy()
         env["GIT_INDEX_FILE"] = str(index)
-        git("read-tree", current["source_tree"], env=env)
+        git("read-tree", "HEAD", env=env)
+        git("add", "-A", "--", ".", env=env)
         for relative in SECURITY_REPORT_RELATIVES:
             subprocess.run(
                 ["git", "update-index", "--force-remove", "--", relative],
@@ -84,10 +103,10 @@ def security_source_snapshot() -> dict[str, str]:
             )
         source_tree = git("write-tree", env=env).decode("ascii").strip()
     manifest = git("ls-tree", "-r", "-z", source_tree)
-    diff = git("diff-tree", "--binary", "--no-ext-diff", current["head_tree"], source_tree)
+    diff = git("diff-tree", "--binary", "--no-ext-diff", head_tree, source_tree)
     return {
-        "head": current["head"],
-        "head_tree": current["head_tree"],
+        "head": head,
+        "head_tree": head_tree,
         "source_tree": source_tree,
         "dirty_diff_sha256": sha256_bytes(diff),
         "source_manifest_sha256": sha256_bytes(manifest),
@@ -188,6 +207,30 @@ def scanner_version(tool: str, env: dict[str, str]) -> str:
     return match.group(0)
 
 
+def reviewed_secret_keys() -> set[tuple[str, str, str]]:
+    baseline = parse_json(SECRET_BASELINE_PATH)
+    return {
+        (
+            normalized_source_path(item.get("filename") or filename),
+            str(item.get("type", "")),
+            str(item.get("hashed_secret", "")),
+        )
+        for filename, items in baseline.get("results", {}).items()
+        for item in items
+        if item.get("is_secret") is False
+    }
+
+
+def secret_is_reviewed(
+    filename: str, item: dict[str, Any], reviewed: set[tuple[str, str, str]]
+) -> bool:
+    return item.get("is_secret") is False or (
+        normalized_source_path(item.get("filename") or filename),
+        str(item.get("type", "")),
+        str(item.get("hashed_secret", "")),
+    ) in reviewed
+
+
 def summarize(report_paths: dict[str, Path]) -> dict[str, int]:
     secrets = parse_json(report_paths["detect-secrets"])
     bandit = parse_json(report_paths["bandit"])
@@ -200,7 +243,13 @@ def summarize(report_paths: dict[str, Path]) -> dict[str, int]:
         ("npm-audit", npm_audit),
     ):
         validate_report_payload(tool, payload)
-    secret_count = sum(len(items) for items in secrets.get("results", {}).values())
+    reviewed = reviewed_secret_keys()
+    secret_count = sum(
+        1
+        for filename, items in secrets.get("results", {}).items()
+        for item in items
+        if not secret_is_reviewed(filename, item, reviewed)
+    )
     bandit_counts = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
     for finding in bandit.get("results", []):
         severity = str(finding.get("issue_severity", "")).upper()
@@ -244,8 +293,11 @@ def build_blocking_findings(
             }
         )
 
+    reviewed = reviewed_secret_keys()
     for filename, items in sorted(secrets["results"].items()):
         for item in items:
+            if secret_is_reviewed(filename, item, reviewed):
+                continue
             append(
                 "secret",
                 "unknown",
@@ -511,6 +563,8 @@ def main() -> int:
             "-m",
             "detect_secrets",
             "scan",
+            "--exclude-files",
+            r"config[\\/]rc0810[\\/]detect_secrets\.baseline\.json$",
             "--all-files",
             str(staging),
         ],
@@ -601,16 +655,21 @@ def main() -> int:
         "phase": "F22-A",
         "captured_at": captured_at,
         **source,
-        "policy_sha256": sha256_file(POLICY_PATH),
-        "exception_registry_sha256": sha256_file(EXCEPTIONS_PATH),
+        "policy_sha256": sha256_git_blob(
+            source["source_tree"], POLICY_PATH.relative_to(ROOT).as_posix()
+        ),
+        "exception_registry_sha256": sha256_git_blob(
+            source["source_tree"], EXCEPTIONS_PATH.relative_to(ROOT).as_posix()
+        ),
         "dependency_inputs": {
-            relative: sha256_file(ROOT / relative)
+            relative: sha256_git_blob(source["source_tree"], relative)
             for relative in (
                 "backend/requirements.txt",
                 "analysis/profiling/requirements.txt",
                 "analysis/text_analysis/requirements.txt",
                 "apps/web/package-lock.json",
                 "Dockerfile",
+                "config/rc0810/detect_secrets.baseline.json",
             )
         },
         "raw_reports": raw_reports,

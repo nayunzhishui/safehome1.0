@@ -1,16 +1,31 @@
-FROM python:3.11-slim
+FROM mcr.microsoft.com/azurelinux/base/python:3.12@sha256:722b6224c23b3f21f5268e2073f80c0f396bc626e3193b6dbf66e40d89478f03 AS builder
+
+WORKDIR /build
+
+COPY backend/requirements.txt /build/requirements.txt
+RUN python3 -m pip install --no-cache-dir --target /opt/python -r /build/requirements.txt \
+    && PYTHONPATH=/opt/python python3 -m pip check \
+    && find /opt/python -type d -name __pycache__ -prune -exec rm -rf {} + \
+    && mkdir -p /runtime-data \
+    && chown 65532:65532 /runtime-data
+
+FROM mcr.microsoft.com/azurelinux/base/python:3.12@sha256:722b6224c23b3f21f5268e2073f80c0f396bc626e3193b6dbf66e40d89478f03
 
 WORKDIR /app
 
-COPY backend/requirements.txt /app/backend/requirements.txt
-RUN pip install --no-cache-dir -r /app/backend/requirements.txt \
-    && pip check
+# WeChat CloudRun invokes /bin/sh for its lifecycle hook. Keep that platform
+# contract explicit so a shell-less runtime image cannot be released again.
+RUN test -x /bin/sh
+
+COPY --from=builder /opt/python /opt/python
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV APP_ENV=production
 # Gunicorn 26 creates its control socket under $HOME/.gunicorn.
 ENV HOME=/app/data
+ENV PATH=/opt/python/bin:/usr/bin
+ENV PYTHONPATH=/opt/python
 ENV CONTENT_DIR=/app/content
 ENV MAX_REQUEST_BODY_BYTES=1048576
 
@@ -34,16 +49,13 @@ COPY backend /app/backend
 COPY content /app/content
 COPY shared /app/shared
 COPY config/rc0810/database_profiles.json /app/config/rc0810/database_profiles.json
+COPY config/rc0810/database_recovery_policy.json /app/config/rc0810/database_recovery_policy.json
 COPY deploy/verify_rc0810_f03_images.py /app/verify_rc0810_f03_images.py
-
-RUN addgroup --system safehome \
-    && adduser --system --ingroup safehome safehome \
-    && mkdir -p /app/data \
-    && chown -R safehome:safehome /app/data
+COPY --from=builder --chown=65532:65532 /runtime-data /app/data
 
 WORKDIR /app/backend
 
-USER safehome
+USER 65532:65532
 
-ENTRYPOINT ["python", "/app/verify_rc0810_f03_images.py", "--entrypoint", "--profile", "production", "--"]
+ENTRYPOINT ["/usr/bin/python3", "/app/verify_rc0810_f03_images.py", "--entrypoint", "--profile", "production", "--"]
 CMD ["gunicorn", "-c", "gunicorn.conf.py", "wsgi:app"]

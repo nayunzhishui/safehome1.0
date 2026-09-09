@@ -14,6 +14,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from run_rc0810_f22_scans import sha256_git_blob
+
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "config" / "rc0810" / "security_gate_policy.json"
@@ -28,10 +30,21 @@ DEPENDENCY_INPUTS = (
     "apps/web/package-lock.json",
     "Dockerfile",
     "config/rc0810/database_profiles.json",
+    "config/rc0810/detect_secrets.baseline.json",
 )
 ACTION_INPUTS = (
     ".github/workflows/security-gate.yml",
     ".github/workflows/check.yml",
+)
+IMAGE_CONTEXT_PATHS = (
+    ".dockerignore",
+    "Dockerfile",
+    "backend",
+    ":(exclude)backend/tests",
+    "content",
+    "shared",
+    "config/rc0810/database_profiles.json",
+    "deploy/verify_rc0810_f03_images.py",
 )
 
 
@@ -39,8 +52,36 @@ def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def docker_context_manifest_sha256(tree: str) -> str:
+    """Hash tracked Docker inputs without requiring an earlier tree object later."""
+    include_paths = [path for path in IMAGE_CONTEXT_PATHS if not path.startswith(":(")]
+    completed = subprocess.run(
+        ["git", "ls-tree", "-r", "-z", tree, "--", *include_paths],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(completed.stderr.decode("utf-8", errors="replace"))
+    entries = [
+        entry
+        for entry in completed.stdout.split(b"\0")
+        if entry and b"\tbackend/tests/" not in entry
+    ]
+    return hashlib.sha256(b"\0".join(entries) + b"\0").hexdigest()
+
+
 def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def docker_context_unchanged(previous_tree: str, source_tree: str) -> bool:
+    try:
+        return docker_context_manifest_sha256(previous_tree) == docker_context_manifest_sha256(
+            source_tree
+        )
+    except RuntimeError:
+        return False
 
 
 def run(argv: list[str], *, cwd: Path = ROOT, timeout: int) -> subprocess.CompletedProcess[bytes]:
@@ -118,8 +159,8 @@ def main() -> int:
 
     policy = load_json(POLICY_PATH)
     previous_gate = (
-        load_json(GATE_PATH)
-        if args.reuse_existing_image_gate and GATE_PATH.is_file()
+        load_json(args.gate_out)
+        if args.reuse_existing_image_gate and args.gate_out.is_file()
         else None
     )
     trivy_version = policy["tools"]["trivy"]
@@ -152,17 +193,7 @@ def main() -> int:
     artifact_reuse: dict[str, Any] | None = None
     if previous_gate is not None:
         previous_tree = str(previous_gate.get("source_tree", ""))
-        unchanged = subprocess.run(
-            [
-                "git", "diff", "--quiet", previous_tree, source_tree, "--",
-                "Dockerfile", "backend", "content", "shared",
-                "config/rc0810/database_profiles.json",
-                "deploy/verify_rc0810_f03_images.py",
-            ],
-            cwd=ROOT,
-            check=False,
-        )
-        if unchanged.returncode != 0:
+        if not docker_context_unchanged(previous_tree, source_tree):
             raise RuntimeError("existing image gate cannot be reused after Docker context changes")
         for section, destination in (
             ("container_scan", container_path),
@@ -182,7 +213,8 @@ def main() -> int:
         artifact_reuse = {
             "from_source_tree": previous_tree,
             "docker_context_unchanged": True,
-            "reason": "Docker Desktop unavailable after source-only Harness and documentation changes",
+            "docker_context_manifest_sha256": docker_context_manifest_sha256(source_tree),
+            "reason": "Docker context unchanged; exact prior image gate artifacts reused",
         }
     else:
         tag = f"safehome-rc0810-f22b:{source_tree[:12]}"
@@ -239,10 +271,18 @@ def main() -> int:
         "source_tree": source_tree,
         "dirty_diff_sha256": source["dirty_diff_sha256"],
         "source_manifest_sha256": source["source_manifest_sha256"],
-        "policy_sha256": sha256_file(POLICY_PATH),
-        "exception_registry_sha256": sha256_file(EXCEPTIONS_PATH),
-        "dependency_inputs": {item: sha256_file(ROOT / item) for item in DEPENDENCY_INPUTS},
-        "action_inputs": {item: sha256_file(ROOT / item) for item in ACTION_INPUTS},
+        "policy_sha256": sha256_git_blob(
+            source_tree, POLICY_PATH.relative_to(ROOT).as_posix()
+        ),
+        "exception_registry_sha256": sha256_git_blob(
+            source_tree, EXCEPTIONS_PATH.relative_to(ROOT).as_posix()
+        ),
+        "dependency_inputs": {
+            item: sha256_git_blob(source_tree, item) for item in DEPENDENCY_INPUTS
+        },
+        "action_inputs": {
+            item: sha256_git_blob(source_tree, item) for item in ACTION_INPUTS
+        },
         "source_reports": source["raw_reports"],
         "negative_gate_evidence": source["negative_gate_evidence"],
         "blocking_findings": source["blocking_findings"],

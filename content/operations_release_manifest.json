@@ -143,7 +143,7 @@
     {
       "artifact_type": "knowledge_index",
       "path": "content/operations_knowledge_index.json",
-      "sha256": "99ddcb9fcf9357c29804b0cad0fec61dc5797cd539111fad58fa9424023f9efe",
+      "sha256": "f4ca44921d760b5605216f580624fa00b4fc0ee3b551987eb50ea166cc3cf8f1",
       "size_bytes": 12397
     },
     {
@@ -172,5 +172,5 @@
   "revision_policy": "never_edit_verified_package_create_new_version",
   "atomic_runtime_switch": true,
   "production_release_approved": false,
-  "manifest_hash": "f767452f1e06de3c58a64321fc8c8453b64f08b0d6011b8db7b2bb25a052f141"
+  "manifest_hash": "0ce3cb8ba4a497b60e47c7fbec397d4c81c27c00cad88d4ffa5c366bb78c99c9"
 }

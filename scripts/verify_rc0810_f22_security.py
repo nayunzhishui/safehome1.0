@@ -6,6 +6,7 @@ import argparse
 import copy
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -24,8 +25,12 @@ from run_rc0810_f22_scans import (  # noqa: E402
     build_blocking_findings,
     parse_json,
     security_source_snapshot,
+    sha256_git_blob,
     summarize,
     validate_report_payload,
+)
+from run_rc0810_f22b_security import (  # noqa: E402
+    docker_context_manifest_sha256,
 )
 
 
@@ -40,12 +45,72 @@ EXPECTED_INPUTS = (
     "analysis/text_analysis/requirements.txt",
     "apps/web/package-lock.json",
     "Dockerfile",
+    "config/rc0810/database_profiles.json",
+    "config/rc0810/detect_secrets.baseline.json",
 )
 EXPECTED_TOOLS = {"bandit", "detect-secrets", "npm-audit", "pip-audit"}
 
 
 def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def git_bytes(*args: str) -> bytes:
+    completed = subprocess.run(
+        ["git", *args], cwd=ROOT, capture_output=True, check=False
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(completed.stderr.decode("utf-8", errors="replace"))
+    return completed.stdout
+
+
+def source_binding_errors(
+    gate: dict[str, Any], source: dict[str, str]
+) -> list[str]:
+    """Validate frozen source while permitting later release-evidence commits."""
+
+    errors: list[str] = []
+    for field, label in (
+        ("source_tree", "source_tree_mismatch"),
+        ("source_manifest_sha256", "source_manifest_mismatch"),
+    ):
+        if gate.get(field) != source[field]:
+            errors.append(label)
+    recorded_head = gate.get("head")
+    recorded_tree = gate.get("head_tree")
+    recorded_diff = gate.get("dirty_diff_sha256")
+    if (
+        not isinstance(recorded_head, str)
+        or re.fullmatch(r"[0-9a-f]{40}", recorded_head) is None
+        or not isinstance(recorded_tree, str)
+        or re.fullmatch(r"[0-9a-f]{40}", recorded_tree) is None
+        or not isinstance(recorded_diff, str)
+        or re.fullmatch(r"[0-9a-f]{64}", recorded_diff) is None
+    ):
+        return [*errors, "head_binding_mismatch"]
+    try:
+        git_bytes("cat-file", "-e", f"{recorded_head}^{{commit}}")
+    except RuntimeError:
+        # Actions checkout is depth=1. Exact source-tree and manifest matches
+        # still bind every scanned byte when the pre-evidence commit is absent.
+        return errors
+    try:
+        git_bytes("merge-base", "--is-ancestor", recorded_head, "HEAD")
+        actual_tree = git_bytes(
+            "rev-parse", f"{recorded_head}^{{tree}}"
+        ).decode("ascii").strip()
+        expected_diff = git_bytes(
+            "diff-tree", "--binary", "--no-ext-diff", recorded_tree,
+            str(gate.get("source_tree")),
+        )
+    except RuntimeError:
+        errors.append("head_binding_mismatch")
+        return errors
+    if recorded_tree != actual_tree:
+        errors.append("head_binding_mismatch")
+    if recorded_diff != hashlib.sha256(expected_diff).hexdigest():
+        errors.append("dirty_diff_mismatch")
+    return errors
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -122,7 +187,7 @@ def normalized(value: Any) -> str:
 
 def contract_arg(value: Any) -> str:
     result = normalized(value)
-    marker = result.find("/.codex_tmp/")
+    marker = result.rfind("/.codex_tmp/")
     return result[marker:] if marker >= 0 else result
 
 
@@ -185,7 +250,15 @@ def report_contract_errors(
         )
     elif not negative and tool == "detect-secrets":
         valid_command = python_command(
-            argv, "detect_secrets", ["scan", "--all-files", staging]
+            argv,
+            "detect_secrets",
+            [
+                "scan",
+                "--exclude-files",
+                contract_arg(r"config[\\/]rc0810[\\/]detect_secrets\.baseline\.json$"),
+                "--all-files",
+                staging,
+            ],
         )
     elif not negative and tool == "bandit":
         valid_command = python_command(
@@ -302,24 +375,26 @@ def validate_f22b(
         errors.append("f22b_schema_invalid")
 
     source = security_source_snapshot()
-    for key, label in (
-        ("source_tree", "source_tree_mismatch"),
-        ("dirty_diff_sha256", "dirty_diff_mismatch"),
-        ("source_manifest_sha256", "source_manifest_mismatch"),
-        ("head", "head_binding_mismatch"),
-        ("head_tree", "head_binding_mismatch"),
+    errors.extend(source_binding_errors(gate, source))
+    if gate.get("policy_sha256") != sha256_git_blob(
+        source["source_tree"], POLICY_PATH.relative_to(ROOT).as_posix()
     ):
-        if gate.get(key) != source[key]:
-            errors.append(label)
-    if gate.get("policy_sha256") != sha256_file(POLICY_PATH):
         errors.append("policy_hash_mismatch")
-    if gate.get("exception_registry_sha256") != sha256_file(EXCEPTIONS_PATH):
+    if gate.get("exception_registry_sha256") != sha256_git_blob(
+        source["source_tree"], EXCEPTIONS_PATH.relative_to(ROOT).as_posix()
+    ):
         errors.append("exception_registry_hash_mismatch")
-    current_inputs = {item: sha256_file(ROOT / item) for item in EXPECTED_INPUTS}
+    current_inputs = {
+        item: sha256_git_blob(source["source_tree"], item)
+        for item in EXPECTED_INPUTS
+    }
     if gate.get("dependency_inputs") != current_inputs:
         errors.append("dependency_input_mismatch")
     action_paths = (".github/workflows/security-gate.yml", ".github/workflows/check.yml")
-    current_actions = {item: sha256_file(ROOT / item) for item in action_paths}
+    current_actions = {
+        item: sha256_git_blob(source["source_tree"], item)
+        for item in action_paths
+    }
     if gate.get("action_inputs") != current_actions:
         errors.append("action_input_mismatch")
     errors.extend(validate_exceptions(exceptions, schema, gate.get("captured_at", ""), baseline=gate, policy=policy))
@@ -452,20 +527,13 @@ def validate_f22b(
     artifact_reuse = attestation.get("local_artifact_reuse")
     if artifact_reuse is not None:
         previous_tree = str(artifact_reuse.get("from_source_tree", ""))
-        unchanged = subprocess.run(
-            [
-                "git", "diff", "--quiet", previous_tree,
-                str(gate.get("source_tree", "")), "--", "Dockerfile", "backend",
-                "content", "shared", "deploy/verify_rc0810_f03_images.py",
-            ],
-            cwd=ROOT,
-            capture_output=True,
-            check=False,
-        )
+        context_sha256 = str(artifact_reuse.get("docker_context_manifest_sha256", ""))
         if (
             re.fullmatch(r"[0-9a-f]{40}", previous_tree) is None
             or artifact_reuse.get("docker_context_unchanged") is not True
-            or unchanged.returncode != 0
+            or re.fullmatch(r"[0-9a-f]{64}", context_sha256) is None
+            or context_sha256
+            != docker_context_manifest_sha256(source["source_tree"])
         ):
             errors.append("artifact_reuse_binding_invalid")
     if (
@@ -548,11 +616,18 @@ def validate_baseline(
     if baseline.get("head") != source["head"] or baseline.get("head_tree") != source["head_tree"]:
         errors.append("head_binding_mismatch")
 
-    if baseline.get("policy_sha256") != sha256_file(POLICY_PATH):
+    if baseline.get("policy_sha256") != sha256_git_blob(
+        source["source_tree"], POLICY_PATH.relative_to(ROOT).as_posix()
+    ):
         errors.append("policy_hash_mismatch")
-    if baseline.get("exception_registry_sha256") != sha256_file(EXCEPTIONS_PATH):
+    if baseline.get("exception_registry_sha256") != sha256_git_blob(
+        source["source_tree"], EXCEPTIONS_PATH.relative_to(ROOT).as_posix()
+    ):
         errors.append("exception_registry_hash_mismatch")
-    current_inputs = {item: sha256_file(ROOT / item) for item in EXPECTED_INPUTS}
+    current_inputs = {
+        item: sha256_git_blob(source["source_tree"], item)
+        for item in EXPECTED_INPUTS
+    }
     if baseline.get("dependency_inputs") != current_inputs:
         errors.append("dependency_input_mismatch")
 
@@ -799,6 +874,10 @@ def main() -> int:
         result["status"] = "self_check_passed" if result["valid"] else "invalid"
         if not result["valid"]:
             result["errors"].append("self_check_failed")
+    if not result["valid"] and os.environ.get("GITHUB_ACTIONS") == "true":
+        message = ",".join(result["errors"])
+        message = message.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+        print(f"::error title=F22 security contract::{message}")
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result["valid"] else 1
 

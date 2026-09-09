@@ -298,6 +298,15 @@
       ]
     },
     {
+      "route": "/api/consent/<consent_record_id>/annotations",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "consent_record_id"
+      ]
+    },
+    {
       "route": "/api/content-review/active/<content_type>/<item_id>",
       "methods": [
         "GET"
@@ -1791,32 +1800,42 @@
     },
     {
       "file": "backend/routes/assessments.py",
-      "line": 314,
+      "line": 328,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/assessments.py",
-      "line": 361,
+      "line": 375,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/assessments.py",
-      "line": 378,
+      "line": 392,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/auth_utils.py",
-      "line": 85,
+      "line": 83,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/checkins.py",
-      "line": 112,
+      "line": 162,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/consent.py",
-      "line": 106,
+      "line": 47,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/consent.py",
+      "line": 47,
+      "parameter": "subject_id"
+    },
+    {
+      "file": "backend/routes/consent.py",
+      "line": 93,
       "parameter": "user_id"
     },
     {
@@ -1831,7 +1850,7 @@
     },
     {
       "file": "backend/routes/diaries.py",
-      "line": 102,
+      "line": 149,
       "parameter": "user_id"
     },
     {
@@ -1851,7 +1870,7 @@
     },
     {
       "file": "backend/routes/goals.py",
-      "line": 74,
+      "line": 121,
       "parameter": "user_id"
     },
     {
@@ -1931,12 +1950,12 @@
     },
     {
       "file": "backend/routes/profile.py",
-      "line": 160,
+      "line": 165,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/profile.py",
-      "line": 469,
+      "line": 523,
       "parameter": "user_id"
     },
     {
@@ -1976,7 +1995,7 @@
     },
     {
       "file": "backend/routes/utils.py",
-      "line": 49,
+      "line": 47,
       "parameter": "user_id"
     }
   ]

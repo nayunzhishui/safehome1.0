@@ -73,7 +73,7 @@ def test_ai_security_boundary_keeps_real_provider_and_participant_release_gated(
     assert governance["engineering_controls"]["participant_enabled"] is False
     assert governance["engineering_controls"]["provider_adapter"]["external_enabled"] is False
     assert "AI_QA_REAL_PROVIDER_ENABLED" in config_source
-    assert "生产环境参与者AI问答禁止使用 fake 供应商" in config_source
+    assert "真实供应商必须由服务端显式开启 AI_QA_REAL_PROVIDER_ENABLED" in config_source
     assert {item["id"] for item in registry["ai_threats"]} >= {"prompt_injection", "knowledge_poisoning", "cross_user_retrieval", "provider_retention", "tool_abuse", "cost_exhaustion", "unauthorized_action"}
 
 

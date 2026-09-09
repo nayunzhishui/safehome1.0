@@ -13,14 +13,23 @@ def _fresh_app(tmp_path, monkeypatch, *, app_env="production", content_dir=None)
     for name in list(sys.modules):
         if name in {"app", "config", "database", "models"} or name.startswith("routes.") or name.startswith("services."):
             sys.modules.pop(name, None)
-    monkeypatch.setenv("APP_ENV", app_env)
+    # The real production factory performs an external MySQL readiness check;
+    # use the validated local app and override only the request-time environment
+    # for these route-level fail-closed assertions.
+    import_env = "validation" if app_env == "production" else app_env
+    monkeypatch.setenv("APP_ENV", import_env)
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / f"f05-{app_env}.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(content_dir or ROOT / "content"))
     monkeypatch.setenv("DB_PROVIDER", "sqlite")
-    monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+    monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "0")
     monkeypatch.setenv("SECRET_KEY", "f05-test-secret-key-that-is-long-enough")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "f05-admin-token")
-    return importlib.import_module("app").app
+    module = importlib.import_module("app")
+    if app_env == "production":
+        app = module.create_app(config_overrides={"APP_ENV": "validation"}, init_database=False)
+        app.config["APP_ENV"] = "production"
+        return app
+    return module.app
 
 
 def test_production_ignores_enabled_showcase_content(tmp_path, monkeypatch):

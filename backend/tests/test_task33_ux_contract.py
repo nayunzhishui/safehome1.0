@@ -30,7 +30,7 @@ def test_registry_covers_all_pages_routes_states_roles_and_fixed_information_arc
 def test_home_layout_and_researcher_navigation_preserve_product_decisions():
     home = (ROOT / "apps/miniprogram/pages/home/index.wxml").read_text(encoding="utf-8")
     main = (ROOT / "apps/web/src/main.tsx").read_text(encoding="utf-8")
-    assert home.index("core-actions") < home.index("today-step-entry") < home.index('<section-title title="三步开始"')
+    assert home.index("<dual-entry") < home.index("today-step-entry") < home.index('title="如何开始"')
     assert all(f'label: "{label}"' in main for label in ["待处理", "参与者", "内容", "研究/导出", "系统状态"])
     assert 'href: "/system/experience"' in main
     assert "showcaseEnabled" in main

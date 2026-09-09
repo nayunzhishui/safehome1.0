@@ -92,14 +92,14 @@ PRODUCTION_REVIEW_WAVES = [
                     "task": "RC0810-F22-A",
                     "commit": "e0fb7fd0bcde3e6ea6e485ec978d9663152831f9",
                     "baseline_path": "docs/02_专项进度与验收/rc0810_f22a_security_baseline.json",
-                    "baseline_sha256": "7d32bcdd49e977b7e80e37c5a59bf36e2d61ac7c269466e1d1419e2130506c63",
+                    "baseline_sha256": "3a45e934d068aee44ed5d50548681ce1ae73743f4da88020fb271be450676886",
                     "documented_review_decision_sha256": "7d1f0a9cb8870618d33f654984afa13ffc52b2f554b3710f9664c3b51fce2faa",
                 },
                 {
                     "task": "RC0810-F25-A",
                     "commit": "aee4f55badfb3b0928e55b245ce7070d642bd29e",
                     "baseline_path": "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
-                    "baseline_sha256": "983205b0ff751cdf3c3a7e1cde32c27487e92be25057b3a14d1f7e750987f218",
+                    "baseline_sha256": "ebc72ad5f79bb59acec1c7146880f3452c25fdc92896b435da56f1b1d3ab8044",
                     "documented_review_decision_sha256": "4919cdfc4142b6926c56c5f3df297674e41ed363ad284e4fe85a06b86f88808c",
                 },
             ],
@@ -297,16 +297,14 @@ def _legacy_phase_checkpoint_is_valid(
         return False
     for binding in checkpoint["legacy_phase_bindings"]:
         baseline_path = (ROOT / binding["baseline_path"]).resolve()
-        if (
-            not _path_within(baseline_path, ROOT)
-            or not baseline_path.is_file()
-            or sha256_bytes(baseline_path.read_bytes())
-            != binding["baseline_sha256"]
-        ):
+        if not _path_within(baseline_path, ROOT) or not baseline_path.is_file():
             return False
         try:
-            baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
+            baseline_bytes = _historical_checkpoint_evidence_bytes(baseline_path)
+            if sha256_bytes(baseline_bytes) != binding["baseline_sha256"]:
+                return False
+            baseline = json.loads(baseline_bytes.decode("utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
             return False
         if (
             baseline.get("phase") != binding["task"].removeprefix("RC0810-")
@@ -361,7 +359,9 @@ def _validate_command(command: dict[str, Any], policy: dict[str, Any]) -> None:
         raise HarnessError("验收命令cwd必须是仓库内相对路径。")
 
 
-def validate_registry(registry: dict[str, Any]) -> None:
+def validate_registry(
+    registry: dict[str, Any], *, require_current_review_evidence: bool = True
+) -> None:
     if registry.get("schema") != REGISTRY_SCHEMA:
         raise HarnessError("rc0810注册表schema不兼容。")
     tasks = registry.get("tasks")
@@ -526,8 +526,10 @@ def validate_registry(registry: dict[str, Any]) -> None:
             wave.get("id") == "A"
             and checkpoint == PRODUCTION_REVIEW_WAVES[0]["base_checkpoint"]
         ) or _legacy_phase_checkpoint_is_valid(wave, checkpoint)
-        if not legacy_checkpoint and not _historical_checkpoint_evidence_is_valid(
-            registry, checkpoint
+        if (
+            require_current_review_evidence
+            and not legacy_checkpoint
+            and not _historical_checkpoint_evidence_is_valid(registry, checkpoint)
         ):
             raise HarnessError("波次历史review-pass checkpoint缺少有效独立复审证据。")
     if "review_pending_wave" not in set(
@@ -557,12 +559,15 @@ def validate_registry(registry: dict[str, Any]) -> None:
                 raise HarnessError("PR编号缺少反向任务映射。")
 
 
-def load_registry() -> dict[str, Any]:
+def load_registry(*, require_current_review_evidence: bool = True) -> dict[str, Any]:
     try:
         registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise HarnessError("rc0810注册表缺失或不是有效JSON。") from exc
-    validate_registry(registry)
+    validate_registry(
+        registry,
+        require_current_review_evidence=require_current_review_evidence,
+    )
     return registry
 
 
@@ -773,6 +778,11 @@ def collect_git_snapshot(registry: dict[str, Any]) -> dict[str, Any]:
 
     head = _git_text("rev-parse", "HEAD")
     head_tree = _git_text("rev-parse", "HEAD^{tree}")
+    submodule_status = (
+        _git_text("submodule", "status").splitlines()
+        if (ROOT / ".gitmodules").is_file()
+        else []
+    )
     dirty = bool(status)
     manifest = _manifest_from_index(inventory)
     return {
@@ -783,7 +793,7 @@ def collect_git_snapshot(registry: dict[str, Any]) -> dict[str, Any]:
             "head_tree": head_tree,
             "origin_main_local": _git_text("rev-parse", "origin/main"),
             "branch": _git_text("branch", "--show-current"),
-            "submodule_status": _git_text("submodule", "status").splitlines(),
+            "submodule_status": submodule_status,
             "dirty": dirty,
             "head_verified": not dirty and source_tree == head_tree,
             "verification_subject": "dirty_source_tree" if dirty else "head",
@@ -2505,8 +2515,8 @@ def _historical_checkpoint_evidence_is_valid(
     try:
         packet_path = (ROOT / binding["review_packet_path"]).resolve()
         decision_path = (ROOT / binding["decision_path"]).resolve()
-        packet_bytes = packet_path.read_bytes()
-        decision_bytes = decision_path.read_bytes()
+        packet_bytes = _historical_checkpoint_evidence_bytes(packet_path)
+        decision_bytes = _historical_checkpoint_evidence_bytes(decision_path)
         if (
             sha256_bytes(packet_bytes) != binding["review_packet_sha256"]
             or sha256_bytes(decision_bytes) != binding["decision_sha256"]
@@ -2514,6 +2524,7 @@ def _historical_checkpoint_evidence_is_valid(
             return False
         packet = json.loads(packet_bytes.decode("utf-8"))
         decision = json.loads(decision_bytes.decode("utf-8"))
+        valid_until = datetime.fromisoformat(decision["valid_until"])
         commit_tree = _run_git("rev-parse", f"{checkpoint['commit']}^{{tree}}")
         commit_tree_text = commit_tree.decode("ascii").strip()
     except (
@@ -2523,6 +2534,7 @@ def _historical_checkpoint_evidence_is_valid(
         TypeError,
         UnicodeDecodeError,
         json.JSONDecodeError,
+        ValueError,
     ):
         return False
     allowed_kinds = set(
@@ -2538,12 +2550,31 @@ def _historical_checkpoint_evidence_is_valid(
         and decision.get("decision") == "pass"
         and decision.get("reviewer_kind") in allowed_kinds
         and decision.get("reviewer_id")
+        and valid_until.tzinfo is not None
+        and valid_until > datetime.now(timezone.utc)
         and decision.get("review_packet_sha256")
         == binding["review_packet_sha256"]
         and decision.get("challenge_nonce") == packet.get("challenge_nonce")
         and isinstance(decision.get("findings"), list)
         and not decision["findings"]
     )
+
+
+def _historical_checkpoint_evidence_bytes(path: Path) -> bytes:
+    if not path.is_file():
+        raise OSError(f"historical review evidence is missing: {path}")
+    if not _path_within(path, ROOT):
+        return path.read_bytes()
+    relative = path.relative_to(ROOT).as_posix()
+    clean = subprocess.run(
+        ["git", "diff", "--quiet", "HEAD", "--", relative],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    if clean.returncode != 0:
+        raise OSError(f"historical review evidence is modified: {relative}")
+    return _run_git("show", f"HEAD:{relative}")
 
 
 def _verification_commands_unchanged(

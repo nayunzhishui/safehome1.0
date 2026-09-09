@@ -1,15 +1,16 @@
 {
   "schema": "safehome.rc0810.f26-final-rc.v1",
   "phase": "F26",
-  "generated_at": "2026-08-26T13:48:46.226601+00:00",
-  "task_status": "complete_no_go",
+  "generated_at": "2026-08-31T00:07:30.888011+00:00",
+  "task_status": "review_pending_wave",
   "engineering_materials_status": "evidence_ready_no_go",
+  "evidence_mode": "current_candidate_evidence_no_go",
   "candidate": {
-    "source_commit": "f879440ecb2d82cb1ebe7798ff87db558f14e35a",
-    "source_tree": "cc6be2cca3dd73217dc26ef8df5733b58f1c7ec5",
-    "branch": "main",
-    "origin_main": "f879440ecb2d82cb1ebe7798ff87db558f14e35a",
-    "origin_in_sync_at_generation": true,
+    "source_commit": "b20026dfaa3d2d4079c1bcf953c85a286e91aa6d",
+    "source_tree": "8c0b9efaa8757ae749fd58f3709763e56f19380a",
+    "branch": "codex/rc0810-release-gates",
+    "origin_main": "fa41440c4868d6787582d66312cc6e3dbb264c1a",
+    "origin_in_sync_at_generation": false,
     "workspace_dirty_observed": true,
     "packaging_mode": "isolated_git_archive",
     "direct_dirty_worktree_build_allowed": false
@@ -17,49 +18,107 @@
   "artifacts": {
     "source_tar": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/f879440ecb2d82cb1ebe7798ff87db558f14e35a/safehome-source.tar",
-      "sha256": "8e09fc9f27c924404332062e87b8b4f8513fff011495e878f420d01b95368838",
-      "size_bytes": 124477440
+      "path": ".codex_tmp/rc0810/f26/b20026dfaa3d2d4079c1bcf953c85a286e91aa6d/safehome-source.tar",
+      "sha256": "d7307255016846c1f2d3566475a8808d120a7b01a07758102c585b54c984ca00",
+      "size_bytes": 124784640
     },
     "backend_source_tar": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/f879440ecb2d82cb1ebe7798ff87db558f14e35a/safehome-backend-source.tar",
-      "sha256": "3fbc905d165c340bc77fa08ad98634baa96612f62962aac46bc665e5e4cb608d",
-      "size_bytes": 10086400
+      "path": ".codex_tmp/rc0810/f26/b20026dfaa3d2d4079c1bcf953c85a286e91aa6d/safehome-backend-source.tar",
+      "sha256": "cb230a2d0a6fc143f8c02a5709899f8cb0a5d09a76a53b4e6684db526807d9df",
+      "size_bytes": 10147840
     },
     "miniprogram_zip": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/f879440ecb2d82cb1ebe7798ff87db558f14e35a/safehome-miniprogram-production.zip",
-      "sha256": "ce5d3075469793bc8bfd96cfd5f234cf4bc80af5b5667b1970e7510b04aadcfd",
-      "size_bytes": 997029,
+      "path": ".codex_tmp/rc0810/f26/b20026dfaa3d2d4079c1bcf953c85a286e91aa6d/safehome-miniprogram-production.zip",
+      "sha256": "6431ef3800cde6309c5b5819e8985a6c1d81e43a224de8a0c77d260e2f19aea0",
+      "size_bytes": 997078,
       "profile": "production",
       "static_journey_gate_passed": true,
-      "release_input_sha256": "4cfc3b8bfc06f10c0c09daa1a2e29b68d5ac69ced3e1e8db1ec7a1bf84155d35"
+      "release_input_sha256": "4cfc3b8bfc06f10c0c09daa1a2e29b68d5ac69ced3e1e8db1ec7a1bf84155d35",
+      "content_manifest_sha256": "099bd82e53bbfab1d77af73eb78c05f0b4c56d23432aeef396105cacba84696c"
     },
     "source_sbom": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/f879440ecb2d82cb1ebe7798ff87db558f14e35a/safehome-source-sbom.json",
-      "sha256": "98a312837d87b4f9749c477fd188b0b5e12e10bc5ea3f9f204628a76aa1d4ed1",
+      "path": ".codex_tmp/rc0810/f26/b20026dfaa3d2d4079c1bcf953c85a286e91aa6d/safehome-source-sbom.json",
+      "sha256": "6b495c0ab7b9741e4997f8fc5f7e00a550485657b3a500a71c123969b7351029",
       "size_bytes": 5441,
       "coverage": "inventory_only_not_vulnerability_scan",
       "component_count": 29
     },
     "artifact_manifest": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/f879440ecb2d82cb1ebe7798ff87db558f14e35a/RC0810_F26_ARTIFACT_MANIFEST.json",
-      "sha256": "0fd350cc05eb1d48102dc04da943e0f92ed42642344d1a494f17c8dac5f4912b",
-      "size_bytes": 1557
+      "path": ".codex_tmp/rc0810/f26/b20026dfaa3d2d4079c1bcf953c85a286e91aa6d/RC0810_F26_ARTIFACT_MANIFEST.json",
+      "sha256": "889f83e0ec820fc1164c8e350d8447d9d4986dff0e6ecc49d14c4d89fbc7ba95",
+      "size_bytes": 1658
     },
     "sha256sums": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/f879440ecb2d82cb1ebe7798ff87db558f14e35a/SHA256SUMS",
-      "sha256": "8ce2e16cbac47b61c936914999caf833b0927e37e117276049b648e30e0d79c0",
+      "path": ".codex_tmp/rc0810/f26/b20026dfaa3d2d4079c1bcf953c85a286e91aa6d/SHA256SUMS",
+      "sha256": "43605f9341fd8c39a5c5fcb360121aec9b5044f67b9d039dd18c3ece063677f3",
       "size_bytes": 474
     },
     "backend_image": {
-      "status": "missing_blocking",
-      "digest": null,
-      "reason": "docker_daemon_unavailable_and_current_image_not_built"
+      "status": "recorded_no_go",
+      "registry_ref": "ghcr.io/nayunzhishui/safehome-rc0810:rc0810-b20026df",
+      "immutable_ref": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:5e14fe15cc0d9ca006d1a5b198eef22d96d2068fb5598379d298ac4d668c832d",
+      "digest": "sha256:5e14fe15cc0d9ca006d1a5b198eef22d96d2068fb5598379d298ac4d668c832d",
+      "source_commit": "b20026dfaa3d2d4079c1bcf953c85a286e91aa6d",
+      "platform": "linux/amd64",
+      "revision_label": "b20026dfaa3d2d4079c1bcf953c85a286e91aa6d",
+      "source_label": "https://github.com/nayunzhishui/safehome1.0",
+      "version_label": "rc0810-b20026df",
+      "provenance": {
+        "status": "recorded_unverified",
+        "builder_id": null,
+        "build_type": "https://mobyproject.org/buildkit@v1"
+      },
+      "container_scan": {
+        "status": "completed_no_go",
+        "scanner": "trivy",
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "unknown": 0
+      },
+      "image_sbom": {
+        "status": "completed",
+        "generator": "trivy",
+        "format": "CycloneDX",
+        "spec_version": "1.7",
+        "component_count": 72,
+        "root_name": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:5e14fe15cc0d9ca006d1a5b198eef22d96d2068fb5598379d298ac4d668c832d",
+        "root_purl": "pkg:oci/safehome-rc0810@sha256:5e14fe15cc0d9ca006d1a5b198eef22d96d2068fb5598379d298ac4d668c832d?arch=amd64&repository_url=ghcr.io%2Fnayunzhishui%2Fsafehome-rc0810"
+      },
+      "attestation": {
+        "status": "pending_external",
+        "reason": "signed_attestation_not_verified"
+      },
+      "files": {
+        "build_metadata": {
+          "path": ".codex_tmp/rc0810/registry/b20026df-build-metadata.json",
+          "sha256": "87091bc14bcbdca8081bb03bf1eff8390af5a5efb1d11f65d55180d8c16fd2b3",
+          "size_bytes": 2691
+        },
+        "container_scan": {
+          "path": ".codex_tmp/rc0810/registry/b20026df-trivy-container.json",
+          "sha256": "33b3cd894c1e933549858891f10dc90e59a43f6d201943338c26cbf30278531a",
+          "size_bytes": 59619
+        },
+        "image_sbom": {
+          "path": ".codex_tmp/rc0810/registry/b20026df-trivy-sbom.cdx.json",
+          "sha256": "1ba5ddda6888e204649cc721e9def1ecb7f34fefaefa94411bff12b3b3beecc3",
+          "size_bytes": 91596
+        }
+      },
+      "raw_evidence_publication": {
+        "status": "pending_actions_artifact",
+        "artifact_name": null,
+        "artifact_url": null,
+        "production_blocking": true
+      },
+      "production_gate_eligible": false
     }
   },
   "dependency_locks": {
@@ -74,48 +133,49 @@
       },
       {
         "path": "apps/web/package-lock.json",
-        "sha256": "9e7f505a74fcc2bf988e85687dd4963be0e16a1924a3d16ea7817293fc38e907"
+        "sha256": "7a779809acda2501cb6d05388d2f53a0af2fb031112092bdc1cd8fbdf5de248a"
       },
       {
         "path": "backend/requirements.txt",
         "sha256": "4d76a7961b36a958f5d00fd59b88f64f8fe3af441f27f59f11e425072602a057"
       }
     ],
-    "aggregate_sha256": "67b99eab07d7470b8a99ad7832855f81549429fdbcd9f6a71643b75cdbc291d1"
+    "aggregate_sha256": "8e9d51ccf68280f6e80eb089490b50a792613f4c428d31954a9b2013015276b9"
   },
   "source_summaries": {
     "migration": {
       "head": "2026_08_26_078",
       "count": 17,
       "source_path": "backend/services/schema_migration_service.py",
-      "source_sha256": "134eeaf21dd6bee7fdfc0ff48597dbd3a0ceecb2ea6f77ea74b45af39d637611",
+      "source_sha256": "53cba069563586faf4e5baa54832e7ed24ba04ce6ebd68b0852ebdd95cdd0ff6",
       "production_migration_executed": false,
       "rollback_executed": false,
       "rollback_plan": "deploy/rc0810_f11_database_rollback.md"
     },
     "content_artifacts": {
       "file_count": 3,
-      "sha256": "a8db4855aeddd7ed11adce0fdb41a2fe93453c7fee0fa3dc6b4da2c123c23b78",
+      "sha256": "d2713d0e062594a1d78c57f9efc268cc6996ab1a4d7746925ed301df8375a8b1",
       "files": {
         "content/content_governance_manifest.json": "2f7ef2277099f7bbbbedcbe3ac5c69069268d750e966ec176eb33e7e3c3ba143",
-        "content/offline_baseline_manifest.json": "dc614546c5a7dfb4df2f733d8806604f6d1b8fc35da3c55e2a0ad3c97e53f2b1",
-        "content/operations_release_manifest.json": "adf641617488b7819a2d0cae28f67119b4cf9e79bfe797102f4a7783ae84d2de"
+        "content/offline_baseline_manifest.json": "cf02dbca950678da6a7a6fb9eb34ae8079543bf38d52e7864b123558262c0a3f",
+        "content/operations_release_manifest.json": "6fad19db2db51a3f560f7a68388dc7e4babbc2db107c9515679bcf707f6d11d9"
       }
     },
     "rc0810_config": {
-      "file_count": 37,
-      "sha256": "26d7c42f6e1f32328141e05c8b11e3fc312cbe46d8f6fad0e5470bc9b295afdd",
+      "file_count": 38,
+      "sha256": "524f276bb7a246f3de0137502a54047ab4c21a390da84fed1bd38106928aea04",
       "files": {
         "config/rc0810/build_profile.schema.json": "915e749291b86e745f2f0cf18a1b46e4244a4d5785996746f3ff0904c7920568",
         "config/rc0810/build_profiles.json": "90deb58cdbfb245d0c2e7a2e165b4b7147363b7e093e6ee7509cd4c325686050",
-        "config/rc0810/capability_matrix.json": "e00a534f5cdb047705c6ca619f94ffcd24febd082f3c34bca85c7af70d227452",
+        "config/rc0810/capability_matrix.json": "cdf63590c7a096e8f9a9db860f53332be783a114bd662baa525c5f42439ac645",
         "config/rc0810/ci_contract_decisions.json": "31ccaea2610c0762d1abc1ddecab5edc899fa77b7837d3426cc70bda82176ddb",
-        "config/rc0810/config_read_inventory.json": "66d87e135bfcbebf2dacaa40c9378f1ac8610bb969afa98a2dab705a995f22f4",
+        "config/rc0810/config_read_inventory.json": "0c0f8540d468f63b212da1fbeebfa233f1c61852598f7b99fdad6d0b62593609",
         "config/rc0810/container_profiles.json": "abdff084fbcde6e1a1b4f7af41b5c104e28d2dae855e2fdb05f50f0ce8360167",
         "config/rc0810/content_artifact_policy.json": "b5fa9f57806756c4eb23c02c1e545a781a6646bb1af3c31acc9a4b9342913081",
-        "config/rc0810/database_profiles.json": "e8486a7bfcc41b3b596f4f283e8c17dc89e6fe9e625cb0101d7a6f98ffc3294a",
+        "config/rc0810/database_profiles.json": "d58d6ae6896b9503304ed64bf07a6e2e7b461a2dd1bc8e57a803ca5323a8c206",
         "config/rc0810/database_recovery_policy.json": "31e52393f1d1813a98e1ad58b776c8737b5ede7732db4c491bd8fc607fb23f7a",
-        "config/rc0810/environment_inventory.json": "ea7e825e106b79fad0ce8337b4f59093115e3944c3f2c456ca6d4741e36bf7c5",
+        "config/rc0810/detect_secrets.baseline.json": "c54ae6347ba68894422bab4159cf264b87236d735393470a431ff72ed610266f",
+        "config/rc0810/environment_inventory.json": "1f20c62574b96127f1632fe7bfa362d4ab8a268069b92e1941bccf7b2d680a50",
         "config/rc0810/f14a_review_decision_checkpoint.json": "13cf65d6fd83c658016c02fe9580b7db9302d7302b2a1c88dc250ea635d0eeba",
         "config/rc0810/f14a_review_packet_checkpoint.json": "67225a4361dc342f5aba89e26ed7583d00a93f4e19dc0d2f7b3f9683b4f21147",
         "config/rc0810/f23_fuzz_seed_corpus.json": "226a572ca106fa3b19eba3c5fd3d5a8d1c0d8fcdd919077b9f737c87b19c6406",
@@ -124,20 +184,20 @@
         "config/rc0810/f24_legacy_disposition.json": "42762db107f73fdce4d9a5f4718ce2e705a6771ff1834e2a8e6b7afcf2353979",
         "config/rc0810/miniprogram_cloud_targets.json": "9ed6b32dc52ebecacd0c98f65848ced8376981c68b8e5154ca2ad2a596d5b179",
         "config/rc0810/miniprogram_page_policy.json": "d8eddf2e0c0c44f1601ffc4ea7d07f36b40ce53b6c4928ed80aa20fc9b46a42c",
-        "config/rc0810/object_authorization_inventory.json": "a26f362829a0099031e3116f4f1f2118b5747e55f62cd3f0ddbb4835c5705058",
+        "config/rc0810/object_authorization_inventory.json": "97a1817fef65562982c482370ef6081f0cd793863afa9461f00634b520649404",
         "config/rc0810/operations_reliability_policy.json": "13f6b16daf4d5e60e83027c01541f6dd297d61a4eddc97f49b2fcd77b892dc14",
         "config/rc0810/privacy_lineage.schema.json": "e2717b48c8874bb1fa76ee7ed20253a7a5dae5e6f436c5c82935624914479ea5",
-        "config/rc0810/privacy_lineage_catalog.json": "5ba8050efa9a2163ba92dac53a903a617e7f3b16232c19ea96f0764b70fd11f6",
+        "config/rc0810/privacy_lineage_catalog.json": "8c683b19a315dc217b486963980925b46a7123a204ec3fcaf40e5f87738695ba",
         "config/rc0810/release_population_and_client_contract.json": "417f6730e0e016a0602f8720b147985b90d926e1e70128c068b0692c4473c905",
         "config/rc0810/research_execution_manifest_policy.json": "9157c35f5657b8c5e51d347106b95e6b98f8f44fac2bf52f45cb51b6841a74fd",
         "config/rc0810/safety_scheduler_policy.json": "3eec46111addea4e35cc7d0146bd2039b1b4200296d111be68c3bdbac61452f9",
         "config/rc0810/security_exception_registry.json": "980783bd924cbaf21048f34ef646a1a3fc5091d45e3a2d60f2ebaad7d7e9f9b9",
         "config/rc0810/security_gate.schema.json": "8106b6e378812a2e0cb3ebaf31584a2645ecd8921b13060a7b4807f96efdfd80",
-        "config/rc0810/security_gate_policy.json": "fe87bb87c2fdda1a5fa12b54d8c79c065e47523f2d6c8bafed2b7c2329acac6c",
+        "config/rc0810/security_gate_policy.json": "aa855eb132dcd305eeeab18bead41d200beb5bc4e16848004073ea1ef440f8f7",
         "config/rc0810/wechat_external_evidence.schema.json": "278b682585c8cd74f405907105997fcaf6f5a032a44818c168e5af5f2e9e7db8",
         "config/rc0810/wechat_external_evidence_catalog.json": "280cf1bf2889ce1ec4f8a74ac2caecb3eed0fe7e81442a42198df47d7652e0f0",
         "config/rc0810/wechat_platform_acceptance.schema.json": "35ab51462fb890cd9f04a5e0cfb4f1e4b9540497356172bca56bd19da22363ab",
-        "config/rc0810/wechat_platform_capability_map.json": "1c40fe93e48998de1cefe4e5ee2e5d51c96c22146d632ecb9661a2ffe741c988",
+        "config/rc0810/wechat_platform_capability_map.json": "c84fce1945000feb64e2ed4efe03c4fd8490a7055cc06b15d3893392cf3940c8",
         "config/rc0810/wechat_platform_catalog.json": "6af3052e98e0fc3942afc78306b3c0454abf5c806eee230153faa677417372e9",
         "config/rc0810/wechat_platform_raci.json": "362622d152dbe806fa7c50b6c8aa1825650e7cc39daeb71945f4f7528a0ad73f",
         "config/rc0810/wechat_platform_real_world_evidence.json": "d4f9d082e67c565eca6f02066e51c964f057349253297ddef384481866378943",
@@ -151,7 +211,7 @@
       "id": "backend",
       "title": "后端全量回归",
       "required": true,
-      "status": "not_run_user_waiver",
+      "status": "not_verified_for_candidate",
       "evidence": null,
       "release_effect": "blocking"
     },
@@ -159,7 +219,7 @@
       "id": "schema_migration_recovery_rollback",
       "title": "Schema、迁移、恢复与回滚",
       "required": true,
-      "status": "not_run_user_waiver",
+      "status": "not_verified_for_candidate",
       "evidence": null,
       "release_effect": "blocking"
     },
@@ -167,7 +227,7 @@
       "id": "shared_api",
       "title": "Shared与API合同",
       "required": true,
-      "status": "not_run_user_waiver",
+      "status": "not_verified_for_candidate",
       "evidence": null,
       "release_effect": "blocking"
     },
@@ -175,7 +235,7 @@
       "id": "web_miniprogram",
       "title": "Web与小程序",
       "required": true,
-      "status": "not_run_user_waiver",
+      "status": "not_verified_for_candidate",
       "evidence": null,
       "release_effect": "blocking"
     },
@@ -183,7 +243,7 @@
       "id": "permission_scope_audit",
       "title": "权限、对象范围与审计",
       "required": true,
-      "status": "not_run_user_waiver",
+      "status": "not_verified_for_candidate",
       "evidence": null,
       "release_effect": "blocking"
     },
@@ -191,7 +251,7 @@
       "id": "idempotency_concurrency_withdrawal_recovery",
       "title": "幂等、并发、撤回与异常恢复",
       "required": true,
-      "status": "not_run_user_waiver",
+      "status": "not_verified_for_candidate",
       "evidence": null,
       "release_effect": "blocking"
     },
@@ -199,7 +259,7 @@
       "id": "content_boundary",
       "title": "内容与心理伦理边界",
       "required": true,
-      "status": "not_run_user_waiver",
+      "status": "not_verified_for_candidate",
       "evidence": null,
       "release_effect": "blocking"
     },
@@ -207,7 +267,7 @@
       "id": "accessibility_four_viewports",
       "title": "公共组件四视口、任务页面源码与自动无障碍",
       "required": true,
-      "status": "not_run_user_waiver",
+      "status": "not_verified_for_candidate",
       "evidence": null,
       "release_effect": "blocking"
     },
@@ -215,7 +275,7 @@
       "id": "full_regression",
       "title": "全量工程回归",
       "required": true,
-      "status": "not_run_user_waiver",
+      "status": "not_verified_for_candidate",
       "evidence": null,
       "release_effect": "blocking"
     },
@@ -223,31 +283,40 @@
       "id": "machine_registry",
       "title": "任务机器注册表",
       "required": true,
-      "status": "not_run_user_waiver",
+      "status": "not_verified_for_candidate",
       "evidence": null,
       "release_effect": "blocking"
     }
   ],
+  "required_ci_summary": {
+    "status": "not_verified_for_candidate",
+    "blocking_job": null,
+    "high_vulnerabilities": null,
+    "official_github_ci": "no_bound_success",
+    "candidate_commit": "b20026dfaa3d2d4079c1bcf953c85a286e91aa6d",
+    "evidence_scope": "candidate_commit_only"
+  },
   "security_evidence": {
     "path": "docs/02_专项进度与验收/rc0810_f22b_security_gate.json",
-    "source_tree": "0856ee899436b6153c9ba01d911df3bf47b6615e",
-    "candidate_source_tree": "cc6be2cca3dd73217dc26ef8df5733b58f1c7ec5",
-    "current_status": "stale",
-    "historical_status": "rescan_complete_no_go",
-    "sbom_status": "inventory_generated_but_current_vulnerability_scan_not_run",
+    "source_tree": "a5fe9edd92b4327523cbd8d795b72dd918b8d0c3",
+    "candidate_source_tree": "a5fe9edd92b4327523cbd8d795b72dd918b8d0c3",
+    "current_status": "current",
+    "historical_status": "attestation_pending_no_go",
+    "sbom_status": "current_scan_complete_no_go",
     "production_gate_eligible": false
   },
   "platform_evidence": {
     "path": "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
-    "source_commit": "11eeeb253f0fddad17b77eefd9762083b8659d25",
+    "source_commit": "b20026dfaa3d2d4079c1bcf953c85a286e91aa6d",
     "historical_engineering_status": "evidence_ready",
     "production_approved": false,
+    "miniprogram_content_manifest_sha256": "099bd82e53bbfab1d77af73eb78c05f0b4c56d23432aeef396105cacba84696c",
     "external_blockers": [
       {
         "id": "F25-EXT-01",
         "scope": "backend_image",
         "status": "pending_external",
-        "reason": "docker_daemon_unavailable"
+        "reason": "image_security_findings_attestation_and_remote_raw_evidence_pending"
       },
       {
         "id": "F25-EXT-02",
@@ -1251,43 +1320,32 @@
     }
   },
   "wave_c_review": {
-    "status": "review_pass",
+    "status": "review_pending_wave",
     "reviewer_id": "sartre_replacement",
     "base_commit": "908603e100c5cb473f2d632f3e673d3824ebff76",
-    "reviewed_head": null,
-    "packet_path": ".codex_tmp/rc0810/run-20260824T090306Z-4c4d4bf8/reviews/wave-C-f26.json",
-    "packet_sha256": "23d5b378c4f623dd3bfce8f7ce9c531e9bc16d383b205f5302d8f75917f21627",
-    "decision_artifact": {
-      "path": "docs/02_专项进度与验收/rc0810_wave_c_review_decision.json",
-      "sha256": "49ea07551f322094a965ac33424806fdce34789487962fbb8d84e275a8b4e65f"
-    },
+    "packet_path": null,
+    "packet_sha256": null,
+    "packet_nonce": null,
+    "packet_head": null,
+    "packet_source_tree": null,
+    "harness_binding": null,
+    "decision_reviewed_head": null,
+    "decision_artifact": null,
     "prior_wave_b_packet_sha256": "2b7c5c249bc80023c094a0a818f203364989d4ea408f59253ef48153c48c6e21",
-    "prior_wave_b_decision_sha256": "a24af5a4fb5f713af91c13767ea6b460cf4dea1a3e44544b6ec0b09df3a37feb",
-    "packet_nonce": "wave-c-30e0ae53-20260826-fix1",
-    "packet_head": "30e0ae53e3642bcc040d6959b3c0e93caa5f8f05",
-    "packet_source_tree": "91d0dea8572e730e35f3a321d7dba70059e476c9",
-    "harness_binding": {
-      "run_id": "run-20260824T090306Z-4c4d4bf8",
-      "state_path": ".codex_tmp/rc0810/run-20260824T090306Z-4c4d4bf8/state.json",
-      "state_sha256": "ddcf1d1844982d32f967b6efd5c5f1386a99364400472950df3542fd15dada7a",
-      "fixed_reviewer_id": "sartre_replacement",
-      "last_review_pass_checkpoint": "RC0810-F21:verified",
-      "wave_b_packet_sha256": "2b7c5c249bc80023c094a0a818f203364989d4ea408f59253ef48153c48c6e21",
-      "wave_b_decision_sha256": "a24af5a4fb5f713af91c13767ea6b460cf4dea1a3e44544b6ec0b09df3a37feb"
-    },
-    "decision_reviewed_head": "fa322a719f81d1cca4b1c3993e8f607c40bd0b64"
+    "prior_wave_b_decision_sha256": "a24af5a4fb5f713af91c13767ea6b460cf4dea1a3e44544b6ec0b09df3a37feb"
   },
   "release_decision": {
     "recommendation": "NO_GO",
     "production_gate_eligible": false,
     "automatic_release_performed": false,
     "blocking_reasons": [
-      "required_ci_not_run_by_user_direction",
-      "current_security_scan_missing_and_f22_evidence_stale",
-      "backend_image_and_digest_missing",
+      "official_required_ci_not_verified_for_candidate",
+      "signed_attestation_verification_pending",
+      "registry_raw_evidence_actions_artifact_pending",
       "wechat_platform_real_device_and_human_evidence_missing",
       "product_platform_engineering_professional_go_incomplete",
-      "72h_candidate_observation_not_executed"
+      "72h_candidate_observation_not_executed",
+      "wave_c_independent_review_pending"
     ]
   },
   "phase_separation": {
@@ -1298,10 +1356,10 @@
     "stable_operation_verified": false
   },
   "known_issues": [
-    "F22-B security report is bound to an older source tree and is historical only.",
+    "F22-B security report is current for the candidate but remains NO-GO.",
     "F25-B has eight external blockers and no platform or human approval.",
-    "Required CI/Harness/regression was not run at F26 by explicit user direction.",
-    "No current backend image, image digest, container scan or production migration evidence exists."
+    "Official GitHub required CI has not been verified for this candidate.",
+    "The GHCR digest and Trivy CycloneDX SBOM are bound; Critical/High image findings are zero, while signed-attestation verification remains blocking."
   ],
   "subtasks": [
     {
@@ -1310,19 +1368,19 @@
     },
     {
       "id": "F26.2",
-      "status": "blocked_user_waiver"
+      "status": "blocked_official_ci_pending"
     },
     {
       "id": "F26.3",
-      "status": "partial_backend_image_missing"
+      "status": "registry_digest_bound_no_go"
     },
     {
       "id": "F26.4",
-      "status": "partial_image_and_security_missing"
+      "status": "current_scan_no_go"
     },
     {
       "id": "F26.5",
-      "status": "partial_structural_scan_only"
+      "status": "current_scan_no_go"
     },
     {
       "id": "F26.6",
@@ -1334,7 +1392,7 @@
     },
     {
       "id": "F26.8",
-      "status": "review_pass"
+      "status": "review_pending_wave"
     },
     {
       "id": "F26.9",

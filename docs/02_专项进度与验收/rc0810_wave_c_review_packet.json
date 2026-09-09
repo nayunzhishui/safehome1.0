@@ -1,0 +1,79 @@
+{
+  "schema": "safehome.rc0810.wave-review-packet.v2",
+  "wave": "C",
+  "freeze_unit": "RC0810-F26",
+  "packet_nonce": "wave-c-19745014-20260828-final-gates",
+  "reviewer_id": "sartre_replacement",
+  "base_checkpoint": {
+    "commit": "908603e100c5cb473f2d632f3e673d3824ebff76",
+    "status": "review_pass",
+    "wave_b_packet_sha256": "2b7c5c249bc80023c094a0a818f203364989d4ea408f59253ef48153c48c6e21",
+    "wave_b_decision_sha256": "a24af5a4fb5f713af91c13767ea6b460cf4dea1a3e44544b6ec0b09df3a37feb"
+  },
+  "review_head": {
+    "commit": "19745014cd3a9e7e9cbef5d8a8da29f28834cf7f",
+    "source_tree": "bc673310f39ba1e3a39a5277eff0c12999ccb69e",
+    "pushed_to_origin": false
+  },
+  "release_candidate": {
+    "commit": "c3dc089002a8f057670c39d75ee3160dcb36f092",
+    "source_tree": "8264085bba6e18e0518511e804918b1361106074",
+    "production_release_approved": false
+  },
+  "execution_units": [
+    "RC0810-F22-B",
+    "RC0810-F23",
+    "RC0810-F24",
+    "RC0810-F25-B",
+    "RC0810-F26"
+  ],
+  "diff": {
+    "range": "908603e100c5cb473f2d632f3e673d3824ebff76..19745014cd3a9e7e9cbef5d8a8da29f28834cf7f",
+    "files_changed": 133,
+    "insertions": 13962,
+    "deletions": 1928,
+    "diff_check": "pass"
+  },
+  "local_evidence": {
+    "backend_full_regression": "1339 passed; 13 stale-evidence/harness-contract failures then fixed",
+    "directed_closure": "F14+F22 24 passed; Harness 1 passed; F25+F26 34 passed with only the expected missing-current-packet failure before this binding",
+    "web": "typecheck and production build passed",
+    "miniprogram_content_api": "passed; 53 pages, four viewports, assets, content and 136 API operations",
+    "mysql_redis": "isolated infrastructure smoke passed",
+    "migration_recovery": "seven recovery scenarios true; five migration-matrix checks passed; restored 181 tables at head 078",
+    "backend_image": "local image sha256:b38f878b4dfed277024860c6f2681f2374e09e58bfd33320141487f6a24737ed; unpublished and without registry digest or attestation",
+    "security_scan": "current source and container scan complete; 362 gates, zero forbidden licenses; npm audit remains blocking"
+  },
+  "open_risks_and_blockers": [
+    "npm audit reports four High findings in one transitive frontend build-tool chain and reports no fix available",
+    "official GitHub required CI is pending branch push",
+    "backend image is local only and has no registry digest or supply-chain attestation",
+    "WeChat platform, DevTools, real-account, iOS/Android, zero-context human, RACI and real-world evidence remain pending external",
+    "Product, Platform, Engineering and Professional GO are all unapproved",
+    "72-hour candidate observation has not run",
+    "the fixed reviewer is not currently recoverable; no review pass is claimed"
+  ],
+  "review_constraints": {
+    "read_only": true,
+    "do_not_repeat_full_regression": true,
+    "rerun_only": [
+      "finding reproduction",
+      "directly relevant targeted test",
+      "evidence gap that changes the decision"
+    ],
+    "pass_means": "wave-C implementation and truthful NO-GO evidence are acceptable",
+    "pass_does_not_mean": "production GO, platform approval, human approval, security clearance or stable release"
+  },
+  "requested_output": {
+    "decision": [
+      "pass",
+      "fix_required"
+    ],
+    "findings": "severity, file and line, reachable impact, evidence, minimal fix and targeted retest",
+    "confirm": [
+      "candidate and report binding",
+      "no forged review, platform, security or CI pass",
+      "NO-GO remains mandatory while blockers exist"
+    ]
+  }
+}

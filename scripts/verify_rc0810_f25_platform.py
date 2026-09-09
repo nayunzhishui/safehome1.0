@@ -22,8 +22,20 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from run_rc0810 import collect_git_snapshot, load_registry  # noqa: E402
 
 
-BASELINE_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f25a_platform_baseline.json"
+BASELINE_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f25a_platform_baseline_current.json"
 BASELINE_RELATIVE = BASELINE_PATH.relative_to(ROOT).as_posix()
+RELEASE_EVIDENCE_RELATIVES = (
+    "docs/02_专项进度与验收/rc0810_f22a_security_baseline.json",
+    "docs/02_专项进度与验收/rc0810_f22b_security_gate.json",
+    "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+    BASELINE_RELATIVE,
+    "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
+    "docs/02_专项进度与验收/rc0810_f26_final_rc.json",
+    "docs/02_专项进度与验收/rc0810_f26_final_rc.md",
+    "docs/02_专项进度与验收/rc0810_required_ci_evidence.json",
+    "docs/02_专项进度与验收/rc0810_wave_c_review_packet.json",
+    "docs/02_专项进度与验收/rc0810_wave_c_review_decision.json",
+)
 DEFINITIONS = (
     "config/rc0810/wechat_platform_acceptance.schema.json",
     "config/rc0810/wechat_platform_catalog.json",
@@ -168,13 +180,14 @@ def platform_source_snapshot() -> dict[str, str]:
         env = os.environ.copy()
         env["GIT_INDEX_FILE"] = str(Path(directory) / "index")
         git("read-tree", current["source_tree"], env=env)
-        subprocess.run(
-            ["git", "update-index", "--force-remove", "--", BASELINE_RELATIVE],
-            cwd=ROOT,
-            env=env,
-            capture_output=True,
-            check=False,
-        )
+        for relative in RELEASE_EVIDENCE_RELATIVES:
+            subprocess.run(
+                ["git", "update-index", "--force-remove", "--", relative],
+                cwd=ROOT,
+                env=env,
+                capture_output=True,
+                check=False,
+            )
         source_tree = git("write-tree", env=env).decode("ascii").strip()
     manifest = git("ls-tree", "-r", "-z", source_tree)
     diff = git("diff-tree", "--binary", "--no-ext-diff", current["head_tree"], source_tree)
@@ -185,6 +198,41 @@ def platform_source_snapshot() -> dict[str, str]:
         "dirty_diff_sha256": sha256_bytes(diff),
         "source_manifest_sha256": sha256_bytes(manifest),
     }
+
+
+def source_binding_errors(
+    baseline: dict[str, Any], source: dict[str, str]
+) -> list[str]:
+    """Validate the frozen source while allowing later evidence-only commits."""
+
+    errors: list[str] = []
+    for field in ("source_tree", "source_manifest_sha256"):
+        if baseline.get(field) != source[field]:
+            errors.append(f"{field}_mismatch")
+    recorded_head = baseline.get("head")
+    recorded_tree = baseline.get("head_tree")
+    if not isinstance(recorded_head, str) or not isinstance(recorded_tree, str):
+        return [*errors, "head_binding_invalid"]
+    try:
+        git("merge-base", "--is-ancestor", recorded_head, "HEAD")
+        actual_recorded_tree = git(
+            "rev-parse", f"{recorded_head}^{{tree}}"
+        ).decode("ascii").strip()
+        expected_diff = git(
+            "diff-tree",
+            "--binary",
+            "--no-ext-diff",
+            recorded_tree,
+            str(baseline.get("source_tree")),
+        )
+    except RuntimeError:
+        errors.append("head_binding_invalid")
+        return errors
+    if recorded_tree != actual_recorded_tree:
+        errors.append("head_tree_mismatch")
+    if baseline.get("dirty_diff_sha256") != sha256_bytes(expected_diff):
+        errors.append("dirty_diff_sha256_mismatch")
+    return errors
 
 
 def definition_paths() -> dict[str, Path]:
@@ -416,9 +464,7 @@ def validate_definition(baseline_path: Path = BASELINE_PATH) -> dict[str, Any]:
     for problem in Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(baseline):
         errors.append(f"baseline_schema:{problem.message}")
     source = platform_source_snapshot()
-    for field in ("head", "head_tree", "source_tree", "dirty_diff_sha256", "source_manifest_sha256"):
-        if baseline.get(field) != source[field]:
-            errors.append(f"{field}_mismatch")
+    errors.extend(source_binding_errors(baseline, source))
     expected_hashes = {relative: sha256_file(path) for relative, path in definition_paths().items()}
     if baseline.get("definition_hashes") != expected_hashes:
         errors.append("definition_hash_mismatch")

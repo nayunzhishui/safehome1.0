@@ -51,7 +51,9 @@ def load_json(path: Path) -> dict[str, Any]:
 
 
 def sha256_file(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    raw = path.read_bytes()
+    normalized = raw.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(normalized).hexdigest()
 
 
 def manifest_sha256(paths: list[Path]) -> str:

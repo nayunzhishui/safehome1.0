@@ -20,6 +20,7 @@ from flask import current_app
 
 from database import get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, write_audit_log
 from services.ai_qa_service import _evaluate_case
+from services.artifact_integrity_service import artifact_bytes
 from services.feedback_service import generate_feedback
 from services.risk_service import check_text_risk
 from services.operations_reliability_service import (
@@ -162,7 +163,7 @@ def _snapshot_manifest() -> dict:
         target = _artifact_target(descriptor.get("path", ""))
         if not target.is_file():
             raise OperationsGovernanceError("artifact_missing", f"制品不存在：{descriptor.get('path')}", 409)
-        raw = target.read_bytes()
+        raw = artifact_bytes(target)
         digest = hashlib.sha256(raw).hexdigest()
         if digest != descriptor.get("sha256"):
             raise OperationsGovernanceError("artifact_integrity_failed", f"制品哈希不匹配：{descriptor.get('path')}", 409)

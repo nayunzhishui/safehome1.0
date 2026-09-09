@@ -14,6 +14,19 @@ VERIFY = ROOT / "deploy" / "verify_rc0810_f03_images.py"
 
 def test_f03_production_image_is_fail_closed():
     text = PRODUCTION.read_text(encoding="utf-8")
+    assert text.splitlines()[0] == (
+        "FROM mcr.microsoft.com/azurelinux/base/python:3.12@sha256:"
+        "722b6224c23b3f21f5268e2073f80c0f396bc626e3193b6dbf66e40d89478f03 AS builder"
+    )
+    assert text.count(
+        "FROM mcr.microsoft.com/azurelinux/base/python:3.12@sha256:"
+        "722b6224c23b3f21f5268e2073f80c0f396bc626e3193b6dbf66e40d89478f03"
+    ) == 2
+    assert "RUN test -x /bin/sh" in text
+    assert "python3 -m pip install --no-cache-dir --target /opt/python" in text
+    assert "COPY --from=builder /opt/python /opt/python" in text
+    assert "USER 65532:65532" in text
+    assert 'ENTRYPOINT ["/usr/bin/python3"' in text
     assert "PRODUCTION_FEATURES_UNLOCKED=1" not in text
     assert "AI_QA_REAL_PROVIDER_ENABLED=1" not in text
     assert "OPERATIONS_PRODUCTION_RELEASE_ENABLED=1" not in text
@@ -86,9 +99,26 @@ def test_f03_gunicorn_home_is_owned_by_runtime_user():
     for dockerfile in (PRODUCTION, VALIDATION):
         text = dockerfile.read_text(encoding="utf-8")
         assert "ENV HOME=/app/data\n" in text
-        assert "mkdir -p /app/data" in text
-        assert "chown -R safehome:safehome /app/data" in text
-        assert "USER safehome" in text
+        if dockerfile == PRODUCTION:
+            assert "COPY --from=builder --chown=65532:65532 /runtime-data /app/data" in text
+            assert "USER 65532:65532" in text
+        else:
+            assert "mkdir -p /app/data" in text
+            assert "chown -R safehome:safehome /app/data" in text
+            assert "USER safehome" in text
+
+
+def test_f03_production_image_packages_database_recovery_policy():
+    copy_contract = (
+        "COPY config/rc0810/database_recovery_policy.json "
+        "/app/config/rc0810/database_recovery_policy.json"
+    )
+    assert copy_contract in PRODUCTION.read_text(encoding="utf-8")
+
+
+def test_f03_runtime_dependencies_include_timezone_database():
+    requirements = (ROOT / "backend" / "requirements.txt").read_text(encoding="utf-8")
+    assert "tzdata==2025.2" in requirements.splitlines()
 
 
 def test_f03_production_runtime_override_is_rejected():
@@ -176,3 +206,8 @@ def test_f03_runtime_verifier_contract_is_exposed():
     assert "local runtime artifacts found in image filesystem" in text
     assert "runtime capabilities disabled" in text
     assert "forbidden runtime capabilities enabled" in text
+    assert 'runtime_environment = "testing"' in text
+    assert "runtime_python" in text
+    assert "image entrypoint guard failed" in text
+    assert '"ALLOW_PRODUCTION_SQLITE=1"' not in text
+    assert "health contract mismatch" in text

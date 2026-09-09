@@ -1,5 +1,13 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-09-09：统一发布候选整合
+
+- [x] 合并release d48791bb与登录隐私分支，解决10个冲突文件，双侧意图保留。
+- [x] 117项受影响组合、前端30项、147处配置读取通过；Luna整合增量审查通过。
+- [x] DMC只读核实生产063+078，无需重复迁移；033配置版本已上线。
+- [ ] 从新合并提交构建/验证统一容器候选、部署、真实微信授权与小程序平台发布；不上传旧076候选。
+
+
 ## 2026-09-09：生产连接恢复checkpoint
 
 - [x] 用户修改配置后，公开healthz和登录能力接口实测200，旧503阻断解除。
@@ -75,6 +83,56 @@
 - [ ] 全页统一检查：全部53页布局、状态/弱网、功能保护、可访问性、微信开发者工具编译及最终真机用户验收。
 
 当前5/53页状态为implemented_pending_final_check，不是最终完成。5页事件/输入合同保留检查通过；日期格式化与open事件4项定向断言通过；未运行全量业务测试或旧Harness。尚未取得本轮DevTools/真机证据。尚未提交推送；原有pelican-cycling.html及其三份动画记录不属于本轮，提交时必须隔离。
+
+## 2026-09-01：RC0810 合并与发布续点
+
+- [x] 将第二阶段功能合入发布分支；冲突直接相关测试 `15 passed`，机器注册表覆盖 `418/418`。
+- [x] 推送并核对远端合并提交 `99fd1efe87630b3f3cb3e36d5e0b10d89a82215a`。
+- [x] 运行 `33499815611` 证明 F22-B 扫描与失败关闭自检通过，并定位旧 GHCR 包权限阻塞。
+- [x] 提交仓库专属 GHCR 包 `safehome1-rc0810` 配置；运行 `33500568071` 已成功推送镜像并上传 registry 证据。
+- [x] 删除测评页已不存在测试按钮对应的过时 WXML 处理规则；定向生产包测试通过。
+- [ ] 修正 Trivy config digest 与 OCI index digest 的绑定规则，并以新 SHA 重跑最终制品链。
+- [ ] 对最终 SHA 生成镜像 digest、Trivy 扫描、CycloneDX SBOM、provenance、F25-B/F26 artifact 和最终云托管 ZIP。
+- [ ] 按备份、隔离恢复、真实 migration head、MySQL CA/TLS、环境变量、零流量候选顺序补齐生产现场证据；全部通过前不切流。
+
+## 2026-08-31：RC0810 漏洞关闭与发布续点
+
+- [x] 正式镜像切换为非 root Distroless Python 3.12；实际运行门禁通过。
+- [x] 关闭源码 High，建立人工确认秘密误报基线；F22 源码/容器阻断均为 0，runtime 与反伪造自检通过。
+- [x] 用户明确授权指定 GitHub 仓库和 GHCR 发布目标。
+- [ ] 推送本地候选 `8dea3f0a`：标准和 HTTP/1.1 连接均因 TLS 握手失败，远端 SHA 未核对。
+- [ ] 远端 SHA 确认后再构建/推送同一 SHA 的 GHCR 镜像，完成 digest、manifest、标签、SBOM、扫描和 attestation 核验。
+- [ ] 重新生成 F25-B/F26 与最新版云托管发布包；未完成前保持 `NO_GO`，不操作生产资源。
+
+## 2026-08-30：RC0810 发布链当前候选
+
+- [x] 保留并提交原 7 个待提交证据文件；分支推送 SHA 已逐次用远端引用核对。
+- [x] 重建并干净树验证 F22：open gate 318，production=false。
+- [x] 从候选 `8d1629b9` 构建/推送 GHCR `linux/amd64` 镜像，回拉核对 digest、manifest 与 revision/source/version 标签。
+- [x] 如实记录 BuildKit/Syft SBOM scanner 超时；用 Trivy 对同一 digest 生成 CycloneDX 1.7/119 组件 SBOM，扫描为 3 Critical、13 High、0 Secret。
+- [x] 重建 F25-B、F26；候选 SHA、镜像 digest、SBOM/扫描一致，两份自检通过并保持 `NO_GO`。
+- [x] 仅运行指定四个定向测试文件：55 passed、7 failed；失败均由 F14-A 历史复审凭据过期触发 fail-closed。
+- [ ] 不新建 reviewer、不添加豁免；由既定独立复审流程更新有效 checkpoint 后复验 Harness。
+- [ ] 完成官方 required CI、F22/镜像发现处理、签名 attestation、隐私人工确认、真实迁移/回滚/恢复证据与最终人工/外部 GO。
+
+## 2026-08-29：GitHub required CI Fix Loop
+
+- [x] 读取 Actions #582：6 个独立 job 通过，`security-contract`、`backend`、`npm-audit` 失败，`release-gate` 随之失败。
+- [x] 修复 CRLF/LF 历史证据绑定、Harness 悬空 Git tree 测试夹具、Asia/Shanghai 日期测试和 Task35 两项非规范化哈希。
+- [x] 定向验证：Harness 7 项、其余受影响组合 57 项、训练日期 1 项、Task35 1 项通过；4 个 F22/F25 用例只报告旧证据按设计失效。
+- [ ] 提交修复后重建 F22/F25/F26 当前证据，并运行其冻结层验证。
+- [ ] 旧波次 C review pass 已因机器合同/源码变化失效；冻结后续用固定 reviewer，禁止补写或伪造 pass。
+- [x] `nanoid` 由 3.3.17 最小更新到 3.3.18；npm audit 0 vulnerability，Web typecheck/build 通过。
+- [ ] 正式 registry digest/attestation、微信平台/真机、四方 GO、72h 仍阻断 production。
+
+## 2026-08-28：RC0810 本地发布门禁续跑
+
+- [x] 恢复并验证 Docker、MySQL 8.4、Redis 7.4；完成隔离迁移恢复和正式候选镜像 runtime gate。
+- [x] 完成 Web、小程序、内容/API、制品、F14 隐私谱系和 F22 完整安全重扫；未操作生产资源。
+- [x] 修复证据哈希循环、过期镜像探针和 Harness 偶然脏状态测试；定向 Fix Loop 已通过。
+- [x] 后端全量首轮执行：1339 passed、13 个门禁绑定失败；13 个失败均已有对应最小复验通过。
+- [ ] npm audit 4 High、F22 open gate 362、镜像 registry digest/attestation、微信平台/真机、四方 GO 和 72h 未关闭，production NO-GO。
+- [ ] 完成 F25/F26 当前证据与固定 reviewer 波次 C 复审后推送；官方 GitHub required CI 和全历史只读审查交给网页 GPT。
 
 ## 2026-08-27：Docker 恢复与正式镜像
 
@@ -12781,6 +12839,107 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] 合并验证：34 个变更 JS、54 个 JSON 可解析；相关前端合同 `25 passed`；UIproduct 分支真值与工程 Harness 通过，53/53 页面已登记。
 - [ ] 全量真机仍为 `fix_required`，仅记录 21/53；本地集成不代表正式上线、生产批准或真机验收完成。
 
+## 2026-08-28：RC0810 required gate 恢复状态
+
+- [x] F01 能力矩阵与稳定源码哈希校验已对齐当前配置代码；F01 专项 `18 passed`。
+- [x] F05、F16/F36/B04/F09 对象范围测试夹具和当前首页合同已修正；相关定向测试通过。
+- [x] 迁移恢复脚本显式执行 pending migrations；Task35、内容/API/config inventory 校验通过。
+- [ ] clean source freeze 后重建 F25-B 包、重跑 F22-A/B 安全扫描、required CI、迁移回滚/恢复与最终全量回归。
+- [ ] 既有 reviewer 只在 F12-B 冻结点接收精简 packet；当前保持 `review_pending_wave`，不得伪造 `review_pass`。
+- [ ] production 仍 NO-GO：外部平台/真机/CloudBase/Secret/发布批准未完成，npm audit 仍有 4 个 High。
+
+## 2026-08-28：本地门禁完成后的继续入口
+
+- [x] 本地 required、Docker、MySQL/Redis、迁移恢复、安全重扫和 RC 重冻结已完成；唯一 required 失败为 npm audit 4 High。
+- [x] 波次 C 审查包已冻结并绑定 `1311eee7`，F26 定向测试 `12 passed`。
+- [ ] 固定 reviewer 当前不可恢复，继续保持 `review_pending_wave`；推送后由网页 GPT 只读审查累计代码并核验 GitHub Actions，不得替代 Harness reviewer 或批准上线。
+- [x] F25-A/F25-B 证据自引用已做最小修复；仅证据提交可保持有效，真实源码、定义、包或镜像变化仍 fail-closed。
+- [x] F22-B Docker 上下文复用检查已与 Dockerfile/`.dockerignore` 对齐；测试、文档、脚本变化仍重扫源码，但不重复未变化镜像扫描。
+- [x] F22-B 与 F25-A 的证据提交后绑定已统一；F25-B tree inventory 排除 `backend/tests`，与 `.dockerignore` 保持一致。
+
+## 2026-08-29：网页审查 Fix Loop 状态
+
+- [x] 修复 GitHub/Ubuntu 与 Windows checkout 的 checkpoint、F22/F25 和 Task35 换行摘要差异；T8 测试改用上海业务日。
+- [x] 新增 UTC 15:59/16:00/白天边界，F01/F03/T8 定向组合 `32 passed`；历史 checkpoint 有效/过期/CRLF 合同 `2 passed`。
+- [x] 历史 review decision 开始强制校验 `valid_until`；当前 F14-A 已过期并按预期 fail-closed，未改日期或伪造 pass。
+- [x] 生产 Docker 基础镜像绑定 immutable digest，本地构建成功；F01 清单改为真实的 fail-closed 生产候选定义。
+- [x] 用户授权 registry 元数据访问后，`nanoid 3.3.17` 最小更新到 3.3.18；audit/typecheck/build 通过。
+- [ ] 推送后由 GitHub required Actions 执行完整回归；按用户要求不再本地重复全量。旧 F22/F25/F26/波次 C 证据因源码变化保持失效。
+- [ ] 固定 reviewer 重新审查当前累计 packet 前保持 `review_pending_wave / production_no_go`。
+
+## 2026-08-29：F01/F14/F24 事实清单 Fix Loop
+
+- [x] 修正 F01 字面量 `\\r\\n` 归一错误；F14/F24 同步使用 LF 规范化源码摘要。
+- [x] 重建 environment inventory、privacy lineage catalog、config-read inventory；三项专项合计 `38 passed`。
+- [x] F14 source bindings/current catalog 恢复有效。
+- [ ] F14 的 189 个 privacy gaps、0 confirmed reviews 与 privacy owner pending_external 保持开放，不由自动化审批。
+- [ ] 推送后由 GitHub required CI 核验；过期 F14-A review decision 仍须固定 reviewer 重新签发，禁止改旧日期。
+
+## 2026-08-29：F25-B 当前证据恢复
+
+- [x] 从 `c128ac08` Git archive 重建 production 小程序包和 F25-B 报告。
+- [x] CI 缺少 `.codex_tmp` 包时按报告绑定提交确定性重建；三项专项与五项反伪造检查通过。
+- [x] `backend_context_drift`、`package_missing` 当前修复关闭。
+- [ ] 8 项外部 blocker、后端 registry image digest、真机/平台/RACI/人工证据继续 pending_external；不生成发布 GO。
+
+## 2026-08-29：F25-B 跨环境重建修复
+
+- [x] 新增 package content manifest digest，解耦 ZIP 容器元数据与逻辑制品身份；内容/路径/重复项变化仍 fail-closed。
+- [x] 重新生成 F25-B 报告绑定并完成 `6 passed` 定向专项与 builder self-check。
+- [ ] 不修改或延长 F14-A 过期 decision；等待新的固定 reviewer 独立 decision 后再继续安全合同。
+- [ ] 推送后由 GitHub Ubuntu required CI 验证缺失包重建；F22/F26/镜像证明/迁移回滚/人工 GO 继续阻塞。
+
+## 2026-08-30：生产镜像安全 finding Fix Loop
+
+- [x] 刷新 production Python slim immutable digest，取得 util-linux 已修复版本。
+- [x] 精确升级 OpenSSL/libssl/provider 到 `3.5.7-1~deb13u2`，并从最终镜像移除 setuptools vendor 链。
+- [x] 本地镜像构建成功；F01/F03 `30 passed`；确认应用无 SQLite FTS5/SQL MATCH 路径。
+- [ ] 提交后按干净 commit 重建、执行 Trivy 容器重扫并推送 GHCR；只记录新候选的真实 digest/SBOM/provenance。
+- [ ] 同步 F22/F25/F26 机器证据并由 GitHub required CI 核验；独立 reviewer、隐私 owner、平台/真机和四方 GO 继续保持人工门禁。
+- [x] 解耦 F22 只读扫描与过期历史 review；Harness 默认有效期门禁不变，正反专项 `2 passed`。
+
+## 2026-08-30：本轮收尾
+
+- [x] F22-B 当前源码与镜像安全重扫已完成并记录真实 NO-GO：源码 302、容器 3 Critical/13 High/Secret 0、SBOM 119、禁用许可证 0。
+- [x] GHCR 候选 `rc0810-5606e830` 已回拉核对，digest=`sha256:74448e123957046615d3c91956cb4d4aeba0f0b286c7f00730cecefa226567cb`，BuildKit provenance 已留存。
+- [x] 停止本轮继续扩展；未执行生产动作、全量回归或人工签署。
+- [ ] 下一会话先解决 GitHub 源码分支 TLS 推送并确认远端 HEAD；随后按最新 HEAD 重建镜像、F25/F26 证据和 required CI。
+- [ ] 过期 F14-A、隐私 owner、当前独立 reviewer、平台/真机和四方 GO 仍不能自动完成。
+
+## 2026-08-30：RC0810 只读事实审查整改计划
+
+- [x] 核对 run 591、F22 漂移、本地 raw evidence、F14-A 过期、隐私与迁移 finding。
+- [x] 增加 F22 原始证据 Actions artifact，并固定 action commit。
+- [x] 增加显式开关控制的 SHA 绑定 GHCR 构建、digest 扫描、SBOM 与 registry raw artifact。
+- [x] 让 F25-B 报告校验不依赖本机临时目录，同时保留严格 raw fail-closed 模式。
+- [x] 统一 F25-B/F26 逻辑小程序内容清单，区分逻辑身份与 ZIP 传输 SHA。
+- [x] 移除 F26 旧 npm High 数量硬编码，required CI 改为候选 commit 专属语义。
+- [ ] 提交并推送本节所在源码候选，核对远端实际 SHA。
+- [ ] 对该 SHA 重跑 F22-B、GHCR、F25-B、F26，并取得 Actions raw/release artifacts。
+- [ ] 由既定独立复审与授权负责人完成复审、隐私、迁移/回滚/恢复、required checks 和最终 GO；自动化不得代签。
+- [x] 源码整改提交 `56b6a949`；源码 push 因 TLS 失败，已如实登记远端仍为 `12543e65`。
+- [x] 当前源码 F22 重扫完成；容器部分因 Trivy DB 超时采用严格、显式的未变输入复用，open gate=319，NO_GO。
+- [x] GHCR `rc0810-56b6a949` 推送并按 digest `a4280975…8e04` 回拉。
+- [x] 完成新 digest 的 manifest/运行时标签、Trivy scan、CycloneDX SBOM、F25-B/F26；3 Critical、13 High、0 Secret、119 组件，仍为 NO_GO。
+- [ ] 源码 push 成功后由 GitHub Actions 生成 F22/registry/release artifacts 并完成官方 required CI；不得用本机文件冒充远端 artifact。
+## 2026-08-31 RC0810 最小发布链
+
+- [x] 推送并确认冻结候选；精确 SHA 由 F25-B/F26 机器报告记录。
+- [x] 构建并推送 `linux/amd64` GHCR 镜像，核对 digest、OCI 标签和 provenance。
+- [x] 对同一 digest 生成 Trivy 扫描和 CycloneDX SBOM；Critical/High/Secret 均为 0。
+- [x] 重建 F22、F25-B、F26；自检通过且保持真实 `NO_GO`。
+- [x] 生成并核对 CloudBase 包及 SHA-256，只保留一个正式交付副本。
+- [ ] 当前候选独立复审、隐私负责人审批、生产等价迁移/回滚/恢复、外部平台批准完成后才能执行生产发布。
+- [x] 修复 F22 tracked inputs 的 Windows CRLF/Linux LF 假漂移；定向回归和 11 项自校验通过，开放安全 finding 为 0。
+- [ ] 提交并推送新候选，以该 SHA 重建 GHCR、F25-B、F26 和 CloudBase 包，再读取一次新 required CI；不重复本地全量回归。
+
+## 2026-08-31 RC0810 最终制品状态
+
+- [x] 冻结并推送候选 `b20026dfaa3d2d4079c1bcf953c85a286e91aa6d`，远端 SHA 已核对一致。
+- [x] 发布 `linux/amd64` GHCR 镜像并按不可变 digest 回拉核对；Trivy Critical/High/Secret 为 0，CycloneDX SBOM 为 72 组件，provenance attestation manifest 已发布。
+- [x] 重建并验证 `SafeHome-RC0810-CloudBase-b20026df.zip` 及 SHA-256。
+- [x] 重建 F25-B/F26 当前候选证据；不重复全量回归，结论保持 `NO_GO`。
+- [ ] 仅待隐私负责人、既定独立复审、生产等价迁移/回滚/恢复、平台批准和签名 attestation 外部核验；完成前不执行生产发布或切流。
 ## 2026-08-23：RC0810 后续验收效率规则
 
 - [x] 将后续执行改为开发层、冻结层、审查层和波次层回归；同一源码快照中，组合套件已包含专项时不重复执行。
@@ -12848,3 +13007,73 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] 保留线上 `flask-gh3l-027`，未执行发布、回退、切流、数据库写入或环境变量读取。
 - [ ] 生产凭据安全阻断、CloudRun 配置复核、候选不切流部署、开发者工具/真机授权验收和正式发布批准仍待后续独立任务。
 - 下一次启动提示词：`从 codex/cloudrun-login-onboarding 的阶段收尾交接开始，先完成生产凭据与 CloudRun 配置安全处理，再做不切流候选部署；保留 027 回退点，随后在开发者工具/真机验收微信登录、手机号授权和隐私/功能级知情同意，不得直接正式切流。`
+
+## 2026-09-01：RC0810 新候选合并 checkpoint
+
+- [x] 将 `ec49e1f` 合入发布分支并完成冲突语义处理。
+- [x] 重算 API、权限矩阵和能力注册表为 418/418 覆盖。
+- [x] 运行直接受冲突影响的 15 项定向测试。
+- [ ] 提交并推送合并结果，按新 SHA 生成 CloudBase 与 GHCR 候选。
+- [ ] 完成生产数据库备份恢复、CA/TLS、环境变量和零流量候选验证后，再决定灰度。
+
+## 2026-09-02：生产 MySQL 现场 checkpoint
+
+- [x] 创建生产 MySQL 手动快照并完成隔离恢复；168 张表及四类关键行数与原库一致。
+- [x] 只读确认恢复库真实 migration head 为 `2026_07_29_061 + 2026_08_07_063`。
+- [ ] 仅在 `safehome-202609012247` 执行候选要求的加法迁移演练，复核目标 head 与关键行数；原库暂不迁移。
+- [ ] `pending_managed_mysql_tls`：当前 `have_ssl=DISABLED`、`require_secure_transport=OFF`，等待微信云托管官方说明开通方式、CA 获取和证书身份校验主机名。
+- [ ] TLS/CA、生产迁移、生产环境变量、零流量候选和正式切流完成前继续 `NO_GO`。
+
+## 2026-09-02：隔离恢复库迁移保护 checkpoint
+
+- [x] 新增只允许 `safehome-时间戳` 恢复库的 `plan/apply/verify` 入口；代码硬拒绝原生产库 `safehome`。
+- [x] 配置目标、实际连接目标和人工目标三重一致；`apply` 使用目标库专属确认短语，未知异常不输出连接详情。
+- [x] 迁移保护定向合同 `4 passed`；未运行无关回归。
+- [ ] 在独立临时迁移服务中先对 `safehome-202609012247` 执行 plan，再由负责人确认后 apply/verify；不得把隔离演练写成生产迁移完成。
+
+## 2026-09-04：第二次隔离演练与 TLS 决策 checkpoint
+
+- [x] 从成功快照恢复全新隔离库 `safehome-r2`；任务 `15561558`、168 张表、回档成功。
+- [x] 迁移工具接受 `safehome-rN`，并增加脱敏失败阶段与数字数据库错误码；直接受影响专项 `8 passed`。
+- [x] 按负责人明确批准，将生产数据库合同改为“同一 CloudBase 环境内网、主机摘要绑定、禁止公网”的暂不启用 TLS 例外；未伪造 CA 或 TLS 成功。
+- [x] 重建诊断包，SHA-256 为 `C242EBC3BAD3DC0567B1E49E2F05BC90115D8E5B1D4E9C8E6A0C8655913862B5`。
+- [ ] 浏览器控制恢复后上传诊断包；当前 Edge 文件权限已开启，但控制组件本地运行目录错误，云端仍是 `rc0810-migrate-008`。
+- [ ] 在 `safehome-r2` 完成 `plan → apply → verify`，确认目标 head 和关键行数；不得复用第一次部分失败库的结果。
+- [ ] 隔离演练成功后再做生产临上线备份、专用生产迁移、零流量候选、健康检查和受控灰度；完成前保持 `NO_GO`。
+
+## 2026-09-04：迁移 009 失败修复 checkpoint
+
+- [x] 用脱敏日志定位 `schema_index:24 / MySQL 1072`，确认是旧库字段尚未补齐时提前建索引。
+- [x] 调整隔离迁移顺序为显式迁移先于候选索引，专项测试 `9 passed`。
+- [ ] 提交修复并重建诊断包；从原备份恢复 `safehome-r3`，先 `plan`，再按目标专属确认执行 `apply → verify`。
+- [ ] `safehome-r2` 仅保留失败诊断事实，不作为干净演练成功证据；生产库继续禁止连接。
+
+## 2026-09-04：迁移 012 瞬时断连 checkpoint
+
+- [x] `safehome-r3` 只读 `plan` 通过：168 张表、关键行数 `15/9/4/612`，未修改数据。
+- [x] 定位 `apply` 失败为 `base_schema:54 / MySQL 2013`，对应幂等 `student_profiles` 建表检查。
+- [x] 仅为基础幂等建表增加一次 `2006/2013` 重连重试；精确复现先失败后通过，专项 `10 passed`。
+- [ ] 提交并推送修复，重建诊断包；云端先重新运行 `plan`，确认 `safehome-r3` 是否仍可继续演练。
+- [ ] 未完成 `apply → verify`、生产迁移、零流量候选、健康检查和灰度；保持 `NO_GO`。
+
+### 云端结果
+
+- [x] `rc0810-migrate-013` 对 `safehome-r3` 执行 `apply` 成功，15 个显式迁移全部完成。
+- [x] `rc0810-migrate-014` 执行只读 `verify` 成功；版本头正确、待迁移为空、关键行数未变。
+- [ ] 生产迁移、零流量候选、健康检查和灰度仍未执行；保持 `NO_GO`。
+
+## 2026-09-04：生产迁移入口 checkpoint
+
+- [x] 新增只允许 `safehome` 的独立生产 `plan/apply/verify` 入口；保留隔离脚本对生产库的硬拒绝。
+- [x] `apply` 强制精确确认，并将迁移前后关键行数一致纳入成功条件；入口保护定向测试 `3 passed`。
+- [ ] 新建临上线手动备份并确认成功后，部署生产迁移入口，先只读核对生产库快照；动作时确认前不得执行真实 `apply`。
+- [ ] 生产迁移通过后创建零流量候选，完成健康检查再决定灰度；此前保持 `NO_GO`。
+
+## 2026-09-05：生产迁移与候选部署 checkpoint
+
+- [x] 使用独立生产入口完成原库 `apply`；目标版本头正确、待迁移为空、关键行数未变。
+- [x] 提交 CloudBase 生命周期 Shell、生产数据库策略文件和时区数据库三个最小启动修复；最终源码为 `52bd77e1`。
+- [x] 生成并校验 `SafeHome-52bd77e1-CloudBase.zip`；清理旧/重复候选 ZIP、两个可再生迁移 staging 副本和空临时目录，保留迁移、恢复、最终包与镜像证据。
+- [x] CloudBase 构建 `flask-gh3l-031` 镜像成功并记录不可变 digest。
+- [ ] 服务设置补齐受控 TLS 例外的环境/服务/数据库批准绑定，并用端口 `5050` 创建新的零流量候选。
+- [ ] 新候选 `/healthz` 通过后确认旧版仍在线且未切流；随后完成最终文档提交，并在 HTTPS TLS 恢复后推送已授权仓库。

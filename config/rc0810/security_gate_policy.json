@@ -22,7 +22,8 @@
   "action_commits": {
     "actions/checkout": "d23441a48e516b6c34aea4fa41551a30e30af803",
     "actions/setup-node": "249970729cb0ef3589644e2896645e5dc5ba9c38",
-    "actions/setup-python": "5fda3b95a4ea91299a34e894583c3862153e4b97"
+    "actions/setup-python": "5fda3b95a4ea91299a34e894583c3862153e4b97",
+    "actions/upload-artifact": "ea165f8d65b6e75b540449e92b4886f43607fa02"
   },
   "scans": [
     {"id": "secret", "tool": "detect-secrets", "scope": ["source_tree"], "timeout_seconds": 300, "phase_b_status": "active"},
@@ -48,6 +49,13 @@
     "__pycache__/": "generated Python bytecode",
     "dist/": "generated build output; final staged artifact is scanned in F22-B",
     "node_modules/": "installed dependencies; package-lock is scanned and final tree is scanned in F22-B"
+  },
+  "secret_baseline": {
+    "path": "config/rc0810/detect_secrets.baseline.json",
+    "review_status": "human_confirmed_false_positives",
+    "reviewed_at": "2026-08-30T22:45:00+08:00",
+    "reviewer_role": "project_owner_user",
+    "new_or_changed_candidates_block_release": true
   },
   "severity_gate": {
     "secret": ["unknown", "low", "medium", "high", "critical"],

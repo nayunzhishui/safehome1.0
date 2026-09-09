@@ -18,14 +18,7 @@ BUILDER = ROOT / "scripts" / "build_rc0810_f26_rc.py"
 REGISTRY = ROOT / "content" / "rc0810_release_candidate_registry.json"
 F26_REPORT = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f26_final_rc.json"
 WAVE_C_DECISION = Path("docs/02_专项进度与验收/rc0810_wave_c_review_decision.json")
-WAVE_C_PACKET = (
-    ROOT
-    / ".codex_tmp"
-    / "rc0810"
-    / "run-20260824T090306Z-4c4d4bf8"
-    / "reviews"
-    / "wave-C-f26.json"
-)
+WAVE_C_PACKET = ROOT / "docs" / "02_专项进度与验收" / "rc0810_wave_c_review_packet.json"
 
 
 def _load_builder():
@@ -67,7 +60,7 @@ def test_f26_clean_archives_bind_candidate_commit_and_hashes(f26):
 
 
 def test_f26_production_packages_exclude_internal_and_local_files(f26):
-    _, report, _, _ = f26
+    module, report, _, _ = f26
     mini = ROOT / report["artifacts"]["miniprogram_zip"]["path"]
     with zipfile.ZipFile(mini) as archive:
         names = set(archive.namelist())
@@ -81,6 +74,18 @@ def test_f26_production_packages_exclude_internal_and_local_files(f26):
         project = json.loads(archive.read("project.config.json"))
         assert project["setting"]["urlCheck"] is True
         assert project["condition"]["miniprogram"]["list"] == []
+        manifest = json.loads(archive.read("RC0810_F26_MANIFEST.json"))
+        canonical = module.f25b._archive_content_manifest_sha256(
+            archive, manifest_name="RC0810_F26_MANIFEST.json"
+        )
+    f25 = json.loads(
+        (ROOT / "docs" / "02_专项进度与验收" / "rc0810_f25b_evidence.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert report["artifacts"]["miniprogram_zip"]["content_manifest_sha256"] == canonical
+    assert manifest["content_manifest_sha256"] == canonical
+    assert canonical == f25["artifact_binding"]["miniprogram_package"]["content_manifest_sha256"]
     backend = ROOT / report["artifacts"]["backend_source_tar"]["path"]
     with tarfile.open(backend) as archive:
         lowered = [name.lower() for name in archive.getnames()]
@@ -90,14 +95,25 @@ def test_f26_production_packages_exclude_internal_and_local_files(f26):
 
 
 def test_f26_required_ci_and_security_gaps_force_no_go(f26):
-    _, report, _, _ = f26
+    module, report, _, _ = f26
     assert report["required_ci"]
     assert all(item["required"] is True for item in report["required_ci"])
-    assert all(item["status"] == "not_run_user_waiver" for item in report["required_ci"])
-    assert report["security_evidence"]["current_status"] == "stale"
-    assert report["artifacts"]["backend_image"]["digest"] is None
+    assert all(item["status"] == "not_verified_for_candidate" for item in report["required_ci"])
+    assert report["required_ci_summary"] == {
+        "status": "not_verified_for_candidate",
+        "blocking_job": None,
+        "high_vulnerabilities": None,
+        "official_github_ci": "no_bound_success",
+        "candidate_commit": report["candidate"]["source_commit"],
+        "evidence_scope": "candidate_commit_only",
+    }
+    assert report["artifacts"]["backend_image"]["digest"]
+    assert "registry_raw_evidence_actions_artifact_pending" in report["release_decision"]["blocking_reasons"]
     assert report["release_decision"]["recommendation"] == "NO_GO"
     assert report["release_decision"]["production_gate_eligible"] is False
+    local = module._required_ci(json.loads((ROOT / "content" / "task37_38_final_acceptance_policy.json").read_text(encoding="utf-8")), True)
+    assert all(item["status"] == "local_pass" for item in local)
+    assert all(item["evidence"] == "local_required_ci_and_fix_loop" for item in local)
 
 
 def test_f26_stale_evidence_is_not_promoted(f26):
@@ -145,37 +161,33 @@ def test_f26_four_go_phase_separation_and_review_remain_truthful(f26):
     assert phases["stable_operation_verified"] is False
 
 
-def test_f26_review_packet_is_prebound_and_rejects_self_reported_or_changed_identity(f26, tmp_path):
+def test_f26_pending_review_does_not_rebind_stale_packet(f26, tmp_path):
     module, _, _, _ = f26
-    bound = json.loads(F26_REPORT.read_text(encoding="utf-8"))
-    review = bound["wave_c_review"]
-    packet = json.loads(WAVE_C_PACKET.read_text(encoding="utf-8"))
-    assert review["packet_sha256"] == hashlib.sha256(WAVE_C_PACKET.read_bytes()).hexdigest()
-    assert review["packet_nonce"] == packet["packet_nonce"]
-    assert review["packet_head"] == packet["review_head"]["commit"]
-    assert review["harness_binding"]["fixed_reviewer_id"] == "sartre_replacement"
-    assert module.validate_report(F26_REPORT)["valid"] is True
+    report = json.loads(F26_REPORT.read_text(encoding="utf-8"))
+    review = report["wave_c_review"]
+    stale_packet = json.loads(WAVE_C_PACKET.read_text(encoding="utf-8"))
 
-    mutations = {}
-    missing = copy.deepcopy(bound)
-    missing["wave_c_review"]["packet_path"] = ".codex_tmp/rc0810/missing/wave-C-f26.json"
-    mutations["missing"] = missing
-    wrong_hash = copy.deepcopy(bound)
-    wrong_hash["wave_c_review"]["packet_sha256"] = "0" * 64
-    mutations["hash"] = wrong_hash
-    wrong_nonce = copy.deepcopy(bound)
-    wrong_nonce["wave_c_review"]["packet_nonce"] = "forged-nonce-value"
-    mutations["nonce"] = wrong_nonce
-    wrong_head = copy.deepcopy(bound)
-    wrong_head["wave_c_review"]["packet_head"] = bound["candidate"]["source_commit"]
-    mutations["head"] = wrong_head
-    for name, candidate in mutations.items():
-        path = tmp_path / f"{name}.json"
-        path.write_text(json.dumps(candidate, ensure_ascii=False), encoding="utf-8")
-        assert module.validate_report(path)["valid"] is False
+    assert review["status"] == "review_pending_wave"
+    assert review["packet_sha256"] is None
+    assert module._bound_review_packet_errors(report) == ["review_packet_not_prebound"]
+    assert stale_packet["release_candidate"]["commit"] != report["candidate"]["source_commit"]
+
+    forged = copy.deepcopy(report)
+    forged["wave_c_review"].update({
+        "packet_path": WAVE_C_PACKET.relative_to(ROOT).as_posix(),
+        "packet_sha256": hashlib.sha256(WAVE_C_PACKET.read_bytes()).hexdigest(),
+        "packet_archive_sha256": hashlib.sha256(WAVE_C_PACKET.read_bytes()).hexdigest(),
+        "packet_nonce": stale_packet["packet_nonce"],
+        "packet_head": stale_packet["review_head"]["commit"],
+        "packet_source_tree": stale_packet["review_head"]["source_tree"],
+        "harness_binding": {"fixed_reviewer_id": "sartre_replacement"},
+    })
+    path = tmp_path / "stale-packet.json"
+    path.write_text(json.dumps(forged, ensure_ascii=False), encoding="utf-8")
+    assert module.validate_report(path)["valid"] is False
 
     assert module._review_decision_errors(
-        bound,
+        report,
         {"path": ".codex_tmp/self-reported-decision.json", "sha256": "0" * 64},
     ) == ["review_decision_path_invalid"]
 

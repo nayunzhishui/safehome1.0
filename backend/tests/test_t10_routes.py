@@ -18,13 +18,9 @@ def _fresh_app(tmp_path, monkeypatch, app_env: str = "development"):
     monkeypatch.setenv("APP_ENV", app_env)
     monkeypatch.delenv("WECHAT_APPID", raising=False)
     monkeypatch.delenv("WECHAT_SECRET", raising=False)
+    monkeypatch.setenv("DB_PROVIDER", "sqlite")
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(PROJECT_ROOT / "content"))
-    if app_env == "production":
-        monkeypatch.setenv("DB_PROVIDER", "sqlite")
-        monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
-        monkeypatch.setenv("SECRET_KEY", "production-test-secret-key-32-chars")
-        monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
     module = importlib.import_module("app")
     return module.app
 
@@ -74,9 +70,9 @@ def test_private_assessment_results_use_token_owner_before_user_id(tmp_path, mon
     assert other_id != owner_id
 
 
-def test_progress_summary_requires_login_in_production_and_keeps_boundary(tmp_path, monkeypatch):
-    production_app = _fresh_app(tmp_path, monkeypatch, "production")
-    production_client = production_app.test_client()
+def test_progress_summary_requires_login_outside_development_and_keeps_boundary(tmp_path, monkeypatch):
+    validation_app = _fresh_app(tmp_path, monkeypatch, "validation")
+    production_client = validation_app.test_client()
 
     blocked = production_client.get("/api/progress-summary?user_id=someone")
     assert blocked.status_code == 401

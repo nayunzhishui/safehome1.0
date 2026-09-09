@@ -323,7 +323,10 @@ def test_cloudbase_identity_matching_appid_without_source_is_rejected_without_ex
 
 def test_wechat_login_reports_network_failure_without_leaking_credentials(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch, app_env="production")
-    app.config.update(WECHAT_APPID="wx-test-appid", WECHAT_SECRET="secret-must-not-leak")
+    app.config.update(
+        WECHAT_APPID="wx-test-appid",
+        WECHAT_SECRET="secret-must-not-leak",
+    )
     auth_module = importlib.import_module("routes.auth")
 
     def fail_network(*_args, **_kwargs):

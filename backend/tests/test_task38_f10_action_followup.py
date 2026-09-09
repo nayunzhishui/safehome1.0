@@ -72,12 +72,29 @@ def _ready_case(client, headers):
         headers={**headers["p-f10"], "Idempotency-Key": "f10-case"},
         json={"assessment_question": "我想理解一次沟通", "shared_scope": ["question"], "consent": True},
     ).get_json()["data"]
-    client.post(
+    with client.application.app_context():
+        from database import get_connection, now_iso
+
+        timestamp = now_iso()
+        with get_connection() as conn:
+            conn.execute(
+                """INSERT INTO therapeutic_assessment_work_queue (
+                id, case_id, queue_type, task_code, required_competency,
+                priority, status, scope_snapshot_json, assigned_user_id,
+                due_at, version, created_by, created_at, updated_at
+                ) VALUES (?, ?, 'supervision', 'action_followup', 'T3',
+                          'normal', 'claimed', '{}', 's-f10',
+                          '2099-01-01T00:00:00+00:00', 1, 's-f10', ?, ?)""",
+                (f"queue-{created['id']}", created["id"], timestamp, timestamp),
+            )
+            conn.commit()
+    assigned = client.post(
         f"/api/therapeutic-assessment/cases/{created['id']}/assign",
         headers={**headers["s-f10"], "Idempotency-Key": "f10-assign"},
         json={"researcher_id": "r-f10"},
     )
-    client.post(
+    assert assigned.status_code == 200
+    readiness = client.post(
         f"/api/therapeutic-assessment/cases/{created['id']}/readiness",
         headers={**headers["s-f10"], "Idempotency-Key": "f10-ready"},
         json={
@@ -86,7 +103,8 @@ def _ready_case(client, headers):
             "ethics_evidence_ref": "evidence:ethics-f10",
         },
     )
-    draft = client.post(
+    assert readiness.status_code == 200
+    draft_response = client.post(
         f"/api/therapeutic-assessment/cases/{created['id']}/feedback-versions",
         headers={**headers["r-f10"], "Idempotency-Key": "f10-feedback"},
         json={
@@ -101,16 +119,20 @@ def _ready_case(client, headers):
             "human_discussion": ["哪些描述贴近你的体验？"],
             "participant_content": "从这次记录看，你先停下来；这只是当前理解，可以不同意。",
         },
-    ).get_json()["data"]
-    client.post(
+    )
+    assert draft_response.status_code == 201
+    draft = draft_response.get_json()["data"]
+    reviewed = client.post(
         f"/api/therapeutic-assessment/feedback-versions/{draft['id']}/review",
         headers={**headers["s-f10"], "Idempotency-Key": "f10-review"},
         json={"decision": "approved"},
     )
-    client.post(
+    assert reviewed.status_code == 200
+    sent = client.post(
         f"/api/therapeutic-assessment/feedback-versions/{draft['id']}/send",
         headers={**headers["s-f10"], "Idempotency-Key": "f10-send"},
     )
+    assert sent.status_code == 200
     return created["id"], draft["id"]
 
 

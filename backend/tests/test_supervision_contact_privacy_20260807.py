@@ -14,13 +14,13 @@ def _fresh_app(tmp_path, monkeypatch):
     for name in list(sys.modules):
         if name in {"app", "config", "database", "models"} or name.startswith("routes.") or name.startswith("services."):
             sys.modules.pop(name, None)
-    monkeypatch.setenv("APP_ENV", "pilot")
+    monkeypatch.setenv("APP_ENV", "testing")
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "supervision-contact.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(ROOT / "content"))
     monkeypatch.setenv("DB_PROVIDER", "sqlite")
     monkeypatch.setenv("SECRET_KEY", "supervision-contact-privacy-secret-key")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "legacy-admin-token")
-    monkeypatch.delenv("LEGACY_ADMIN_TOKEN_ENABLED", raising=False)
+    monkeypatch.setenv("LEGACY_ADMIN_TOKEN_ENABLED", "0")
     return importlib.import_module("app").app
 
 

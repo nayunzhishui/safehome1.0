@@ -125,6 +125,7 @@ try {
     "content",
     "shared",
     "config/rc0810/database_profiles.json",
+    "config/rc0810/database_recovery_policy.json",
     "deploy/verify_rc0810_f03_images.py"
   )
   Expand-Archive -LiteralPath $SourceArchive -DestinationPath $StagingRoot -Force
@@ -154,7 +155,7 @@ try {
     "Head=$head",
     "SourceMode=git_archive_head",
     "SourceTree=$sourceTree",
-    "Included=Dockerfile,.dockerignore,backend,content,shared,config/rc0810/database_profiles.json,deploy/verify_rc0810_f03_images.py",
+    "Included=Dockerfile,.dockerignore,backend,content,shared,config/rc0810/database_profiles.json,config/rc0810/database_recovery_policy.json,deploy/verify_rc0810_f03_images.py",
     "Excluded=env files, databases, logs, caches, virtualenvs, node build outputs, backups, backend/tests",
     "CloudBaseCompatibility=content/profiles JSON filenames are shortened in the package only; model_id inside each JSON is preserved.",
     "WorkingTreeDirty=$($workingTreeDirty.ToString().ToLowerInvariant())"

@@ -20,6 +20,7 @@ if str(BACKEND) not in sys.path:
 from config import Config
 import database
 import models
+from services.schema_migration_service import apply_pending_schema_migrations
 
 
 MATRIX_PATH = ROOT / "config" / "task36_migration_matrix.json"
@@ -78,6 +79,9 @@ def _with_database(path: Path, callback):
 def _apply(path: Path) -> dict:
     def run():
         database.init_db()
+        with database.get_connection() as conn:
+            apply_pending_schema_migrations(conn)
+            conn.commit()
         return database.check_database_health()
 
     return _with_database(path, run)

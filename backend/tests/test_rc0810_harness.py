@@ -27,6 +27,9 @@ def run_cli(*args: str, env: dict[str, str] | None = None):
 
 def fixture_registry(tmp_path: Path, mode: str = "success", timeout: int = 10):
     registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    registry["frozen_baseline"]["source_tree"] = subprocess.check_output(
+        ["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True
+    ).strip()
     registry["tasks"][0]["acceptance_commands"] = [
         {
             "argv": [
@@ -287,6 +290,7 @@ def test_wave_resume_uses_declared_historical_review_pass_checkpoint(tmp_path):
         "reviewer_id": "checkpoint-test-reviewer",
         "reviewer_kind": "separate_agent",
         "findings": [],
+        "valid_until": "2099-01-01T00:00:00+00:00",
     }
     decision_path = tmp_path / "checkpoint-decision.json"
     decision_path.write_text(json.dumps(decision), encoding="utf-8")
@@ -303,6 +307,8 @@ def test_wave_resume_uses_declared_historical_review_pass_checkpoint(tmp_path):
             "decision_sha256": hashlib.sha256(decision_path.read_bytes()).hexdigest(),
         },
     }
+    registry["review_waves"][1]["base_checkpoint"] = None
+    registry["review_waves"][2]["base_checkpoint"] = None
     registry_path = tmp_path / "checkpoint-registry.json"
     registry_path.write_text(json.dumps(registry), encoding="utf-8")
     runtime = tmp_path / "runtime"
@@ -355,6 +361,135 @@ def test_wave_resume_uses_declared_historical_review_pass_checkpoint(tmp_path):
     )
     assert forged.returncode != 0
     assert "复审证据" in forged.stderr
+
+    decision["valid_until"] = "2020-01-01T00:00:00+00:00"
+    decision_path.write_text(json.dumps(decision), encoding="utf-8")
+    registry["review_waves"][0]["base_checkpoint"]["evidence_binding"][
+        "decision_sha256"
+    ] = hashlib.sha256(decision_path.read_bytes()).hexdigest()
+    invalid_path.write_text(json.dumps(registry), encoding="utf-8")
+    expired = run_cli(
+        "start",
+        "RC0810-F10-B",
+        env={
+            "RC0810_RUNTIME_ROOT": str(tmp_path / "expired-runtime"),
+            "RC0810_REGISTRY_PATH": str(invalid_path),
+        },
+    )
+    assert expired.returncode != 0
+    assert "复审证据" in expired.stderr
+
+
+def test_historical_checkpoint_accepts_clean_crlf_checkout(tmp_path):
+    repo = tmp_path / "checkpoint-repo"
+    repo.mkdir()
+    subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "checkpoint@example.invalid"],
+        cwd=repo,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "Checkpoint Test"], cwd=repo, check=True
+    )
+    (repo / ".gitattributes").write_text("*.json text\n", encoding="utf-8")
+    subprocess.run(["git", "add", ".gitattributes"], cwd=repo, check=True)
+    subprocess.run(
+        ["git", "commit", "-q", "-m", "checkpoint base"], cwd=repo, check=True
+    )
+    checkpoint_commit = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    checkpoint_tree = subprocess.run(
+        ["git", "rev-parse", f"{checkpoint_commit}^{{tree}}"],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    evidence_dir = repo / "config" / "rc0810"
+    evidence_dir.mkdir(parents=True)
+    packet_path = evidence_dir / "checkpoint-packet.json"
+    packet_path.write_bytes(
+        (
+            json.dumps(
+                {
+                    "schema": "safehome.rc0810.review-packet.v1",
+                    "task": "RC0810-F09",
+                    "source_tree": checkpoint_tree,
+                    "challenge_nonce": "clean-crlf-checkout",
+                }
+            )
+            + "\n"
+        ).encode("utf-8")
+    )
+    packet_sha256 = hashlib.sha256(packet_path.read_bytes()).hexdigest()
+    decision_path = evidence_dir / "checkpoint-decision.json"
+    decision_path.write_bytes(
+        (
+            json.dumps(
+                {
+                    "schema": "safehome.rc0810.review-decision.v1",
+                    "review_packet_sha256": packet_sha256,
+                    "challenge_nonce": "clean-crlf-checkout",
+                    "decision": "pass",
+                    "reviewer_id": "checkpoint-test-reviewer",
+                    "reviewer_kind": "separate_agent",
+                    "findings": [],
+                    "valid_until": "2099-01-01T00:00:00+00:00",
+                }
+            )
+            + "\n"
+        ).encode("utf-8")
+    )
+    decision_sha256 = hashlib.sha256(decision_path.read_bytes()).hexdigest()
+    subprocess.run(["git", "add", "config"], cwd=repo, check=True)
+    subprocess.run(
+        ["git", "commit", "-q", "-m", "store review evidence"],
+        cwd=repo,
+        check=True,
+    )
+    packet_path.write_bytes(packet_path.read_bytes().replace(b"\n", b"\r\n"))
+    decision_path.write_bytes(decision_path.read_bytes().replace(b"\n", b"\r\n"))
+    assert (
+        subprocess.run(
+            ["git", "diff", "--quiet", "HEAD", "--", "config"], cwd=repo
+        ).returncode
+        == 0
+    )
+
+    registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    registry["review_waves"][0]["base_checkpoint"] = {
+        "status": "review_pass",
+        "commit": checkpoint_commit,
+        "execution_units": ["RC0810-F07", "RC0810-F08", "RC0810-F09"],
+        "production_gate_eligible": False,
+        "evidence_binding": {
+            "task": "RC0810-F09",
+            "review_packet_path": "config/rc0810/checkpoint-packet.json",
+            "review_packet_sha256": packet_sha256,
+            "decision_path": "config/rc0810/checkpoint-decision.json",
+            "decision_sha256": decision_sha256,
+        },
+    }
+    registry["review_waves"][1]["base_checkpoint"] = None
+    registry["review_waves"][2]["base_checkpoint"] = None
+    registry_path = tmp_path / "checkpoint-registry.json"
+    registry_path.write_text(json.dumps(registry), encoding="utf-8")
+
+    planned = run_cli(
+        "plan",
+        env={
+            "RC0810_REPO_ROOT": str(repo),
+            "RC0810_REGISTRY_PATH": str(registry_path),
+            "RC0810_RUNTIME_ROOT": str(tmp_path / "runtime"),
+        },
+    )
+    assert planned.returncode == 0, planned.stderr
 
 
 def test_wave_resume_adopts_checkpoint_registry_over_stale_runtime_registry(tmp_path):
@@ -414,11 +549,19 @@ def test_wave_resume_adopts_checkpoint_registry_over_stale_runtime_registry(tmp_
 def test_recoverable_lifecycle_binds_dirty_source_and_requires_independent_review(
     tmp_path,
 ):
+    repo = tmp_path / "dirty-repo"
+    subprocess.run(
+        ["git", "clone", "--quiet", "--shared", "--no-hardlinks", "--local", str(ROOT), str(repo)],
+        check=True,
+    )
+    fixture = repo / "backend" / "tests" / "fixtures" / "rc0810_command_fixture.py"
+    fixture.write_text(fixture.read_text(encoding="utf-8") + "\n", encoding="utf-8")
     runtime = tmp_path / "runtime"
     counter = tmp_path / "counter.txt"
     registry_path = fixture_registry(tmp_path)
     env = {
         "RC0810_RUNTIME_ROOT": str(runtime),
+        "RC0810_REPO_ROOT": str(repo),
         "RC0810_REGISTRY_PATH": str(registry_path),
         "RC0810_RUN_ID": "run-contract",
         "RC0810_FIXTURE_COUNTER": str(counter),
@@ -1180,6 +1323,9 @@ def test_wave_c_legacy_phase_checkpoint_restores_f22b_without_forged_pass():
     registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
     module.validate_registry(registry)
     wave_c = next(wave for wave in registry["review_waves"] if wave["id"] == "C")
+    for binding in wave_c["base_checkpoint"]["legacy_phase_bindings"]:
+        committed = module._run_git("show", f"HEAD:{binding['baseline_path']}")
+        assert module.sha256_bytes(committed) == binding["baseline_sha256"]
     assert module._wave_base_checkpoint_units(wave_c) == {
         "RC0810-F22-A",
         "RC0810-F25-A",

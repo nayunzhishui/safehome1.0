@@ -30,9 +30,9 @@ def test_home_uses_one_shared_journey_action_card_in_the_frozen_position():
     markup = _read("apps/miniprogram/pages/home/index.wxml")
     config = _read("apps/miniprogram/pages/home/index.json")
 
-    core_index = markup.index('class="core-actions"')
+    core_index = markup.index("<dual-entry")
     journey_index = markup.index("<journey-action-card")
-    three_step_index = markup.index('title="三步开始"')
+    three_step_index = markup.index('title="如何开始"')
     assert core_index < journey_index < three_step_index
     assert markup.count("<journey-action-card") == 1
     assert 'bind:action="openTodayAction"' in markup
@@ -55,8 +55,10 @@ def test_growth_and_messages_share_loading_error_empty_and_status_components():
 
     messages_markup = _read("apps/miniprogram/pages/messages/index.wxml")
     messages_config = _read("apps/miniprogram/pages/messages/index.json")
-    assert "<status-pill" in messages_markup
-    assert '"status-pill"' in messages_config
+    message_row_markup = _read("apps/miniprogram/components/message-row/index.wxml")
+    assert "<message-row" in messages_markup
+    assert '"message-row"' in messages_config
+    assert 'class="message-status' in message_row_markup
 
 
 def test_feedback_rating_exposes_selected_state_and_save_status():
@@ -73,7 +75,7 @@ def test_key_participant_pages_keep_bottom_safe_area_and_one_primary_action():
 
     message_markup = _read("apps/miniprogram/pages/message-detail/index.wxml")
     assert message_markup.count('class="safe-primary-button bottom-action"') <= 1
-    assert 'class="safe-outline-button bottom-action"' in message_markup
+    assert 'class="safe-outline-button return-action"' in message_markup
 
 
 def test_visual_audit_covers_required_viewports_overflow_touch_and_names():

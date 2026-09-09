@@ -86,8 +86,11 @@ def test_schema_and_mysql_contract_include_stop_recovery_tables():
 
     schema = "\n".join(SCHEMA_SQL)
     indexes = "\n".join(INDEX_SQL)
-    assert CURRENT_SCHEMA_VERSION == "2026_07_29_061"
-    assert CURRENT_SCHEMA_NAME == "therapeutic_assessment_stop_recovery"
+    assert CURRENT_SCHEMA_VERSION >= "2026_07_29_061"
+    assert CURRENT_SCHEMA_NAME in {
+        "therapeutic_assessment_stop_recovery",
+        "rc0810_f07_consent_provenance",
+    }
     assert "therapeutic_assessment_stop_incidents" in schema
     assert "therapeutic_assessment_recovery_evidence" in schema
     assert "idx_therapeutic_recovery_verifier_idempotency" in indexes

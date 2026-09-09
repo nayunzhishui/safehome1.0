@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 import build_rc0810_f25b_evidence as f25b
+import run_rc0810_f22_scans as f22scan
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,6 +34,7 @@ ARTIFACT_ROOT = ROOT / ".codex_tmp" / "rc0810" / "f26"
 RC0810_RUNTIME_ROOT = ROOT / ".codex_tmp" / "rc0810"
 ACTIVE_STATE_POINTER = RC0810_RUNTIME_ROOT / "state.json"
 WAVE_C_PACKET_NAME = "wave-C-f26.json"
+WAVE_C_PACKET_ARCHIVE = ROOT / "docs" / "02_专项进度与验收" / "rc0810_wave_c_review_packet.json"
 WAVE_C_BASE_COMMIT = "908603e1"
 WAVE_C_PENDING_BLOCKER = "wave_c_independent_review_pending"
 WAVE_B_PACKET_SHA256 = "2b7c5c249bc80023c094a0a818f203364989d4ea408f59253ef48153c48c6e21"
@@ -129,11 +131,13 @@ def _build_miniprogram_package(commit: str, target: Path) -> dict[str, Any]:
                 for name in source.namelist()
                 if name != "RC0810_F25B_MANIFEST.json"
             }
+        content_manifest_sha256 = f25b._content_manifest_digest(files)
         manifest = {
             "schema": "safehome.rc0810.f26-miniprogram-manifest.v1",
             "source_commit": commit,
             "source_tree": _git_text("rev-parse", f"{commit}^{{tree}}"),
             "release_input_sha256": built["manifest"]["release_input_sha256"],
+            "content_manifest_sha256": content_manifest_sha256,
             "profile": "production",
             "production_release_approved": False,
         }
@@ -155,6 +159,7 @@ def _build_miniprogram_package(commit: str, target: Path) -> dict[str, Any]:
         "profile": "production",
         "static_journey_gate_passed": built["audit"]["journey_gate_passed"] is True,
         "release_input_sha256": manifest["release_input_sha256"],
+        "content_manifest_sha256": content_manifest_sha256,
     }
 
 
@@ -279,15 +284,15 @@ def _pr8_matrix(registry: dict[str, Any]) -> list[dict[str, Any]]:
     return result
 
 
-def _required_ci(policy: dict[str, Any]) -> list[dict[str, Any]]:
+def _required_ci(policy: dict[str, Any], local_ci_complete: bool = False) -> list[dict[str, Any]]:
     return [
         {
             "id": item["id"],
             "title": item["title"],
             "required": item["required"] is True,
-            "status": "not_run_user_waiver",
-            "evidence": None,
-            "release_effect": "blocking",
+            "status": "local_pass" if local_ci_complete else "not_run_user_waiver",
+            "evidence": "local_required_ci_and_fix_loop" if local_ci_complete else None,
+            "release_effect": "satisfied_locally" if local_ci_complete else "blocking",
         }
         for item in policy["automatic_acceptance_categories"]
     ]
@@ -342,6 +347,7 @@ def _side_effect_ledger() -> list[dict[str, Any]]:
 
 def _artifact_errors(report: dict[str, Any]) -> list[str]:
     errors: list[str] = []
+    candidate = report.get("candidate", {})
     for name, artifact in report.get("artifacts", {}).items():
         if artifact.get("status") != "generated":
             continue
@@ -369,6 +375,39 @@ def _artifact_errors(report: dict[str, Any]) -> list[str]:
                 conditions = project.get("condition", {}).get("miniprogram", {}).get("list")
                 if project.get("setting", {}).get("urlCheck") is not True or conditions != []:
                     errors.append("miniprogram_profile_not_frozen")
+                mini_manifest = json.loads(archive.read("RC0810_F26_MANIFEST.json"))
+                if mini_manifest.get("source_commit") != candidate.get("source_commit") or mini_manifest.get("source_tree") != candidate.get("source_tree"):
+                    errors.append("miniprogram_candidate_binding_mismatch")
+                content_manifest = f25b._archive_content_manifest_sha256(
+                    archive, manifest_name="RC0810_F26_MANIFEST.json"
+                )
+                if (
+                    mini.get("content_manifest_sha256") != content_manifest
+                    or mini_manifest.get("content_manifest_sha256") != content_manifest
+                ):
+                    errors.append("miniprogram_content_manifest_mismatch")
+                f25 = _read_json(F25_REPORT_PATH)
+                f25_source = f25.get("artifact_source", {})
+                f25_manifest = (
+                    f25.get("artifact_binding", {})
+                    .get("miniprogram_package", {})
+                    .get("content_manifest_sha256")
+                )
+                if (
+                    f25_source.get("commit") != candidate.get("source_commit")
+                    or f25_manifest != content_manifest
+                ):
+                    errors.append("f25_f26_content_identity_mismatch")
+    source_sbom = report.get("artifacts", {}).get("source_sbom", {})
+    if source_sbom.get("status") == "generated" and (ROOT / source_sbom["path"]).is_file():
+        sbom_value = _read_json(ROOT / source_sbom["path"])
+        if sbom_value.get("source_commit") != candidate.get("source_commit") or sbom_value.get("source_tree") != candidate.get("source_tree"):
+            errors.append("source_sbom_candidate_binding_mismatch")
+    artifact_manifest = report.get("artifacts", {}).get("artifact_manifest", {})
+    if artifact_manifest.get("status") == "generated" and (ROOT / artifact_manifest["path"]).is_file():
+        manifest_value = _read_json(ROOT / artifact_manifest["path"])
+        if manifest_value.get("source_commit") != candidate.get("source_commit") or manifest_value.get("source_tree") != candidate.get("source_tree"):
+            errors.append("artifact_manifest_candidate_binding_mismatch")
     return errors
 
 
@@ -377,6 +416,9 @@ def build_report(
     *,
     markdown_path: Path = DEFAULT_MARKDOWN,
     commit: str | None = None,
+    local_ci_complete: bool = False,
+    backend_image_id: str | None = None,
+    backend_image_tag: str | None = None,
 ) -> dict[str, Any]:
     commit = _git_text("rev-parse", commit or "HEAD")
     source_tree = _git_text("rev-parse", f"{commit}^{{tree}}")
@@ -418,12 +460,53 @@ def build_report(
     f22 = _read_json(F22_REPORT_PATH)
     f25 = _read_json(F25_REPORT_PATH)
     wave_base = _git_text("rev-parse", WAVE_C_BASE_COMMIT)
+    local_evidence_mode = local_ci_complete and bool(backend_image_id and backend_image_tag)
+    registry_evidence = f25b.load_registry_evidence(commit)
+    if registry_evidence is None and f25.get("artifact_source", {}).get("commit") == commit:
+        embedded_registry = (
+            f25.get("artifact_binding", {})
+            .get("backend_image", {})
+            .get("registry_evidence")
+        )
+        if not f25b.registry_evidence_errors(embedded_registry, commit):
+            registry_evidence = embedded_registry
+    registry_evidence_mode = registry_evidence is not None
+    current_security_tree = f22scan.security_source_snapshot()["source_tree"] if (local_evidence_mode or registry_evidence_mode) else None
+    security_is_current = (local_evidence_mode or registry_evidence_mode) and f22.get("source_tree") == current_security_tree
+    backend_image = (
+        registry_evidence
+        if registry_evidence_mode
+        else
+        {
+            "status": "local_built_unpublished",
+            "image_id": backend_image_id,
+            "tag": backend_image_tag,
+            "digest": None,
+            "source_commit": commit,
+            "reason": "registry_digest_and_attestation_pending",
+        }
+        if local_evidence_mode
+        else {
+            "status": "missing_blocking",
+            "digest": None,
+            "reason": "docker_daemon_unavailable_and_current_image_not_built",
+        }
+    )
+    registry_raw_pending = bool(
+        registry_evidence_mode
+        and registry_evidence.get("raw_evidence_publication", {}).get("production_blocking")
+    )
     report = {
         "schema": "safehome.rc0810.f26-final-rc.v1",
         "phase": "F26",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "task_status": "review_pending_wave",
         "engineering_materials_status": "evidence_ready_no_go",
+        "evidence_mode": (
+            "current_candidate_evidence_no_go"
+            if registry_evidence_mode
+            else "local_gates_complete_no_go" if local_evidence_mode else "historical_user_waiver"
+        ),
         "candidate": {
             "source_commit": commit,
             "source_tree": source_tree,
@@ -441,11 +524,7 @@ def build_report(
             "source_sbom": {**sbom_artifact, "coverage": sbom["status"], "component_count": len(sbom["components"])},
             "artifact_manifest": manifest,
             "sha256sums": sums,
-            "backend_image": {
-                "status": "missing_blocking",
-                "digest": None,
-                "reason": "docker_daemon_unavailable_and_current_image_not_built",
-            },
+            "backend_image": backend_image,
         },
         "dependency_locks": {
             "inputs": dependency_inputs,
@@ -456,14 +535,49 @@ def build_report(
             "content_artifacts": _tracked_hash_summary(commit, ("content/content_governance_manifest.json", "content/offline_baseline_manifest.json", "content/operations_release_manifest.json")),
             "rc0810_config": _tracked_hash_summary(commit, ("config/rc0810/",)),
         },
-        "required_ci": _required_ci(final_policy),
+        "required_ci": (
+            [
+                {
+                    "id": item["id"],
+                    "title": item["title"],
+                    "required": item["required"] is True,
+                    "status": "not_verified_for_candidate",
+                    "evidence": None,
+                    "release_effect": "blocking",
+                }
+                for item in final_policy["automatic_acceptance_categories"]
+            ]
+            if registry_evidence_mode
+            else _required_ci(final_policy, local_evidence_mode)
+        ),
+        "required_ci_summary": (
+            {
+                "status": "local_only_not_official",
+                "blocking_job": None,
+                "high_vulnerabilities": None,
+                "official_github_ci": "no_bound_success",
+                "candidate_commit": commit,
+                "evidence_scope": "candidate_commit_only",
+            }
+            if local_evidence_mode
+            else {
+                "status": "not_verified_for_candidate",
+                "blocking_job": None,
+                "high_vulnerabilities": None,
+                "official_github_ci": "no_bound_success",
+                "candidate_commit": commit,
+                "evidence_scope": "candidate_commit_only",
+            }
+            if registry_evidence_mode
+            else {"status": "not_run_user_waiver"}
+        ),
         "security_evidence": {
             "path": F22_REPORT_PATH.relative_to(ROOT).as_posix(),
             "source_tree": f22.get("source_tree"),
-            "candidate_source_tree": source_tree,
-            "current_status": "current" if f22.get("source_tree") == source_tree else "stale",
+            "candidate_source_tree": current_security_tree or source_tree,
+            "current_status": "current" if security_is_current else "stale",
             "historical_status": f22.get("status"),
-            "sbom_status": "inventory_generated_but_current_vulnerability_scan_not_run",
+            "sbom_status": "current_scan_complete_no_go" if security_is_current else "inventory_generated_but_current_vulnerability_scan_not_run",
             "production_gate_eligible": False,
         },
         "platform_evidence": {
@@ -471,6 +585,7 @@ def build_report(
             "source_commit": f25.get("artifact_source", {}).get("commit"),
             "historical_engineering_status": f25.get("engineering_status"),
             "production_approved": False,
+            "miniprogram_content_manifest_sha256": f25.get("artifact_binding", {}).get("miniprogram_package", {}).get("content_manifest_sha256"),
             "external_blockers": f25.get("blockers", []),
         },
         "pr8_close_matrix": _pr8_matrix(registry),
@@ -502,9 +617,12 @@ def build_report(
             "production_gate_eligible": False,
             "automatic_release_performed": False,
             "blocking_reasons": [
-                "required_ci_not_run_by_user_direction",
-                "current_security_scan_missing_and_f22_evidence_stale",
-                "backend_image_and_digest_missing",
+                *( ["official_required_ci_not_verified_for_candidate", "image_security_findings_and_signed_attestation_pending"]
+                   if registry_evidence_mode
+                   else ["official_required_ci_not_verified_for_candidate", "backend_registry_digest_and_attestation_missing"]
+                   if local_evidence_mode
+                   else ["required_ci_not_run_by_user_direction", "current_security_scan_missing_and_f22_evidence_stale", "backend_image_and_digest_missing"] ),
+                *(["registry_raw_evidence_actions_artifact_pending"] if registry_raw_pending else []),
                 "wechat_platform_real_device_and_human_evidence_missing",
                 "product_platform_engineering_professional_go_incomplete",
                 "72h_candidate_observation_not_executed",
@@ -519,17 +637,23 @@ def build_report(
             "stable_operation_verified": False,
         },
         "known_issues": [
-            "F22-B security report is bound to an older source tree and is historical only.",
+            ("F22-B security report is current for the candidate but remains NO-GO." if security_is_current else "F22-B security report is bound to an older source tree and is historical only."),
             "F25-B has eight external blockers and no platform or human approval.",
-            "Required CI/Harness/regression was not run at F26 by explicit user direction.",
-            "No current backend image, image digest, container scan or production migration evidence exists.",
+            *( ["Official GitHub required CI has not been verified for this candidate.",
+                "The GHCR digest and Trivy CycloneDX SBOM are bound; Critical/High image findings and signed-attestation verification remain blocking."]
+               if registry_evidence_mode
+               else ["Local required CI and fix loop completed, but npm audit still reports four High findings with no upstream fix.",
+                "The backend image is local only; registry digest and supply-chain attestation remain missing."]
+               if local_evidence_mode
+               else ["Required CI/Harness/regression was not run at F26 by explicit user direction.",
+                     "No current backend image, image digest, container scan or production migration evidence exists."] ),
         ],
         "subtasks": [
             {"id": "F26.1", "status": "evidence_ready"},
-            {"id": "F26.2", "status": "blocked_user_waiver"},
-            {"id": "F26.3", "status": "partial_backend_image_missing"},
-            {"id": "F26.4", "status": "partial_image_and_security_missing"},
-            {"id": "F26.5", "status": "partial_structural_scan_only"},
+            {"id": "F26.2", "status": "blocked_official_ci_pending" if registry_evidence_mode else "local_complete_with_failure" if local_evidence_mode else "blocked_user_waiver"},
+            {"id": "F26.3", "status": "registry_digest_bound_no_go" if registry_evidence_mode else "local_image_registry_digest_missing" if local_evidence_mode else "partial_backend_image_missing"},
+            {"id": "F26.4", "status": "current_scan_no_go" if (registry_evidence_mode or local_evidence_mode) else "partial_image_and_security_missing"},
+            {"id": "F26.5", "status": "current_scan_no_go" if (registry_evidence_mode or local_evidence_mode) else "partial_structural_scan_only"},
             {"id": "F26.6", "status": "evidence_ready"},
             {"id": "F26.7", "status": "evidence_ready_no_resolved_claims"},
             {"id": "F26.8", "status": "review_pending_wave"},
@@ -550,6 +674,16 @@ def build_report(
 
 def render_markdown(report: dict[str, Any]) -> str:
     candidate = report["candidate"]
+    local_mode = report.get("evidence_mode") == "local_gates_complete_no_go"
+    registry_mode = report.get("evidence_mode") == "current_candidate_evidence_no_go"
+    image = report["artifacts"]["backend_image"]
+    image_line = (
+        f"`{image['immutable_ref']}`；Trivy CycloneDX SBOM 已绑定，扫描仍有 Critical/High 阻断，签名证明待外部核验"
+        if registry_mode
+        else f"本地已构建 `{image['tag']}` / `{image['image_id']}`；未伪造 registry digest"
+        if local_mode
+        else "缺失，未伪造 digest"
+    )
     blockers = "\n".join(f"- {item}" for item in report["release_decision"]["blocking_reasons"])
     gates = "\n".join(
         f"- {name}: {item['status']}（approved={str(item['approved']).lower()}）"
@@ -557,13 +691,13 @@ def render_markdown(report: dict[str, Any]) -> str:
     )
     if report["wave_c_review"]["status"] == "review_pass":
         next_action = (
-            "波次 C 固定 reviewer 已审查通过工程实现与如实 NO-GO 结论。仍须补齐 required CI、"
-            "当前安全扫描、正式后端镜像、微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。"
+            "波次 C 固定 reviewer 已审查通过工程实现与如实 NO-GO 结论。仍须完成 required CI、关闭镜像安全发现并核验签名证明、"
+            "微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。"
         )
     else:
         next_action = (
-            "波次 C 先由固定 reviewer 独立审查累计 diff 与本证据包。之后仍须补齐 required CI、"
-            "当前安全扫描、正式后端镜像、微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。"
+            "波次 C 先由固定 reviewer 独立审查累计 diff 与本证据包。之后仍须完成 required CI、关闭镜像安全发现并核验签名证明、"
+            "微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。"
         )
     return f"""# RC0810-F26 最终 RC 收口与发布建议
 
@@ -575,7 +709,7 @@ def render_markdown(report: dict[str, Any]) -> str:
 - tree：`{candidate['source_tree']}`
 - 打包方式：隔离 Git archive；未从脏工作区直接打包
 - production 小程序 ZIP：`{report['artifacts']['miniprogram_zip']['sha256']}`
-- 后端镜像：缺失，未伪造 digest
+- 后端镜像：{image_line}
 
 ## 阻断原因
 
@@ -748,13 +882,69 @@ def _bound_review_packet_errors(report: dict[str, Any]) -> list[str]:
     path_value = review.get("packet_path")
     if not isinstance(path_value, str):
         return ["review_packet_not_prebound"]
+    active_binding_error: Exception | None = None
     try:
         expected_path, _, _, _ = _expected_wave_c_packet_path()
     except (OSError, json.JSONDecodeError, RcEvidenceError) as exc:
-        return [f"harness_binding_invalid:{exc}"]
+        active_binding_error = exc
+        run_id = review.get("harness_binding", {}).get("run_id")
+        expected_path = (RC0810_RUNTIME_ROOT / str(run_id or "") / "reviews" / WAVE_C_PACKET_NAME).resolve()
     path = (ROOT / path_value).resolve()
-    if path != expected_path or not path.is_file():
+    if path != expected_path:
         return ["review_packet_missing_or_self_reported_path"]
+    if not path.is_file():
+        archive_value = review.get("packet_archive_path")
+        archive_path = (ROOT / str(archive_value or "")).resolve()
+        if archive_path != WAVE_C_PACKET_ARCHIVE.resolve() or not archive_path.is_file():
+            return ["review_packet_missing_or_self_reported_path"]
+        archive_bytes = archive_path.read_bytes()
+        archive_sha256 = _sha256(archive_bytes)
+        if (
+            archive_sha256 != review.get("packet_sha256")
+            or archive_sha256 != review.get("packet_archive_sha256")
+        ):
+            return ["review_packet_archive_hash_mismatch"]
+        try:
+            packet = json.loads(archive_bytes)
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            return [f"review_packet_unreadable:{exc}"]
+        harness = review.get("harness_binding", {})
+        expected_runtime = (
+            f".codex_tmp/rc0810/{harness.get('run_id')}/reviews/{WAVE_C_PACKET_NAME}"
+        )
+        errors: list[str] = []
+        if path_value != expected_runtime:
+            errors.append("bound_review_packet_path_mismatch")
+        if packet.get("schema") != "safehome.rc0810.wave-review-packet.v2" or packet.get("wave") != "C":
+            errors.append("review_packet_identity_invalid")
+        if packet.get("reviewer_id") != "sartre_replacement":
+            errors.append("review_packet_reviewer_invalid")
+        if packet.get("base_checkpoint", {}).get("commit") != review.get("base_commit"):
+            errors.append("review_packet_base_invalid")
+        nonce = packet.get("packet_nonce")
+        packet_head = packet.get("review_head", {}).get("commit")
+        packet_tree = packet.get("review_head", {}).get("source_tree")
+        candidate = report.get("candidate", {})
+        if review.get("packet_nonce") != nonce:
+            errors.append("bound_review_packet_nonce_mismatch")
+        if review.get("packet_head") != packet_head or review.get("packet_source_tree") != packet_tree:
+            errors.append("bound_review_packet_head_mismatch")
+        if packet.get("release_candidate", {}).get("commit") != candidate.get("source_commit"):
+            errors.append("review_packet_candidate_commit_invalid")
+        if packet.get("release_candidate", {}).get("source_tree") != candidate.get("source_tree"):
+            errors.append("review_packet_candidate_tree_invalid")
+        if harness.get("fixed_reviewer_id") != "sartre_replacement":
+            errors.append("bound_harness_state_mismatch")
+        try:
+            if packet_tree != _git_text("rev-parse", f"{packet_head}^{{tree}}"):
+                errors.append("review_packet_head_tree_invalid")
+            _run("git", "merge-base", "--is-ancestor", review.get("base_commit"), packet_head)
+            _run("git", "merge-base", "--is-ancestor", packet_head, "HEAD")
+        except (RcEvidenceError, TypeError) as exc:
+            errors.append(f"review_packet_git_binding_invalid:{exc}")
+        return errors
+    if active_binding_error is not None:
+        return [f"harness_binding_invalid:{active_binding_error}"]
     try:
         packet = _read_json(path)
     except (OSError, json.JSONDecodeError) as exc:
@@ -846,14 +1036,76 @@ def validate_report(report_path: Path = DEFAULT_REPORT) -> dict[str, Any]:
     expected_ci = {item["id"] for item in policy["automatic_acceptance_categories"]}
     if {item.get("id") for item in required_ci} != expected_ci:
         errors.append("required_ci_catalog_incomplete")
-    if any(item.get("required") is not True or item.get("status") != "not_run_user_waiver" for item in required_ci):
-        errors.append("required_ci_must_remain_unverified")
+    evidence_mode = report.get("evidence_mode", "historical_user_waiver")
+    if evidence_mode == "current_candidate_evidence_no_go":
+        if any(
+            item.get("required") is not True
+            or item.get("status") != "not_verified_for_candidate"
+            or item.get("evidence") is not None
+            or item.get("release_effect") != "blocking"
+            for item in required_ci
+        ):
+            errors.append("official_required_ci_evidence_invalid")
+        if report.get("required_ci_summary") != {
+            "status": "not_verified_for_candidate",
+            "blocking_job": None,
+            "high_vulnerabilities": None,
+            "official_github_ci": "no_bound_success",
+            "candidate_commit": commit,
+            "evidence_scope": "candidate_commit_only",
+        }:
+            errors.append("official_required_ci_summary_invalid")
+    elif evidence_mode == "local_gates_complete_no_go":
+        if any(
+            item.get("required") is not True
+            or item.get("status") != "local_pass"
+            or item.get("evidence") != "local_required_ci_and_fix_loop"
+            for item in required_ci
+        ):
+            errors.append("local_required_ci_evidence_invalid")
+        if report.get("required_ci_summary") != {
+            "status": "local_only_not_official",
+            "blocking_job": None,
+            "high_vulnerabilities": None,
+            "official_github_ci": "no_bound_success",
+            "candidate_commit": commit,
+            "evidence_scope": "candidate_commit_only",
+        }:
+            errors.append("required_ci_failure_summary_invalid")
+    elif evidence_mode == "historical_user_waiver":
+        if any(item.get("required") is not True or item.get("status") != "not_run_user_waiver" for item in required_ci):
+            errors.append("required_ci_must_remain_unverified")
+    else:
+        errors.append("evidence_mode_invalid")
     security = report.get("security_evidence", {})
-    if security.get("source_tree") == candidate.get("source_tree") or security.get("current_status") != "stale":
-        errors.append("stale_security_evidence_promoted")
     image = report.get("artifacts", {}).get("backend_image", {})
-    if image.get("status") != "missing_blocking" or image.get("digest") is not None:
-        errors.append("backend_image_fabricated")
+    if evidence_mode in {"current_candidate_evidence_no_go", "local_gates_complete_no_go"}:
+        try:
+            current_security_tree = f22scan.security_source_snapshot()["source_tree"]
+        except (RuntimeError, OSError) as exc:
+            errors.append(f"security_snapshot_unavailable:{exc}")
+        else:
+            if (
+                security.get("source_tree") != current_security_tree
+                or security.get("candidate_source_tree") != current_security_tree
+                or security.get("current_status") != "current"
+            ):
+                errors.append("current_security_evidence_invalid")
+        if evidence_mode == "current_candidate_evidence_no_go":
+            errors.extend(f25b.registry_evidence_errors(image, commit))
+        elif (
+                image.get("status") != "local_built_unpublished"
+                or not re.fullmatch(r"sha256:[0-9a-f]{64}", str(image.get("image_id") or ""))
+                or not isinstance(image.get("tag"), str)
+                or image.get("source_commit") != commit
+                or image.get("digest") is not None
+            ):
+                errors.append("local_backend_image_evidence_invalid")
+    else:
+        if security.get("source_tree") == candidate.get("source_tree") or security.get("current_status") != "stale":
+            errors.append("stale_security_evidence_promoted")
+        if image.get("status") != "missing_blocking" or image.get("digest") is not None:
+            errors.append("backend_image_fabricated")
     registry = _read_json(REGISTRY_PATH)
     expected_prs = {pr_id for task in registry["tasks"] for pr_id in task["pr_ids"]}
     matrix = report.get("pr8_close_matrix", [])
@@ -1014,12 +1266,22 @@ def main() -> int:
     parser.add_argument("--markdown", type=Path, default=DEFAULT_MARKDOWN)
     parser.add_argument("--source-commit")
     parser.add_argument("--write-report", action="store_true")
+    parser.add_argument("--local-ci-complete", action="store_true")
+    parser.add_argument("--backend-image-id")
+    parser.add_argument("--backend-image-tag")
     parser.add_argument("--self-check", action="store_true")
     parser.add_argument("--bind-review-packet", type=Path)
     parser.add_argument("--apply-review-decision", type=Path)
     args = parser.parse_args()
     if args.write_report:
-        build_report(args.report, markdown_path=args.markdown, commit=args.source_commit)
+        build_report(
+            args.report,
+            markdown_path=args.markdown,
+            commit=args.source_commit,
+            local_ci_complete=args.local_ci_complete,
+            backend_image_id=args.backend_image_id,
+            backend_image_tag=args.backend_image_tag,
+        )
     if args.bind_review_packet:
         bind_review_packet(args.report, args.bind_review_packet, args.markdown)
     if args.apply_review_decision:

@@ -93,9 +93,9 @@
 画像模型,task12_micro_ysq_relationship_18_profile_v1,task12_micro_ysq_relationship_18_profile_v1,pilot_approved,True,模型产物存在,开放,模型与对应量表均达到准入条件,content/profiles/task12_micro_ysq_relationship_18_profile_model.json；worksheet=micro_ysq_relationship_18
 画像模型,task12_regulatory_focus_relationship_18_profile_v1,task12_regulatory_focus_relationship_18_profile_v1,pilot_approved,True,模型产物存在,开放,模型与对应量表均达到准入条件,content/profiles/task12_regulatory_focus_relationship_18_profile_model.json；worksheet=regulatory_focus_relationship_18
 画像模型,task12_relationship_initiation_intention_action_profile_v1,task12_relationship_initiation_intention_action_profile_v1,pilot_approved,True,模型产物存在,开放,模型与对应量表均达到准入条件,content/profiles/task12_relationship_initiation_intention_action_profile_model.json；worksheet=relationship_initiation_intention_action
-研究分析,情感计算聚合,情感计算聚合,legacy_unverified,False,离线脚本+研究者只读API,继续隐藏,产物缺失、样本不足或质量状态未通过,analysis/text_analysis；outputs/text_analysis/text_analysis_summary.json；GET /api/text-analysis/summary
+研究分析,情感计算聚合,情感计算聚合,missing,False,离线脚本存在、当前产物缺失,继续隐藏,产物缺失、样本不足或质量状态未通过,analysis/text_analysis；outputs/text_analysis/text_analysis_summary.json；GET /api/text-analysis/summary
 研究分析,语义共现网络,语义共现网络,missing,False,离线脚本存在、当前产物缺失,继续隐藏,产物缺失、样本不足或质量状态未通过,analysis/text_analysis；outputs/text_analysis/semantic_network_summary.json；GET /api/text-analysis/summary
 研究分析,家庭拓扑审计,家庭拓扑审计,missing,False,离线脚本存在、当前产物缺失,继续隐藏,产物缺失、样本不足或质量状态未通过,analysis/text_analysis；outputs/text_analysis/family_topology_audit_summary.json；GET /api/text-analysis/summary
-技术入口,miniprogram_pages,小程序页面,implemented,True,51页已注册,开放,页面注册完整，具体内容仍受后端治理,apps/miniprogram/app.json
+技术入口,miniprogram_pages,小程序页面,implemented,True,53页已注册,开放,页面注册完整，具体内容仍受后端治理,apps/miniprogram/app.json
 技术入口,web_research_dashboard,Web研究后台,implemented,True,角色路由+API客户端,研究者受控,研究后台按角色授权，不向普通用户开放,apps/web/src/main.tsx；ResearchDashboard.tsx
 技术入口,risk_review,风险人工复核,implemented,True,API+数据库+后台,研究者受控,高风险只进入人工复核，不生成普通自动建议,backend/routes/risk_review.py；risk_review_records

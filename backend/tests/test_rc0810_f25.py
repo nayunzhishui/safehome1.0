@@ -3,6 +3,7 @@ import importlib.util
 import subprocess
 import sys
 import copy
+import hashlib
 import zipfile
 from pathlib import Path
 
@@ -31,6 +32,117 @@ def load_verifier_module():
     assert spec.loader is not None
     spec.loader.exec_module(module)
     return module
+
+
+def load_f25b_builder_module():
+    spec = importlib.util.spec_from_file_location("build_rc0810_f25b_evidence", F25B_BUILDER)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_f25a_source_binding_allows_later_evidence_only_commit(monkeypatch):
+    module = load_verifier_module()
+    recorded_head = "a" * 40
+    recorded_tree = "b" * 40
+    source_tree = "c" * 40
+    diff_bytes = b"frozen evidence diff"
+    baseline = {
+        "head": recorded_head,
+        "head_tree": recorded_tree,
+        "source_tree": source_tree,
+        "dirty_diff_sha256": module.sha256_bytes(diff_bytes),
+        "source_manifest_sha256": "d" * 64,
+    }
+    current = {
+        "head": "e" * 40,
+        "head_tree": "f" * 40,
+        "source_tree": source_tree,
+        "dirty_diff_sha256": "0" * 64,
+        "source_manifest_sha256": "d" * 64,
+    }
+
+    def fake_git(*args, **_kwargs):
+        if args[:2] == ("merge-base", "--is-ancestor"):
+            return b""
+        if args[0] == "rev-parse":
+            return f"{recorded_tree}\n".encode("ascii")
+        if args[0] == "diff-tree":
+            return diff_bytes
+        raise AssertionError(args)
+
+    monkeypatch.setattr(module, "git", fake_git)
+    assert module.source_binding_errors(baseline, current) == []
+
+
+def test_f25b_backend_context_hash_uses_tree_inventory(monkeypatch):
+    module = load_f25b_builder_module()
+    included = b"100644 blob deadbeef\tbackend/app.py"
+    excluded = b"100644 blob feedface\tbackend/tests/test_app.py"
+    inventory = included + b"\0" + excluded + b"\0"
+    calls = []
+
+    def fake_git_bytes(*args):
+        calls.append(args)
+        return inventory
+
+    monkeypatch.setattr(module, "_git_bytes", fake_git_bytes)
+    assert module._backend_context_sha256("a" * 40) == hashlib.sha256(included + b"\0").hexdigest()
+    assert calls[0][:5] == ("-c", "core.quotepath=false", "ls-tree", "-r", "-z")
+
+
+def test_package_content_manifest_ignores_zip_container_metadata(tmp_path):
+    module = load_f25b_builder_module()
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "app.js").write_text("console.log('ok');\n", encoding="utf-8")
+    (source / "RC0810_F25B_MANIFEST.json").write_text("metadata\n", encoding="utf-8")
+    expected = module._content_manifest_sha256(source)
+
+    archives = []
+    for index, (system, compression) in enumerate(((0, zipfile.ZIP_DEFLATED), (3, zipfile.ZIP_STORED))):
+        path = tmp_path / f"package-{index}.zip"
+        with zipfile.ZipFile(path, "w") as archive:
+            info = zipfile.ZipInfo("app.js", date_time=(1980, 1, 1, 0, 0, 0))
+            info.create_system = system
+            info.compress_type = compression
+            info.external_attr = (0o100644 if index == 0 else 0o100755) << 16
+            archive.writestr(info, (source / "app.js").read_bytes())
+            archive.writestr(module.PACKAGE_MANIFEST_NAME, b"metadata\n")
+        archives.append(path)
+
+    with zipfile.ZipFile(archives[0]) as first, zipfile.ZipFile(archives[1]) as second:
+        assert module._archive_content_manifest_sha256(first) == expected
+        assert module._archive_content_manifest_sha256(second) == expected
+
+    tampered = tmp_path / "tampered.zip"
+    with zipfile.ZipFile(tampered, "w") as archive:
+        archive.writestr("app.js", b"console.log('tampered');\n")
+        archive.writestr(module.PACKAGE_MANIFEST_NAME, b"metadata\n")
+    with zipfile.ZipFile(tampered) as archive:
+        assert module._archive_content_manifest_sha256(archive) != expected
+
+
+def test_registry_evidence_is_portable_but_raw_mode_still_fails_closed(monkeypatch):
+    module = load_f25b_builder_module()
+    report = json.loads(F25B_REPORT.read_text(encoding="utf-8"))
+    commit = report["artifact_source"]["commit"]
+    evidence = report["artifact_binding"]["backend_image"]["registry_evidence"]
+    assert module.registry_evidence_errors(evidence, commit, require_raw=False) == []
+    raw_paths = set(module._registry_evidence_paths(commit).values())
+    original_is_file = module.Path.is_file
+    monkeypatch.setattr(
+        module.Path,
+        "is_file",
+        lambda path: False if path in raw_paths else original_is_file(path),
+    )
+    raw_errors = module.registry_evidence_errors(evidence, commit, require_raw=True)
+    assert set(raw_errors) >= {
+        "registry_file_missing:build_metadata",
+        "registry_file_missing:container_scan",
+        "registry_file_missing:image_sbom",
+    }
 
 
 def test_f25a_default_definition_is_ready_but_release_stays_no_go():
@@ -185,6 +297,18 @@ def test_f25a_review_freeze_covers_contract_accounts_data_artifacts_target_priva
 
 def test_f25a_semantics_reject_release_flag_required_outcome_and_invalidation_drift():
     module = load_verifier_module()
+    assert set(module.RELEASE_EVIDENCE_RELATIVES) == {
+        "docs/02_专项进度与验收/rc0810_f22a_security_baseline.json",
+        "docs/02_专项进度与验收/rc0810_f22b_security_gate.json",
+        "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+        "docs/02_专项进度与验收/rc0810_f25a_platform_baseline_current.json",
+        "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
+        "docs/02_专项进度与验收/rc0810_f26_final_rc.json",
+        "docs/02_专项进度与验收/rc0810_f26_final_rc.md",
+        "docs/02_专项进度与验收/rc0810_required_ci_evidence.json",
+        "docs/02_专项进度与验收/rc0810_wave_c_review_packet.json",
+        "docs/02_专项进度与验收/rc0810_wave_c_review_decision.json",
+    }
     definitions = module.load_definitions()
 
     release_mutation = copy.deepcopy(definitions)
@@ -267,7 +391,14 @@ def test_f25a_self_check_and_registry_freeze_exact_sixteen_file_scope():
 
 def test_f25b_packet_is_valid_but_release_stays_no_go():
     completed = subprocess.run(
-        [sys.executable, str(F25B_BUILDER), "--report", str(F25B_REPORT), "--self-check"],
+        [
+            sys.executable,
+            str(F25B_BUILDER),
+            "--report",
+            str(F25B_REPORT),
+            "--rebuild-missing",
+            "--self-check",
+        ],
         cwd=ROOT,
         capture_output=True,
         text=True,
@@ -284,6 +415,21 @@ def test_f25b_packet_is_valid_but_release_stays_no_go():
 def test_f25b_package_is_bound_and_excludes_internal_surfaces():
     report = json.loads(F25B_REPORT.read_text(encoding="utf-8"))
     package = ROOT / report["artifact_binding"]["miniprogram_package"]["path"]
+    if not package.is_file():
+        rebuilt = subprocess.run(
+            [
+                sys.executable,
+                str(F25B_BUILDER),
+                "--report",
+                str(F25B_REPORT),
+                "--rebuild-missing",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert rebuilt.returncode == 0, rebuilt.stderr
     with zipfile.ZipFile(package) as archive:
         names = set(archive.namelist())
         assert "project.private.config.json" not in names

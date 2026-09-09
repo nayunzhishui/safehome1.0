@@ -1056,9 +1056,9 @@
       "kind": "研究分析",
       "item_id": "情感计算聚合",
       "title": "情感计算聚合",
-      "governance_status": "legacy_unverified",
+      "governance_status": "missing",
       "enabled_flag": false,
-      "technical_chain": "离线脚本+研究者只读API",
+      "technical_chain": "离线脚本存在、当前产物缺失",
       "opening_category": "继续隐藏",
       "reason": "产物缺失、样本不足或质量状态未通过",
       "evidence": "analysis/text_analysis；outputs/text_analysis/text_analysis_summary.json；GET /api/text-analysis/summary"
@@ -1091,7 +1091,7 @@
       "title": "小程序页面",
       "governance_status": "implemented",
       "enabled_flag": true,
-      "technical_chain": "51页已注册",
+      "technical_chain": "53页已注册",
       "opening_category": "开放",
       "reason": "页面注册完整，具体内容仍受后端治理",
       "evidence": "apps/miniprogram/app.json"

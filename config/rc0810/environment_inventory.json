@@ -4,18 +4,18 @@
   "inventory_status": "frozen_current_fact",
   "sensitive_values_included": false,
   "sources": [
-    {"path": ".env.example", "layer": "deployment", "classification": "development_template", "production_eligible": false, "sha256": "7705c548d5f5edee2693ae85aeeb686bcd1161b8a6b2d926b7d721cd24882f7a"},
-    {"path": "Dockerfile", "layer": "deployment", "classification": "validation_only_legacy", "production_eligible": false, "sha256": "a9637bc2c4e3fbf15c4ed273806d5ef26c069cbb5336a2f6ca5d8a953d56c988"},
-    {"path": "backend/config.py", "layer": "backend", "classification": "runtime_configuration", "production_eligible": false, "sha256": "47cd7fce6b4c94356fbe502eba1e7fe1adbb4da5627550998ff7beba545dc81b"},
-    {"path": "backend/app.py", "layer": "backend", "classification": "runtime_entrypoint", "production_eligible": false, "sha256": "a86dd1b051c3a6f2fcb9410cbaf376152a3c6e17778c622edb5b7a879d1c141f"},
-    {"path": "backend/gunicorn.conf.py", "layer": "deployment", "classification": "runtime_server", "production_eligible": false, "sha256": "05e6b66d00fff9bcbd72c96308a458ce77c5b9f7be488b867646a77b42f021c0"},
-    {"path": "apps/miniprogram/services/cloudConfig.js", "layer": "miniprogram", "classification": "legacy_default_plus_runtime_override", "production_eligible": false, "sha256": "55a3a14ef556bdd8f63929c41ae633f6dc546c786478b41a77001cd601ef77d1"},
-    {"path": "apps/miniprogram/services/api.js", "layer": "miniprogram", "classification": "transport_contract", "production_eligible": false, "sha256": "f64ff18f979649f31945a7767e4799a43711fdb438c2e6dff64860104b57a814"},
+    {"path": ".env.example", "layer": "deployment", "classification": "development_template", "production_eligible": false, "sha256": "b6aeb78a2377a0c6317ea20fe9dfaf63d5d3328d7ba1071cf5b2f4a0ff10ba27"},
+    {"path": "Dockerfile", "layer": "deployment", "classification": "production_backend_definition_fail_closed", "production_eligible": false, "sha256": "fe5db0db1740e561d7f9877ac7029978905fc0c1877e9f8dd929c309c58a9bf5"},
+    {"path": "backend/config.py", "layer": "backend", "classification": "runtime_configuration", "production_eligible": false, "sha256": "cc1316eb2e657d7f3f3d76317f33492018eadc641e658913c440933321f253f3"},
+    {"path": "backend/app.py", "layer": "backend", "classification": "runtime_entrypoint", "production_eligible": false, "sha256": "317660837b3965b505ba195cc020da9dd91d54a17aff1701bcb39a20d6bc5d4f"},
+    {"path": "backend/gunicorn.conf.py", "layer": "deployment", "classification": "runtime_server", "production_eligible": false, "sha256": "168207170f3053f4c1d951dfefa52f95d767393ce0253a7193d2e6034deaa84b"},
+    {"path": "apps/miniprogram/services/cloudConfig.js", "layer": "miniprogram", "classification": "legacy_default_plus_runtime_override", "production_eligible": false, "sha256": "0d3b6a77279b5954783444dad5bf62384d8627df7d9b798fd3e053449673e75f"},
+    {"path": "apps/miniprogram/services/api.js", "layer": "miniprogram", "classification": "transport_contract", "production_eligible": false, "sha256": "f82d4905b2b4d344a4638c84597fc5444c157178059951553014e93dd7e73f8d"},
     {"path": "apps/web/vite.config.ts", "layer": "web", "classification": "development_build_tool", "production_eligible": false, "sha256": "d58ce35d792610b39e51ea5c58646a0b8ae54668c9d71406fb75d7aefb67f20f"},
-    {"path": "apps/web/src/services/safehomeApi.ts", "layer": "web", "classification": "client_transport_contract", "production_eligible": false, "sha256": "8d9c0934cc5ac8e52e0a6a5a931f659b850360c1387e771a40b89fa752e2fd87"},
-    {"path": "shared/constants/api.ts", "layer": "shared", "classification": "shared_api_contract", "production_eligible": false, "sha256": "dcb3bd2331b3ce1bcb8d9c99d8db8637736969df97da05467a97eaf8f3a8aeed"},
-    {"path": "docs/03_技术真相/API接口文档.md", "layer": "docs", "classification": "documented_api_contract", "production_eligible": false, "sha256": "c16f325424e181cac1e7e8285c3035215151e3eb07a06d83f7a77c3b23882166"},
-    {"path": "scripts/build_task9_cloudbase_package.ps1", "layer": "deployment", "classification": "legacy_validation_packager", "production_eligible": false, "sha256": "c9265042aef0c2f9ea08e287c2e00ee531a571694ce9d1b5e55969f35bdc3e4a"}
+    {"path": "apps/web/src/services/safehomeApi.ts", "layer": "web", "classification": "client_transport_contract", "production_eligible": false, "sha256": "e5797dc83e5e9d14e77f292931e455a782239dce6dbd15ccfca6f76916b26fa2"},
+    {"path": "shared/constants/api.ts", "layer": "shared", "classification": "shared_api_contract", "production_eligible": false, "sha256": "d3831be5d2b329799cb16dfa83ebe906d8803cf08d2e3e89901dd736e89b6622"},
+    {"path": "docs/03_技术真相/API接口文档.md", "layer": "docs", "classification": "documented_api_contract", "production_eligible": false, "sha256": "3412a24ea54e65dd564c4029210f94d777f5830476180057bf82f2ca37a567bd"},
+    {"path": "scripts/build_task9_cloudbase_package.ps1", "layer": "deployment", "classification": "legacy_validation_packager", "production_eligible": false, "sha256": "30f0d6061edc20a1be30b48b4bd411d7b1e3d3b07c890012597d4edd2bb6e381"}
   ],
   "environment_variable_classes": {
     "environment_selector": ["APP_ENV", "FLASK_ENV", "DB_PROVIDER"],
@@ -25,7 +25,7 @@
     "capability_flag_source": "capability_matrix.json"
   },
   "current_fact_findings": [
-    {"id": "ENV-CURRENT-001", "fact": "Dockerfile以APP_ENV=production启动并打开多项能力", "decision": "仅分类为历史验证部署，禁止用作生产制品"},
+    {"id": "ENV-CURRENT-001", "fact": "Dockerfile以APP_ENV=production启动且生产能力默认关闭；生产构建使用Python 3.12 Azure Linux，最终运行层固定为非root Distroless digest，不包含包管理器或shell", "decision": "任何Docker输入变化都必须重建、重新扫描并用新digest发布；扫描与发布证据完成前production_eligible保持false"},
     {"id": "ENV-CURRENT-002", "fact": "小程序cloudConfig.js含现有默认CloudBase标识和本地HTTP入口", "decision": "生产profile不得继承这些引用，必须由冻结extConfig注入"},
     {"id": "ENV-CURRENT-003", "fact": ".env.example含本地开发默认值", "decision": "仅作为开发模板，任何生产构建不得打包该文件"}
   ]

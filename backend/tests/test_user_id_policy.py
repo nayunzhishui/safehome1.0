@@ -48,8 +48,11 @@ def test_development_allows_demo_parent_for_query_endpoint(tmp_path, monkeypatch
     assert response.get_json()["data"]["items"] == []
 
 
-def test_production_rejects_missing_user_id_for_core_write_endpoints(tmp_path, monkeypatch):
-    app = _fresh_app(tmp_path, monkeypatch, "production")
+def test_non_development_rejects_missing_user_id_for_core_write_endpoints(tmp_path, monkeypatch):
+    # Production requires an approved MySQL profile and cannot be booted on the
+    # isolated SQLite fixture; testing keeps the same no-anonymous-identity
+    # contract without attempting a production connection.
+    app = _fresh_app(tmp_path, monkeypatch, "testing")
     client = app.test_client()
     cases = [
         ("/api/goals", {"scene": "作业拖延", "smart_goal": "先记录一次具体事件"}),
@@ -74,8 +77,8 @@ def test_production_rejects_missing_user_id_for_core_write_endpoints(tmp_path, m
         assert "匿名 user_id" in body["error"]["message"] or "登录" in body["error"]["message"] or "需要先登录" in body["error"]["message"], path
 
 
-def test_production_rejects_missing_user_id_for_query_endpoints(tmp_path, monkeypatch):
-    app = _fresh_app(tmp_path, monkeypatch, "production")
+def test_non_development_rejects_missing_user_id_for_query_endpoints(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch, "testing")
     client = app.test_client()
     paths = [
         "/api/goals",
@@ -93,8 +96,8 @@ def test_production_rejects_missing_user_id_for_query_endpoints(tmp_path, monkey
         assert "匿名 user_id" in body["error"]["message"] or "登录" in body["error"]["message"] or "需要先登录" in body["error"]["message"], path
 
 
-def test_production_rejects_body_and_query_user_id_without_signed_actor(tmp_path, monkeypatch):
-    app = _fresh_app(tmp_path, monkeypatch, "production")
+def test_non_development_rejects_body_and_query_user_id_without_signed_actor(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch, "testing")
     client = app.test_client()
 
     responses = [

@@ -26,9 +26,6 @@ def test_cloudbase_all_interface_profile_opens_implemented_surfaces_without_dest
         "PRIVACY_PRODUCTION_EXECUTION_ENABLED",
         "RESEARCH_OPERATIONS_WRITE_ENABLED",
         "THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED",
-        "AI_QA_ENABLED",
-        "AI_QA_SANDBOX_ENABLED",
-        "AI_QA_REAL_PROVIDER_ENABLED",
         "OFFLINE_BENCHMARK_ENABLED",
         "RESEARCH_METHODOLOGY_WORKBENCH_ENABLED",
         "RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED",
@@ -46,6 +43,9 @@ def test_cloudbase_all_interface_profile_opens_implemented_surfaces_without_dest
         "WECHAT_SUBSCRIBE_SEND_ENABLED",
     }
     assert {name for name in enabled if values.get(name) != "1"} == set()
+    assert values["AI_QA_ENABLED"] == "0"
+    assert values["AI_QA_SANDBOX_ENABLED"] == "0"
+    assert values["AI_QA_REAL_PROVIDER_ENABLED"] == "0"
     assert values["AI_QA_PROVIDER"] == "deepseek"
     assert values["TRUST_CLOUDBASE_IDENTITY_HEADERS"] == "0"
     assert values["OFFLINE_EXTERNAL_INGEST_ENABLED"] == "0"
@@ -63,15 +63,15 @@ def test_cloudbase_profile_contains_placeholders_instead_of_external_secrets():
     assert "WECHAT_SECRET=__FROM_CLOUDBASE_SECRET_STORE__" in text
 
 
-def test_cloudbase_dockerfile_enables_runtime_interfaces_but_keeps_security_checks():
+def test_cloudbase_dockerfile_defaults_to_fail_closed_runtime_interfaces():
     text = (ROOT / "Dockerfile").read_text(encoding="utf-8")
     for token in (
-        "PRODUCTION_FEATURES_UNLOCKED=1",
-        "AI_QA_ENABLED=1",
-        "AI_QA_SANDBOX_ENABLED=1",
-        "RESEARCH_OPERATIONS_WRITE_ENABLED=1",
-        "THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED=1",
-        "OPERATIONS_PRODUCTION_RELEASE_ENABLED=1",
+        "PRODUCTION_FEATURES_UNLOCKED=0",
+        "AI_QA_ENABLED=0",
+        "AI_QA_SANDBOX_ENABLED=0",
+        "AI_QA_REAL_PROVIDER_ENABLED=0",
+        "RESEARCH_OPERATIONS_WRITE_ENABLED=0",
+        "OPERATIONS_PRODUCTION_RELEASE_ENABLED=0",
     ):
         assert token in text
     assert "RELIABILITY_FAULT_INJECTION_ENABLED=0" in text
