@@ -80,6 +80,17 @@ def test_f03_images_package_database_profile_contract():
     assert copy_contract in VALIDATION.read_text(encoding="utf-8")
 
 
+def test_f03_gunicorn_home_is_owned_by_runtime_user():
+    # Gunicorn 26 puts its control socket under $HOME/.gunicorn by default.
+    # Both images already provision /app/data for the unprivileged user.
+    for dockerfile in (PRODUCTION, VALIDATION):
+        text = dockerfile.read_text(encoding="utf-8")
+        assert "ENV HOME=/app/data\n" in text
+        assert "mkdir -p /app/data" in text
+        assert "chown -R safehome:safehome /app/data" in text
+        assert "USER safehome" in text
+
+
 def test_f03_production_runtime_override_is_rejected():
     execution_flags = [
         "AI_QA_ENABLED",

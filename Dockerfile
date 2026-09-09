@@ -9,7 +9,8 @@ RUN pip install --no-cache-dir -r /app/backend/requirements.txt \
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV APP_ENV=production
-ENV HOME=/app
+# Gunicorn 26 creates its control socket under $HOME/.gunicorn.
+ENV HOME=/app/data
 ENV CONTENT_DIR=/app/content
 ENV MAX_REQUEST_BODY_BYTES=1048576
 
