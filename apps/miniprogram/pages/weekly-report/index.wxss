@@ -400,3 +400,32 @@
 .secondary-button::after {
   border: 0;
 }
+
+/* UIproduct2: task-scoped visual refinement, no business behavior. */
+.ui2-page { --ui2-section-accent-display:none; --safe-shadow-card:none; --safe-shadow-float:none; box-sizing:border-box; background:var(--ui2-canvas); padding:48rpx 40rpx calc(64rpx + env(safe-area-inset-bottom)); }
+.ui2-page .page-title,.ui2-page .hero-title,.ui2-page .history-title,.ui2-page .result-title { font-size:44rpx; line-height:1.6; font-weight:700; text-align:center; color:var(--ui2-ink); }
+.ui2-page .safe-primary-button,.ui2-page .safe-outline-button { min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; box-shadow:none; }
+.ui2-page .ui2-placeholder { color:var(--ui2-muted); }
+.ui2-page .weekly-hero { padding:0 0 32rpx; }
+.ui2-page .profile-card,.ui2-page .change-card,.ui2-page .review-card,.ui2-page .practice-card { padding:24rpx 0; border:0; border-bottom:1rpx solid var(--ui2-line); border-radius:0; background:transparent; box-shadow:none; }
+.ui2-page .profile-title,.ui2-page .section-title,.ui2-page .practice-title,.ui2-page .next-title { font-size:32rpx; line-height:1.6; font-weight:700; }
+.ui2-page .profile-text,.ui2-page .row-desc,.ui2-page .row-name,.ui2-page .practice-text,.ui2-page .next-text,.ui2-page .muted { font-size:30rpx; line-height:1.7; }
+.ui2-page .profile-meta,.ui2-page .section-hint,.ui2-page .change-label { font-size:28rpx; line-height:1.7; }
+.ui2-page .change-title { font-size:28rpx; line-height:1.6; }
+.ui2-page .stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 24rpx; }
+.ui2-page .stat-card { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12rpx; padding:24rpx 0; border:0; border-bottom:1rpx solid var(--ui2-line); border-radius:0; background:transparent; text-align:left; box-shadow:none; }
+.ui2-page .stat-value { font-size:30rpx; font-weight:700; line-height:1.6; order:2; }
+.ui2-page .stat-label { font-size:26rpx; margin:0; }
+.ui2-page .dimension-group { padding:24rpx 0; border:0; border-bottom:1rpx solid var(--ui2-line); background:transparent; }
+.ui2-page .dimension-group-title { font-size:30rpx; line-height:1.6; }
+.ui2-page .list-row,.ui2-page .dimension-change-row { flex-wrap:wrap; gap:16rpx; }
+.ui2-page .row-count { font-size:28rpx; }
+.ui2-page .next-step-card { padding:28rpx; border:0; border-radius:24rpx; background:var(--ui2-soft); }
+.ui2-page .primary-button,.ui2-page .secondary-button,.ui2-page .outline-button { min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; }
+.ui2-page .primary-button { background:var(--ui2-primary); color:white; }
+.ui2-page .secondary-button { background:transparent; border:2rpx solid var(--ui2-control-border); color:var(--ui2-primary); }
+.ui2-page .state-title { font-size:32rpx; }
+.ui2-page .state-text { font-size:30rpx; line-height:1.7; }
+
+.ui2-page .profile-title { color:var(--ui2-ink); }
+.ui2-page .primary-button { box-shadow:none; }

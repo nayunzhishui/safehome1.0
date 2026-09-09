@@ -11,6 +11,7 @@ Page({
     sourceOptions: [{ type: "", id: "", title: "不关联具体记录", meta: "单独提交一条人工支持请求", selected: true }],
     selectedSource: { type: "", id: "", title: "不关联具体记录" },
     loadingSources: true,
+    sourceError: "",
     message: "",
     contact: "",
     riskHint: "",
@@ -54,6 +55,7 @@ Page({
   },
 
   async loadSourceOptions(diaryId) {
+    this.setData({ loadingSources: true, sourceError: "" });
     try {
       const [diariesPayload, assessmentsPayload] = await Promise.all([
         api.listDiaries({ limit: 8 }),
@@ -76,8 +78,8 @@ Page({
         ...diaryOptions,
         ...assessmentOptions,
       ];
-      const restoredSource = this.data.selectedSource || {};
-      const selected = options.find((item) => item.type === restoredSource.type && item.id === restoredSource.id)
+      const restoredSource = (this.sourceChosenManually || this.data.draftRestored) ? this.data.selectedSource : null;
+      const selected = (restoredSource && options.find((item) => item.type === restoredSource.type && item.id === restoredSource.id))
         || options.find((item) => item.type === "diary" && item.id === diaryId)
         || options[0];
       this.setData({
@@ -86,11 +88,16 @@ Page({
         loadingSources: false,
       });
     } catch (error) {
-      this.setData({ loadingSources: false });
+      this.setData({ loadingSources: false, sourceError: error.message || "关联记录暂未读取，可以重试或不关联记录提交。" });
     }
   },
 
+  retrySources() {
+    return this.loadSourceOptions(this.data.diaryId);
+  },
+
   selectSource(event) {
+    this.sourceChosenManually = true;
     const type = event.currentTarget.dataset.type || "";
     const id = event.currentTarget.dataset.id || "";
     const selected = this.data.sourceOptions.find((item) => item.type === type && item.id === id) || this.data.sourceOptions[0];

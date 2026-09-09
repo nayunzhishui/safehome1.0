@@ -189,3 +189,107 @@ test('读取测评遇到401时显示登录恢复，普通网络错误不误判�
     assert.equal(page.data.errorMessage, error.message);
   }
 });
+
+function supervisionApi() {
+  return {
+    listDiaries: async () => ({ items: [{ id: 'diary-a', scene: '合成场景', event_description: '合成记录' }] }),
+    listAssessmentResults: async () => ({ items: [{ id: 'assessment-a', worksheet_title: '合成测评' }] }),
+  };
+}
+
+test('人工支持默认选择URL带入日记，不被默认不关联抢占', async () => {
+  const { page } = pageHarness('supervision', supervisionApi());
+  await page.loadSourceOptions('diary-a');
+  assert.equal(page.data.selectedSource.id, 'diary-a');
+  assert.equal(page.data.selectedSource.type, 'diary');
+  assert.equal(page.data.sourceOptions.filter((item) => item.selected).length, 1);
+});
+
+test('人工支持尊重草稿中的不关联或测评选择', async () => {
+  for (const selectedSource of [{ type: '', id: '' }, { type: 'assessment', id: 'assessment-a' }]) {
+    const { page } = pageHarness('supervision', supervisionApi());
+    page.data.draftRestored = true;
+    page.data.selectedSource = selectedSource;
+    await page.loadSourceOptions('diary-a');
+    assert.equal(page.data.selectedSource.id, selectedSource.id);
+    assert.equal(page.data.selectedSource.type, selectedSource.type);
+  }
+});
+
+test('关联列表读取失败可重试，重试成功后清除错误且保留请求正文', async () => {
+  const api = supervisionApi();
+  const working = api.listDiaries;
+  api.listDiaries = async () => { throw { message: '合成网络故障' }; };
+  const { page } = pageHarness('supervision', api);
+  page.data.diaryId = 'diary-a';
+  page.data.message = '仍需保留的请求正文';
+  await page.loadSourceOptions('diary-a');
+  assert.equal(page.data.sourceError, '合成网络故障');
+  assert.equal(page.data.loadingSources, false);
+  api.listDiaries = working;
+  await page.retrySources();
+  assert.equal(page.data.sourceError, '');
+  assert.equal(page.data.selectedSource.id, 'diary-a');
+  assert.equal(page.data.message, '仍需保留的请求正文');
+});
+
+test('人工支持仅显式提交时调用API，传递原有来源字段', async () => {
+  const submitted = [];
+  const { page } = pageHarness('supervision', {
+    ...supervisionApi(),
+    createSupervision: async (payload) => submitted.push(payload),
+  });
+  await page.loadSourceOptions('diary-a');
+  assert.equal(submitted.length, 0);
+  page.data.message = ' 请一起看看这次记录 ';
+  await page.submitSupervision();
+  assert.equal(submitted.length, 1);
+  assert.equal(submitted[0].source_type, 'diary');
+  assert.equal(submitted[0].source_id, 'diary-a');
+  assert.equal(submitted[0].message, '请一起看看这次记录');
+});
+
+test('任务卡状态提示不假写缓存，进入打卡保留卡ID与日记ID', () => {
+  const h = pageHarness('task-detail');
+  h.page.data.task = { cardId: 'synthetic-card', title: '合成练习' };
+  h.page.data.diaryId = 'diary-a';
+  h.page.data.reflection = '本页感受';
+  h.page.recordFeeling();
+  assert.equal(h.writes.length, 0);
+  h.page.finishPractice();
+  assert.match(h.navigation[0].url, /card_id=synthetic-card/);
+  assert.match(h.navigation[0].url, /diary_id=diary-a/);
+  assert.doesNotMatch(h.navigation[0].url, /reflection=/);
+  assert.ok(read('pages/task-detail/index.wxml').includes('打卡页需要另行填写'));
+});
+
+test('开发页声明写入后果，两个长期测试入口继续保留', () => {
+  const debug = read('pages/debug/index.wxml');
+  const integration = read('pages/integration-test/index.wxml');
+  assert.ok(debug.includes('开发专用'));
+  assert.ok(debug.includes('profile 测试会创建测试记录'));
+  assert.ok(integration.includes('运行后会创建测试情绪记录'));
+  assert.ok(integration.includes('bindtap="runSmokeTest"'));
+  assert.ok(debug.includes('bindtap="testProfile"'));
+});
+
+test('关联读取失败后主动不关联，重试成功及提交仍保持不关联', async () => {
+  const api = supervisionApi();
+  const working = api.listDiaries;
+  const submitted = [];
+  api.listDiaries = async () => { throw { message: '合成网络故障' }; };
+  api.createSupervision = async (payload) => submitted.push(payload);
+  const { page } = pageHarness('supervision', api);
+  page.data.diaryId = 'diary-a';
+  await page.loadSourceOptions('diary-a');
+  page.selectSource({ currentTarget: { dataset: { type: '', id: '' } } });
+  page.data.message = '只提交这段请求，不关联记录';
+  api.listDiaries = working;
+  await page.retrySources();
+  assert.equal(page.data.selectedSource.id, '');
+  assert.equal(page.data.draftRestored, false);
+  await page.submitSupervision();
+  assert.equal(submitted.length, 1);
+  assert.equal(submitted[0].source_id, undefined);
+  assert.equal(submitted[0].source_type, undefined);
+});

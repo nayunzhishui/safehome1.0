@@ -1,4 +1,4 @@
-<view class="safe-page supervision-page" role="main" aria-label="人工支持">
+<view class="safe-page ui2-page supervision-page" role="main" aria-label="人工支持">
   <view class="supervision-hero">
     <view class="hero-copy">
       <text class="title">人工支持</text>
@@ -14,6 +14,8 @@
   <view class="form-card">
     <view class="field linked-record">
       <text class="label">选择想请老师一起看的记录</text>
+      <text wx:if="{{loadingSources}}" class="source-state" aria-live="polite">正在读取可关联记录…</text>
+      <view wx:if="{{sourceError}}" class="source-error"><text>{{sourceError}}</text><button class="safe-secondary-button" bindtap="retrySources">重新读取关联记录</button></view>
       <scroll-view scroll-y class="source-list">
         <button
           wx:for="{{sourceOptions}}"
@@ -21,7 +23,7 @@
           class="source-option {{item.selected ? 'source-option--active' : ''}}"
           data-type="{{item.type}}"
           data-id="{{item.id}}"
-          bindtap="selectSource"
+          bindtap="selectSource" aria-pressed="{{item.selected}}"
         >
           <view class="source-copy">
             <text class="source-title">{{item.title}}</text>
@@ -34,7 +36,7 @@
 
     <view class="field">
       <text class="label">想请老师补充看的内容</text>
-      <textarea
+      <textarea aria-label="想请老师补充看的内容" placeholder-class="ui2-placeholder"
         class="textarea"
         value="{{message}}"
         placeholder="例如：这次记录里，我想知道可以先从哪个小动作开始练。"
@@ -45,7 +47,7 @@
 
     <view class="field">
       <text class="label">可选联系方式</text>
-      <input
+      <input aria-label="联系方式，可选" placeholder-class="ui2-placeholder"
         class="input"
         value="{{contact}}"
         placeholder="可不填。只填写你愿意用于后续沟通的信息。"
@@ -56,7 +58,7 @@
 
     <view class="field">
       <text class="label">可选风险提示</text>
-      <textarea
+      <textarea aria-label="风险提示，可选" placeholder-class="ui2-placeholder"
         class="textarea"
         value="{{riskHint}}"
         placeholder="可不填。如果有需要老师特别留意的安全或压力信息，可以简单写一句。紧急情况请先找现实支持。"

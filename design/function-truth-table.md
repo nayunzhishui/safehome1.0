@@ -1896,6 +1896,8 @@
 
 ### 47 UP任务卡 — `pages/task-detail/index`
 
+2026-09-09复核：startPractice仅Toast“可以从第一步开始”；recordFeeling仅Toast说明感受在本页，不写storage、不提交API；finishPractice只跳打卡，不携带reflection/emotionLevel。UI改称“练习提示”“查看填写状态”“去填写打卡”，明确本页感受不是持久保存，原处理器不改。
+
 **用户任务：** 阅读当前本地任务步骤与示例、做一次记录并进入打卡；不冒充服务端新增任务。
 - 页面源码：`apps/miniprogram/pages/task-detail/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
 - 实际条件：`{{task}}`
@@ -1996,6 +1998,8 @@
 - 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
 
 ### 51 人工督导入口 — `pages/supervision/index`
+
+2026-09-09复核：默认selectedSource“不关联”会抢先匹配，导致URL传入diary_id未自动选中。修正为本页手动选择或确实恢复草稿时优先保留当前选择，否则匹配传入日记；手动“不关联”在重试后不得被URL覆盖。关联列表读取失败增加错误/重试显示，不改API或请求字段。
 
 **用户任务：** 提交非实时人工支持请求，可关联本人记录；紧急边界、提交与失败恢复清楚。
 - 页面源码：`apps/miniprogram/pages/supervision/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。

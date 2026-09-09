@@ -1,6 +1,7 @@
-<view class="page" role="main" aria-label="开发调试">
+<view class="page ui2-page" role="main" aria-label="开发调试">
   <view class="panel">
     <text class="title">云托管诊断</text>
+    <text class="dev-notice">开发专用。请先核对环境；profile 测试会创建测试记录，不要在真实数据环境中随意运行。</text>
 
     <view class="section">
       <text class="section-title">当前配置</text>
@@ -18,7 +19,7 @@
       <button class="primary-button" bindtap="testHealthz" disabled="{{status === 'running'}}">测试 healthz</button>
       <button class="secondary-button" bindtap="testAssessments" disabled="{{status === 'running'}}">测试 assessments</button>
       <button class="secondary-button" bindtap="testRiskCheck" disabled="{{status === 'running'}}">测试 risk/check</button>
-      <button class="secondary-button" bindtap="testProfile" disabled="{{status === 'running'}}">测试 profile</button>
+      <button class="secondary-button" bindtap="testProfile" disabled="{{status === 'running'}}">测试 profile（会写入测试记录）</button>
     </view>
 
     <view class="status {{status}}">

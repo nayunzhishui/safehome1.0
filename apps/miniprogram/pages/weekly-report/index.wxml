@@ -1,4 +1,4 @@
-<view class="safe-page weekly-page" role="main" aria-label="本周复盘">
+<view class="safe-page ui2-page weekly-page" role="main" aria-label="本周复盘">
   <view class="weekly-hero">
     <view class="hero-copy">
       <text class="hero-title">本周复盘</text>
@@ -17,6 +17,11 @@
   </view>
 
   <view wx:else class="weekly-content">
+    <view class="change-card safe-card">
+      <text class="change-label">记录范围</text>
+      <text class="change-title">{{report.week_start}} 至 {{report.week_end}}</text>
+    </view>
+
     <view class="profile-card">
       <text class="profile-title">阶段性画像线索</text>
       <text class="profile-text">
@@ -26,24 +31,20 @@
       <text wx:if="{{report.profile_trend && report.profile_trend.requires_review_count}}" class="profile-meta">有内容需要人工关注，请优先等待或提交人工支持。</text>
     </view>
 
-    <view class="change-card safe-card">
-      <text class="change-label">本周小变化</text>
-      <text class="change-title">{{report.week_start}} 至 {{report.week_end}}</text>
-      <text class="change-text">{{report.next_week_suggestion}}</text>
-    </view>
+
 
     <view class="stats-grid">
       <view class="stat-card">
         <text class="stat-value">{{frequentScenes.length}}</text>
-        <text class="stat-label">类常见场景</text>
+        <text class="stat-label">常见场景（类）</text>
       </view>
       <view class="stat-card">
         <text class="stat-value">{{frequentEmotions.length}}</text>
-        <text class="stat-label">类常见情绪</text>
+        <text class="stat-label">常见情绪（类）</text>
       </view>
       <view class="stat-card">
         <text class="stat-value">{{commonPatterns.length}}</text>
-        <text class="stat-label">条互动线索</text>
+        <text class="stat-label">互动线索（条）</text>
       </view>
       <view class="stat-card">
         <text class="stat-value">{{completedCardsText ? '已记' : '待记'}}</text>
@@ -86,7 +87,7 @@
       </view>
       <view class="review-card">
         <text class="row-desc">{{report.thermometer_trend ? report.thermometer_trend.trend_text : '本周还没有情绪温度记录。'}}</text>
-        <text class="row-desc">{{thermometerDetailText}}</text>
+        <text wx:if="{{thermometerDetailText && thermometerDetailText !== '本周还没有情绪温度记录。'}}" class="row-desc">{{thermometerDetailText}}</text>
       </view>
     </view>
 

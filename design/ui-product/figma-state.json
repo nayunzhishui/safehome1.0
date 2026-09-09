@@ -754,12 +754,12 @@
     "buttonDefault": "385:6",
     "labelProperty": "Label#385:0",
     "fileKey": "8vocq2yUvjQavYpaxGotPs",
-    "phase": "pages_in_progress",
+    "phase": "all_routes_implemented_unified_acceptance_pending",
     "journey": "386:6",
     "home": "387:7",
     "homeHeader": "387:8",
     "homeTitle": "387:9",
-    "activeRoute": "pages/task-detail/index",
+    "activeRoute": null,
     "login": "392:103",
     "passwordChange": "393:122",
     "homeEntryRow": "388:17",
@@ -1025,6 +1025,55 @@
         "reviewDate": "2026-09-09",
         "figmaCoverage": "main_synthetic_layout_not_all_states",
         "device": "pending"
+      },
+      "pages/task-detail/index": {
+        "figma": "602:612",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "figmaCoverage": "main_synthetic_layout_not_all_states",
+        "device": "pending"
+      },
+      "pages/training-card/index": {
+        "figma": "604:612",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "figmaCoverage": "main_synthetic_layout_not_all_states",
+        "device": "pending"
+      },
+      "pages/checkin/index": {
+        "figma": "606:622",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "figmaCoverage": "main_synthetic_layout_not_all_states",
+        "device": "pending"
+      },
+      "pages/weekly-report/index": {
+        "figma": "608:622",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "figmaCoverage": "main_synthetic_layout_not_all_states",
+        "device": "pending"
+      },
+      "pages/supervision/index": {
+        "figma": "610:622",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "figmaCoverage": "main_synthetic_layout_not_all_states",
+        "device": "pending"
+      },
+      "pages/debug/index": {
+        "figma": "612:622",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "figmaCoverage": "development_idle_synthetic_only",
+        "device": "pending"
+      },
+      "pages/integration-test/index": {
+        "figma": "614:622",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "figmaCoverage": "development_idle_synthetic_only",
+        "device": "pending"
       }
     },
     "register": "394:135",
@@ -1108,7 +1157,7 @@
       "status": "current_pages_self_review_in_progress",
       "programList": "local_draft_preview_not_release_approval",
       "programDetail": "readonly_local_draft_content",
-      "remaining_work": "7 routes; full Figma variants, general purpose consent UI, first-run completion/skip states, native runtime and real device acceptance pending"
+      "remaining_work": "All 53 route implementations covered (51 product + 2 dev); full state/visual/device acceptance, general purpose consent UI and first-run completion/skip still pending"
     },
     "flowComponents": {
       "choiceSet": "499:447",
@@ -1205,6 +1254,85 @@
         "native_simulator_real_device_keyboard_screen_reader"
       ],
       "remotePush": "not_attempted"
+    },
+    "finalRouteReview": {
+      "date": "2026-09-09",
+      "first46": {
+        "structure": "pass",
+        "nativeCompile": {
+          "wxml": 78,
+          "wxss": 71,
+          "exit": 0
+        },
+        "figmaMainFramesChecked": 46,
+        "fixed": "thermometer_10_tick_labels_11px_to_13px"
+      },
+      "last7": {
+        "routes": [
+          "pages/task-detail/index",
+          "pages/training-card/index",
+          "pages/checkin/index",
+          "pages/weekly-report/index",
+          "pages/supervision/index",
+          "pages/debug/index",
+          "pages/integration-test/index"
+        ],
+        "mainFrames": [
+          "602:612",
+          "604:612",
+          "606:622",
+          "608:622",
+          "610:622",
+          "612:622",
+          "614:622"
+        ],
+        "protectedAttributes": "preserved; supervision retrySources added",
+        "syntheticLayouts": 26,
+        "widths": [
+          320,
+          390
+        ],
+        "visibleTextMinRpx": 24
+      },
+      "all53": {
+        "nativeCompile": {
+          "wxml": 85,
+          "wxss": 78,
+          "exit": 0
+        },
+        "syntax": {
+          "js": 99,
+          "json": 89,
+          "affectedSupervisionJsCheckedAfterChange": true
+        },
+        "nodeTests": 18
+      },
+      "typography": {
+        "titleRpx": "40–44",
+        "bodyRpx": "30–32",
+        "metadataRpx": 26,
+        "minRpx": 24,
+        "technicalLongTextRpx": 28
+      },
+      "reviewer": {
+        "id": "01a0868e-fe3f-74b3-9b53-e809b33089f8",
+        "model": "gpt-5.6-luna",
+        "reasoningEffort": "high",
+        "initial": "fix_required",
+        "finding": "manual_no_association_overwritten_on_retry",
+        "final": "pass"
+      },
+      "evidence": ".codex_tmp/ui2-final",
+      "realApiWrites": 0,
+      "published": false,
+      "pushed": false,
+      "remaining": [
+        "complete_figma_variants_and_source_alignment",
+        "native_simulator_real_device_keyboard_screen_reader",
+        "privacy_clinical_human_approval",
+        "general_purpose_consent_ui",
+        "first_run_completion_skip"
+      ]
     }
   }
 }

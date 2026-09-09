@@ -98,3 +98,25 @@
   background: #fff1f1;
   border-color: #efb4b4;
 }
+
+/* UIproduct2: task-scoped visual refinement, no business behavior. */
+.ui2-page { --ui2-section-accent-display:none; --safe-shadow-card:none; --safe-shadow-float:none; box-sizing:border-box; background:var(--ui2-canvas); padding:48rpx 40rpx calc(64rpx + env(safe-area-inset-bottom)); }
+.ui2-page .page-title,.ui2-page .hero-title,.ui2-page .history-title,.ui2-page .result-title { font-size:44rpx; line-height:1.6; font-weight:700; text-align:center; color:var(--ui2-ink); }
+.ui2-page .safe-primary-button,.ui2-page .safe-outline-button { min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; box-shadow:none; }
+.ui2-page .ui2-placeholder { color:var(--ui2-muted); }
+.ui2-page.page { min-height:100vh; }
+.ui2-page .panel { padding:0; border:0; border-radius:0; background:transparent; }
+.ui2-page .title { font-size:44rpx; font-weight:700; line-height:1.6; color:var(--ui2-ink); }
+.ui2-page .dev-notice { display:block; margin:24rpx 0; padding:24rpx; background:var(--ui2-warm); border-radius:24rpx; color:#765323; font-size:28rpx; line-height:1.7; }
+.ui2-page .section,.ui2-page .diagnostics,.ui2-page .result-block { padding:24rpx 0; border:0; border-top:1rpx solid var(--ui2-line); border-radius:0; background:transparent; }
+.ui2-page .result-block::before { display:none; }
+.ui2-page .section-title,.ui2-page .block-title { font-size:32rpx; line-height:1.6; color:var(--ui2-ink); }
+.ui2-page .line,.ui2-page .pre,.ui2-page .diagnostic-line { font-size:26rpx; line-height:1.7; color:var(--ui2-muted); white-space:pre-wrap; word-break:break-all; }
+.ui2-page .primary-button,.ui2-page .secondary-button { width:100%; min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; }
+.ui2-page .primary-button { background:var(--ui2-primary); color:white; }
+.ui2-page .secondary-button { background:transparent; border:2rpx solid var(--ui2-control-border); color:var(--ui2-primary); }
+.ui2-page button[disabled] { background:var(--ui2-soft); color:var(--ui2-muted); }
+.ui2-page .status { border:1rpx solid var(--ui2-line); background:var(--ui2-soft); font-size:28rpx; line-height:1.7; word-break:break-word; }
+.ui2-page .status.error,.ui2-page .error-card { background:#fff4f1; color:#a5453f; border-color:#a5453f; }
+
+.ui2-page .line,.ui2-page .pre,.ui2-page .diagnostic-line { font-size:28rpx; }

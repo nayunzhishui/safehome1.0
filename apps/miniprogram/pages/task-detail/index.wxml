@@ -1,6 +1,6 @@
-<view class="safe-page task-detail-page" wx:if="{{task}}" role="main" aria-label="训练任务详情">
+<view class="safe-page ui2-page task-detail-page" wx:if="{{task}}" role="main" aria-label="训练任务详情">
   <view class="detail-nav">
-    <button class="back-button" bindtap="goBack">‹</button>
+    <button class="back-button" aria-label="返回上一页" bindtap="goBack">返回</button>
   </view>
 
   <view class="overview-card safe-card safe-card--hero">
@@ -45,9 +45,10 @@
     <section-title title="练习后记录" />
     <view class="record-card">
       <text class="field-label">今日感受</text>
-      <textarea class="reflection-input" value="{{reflection}}" placeholder="例如：我先停了一下，说话比刚才慢了一点。" bindinput="onReflectionInput" />
+      <text class="local-note">感受仅保留在当前页，打卡页需要另行填写。</text>
+      <textarea class="reflection-input" aria-label="今日感受，仅保留在本页" placeholder-class="ui2-placeholder" value="{{reflection}}" placeholder="例如：我先停了一下，说话比刚才慢了一点。" bindinput="onReflectionInput" />
       <text class="field-label">当前情绪强度：{{emotionLevel}} / 10</text>
-      <slider min="0" max="10" step="1" value="{{emotionLevel}}" activeColor="#578B5F" block-color="#578B5F" bindchange="onEmotionLevelChange" />
+      <slider min="0" max="10" step="1" value="{{emotionLevel}}" activeColor="#23666E" block-color="#23666E" bindchange="onEmotionLevelChange" />
     </view>
   </view>
 
@@ -56,10 +57,10 @@
   </view>
 
   <view class="action-bar">
-    <button class="safe-primary-button action-button" bindtap="finishPractice">完成并打卡</button>
+    <button class="safe-primary-button action-button" bindtap="finishPractice">去填写打卡</button>
     <view class="secondary-actions">
-      <button class="soft-action-button" bindtap="startPractice">从第一步开始</button>
-      <button class="soft-action-button" bindtap="recordFeeling">暂存感受</button>
+      <button class="soft-action-button" bindtap="startPractice">练习提示</button>
+      <button class="soft-action-button" bindtap="recordFeeling">查看填写状态</button>
     </view>
   </view>
 

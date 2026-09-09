@@ -404,3 +404,27 @@
   color: var(--safe-primary-deep);
   box-shadow: none;
 }
+
+/* UIproduct2: task-scoped visual refinement, no business behavior. */
+.ui2-page { --ui2-section-accent-display:none; --safe-shadow-card:none; --safe-shadow-float:none; box-sizing:border-box; background:var(--ui2-canvas); padding:48rpx 40rpx calc(64rpx + env(safe-area-inset-bottom)); }
+.ui2-page .page-title,.ui2-page .hero-title,.ui2-page .history-title,.ui2-page .result-title { font-size:44rpx; line-height:1.6; font-weight:700; text-align:center; color:var(--ui2-ink); }
+.ui2-page .safe-primary-button,.ui2-page .safe-outline-button { min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; box-shadow:none; }
+.ui2-page .ui2-placeholder { color:var(--ui2-muted); }
+.ui2-page .detail-hero { padding:0 0 32rpx; }
+.ui2-page .match-card { padding:20rpx 0; border:0; background:transparent; border-radius:0; }
+.ui2-page .match-label,.ui2-page .today-label,.ui2-page .tip-title { font-size:32rpx; line-height:1.6; }
+.ui2-page .match-text,.ui2-page .today-text,.ui2-page .detail-text,.ui2-page .tip-text,.ui2-page .boundary-text { font-size:30rpx; line-height:1.7; }
+.ui2-page .task-card { padding:28rpx 0; border:0; border-bottom:1rpx solid var(--ui2-line); border-radius:0; background:transparent; box-shadow:none; }
+.ui2-page { --ui2-training-padding:28rpx; --ui2-training-border:0; --ui2-training-radius:24rpx; --ui2-training-tag-color:#765323; }
+.ui2-page .today-step { border:0; border-radius:24rpx; background:var(--ui2-soft); padding:28rpx; }
+.ui2-page .detail-toggle { width:100%; min-height:96rpx; padding:22rpx 24rpx; border:2rpx solid var(--ui2-control-border); border-radius:24rpx; background:transparent; color:var(--ui2-primary); font-size:30rpx; line-height:1.6; gap:16rpx; }
+.ui2-page .detail-label { font-size:28rpx; color:var(--ui2-muted); }
+.ui2-page .details-panel { padding:24rpx 0; background:transparent; border:0; }
+.ui2-page .detail-row { align-items:flex-start; gap:16rpx; }
+.ui2-page .example-box { background:var(--ui2-soft); }
+.ui2-page .tip-box { background:var(--ui2-warm); }
+.ui2-page .primary-button { width:100%; min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; background:var(--ui2-primary); color:white; font-size:30rpx; line-height:1.6; }
+.ui2-page .primary-button--secondary { border:2rpx solid var(--ui2-control-border); background:transparent; color:var(--ui2-primary); }
+
+.ui2-page .match-card,.ui2-page .primary-button { box-shadow:none; }
+.ui2-page .today-label { color:var(--ui2-ink); }

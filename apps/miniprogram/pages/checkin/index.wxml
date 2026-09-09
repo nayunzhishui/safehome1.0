@@ -1,4 +1,4 @@
-<view class="page" role="main" aria-label="训练打卡">
+<view class="page ui2-page" role="main" aria-label="训练打卡">
   <view class="hero">
     <text class="title">练习打卡</text>
   </view>
@@ -17,12 +17,12 @@
 
     <view class="field">
       <text class="label">练习前情绪强度：{{emotionBefore}} / 10</text>
-      <slider min="0" max="10" step="1" value="{{emotionBefore}}" activeColor="#2f7d45" bindchange="onEmotionBeforeChange" />
+      <slider min="0" max="10" step="1" value="{{emotionBefore}}" activeColor="#23666E" bindchange="onEmotionBeforeChange" />
     </view>
 
     <view class="field">
       <text class="label">练习后情绪强度：{{emotionAfter}} / 10</text>
-      <slider min="0" max="10" step="1" value="{{emotionAfter}}" activeColor="#2f7d45" bindchange="onEmotionAfterChange" />
+      <slider min="0" max="10" step="1" value="{{emotionAfter}}" activeColor="#23666E" bindchange="onEmotionAfterChange" />
     </view>
 
     <view class="field">
@@ -33,7 +33,7 @@
           wx:key="value"
           class="helpfulness-chip {{helpfulnessRating === item.value ? 'helpfulness-chip--active' : ''}}"
           data-value="{{item.value}}"
-          bindtap="chooseHelpfulness"
+          bindtap="chooseHelpfulness" aria-pressed="{{helpfulnessRating === item.value}}"
         >
           {{item.label}}
         </button>
@@ -41,8 +41,8 @@
     </view>
 
     <view class="field">
-      <text class="label">如果暂时不想完成，可以写一个原因（可选）</text>
-      <input class="pause-input" value="{{skipReason}}" placeholder="例如：今天太累，先暂停一下。" bindinput="onSkipReasonInput" />
+      <text class="label">这次尝试中需要暂停的原因（可选）</text>
+      <input class="pause-input" aria-label="暂停原因，可选" placeholder-class="ui2-placeholder" value="{{skipReason}}" placeholder="例如：今天太累，先暂停一下。" bindinput="onSkipReasonInput" />
     </view>
 
     <view class="field">
@@ -50,7 +50,7 @@
       <view class="reflection-prompts">
         <text wx:for="{{reflectionPrompts}}" wx:key="*this" class="prompt-item">{{item}}</text>
       </view>
-      <textarea class="textarea" value="{{reflection}}" placeholder="例如：这次我先停了一下，说话慢了一点。下次想先从少说一句开始。" bindinput="onReflectionInput" />
+      <textarea class="textarea" aria-label="练习复盘" placeholder-class="ui2-placeholder" value="{{reflection}}" placeholder="例如：这次我先停了一下，说话慢了一点。下次想先从少说一句开始。" bindinput="onReflectionInput" />
     </view>
 
     <view wx:if="{{successMessage}}" class="status success">
