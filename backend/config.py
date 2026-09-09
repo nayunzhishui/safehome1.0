@@ -65,6 +65,10 @@ class Config:
     DEPLOYMENT_TARGET_ENVIRONMENT = os.environ.get("DEPLOYMENT_TARGET_ENVIRONMENT", "").strip()
     # Enable only on a CloudRun version built with the official OpenAPI sidecar.
     CLOUDBASE_OPENAPI_ENABLED = os.environ.get("CLOUDBASE_OPENAPI_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
+    # Separate owner-controlled access switches; never grant research/AI rights.
+    TEMPORARY_ASSESSMENTS_OPEN = os.environ.get("TEMPORARY_ASSESSMENTS_OPEN", "0").strip().lower() in {"1", "true", "yes"}
+    TEMPORARY_TRAINING_CARDS_OPEN = os.environ.get("TEMPORARY_TRAINING_CARDS_OPEN", "0").strip().lower() in {"1", "true", "yes"}
+    TEMPORARY_PROGRAMS_OPEN = os.environ.get("TEMPORARY_PROGRAMS_OPEN", "0").strip().lower() in {"1", "true", "yes"}
     TRUST_CLOUDBASE_IDENTITY_HEADERS = os.environ.get("TRUST_CLOUDBASE_IDENTITY_HEADERS", "").strip().lower() in {
         "1",
         "true",

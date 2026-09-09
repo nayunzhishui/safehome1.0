@@ -8,6 +8,7 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
+from check_launch_readiness import privacy_notice
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -274,6 +275,7 @@ def build(profile: str, output: Path, policy_path: Path, should_copy: bool, clou
     })
     if should_copy:
         copy_source(output, set() if profile == "validation" else internal)
+        write_json(output / "utils/privacy-policy.json", privacy_notice((ROOT / "content/privacy.md").read_text(encoding="utf-8")))
         configure_cloud_target(output, profile, cloud_targets_path)
         if profile == "production":
             for relative, methods in policy.get("production_route_rewrites", {}).items():

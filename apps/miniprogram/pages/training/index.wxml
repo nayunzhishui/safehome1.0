@@ -16,7 +16,7 @@
         <text class="entry-desc">根据测评推荐练习</text>
       </button>
       <button class="entry-item" bindtap="openProgramList">
-        <text class="entry-title">项目测试</text>
+        <text class="entry-title">陪伴项目</text>
         <text class="entry-desc">试点练习包</text>
       </button>
     </view>

@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "教育热榜",
+  "navigationBarTitleText": "亲子沟通主题",
   "usingComponents": {
     "section-title": "/components/section-title/index",
     "bottom-tip-card": "/components/bottom-tip-card/index",

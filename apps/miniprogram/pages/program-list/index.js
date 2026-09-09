@@ -10,7 +10,7 @@ Page({
     availability: null,
     previewMode: false,
     errorMessage: "",
-    boundaryNotice: "项目测试内容只用于陪伴练习和自我观察，不构成诊断、筛查或治疗方案。",
+    boundaryNotice: "陪伴项目内容只用于陪伴练习和自我观察，不构成诊断、筛查或治疗方案。",
   },
 
   onShow() {
@@ -35,7 +35,7 @@ Page({
       .catch((error) => {
         this.setData({
           loading: false,
-          errorMessage: error.message || "项目测试内容暂时没能读取，请检查网络后再试一次。",
+          errorMessage: error.message || "陪伴项目内容暂时没能读取，请检查网络后再试一次。",
         });
         wx.showToast({ title: error.message || "读取失败", icon: "none" });
       });

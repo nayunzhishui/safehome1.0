@@ -4,6 +4,7 @@ from flask import current_app, has_app_context
 
 from database import load_content_json
 from services.showcase_access_service import showcase_training_cards_open
+from services.temporary_content_access import temporary_content_open, boundary_with_temporary_notice
 
 
 APPROVED_REVIEW_STATUSES = {"pilot_approved", "production_approved", "enabled", "trial_enabled"}
@@ -18,8 +19,10 @@ def list_cards(enabled_only: bool = True, include_unapproved: bool = False) -> l
     cards = payload.get("cards", [])
     if enabled_only:
         cards = [card for card in cards if card.get("enabled", True)]
-    if _is_production() and not include_unapproved and not showcase_training_cards_open():
+    if _is_production() and not include_unapproved and not showcase_training_cards_open() and not temporary_content_open("training_cards"):
         cards = [card for card in cards if card.get("review_status") in APPROVED_REVIEW_STATUSES]
+    if temporary_content_open("training_cards"):
+        cards = [{**card, "boundary_notice": boundary_with_temporary_notice("training_cards", card.get("boundary_notice"))} for card in cards]
     return cards
 
 

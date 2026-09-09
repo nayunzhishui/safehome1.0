@@ -37,7 +37,7 @@
 
         <view class="auth-privacy-note">
           <text class="auth-privacy-dot">•</text>
-          <text class="auth-privacy-copy">手机号仅用于识别你的账号，系统只保存不可逆摘要，不保存完整号码。</text>
+          <text class="auth-privacy-copy">手机号登录仅保存用于识别账号的摘要，不保存该授权流程中的完整号码；人工支持中自填的联系方式另行说明。</text>
         </view>
         <view wx:if="{{capabilityMessage}}" class="capability-note" aria-live="polite">{{capabilityMessage}}</view>
       </view>

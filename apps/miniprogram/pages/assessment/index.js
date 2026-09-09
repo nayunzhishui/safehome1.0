@@ -50,6 +50,7 @@ function formatRequestError(error, fallback) {
 }
 
 function getReviewLabel(item) {
+  if (String(item.review_note || "").includes("临时开放")) return "临时开放";
   if (item.enabled_for_user !== false) return "可填写";
   if (item.review_status === "needs_ethics_review") return "需伦理复核";
   if (item.review_status === "draft_only") return "草稿待审核";
@@ -130,9 +131,9 @@ function buildAssessmentSections(items, activeAudience, query) {
     return [
       {
         key: "empty",
-        title: "没有匹配内容",
+        title: (items || []).length ? "没有匹配内容" : "暂无可填写的测评",
         subtitle: "换一个分类或关键词再看",
-        emptyText: "换一个分类或关键词再看。",
+        emptyText: (items || []).length ? "换一个分类或关键词再看。" : "当前没有向本账号开放的测评。可以稍后重试；这不是你的作答问题。",
         items: [],
       },
     ];

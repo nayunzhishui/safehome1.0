@@ -54,6 +54,12 @@ def _as_sensitive_category(value) -> str:
 
 
 def worksheet_to_row(worksheet: dict, timestamp: str) -> dict:
+    metadata = dict(worksheet.get("_meta") or {})
+    # These scoring fields have no dedicated DB columns. Preserve the actual
+    # top-level source values instead of losing them or retaining stale copies.
+    for name in ("total_score_method", "derived_dimensions"):
+        if name in worksheet:
+            metadata[name] = worksheet[name]
     return {
         "id": worksheet["id"],
         "display_title": worksheet.get("display_title") or worksheet.get("source_title") or worksheet["id"],
@@ -83,7 +89,7 @@ def worksheet_to_row(worksheet: dict, timestamp: str) -> dict:
         "sections_json": json_dumps(worksheet.get("sections", [])),
         "scoring": worksheet.get("scoring"),
         "pages": worksheet.get("pages"),
-        "_meta_json": json_dumps(worksheet.get("_meta", {})),
+        "_meta_json": json_dumps(metadata),
         "created_at": timestamp,
         "updated_at": timestamp,
     }

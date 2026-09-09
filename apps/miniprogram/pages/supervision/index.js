@@ -137,7 +137,7 @@ Page({
     const message = this.data.message.trim();
 
     if (!message) {
-      this.setData({ errorMessage: "请先写下你想请老师进一步看的内容。" });
+      this.setData({ errorMessage: "请先写下你想请负责人员进一步看的内容。" });
       return;
     }
 
@@ -161,7 +161,7 @@ Page({
       if (this.draftController) this.draftController.clear();
 
       this.setData({
-        successMessage: "已提交。老师后续可以基于这条记录补充理解和练习建议，请不要把这里当作紧急求助入口。",
+        successMessage: "已提交。负责人员后续可以基于这条记录补充理解和练习建议，请不要把这里当作紧急求助入口。",
         message: "",
         contact: "",
         riskHint: "",

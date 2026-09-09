@@ -37,7 +37,7 @@
     {
       "file": "backend/config.py",
       "profile": "flask_config_source",
-      "source_sha256": "fce1a6fcb0c95520e7aae2b17e582ceeefd0403036388e774bbd87f89cb4c5b0",
+      "source_sha256": "df8658352870fd654a7db3b6410ba6eb54bfe2b4b67f91a965cac3f7e4ca9c0e",
       "reads": [
         {
           "line": 15,
@@ -195,327 +195,342 @@
           "access": "os.environ.get"
         },
         {
-          "line": 68,
+          "line": 69,
+          "name": "TEMPORARY_ASSESSMENTS_OPEN",
+          "access": "os.environ.get"
+        },
+        {
+          "line": 70,
+          "name": "TEMPORARY_TRAINING_CARDS_OPEN",
+          "access": "os.environ.get"
+        },
+        {
+          "line": 71,
+          "name": "TEMPORARY_PROGRAMS_OPEN",
+          "access": "os.environ.get"
+        },
+        {
+          "line": 72,
           "name": "TRUST_CLOUDBASE_IDENTITY_HEADERS",
           "access": "os.environ.get"
         },
         {
-          "line": 73,
+          "line": 77,
           "name": "ALLOW_PRODUCTION_SQLITE",
           "access": "os.environ.get"
         },
         {
-          "line": 74,
+          "line": 78,
           "name": "CONTENT_GOVERNANCE_ENFORCED",
           "access": "os.environ.get"
         },
         {
-          "line": 79,
+          "line": 83,
           "name": "CONTENT_GOVERNANCE_PUBLISH_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 85,
+          "line": 89,
           "name": "ALLOWED_ORIGINS",
           "access": "os.environ.get"
         },
         {
-          "line": 88,
+          "line": 92,
           "name": "REDIS_URL",
           "access": "os.environ.get"
         },
         {
-          "line": 89,
+          "line": 93,
           "name": "REDIS_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 90,
+          "line": 94,
           "name": "REDIS_LOGIN_RATE_LIMIT_PER_MINUTE",
           "access": "os.environ.get"
         },
         {
-          "line": 91,
+          "line": 95,
           "name": "REDIS_AI_RATE_LIMIT_PER_MINUTE",
           "access": "os.environ.get"
         },
         {
-          "line": 92,
+          "line": 96,
           "name": "DATA_CLAIM_RATE_LIMIT_PER_MINUTE",
           "access": "os.environ.get"
         },
         {
-          "line": 93,
+          "line": 97,
           "name": "DATA_CLAIM_TOKEN_TTL_SECONDS",
           "access": "os.environ.get"
         },
         {
-          "line": 94,
+          "line": 98,
           "name": "DATA_CLAIM_MAX_ATTEMPTS",
           "access": "os.environ.get"
         },
         {
-          "line": 95,
+          "line": 99,
           "name": "MAX_REQUEST_BODY_BYTES",
           "access": "os.environ.get"
         },
         {
-          "line": 96,
+          "line": 100,
           "name": "TRUST_PROXY_HOPS",
           "access": "os.environ.get"
         },
         {
-          "line": 99,
+          "line": 103,
           "name": "WECHAT_APPID",
           "access": "os.environ.get"
         },
         {
-          "line": 100,
+          "line": 104,
           "name": "WECHAT_SECRET",
           "access": "os.environ.get"
         },
         {
-          "line": 101,
+          "line": 105,
           "name": "CLOUDBASE_ACCESS_TOKEN_PATH",
           "access": "os.environ.get"
         },
         {
-          "line": 106,
-          "name": "LEGACY_ADMIN_TOKEN_ENABLED",
-          "access": "os.environ.get"
-        },
-        {
-          "line": 107,
-          "name": "LEGACY_ADMIN_TOKEN_ENABLED",
-          "access": "os.environ.get"
-        },
-        {
-          "line": 109,
-          "name": "WECHAT_TRAINING_DUE_TEMPLATE_ID",
-          "access": "os.environ.get"
-        },
-        {
           "line": 110,
-          "name": "WECHAT_TRAINING_DUE_TEMPLATE_FIELDS",
+          "name": "LEGACY_ADMIN_TOKEN_ENABLED",
           "access": "os.environ.get"
         },
         {
           "line": 111,
-          "name": "WECHAT_TRAINING_DUE_PAGE",
+          "name": "LEGACY_ADMIN_TOKEN_ENABLED",
+          "access": "os.environ.get"
+        },
+        {
+          "line": 113,
+          "name": "WECHAT_TRAINING_DUE_TEMPLATE_ID",
           "access": "os.environ.get"
         },
         {
           "line": 114,
-          "name": "WECHAT_SUBSCRIBE_MODE",
+          "name": "WECHAT_TRAINING_DUE_TEMPLATE_FIELDS",
           "access": "os.environ.get"
         },
         {
           "line": 115,
+          "name": "WECHAT_TRAINING_DUE_PAGE",
+          "access": "os.environ.get"
+        },
+        {
+          "line": 118,
+          "name": "WECHAT_SUBSCRIBE_MODE",
+          "access": "os.environ.get"
+        },
+        {
+          "line": 119,
           "name": "WECHAT_SUBSCRIBE_SEND_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 120,
+          "line": 124,
           "name": "NOTIFICATION_SCHEDULER_TOKEN",
           "access": "os.environ.get"
         },
         {
-          "line": 121,
+          "line": 125,
           "name": "PRIVACY_EXECUTION_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 122,
+          "line": 126,
           "name": "PRIVACY_RETENTION_POLICY_APPROVED",
           "access": "os.environ.get"
         },
         {
-          "line": 123,
+          "line": 127,
           "name": "PRIVACY_PRODUCTION_EXECUTION_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 124,
+          "line": 128,
           "name": "PRIVACY_TOMBSTONE_SECRET",
           "access": "os.environ.get"
         },
         {
-          "line": 125,
+          "line": 129,
           "name": "RESEARCH_OPERATIONS_WRITE_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 133,
+          "line": 137,
           "name": "AI_QA_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 135,
+          "line": 139,
           "name": "AI_QA_SANDBOX_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 140,
+          "line": 144,
           "name": "AI_QA_PROVIDER",
           "access": "os.environ.get"
         },
         {
-          "line": 141,
+          "line": 145,
           "name": "AI_QA_REAL_PROVIDER_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 145,
+          "line": 149,
           "name": "AI_QA_REQUESTS_PER_HOUR",
           "access": "os.environ.get"
         },
         {
-          "line": 146,
+          "line": 150,
           "name": "AI_QA_DAILY_BUDGET_MICROS",
           "access": "os.environ.get"
         },
         {
-          "line": 147,
+          "line": 151,
           "name": "AI_QA_TIMEOUT_MS",
           "access": "os.environ.get"
         },
         {
-          "line": 149,
+          "line": 153,
           "name": "AI_QA_CONNECT_TIMEOUT_MS",
           "access": "os.environ.get"
         },
         {
-          "line": 152,
+          "line": 156,
           "name": "AI_QA_READ_TIMEOUT_MS",
           "access": "os.environ.get"
         },
         {
-          "line": 154,
+          "line": 158,
           "name": "AI_QA_PROVIDER_RETRIES",
           "access": "os.environ.get"
         },
         {
-          "line": 155,
+          "line": 159,
           "name": "AI_QA_SYNTHETIC_RETENTION_DAYS",
           "access": "os.environ.get"
         },
         {
-          "line": 156,
+          "line": 160,
           "name": "OFFLINE_BENCHMARK_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 160,
+          "line": 164,
           "name": "OFFLINE_EXTERNAL_INGEST_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 161,
+          "line": 165,
           "name": "OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED",
           "access": "os.environ.get"
         },
         {
-          "line": 162,
+          "line": 166,
           "name": "RESEARCH_METHODOLOGY_WORKBENCH_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 166,
+          "line": 170,
           "name": "RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED",
           "access": "os.environ.get"
         },
         {
-          "line": 167,
+          "line": 171,
           "name": "RESEARCH_OUTCOME_ANALYSIS_ALLOWED",
           "access": "os.environ.get"
         },
         {
-          "line": 168,
+          "line": 172,
           "name": "RESEARCH_ANALYSIS_JOB_EXECUTION_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 172,
+          "line": 176,
           "name": "SECURITY_SCAN_EXECUTION_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 176,
+          "line": 180,
           "name": "RELIABILITY_WORKBENCH_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 180,
+          "line": 184,
           "name": "RELIABILITY_JOB_EXECUTION_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 184,
+          "line": 188,
           "name": "RELIABILITY_FAULT_INJECTION_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 187,
+          "line": 191,
           "name": "RELIABILITY_GRADUAL_RELEASE_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 190,
+          "line": 194,
           "name": "RELIABILITY_PRODUCTION_SLO_FROZEN",
           "access": "os.environ.get"
         },
         {
-          "line": 193,
+          "line": 197,
           "name": "OPERATIONS_HEALTH_TOKEN",
           "access": "os.environ.get"
         },
         {
-          "line": 194,
+          "line": 198,
           "name": "OPERATIONS_HEALTH_TRUSTED_CIDRS",
           "access": "os.environ.get"
         },
         {
-          "line": 198,
+          "line": 202,
           "name": "UX_GOVERNANCE_WORKBENCH_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 202,
+          "line": 206,
           "name": "OPERATIONS_GOVERNANCE_WORKBENCH_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 206,
+          "line": 210,
           "name": "OPERATIONS_LOCAL_RELEASE_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 210,
+          "line": 214,
           "name": "OPERATIONS_PRODUCTION_RELEASE_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 213,
+          "line": 217,
           "name": "PRODUCTION_FEATURES_UNLOCKED",
           "access": "os.environ.get"
         },
         {
-          "line": 216,
+          "line": 220,
           "name": "THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 220,
+          "line": 224,
           "name": "SAFETY_SCHEDULER_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 224,
+          "line": 228,
           "name": "SAFETY_SCHEDULER_LEASE_SECONDS",
           "access": "os.environ.get"
         },
         {
-          "line": 225,
+          "line": 229,
           "name": "SAFETY_SCHEDULER_MAX_ATTEMPTS",
           "access": "os.environ.get"
         }

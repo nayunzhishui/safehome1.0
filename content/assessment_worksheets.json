@@ -748,13 +748,13 @@
       ],
       "derived_dimensions": [],
       "dimension_score_method": "sum",
-      "total_score_method": "sum",
+      "total_score_method": "none",
       "scoring": "本地 PDF 第 2 页写明：重新评价 = T1、T3、T5、T7、T8、T10；本地 PDF 第 2 页写明：表达抑制 = T2、T4、T6、T9；sps 计分脚本写明 gerqcogre = gerq1 + gerq3 + gerq5 + gerq7 + gerq8 + gerq10；sps 计分脚本写明 gerqinhib = gerq2 + gerq4 + gerq6 + gerq9；未见反向计分说明；正式开放前必须由人工核对题项、计分方式、标准引用和伦理边界。",
       "recommended_card_ids": [
         "emotion_naming",
         "cognitive_flexibility"
       ],
-      "source_version": "2026.06-emotion_regulation_erq_gross-from-scale-draft",
+      "source_version": "2026.06-emotion_regulation_erq_gross-from-scale-draft-subscales-only-v1",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
@@ -763,8 +763,9 @@
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "profile_model_id": null,
       "_meta": {
-        "total_score_method": "sum",
-        "derived_dimensions": []
+        "total_score_method": "none",
+        "derived_dimensions": [],
+        "scoring_review_note": "对照提供的原始计分说明仅保留分量表，不生成缺少原文依据的跨维度总分；此修正不替代内容与版权审核。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -1657,13 +1658,13 @@
       ],
       "derived_dimensions": [],
       "dimension_score_method": "mean",
-      "total_score_method": "sum",
+      "total_score_method": "none",
       "scoring": "PRFQ11 和 PRFQ18 按 syntax 进行 1-7 反向计分；PRFQ_PM = PRFQ1、4、7、10、13、16 的均值；PRFQ_CM = PRFQ2、5、8、11rr、14、17 的均值；PRFQ_IC = PRFQ3、6、9、12、15、18rr 的均值；正式开放前必须由人工核对中文题项、维度译名、计分解释和伦理边界。",
       "recommended_card_ids": [
         "emotion_naming",
         "nonjudgmental_response"
       ],
-      "source_version": "2026.06-parent_reflective_functioning_prfq-from-scale-draft",
+      "source_version": "2026.06-parent_reflective_functioning_prfq-from-scale-draft-subscales-only-v1",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
@@ -1672,8 +1673,9 @@
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "profile_model_id": null,
       "_meta": {
-        "total_score_method": "sum",
-        "derived_dimensions": []
+        "total_score_method": "none",
+        "derived_dimensions": [],
+        "scoring_review_note": "对照提供的原始计分说明仅保留分量表，不生成缺少原文依据的跨维度总分；此修正不替代内容与版权审核。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",

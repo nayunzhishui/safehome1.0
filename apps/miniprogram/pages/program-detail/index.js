@@ -20,7 +20,7 @@ function formatProgram(program) {
   const measurementPlan = program.measurement_plan || null;
   return {
     ...program,
-    previewLabel: program.showcase_open ? "临时展示开放" : program.review_status === "pilot_approved" ? "已批准试点" : "开发预览，尚未正式开放",
+    previewLabel: String(program.boundary_notice || "").startsWith("临时开放：") ? "临时开放 · 待正式审核" : program.showcase_open ? "临时展示开放" : program.review_status === "pilot_approved" ? "已批准试点" : "开发预览，尚未正式开放",
     doseText: program.minimum_dose
       ? `计划 ${program.minimum_dose.planned_sessions} 节，至少完成 ${program.minimum_dose.minimum_completed_sessions} 节；建议间隔 ${program.minimum_dose.session_interval_days}`
       : "",

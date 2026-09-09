@@ -16,6 +16,7 @@ from services.assessment_profile_position_store import backfill_profile_position
 from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
 from services.idempotency_service import public_idempotent_resource
 from services.psychological_content_governance_service import production_worksheet_allowed
+from services.temporary_content_access import temporary_content_open, boundary_with_temporary_notice
 from services.participant_exploratory_analysis_service import build_participant_exploratory_analysis
 
 bp = Blueprint("assessments", __name__, url_prefix="/api")
@@ -43,6 +44,8 @@ def _is_governed_for_user(worksheet: dict) -> bool:
     if str(worksheet.get("review_status") or "") not in APPROVED_REVIEW_STATUSES:
         return False
     if str(current_app.config.get("APP_ENV") or "development").lower() == "production":
+        if temporary_content_open("assessments") and worksheet.get("id") != "student_profile_v1":
+            return bool(worksheet.get("questions"))
         return production_worksheet_allowed(str(worksheet.get("id") or ""))
     return True
 
@@ -190,7 +193,7 @@ def _summarize_worksheet(worksheet: dict) -> dict:
         "profile_model_id": worksheet.get("profile_model_id"),
         "review_status": worksheet.get("review_status"),
         "enabled_for_user": worksheet.get("enabled_for_user", True),
-        "review_note": worksheet.get("review_note"),
+        "review_note": boundary_with_temporary_notice("assessments", worksheet.get("review_note")),
         "question_count": len(worksheet.get("questions", [])),
         "is_reference": worksheet.get("category") == "示例参考",
     }
@@ -264,7 +267,7 @@ def list_assessments():
     return ok(
         {
             "version": payload.get("version"),
-            "boundary_notice": payload.get("boundary_notice"),
+            "boundary_notice": boundary_with_temporary_notice("assessments", payload.get("boundary_notice")),
             "items": items,
             "groups": group_items,
         }
@@ -280,7 +283,7 @@ def get_assessment(worksheet_id: str):
     return ok(
         {
             **worksheet,
-            "boundary_notice": worksheet.get("boundary_notice") or payload.get("boundary_notice"),
+            "boundary_notice": boundary_with_temporary_notice("assessments", worksheet.get("boundary_notice") or payload.get("boundary_notice")),
             "result_disclaimer": worksheet.get("result_disclaimer") or payload.get("boundary_notice"),
             "training_recommendation_rules": _training_rules_for_worksheet(worksheet_id),
         }

@@ -1,3 +1,4 @@
+const privacyPolicy = require("../../utils/privacy-policy.json");
 const { createSafeHomeApi } = require("../../services/api");
 const { getAuthUser, isLoggedIn } = require("../../utils/authGuard");
 const {
@@ -42,34 +43,7 @@ const NOTICE_MAP = {
       },
     ],
   },
-  privacy: {
-    kicker: "隐私说明",
-    title: "记录只用于复盘和必要支持",
-    subtitle: "这里是小程序端精简说明，正式文本以 content/privacy.md 为准。",
-    sections: [
-      {
-        title: "记录用途",
-        items: [
-          "记录会用于你的复盘、训练建议和必要的人工补充反馈。",
-          "研究分析默认使用脱敏或聚合数据，不默认展示自由文本原文。",
-        ],
-      },
-      {
-        title: "账号与数据",
-        items: [
-          "登录后，系统优先用登录账号识别记录归属。",
-          "退出登录只清除本机登录态，不等于删除服务器记录。",
-        ],
-      },
-      {
-        title: "人工补充反馈",
-        items: [
-          "你主动提交人工督导时，相关记录会供老师补充理解。",
-          "请不要填写身份证号、详细住址、电话等不必要的个人敏感信息。",
-        ],
-      },
-    ],
-  },
+  privacy: privacyPolicy,
   boundary: {
     kicker: "工具边界",
     title: "支持性工具，不替代现实帮助",

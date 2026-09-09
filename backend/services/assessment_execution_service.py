@@ -430,6 +430,8 @@ def score_answers(worksheet: dict, answers: list[dict]) -> tuple[dict, int | flo
         if calculated is not None:
             value = calculated
             calculation_method = calculation.get("type", score_method)
+            if calculation_method in {"mapped_mean_terms", "mean_terms"}:
+                item_count = len({term.get("item") for term in calculation.get("terms", []) if term.get("item") in item_scores})
         elif score_method == "mean" and item_count:
             value = round(bucket["score"] / item_count, 2)
             calculation_method = score_method
