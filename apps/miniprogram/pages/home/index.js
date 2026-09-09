@@ -219,8 +219,8 @@ Page({
     this.startGuide();
   },
   onGuideDecline() {
-    this.setData({ welcomeVisible: false });
-    wx.showTabBar({ animation: false });
+    // Keep the welcome overlay until navigation actually leaves this page.
+    this.showWelcome();
     wx.navigateTo({ url: "/pages/settings-detail/index?type=privacy" });
   },
   startGuide() {

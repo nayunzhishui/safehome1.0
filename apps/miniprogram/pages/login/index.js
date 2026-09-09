@@ -105,6 +105,7 @@ Page({
   },
 
   submitLogin() {
+    if (this.data.loading || this.data.wechatLoading || this.data.phoneLoading) return;
     const username = this.data.username.trim();
     const password = this.data.password;
     if (!username || !password) {
@@ -240,6 +241,7 @@ Page({
   },
 
   handlePhoneLogin(event) {
+    if (this.data.loading || this.data.wechatLoading || this.data.phoneLoading) return;
     const detail = event.detail || {};
     const code = detail.code || "";
     if (!code) {

@@ -12,6 +12,9 @@ function formatSavedAt(timestamp) {
 }
 
 function createResilientForm({ storageKey, fields, submissionPrefix, hasContent }) {
+  const ownerId = String((wx.getStorageSync("auth_user") || {}).id || "");
+  const scopedStorageKey = `${storageKey}:user:${encodeURIComponent(ownerId)}`;
+  const isOwner = () => !!ownerId && String((wx.getStorageSync("auth_user") || {}).id || "") === ownerId;
   let timer = null;
   let currentSubmissionId = createSubmissionId(submissionPrefix);
 
@@ -21,7 +24,9 @@ function createResilientForm({ storageKey, fields, submissionPrefix, hasContent 
 
   function restore() {
     try {
-      const stored = wx.getStorageSync(storageKey);
+      if (!isOwner()) return null;
+      // Legacy unscoped drafts have no reliable owner; do not auto-import them.
+      const stored = wx.getStorageSync(scopedStorageKey);
       if (!stored || stored.version !== DRAFT_VERSION || !stored.values) return null;
       currentSubmissionId = stored.clientSubmissionId || currentSubmissionId;
       return {
@@ -36,6 +41,7 @@ function createResilientForm({ storageKey, fields, submissionPrefix, hasContent 
   }
 
   function save(data) {
+    if (!isOwner()) return { savedAt: "", saveStatus: "账号已变化，草稿未保存，请重新进入页面" };
     const values = pick(data);
     if (!hasContent(values)) {
       clear(true);
@@ -43,7 +49,7 @@ function createResilientForm({ storageKey, fields, submissionPrefix, hasContent 
     }
     const savedAt = new Date().toISOString();
     try {
-      wx.setStorageSync(storageKey, { version: DRAFT_VERSION, values, savedAt, clientSubmissionId: currentSubmissionId });
+      wx.setStorageSync(scopedStorageKey, { version: DRAFT_VERSION, values, savedAt, clientSubmissionId: currentSubmissionId });
     } catch (error) {
       return { savedAt: "", saveStatus: "本机空间不足，暂时无法保存草稿" };
     }
@@ -72,14 +78,19 @@ function createResilientForm({ storageKey, fields, submissionPrefix, hasContent 
   function clear(removeStored = true) {
     if (timer) clearTimeout(timer);
     timer = null;
-    if (removeStored) {
-      try { wx.removeStorageSync(storageKey); } catch (error) { /* best effort */ }
+    if (removeStored && isOwner()) {
+      try { wx.removeStorageSync(scopedStorageKey); } catch (error) { /* best effort */ }
     }
     try { if (wx.disableAlertBeforeUnload) wx.disableAlertBeforeUnload(); } catch (error) { /* best effort */ }
     currentSubmissionId = createSubmissionId(submissionPrefix);
   }
 
-  return { restore, schedule, flush, clear, getSubmissionId: () => currentSubmissionId };
+  function getSubmissionId() {
+    if (!isOwner()) throw new Error("账号已变化，请重新进入页面后再提交。");
+    return currentSubmissionId;
+  }
+
+  return { restore, schedule, flush, clear, getSubmissionId };
 }
 
 module.exports = { createResilientForm, formatSavedAt };

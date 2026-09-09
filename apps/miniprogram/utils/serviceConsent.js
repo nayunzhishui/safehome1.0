@@ -34,6 +34,17 @@ async function ensureServiceConsent(page, api, feature, native = false) {
   };
   page._consentPending = true;
   try {
+    // A local acknowledgement cannot stand in for the current WeChat decision.
+    await new Promise((resolve, reject) => {
+      if (!wx.getPrivacySetting) { reject(new Error("当前微信版本无法确认隐私状态，请更新微信后返回首页重试。")); return; }
+      wx.getPrivacySetting({
+        success: result => result.needAuthorization
+          ? reject(new Error("请先返回首页完成微信隐私授权，再使用本功能。"))
+          : resolve(),
+        fail: () => reject(new Error("微信隐私状态暂时无法确认，请稍后重试。")),
+      });
+    });
+    ensureSameUser();
     const payload = await api.listConsentRecords(); ensureSameUser();
     const items = payload.items || [];
     const current = latest(items, "service_data");

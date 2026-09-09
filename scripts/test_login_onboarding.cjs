@@ -5,12 +5,12 @@ const path = require("node:path");
 const root = path.resolve(__dirname, "..");
 const consent = require("../apps/miniprogram/utils/serviceConsent");
 let storage = { auth_user: { id: "synthetic-user" } };
-global.wx = { getStorageSync: k => storage[k], setStorageSync: (k,v) => storage[k]=v };
+global.wx = { getStorageSync: k => storage[k], setStorageSync: (k,v) => storage[k]=v, removeStorageSync: k => delete storage[k], getPrivacySetting: ({success}) => success({needAuthorization:false}) };
 const page = () => ({ data:{}, setData(v){ Object.assign(this.data,v); } });
 const tick = () => new Promise(resolve => setImmediate(resolve));
 consent.acceptLocalNotice();
-let count = 0;
-async function check(name, fn) { await fn(); count++; console.log("PASS " + name); }
+let count = 0, failures = 0;
+async function check(name, fn) { try { await fn(); count++; console.log("PASS " + name); } catch(error) { failures++; console.error("FAIL " + name, error.message); } }
 (async () => {
  await check("rejecting a feature notice sends no consent or participant data", async () => {
    const p=page();let writes=0;
@@ -117,5 +117,74 @@ async function check(name, fn) { await fn(); count++; console.log("PASS " + name
    delete storage["safehome:serviceNotice:v1"];let reads=0;
    await assert.rejects(consent.ensureServiceConsent(page(),{listConsentRecords:async()=>{reads++;}},"assessment"),/返回首页/);assert.equal(reads,0);consent.acceptLocalNotice();
  });
- console.log(`${count} focused checks passed`);
+ await check("platform privacy revocation and query failure block feature consent reads", async () => {
+   consent.acceptLocalNotice();const original=global.wx.getPrivacySetting;let reads=0;
+   const api={listConsentRecords:async()=>{reads++;return {items:[]};}};
+   global.wx.showModal=({success})=>success({confirm:false});
+   try {
+     global.wx.getPrivacySetting=({success})=>success({needAuthorization:true});
+     await assert.rejects(consent.ensureServiceConsent(page(),api,"goal",true),/隐私/);
+     global.wx.getPrivacySetting=({fail})=>fail({});
+     await assert.rejects(consent.ensureServiceConsent(page(),api,"goal",true),/隐私/);
+     assert.equal(reads,0);
+   } finally { global.wx.getPrivacySetting=original; }
+ });
+ await check("declined welcome stays blocking when privacy navigation fails", async () => {
+   delete storage["safehome:serviceNotice:v1"];
+   const p=loadPage("apps/miniprogram/pages/home/index.js",{}, {navigateTo(options){if(options.fail)options.fail({});}});
+   p.onShow();p.onGuideDecline();assert.equal(p.data.welcomeVisible,true);assert.equal(consent.hasLocalNotice(),false);
+   consent.acceptLocalNotice();
+ });
+ await check("account and phone login ignore overlapping requests", async () => {
+   let calls=0;const pending=()=>{calls++;return new Promise(()=>{});};
+   const p=loadPage("apps/miniprogram/pages/login/index.js",{login:pending,phoneLogin:pending});
+   p.data.username="synthetic";p.data.password="synthetic-only";p.submitLogin();p.submitLogin();p.handlePhoneLogin({detail:{code:"synthetic-code"}});
+   assert.equal(calls,1);
+   const q=loadPage("apps/miniprogram/pages/login/index.js",{login:pending,phoneLogin:pending});
+   q.handlePhoneLogin({detail:{code:"synthetic-code"}});q.handlePhoneLogin({detail:{code:"synthetic-code"}});assert.equal(calls,2);
+ });
+ await check("resilient drafts are isolated between accounts and restored to their owner", async () => {
+   const {createResilientForm}=require("../apps/miniprogram/utils/resilientForm");
+   const make=()=>createResilientForm({storageKey:"synthetic:review-draft",fields:["text"],submissionPrefix:"review",hasContent:v=>!!v.text});
+   try {
+     storage.auth_user={id:"synthetic-A"};make().flush({text:"synthetic-A-text"});
+     storage.auth_user={id:"synthetic-B"};assert.equal(make().restore(),null);make().flush({text:"synthetic-B-text"});
+     storage.auth_user={id:"synthetic-A"};assert.equal(make().restore().values.text,"synthetic-A-text");
+   } finally {storage.auth_user={id:"synthetic-user"};}
+ });
+ await check("an old draft controller cannot save after account switch", async () => {
+   const {createResilientForm}=require("../apps/miniprogram/utils/resilientForm");
+   const make=()=>createResilientForm({storageKey:"synthetic:old-controller",fields:["text"],submissionPrefix:"review",hasContent:v=>!!v.text});
+   try {
+     storage.auth_user={id:"synthetic-A"};const old=make();old.flush({text:"original"});
+     storage.auth_user={id:"synthetic-B"};old.flush({text:"wrong-session"});
+     assert.throws(()=>old.getSubmissionId(),/账号已变化/);
+     storage.auth_user={id:"synthetic-A"};assert.equal(make().restore().values.text,"original");
+   } finally {storage.auth_user={id:"synthetic-user"};}
+ });
+ await check("tutorial skip, replay and missing anchor do not create participation", async () => {
+   consent.acceptLocalNotice();const p=loadPage("apps/miniprogram/pages/home/index.js",{}, {createSelectorQuery(){return {in(){return this;},select(){return this;},boundingClientRect(cb){cb(null);return this;},exec(){}};}});
+   p.startGuide();assert.equal(p.data.tourRect,null);p.endGuide();assert.equal(p.data.tourVisible,false);p.startGuide();assert.equal(p.data.tourVisible,true);assert.equal(p.data.tourIndex,0);
+ });
+ await check("privacy components never emit agreement without an explicit checkbox", async () => {
+   for(const name of ["service-consent","onboarding-guide"]) {
+     let definition;const events=[];
+     vm.runInNewContext(fs.readFileSync(path.join(root,`apps/miniprogram/components/${name}/index.js`),"utf8"),{Component:value=>definition=value,wx:global.wx});
+     const c={...definition.methods,data:{...definition.data},setData(v){Object.assign(this.data,v);},triggerEvent(...args){events.push(args);}};
+     c.agree();assert.equal(events.length,0);c.check({detail:{value:["agree"]}});c.agree();assert.equal(events.length,1);
+     c.check({detail:{value:[]}});c.agree();assert.equal(events.length,1);
+   }
+ });
+ await check("phone authorization denial sends no login request", async () => {
+   let calls=0;const p=loadPage("apps/miniprogram/pages/login/index.js",{phoneLogin(){calls++;}});
+   p.handlePhoneLogin({detail:{errMsg:"getPhoneNumber:fail user deny"}});assert.equal(calls,0);assert.equal(p.data.status,"idle");assert.equal(p.data.phoneLoading,false);
+ });
+ await check("standard WeChat login submits the returned code and handles missing code", async () => {
+   let payload,completed=0;const api={wechatLogin:async data=>{payload=data;return {user:{role:"parent"}};}};
+   const p=loadPage("apps/miniprogram/pages/login/index.js",api,{login:({success})=>success({code:"synthetic-wx-code"})});
+   p.completeLogin=()=>{completed++;};p.submitWechatLogin();await tick();assert.equal(payload.code,"synthetic-wx-code");assert.equal(completed,1);
+   payload=null;const q=loadPage("apps/miniprogram/pages/login/index.js",api,{login:({success})=>success({})});q.submitWechatLogin();await tick();assert.equal(payload,null);assert.equal(q.data.status,"error");assert.equal(q.data.wechatLoading,false);
+ });
+ console.log(`${count} focused checks passed; ${failures} failed`);
+ if(failures)process.exitCode=1;
 })().catch(error=>{console.error(error);process.exitCode=1;});
