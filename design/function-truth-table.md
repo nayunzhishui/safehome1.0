@@ -1506,7 +1506,9 @@
 
 ### 34 课程 — `pages/course/index`
 
-**用户任务：** 按主题浏览真实课程与进度，进入课程内容；不是课程商城。
+2026-09-09复核更正：`weeklyProgress.learnedLessons`只在初始data设为0，`formatCourse`也将progress固定为0；本页仅调用listCourses，不读取课程进度。故列表隐藏未接入的统计/进度展示，保留课程数量、主题、描述及进入详情事件。真实进度读取/保存仍只在course-detail，不新增API。
+
+**用户任务：** 按主题浏览真实课程，进入课程内容；进度由详情页读取/保存，列表不冒充已同步统计，不是课程商城。
 - 页面源码：`apps/miniprogram/pages/course/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
 - 实际条件：`{{errorMessage}}`；`{{loading}}`；`{{!loading && !errorMessage}}`；`{{boundaryNotice}}`
 - 组件：`page-state`、`section-title`、`course-card`、`bottom-tip-card`

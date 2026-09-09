@@ -1,4 +1,4 @@
-<view class="page" role="main" aria-label="目标设定">
+<view class="ui2-page page" role="main" aria-label="目标设定">
   <view class="hero">
     <text class="title">本周小目标</text>
   </view>
@@ -16,11 +16,13 @@
           class="tag {{selectedScene === item ? 'active' : ''}}"
           data-value="{{item}}"
           bindtap="selectScene"
+          aria-pressed="{{selectedScene === item}}"
         >
           {{item}}
         </button>
       </view>
-      <input class="input" value="{{customScene}}" placeholder="其他场景，可不填" bindinput="onTextInput" data-key="customScene" />
+      <label for="custom-scene" class="field-label">其他场景（可不填，填写后优先使用）</label>
+      <input id="custom-scene" aria-label="其他场景" placeholder-class="ui2-placeholder" class="input" value="{{customScene}}" placeholder="其他场景，可不填" bindinput="onTextInput" data-key="customScene" />
     </view>
 
     <view class="step-card">
@@ -35,6 +37,7 @@
           class="tag {{oldReaction === item ? 'active' : ''}}"
           data-value="{{item}}"
           bindtap="selectOldReaction"
+          aria-pressed="{{oldReaction === item}}"
         >
           {{item}}
         </button>
@@ -53,6 +56,7 @@
           class="tag {{newReaction === item ? 'active' : ''}}"
           data-value="{{item}}"
           bindtap="selectNewReaction"
+          aria-pressed="{{newReaction === item}}"
         >
           {{item}}
         </button>
@@ -65,6 +69,7 @@
         <text class="step-title">本周 SMART 小目标</text>
       </view>
       <textarea
+        aria-label="本周SMART小目标" placeholder-class="ui2-placeholder"
         class="textarea"
         value="{{smartGoal}}"
         placeholder="例如：这周遇到作业拖延时，我先停三秒，再用一句话说明期待，至少练习 3 次。"

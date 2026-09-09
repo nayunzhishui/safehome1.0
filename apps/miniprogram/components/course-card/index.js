@@ -24,6 +24,10 @@ Component({
       type: Number,
       value: 0,
     },
+    showProgress: {
+      type: Boolean,
+      value: true,
+    },
     buttonText: {
       type: String,
       value: "开始学习",

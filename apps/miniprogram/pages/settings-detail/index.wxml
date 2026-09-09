@@ -1,4 +1,4 @@
-<view class="safe-page settings-detail-page" role="main" aria-label="设置详情">
+<view class="safe-page ui2-page settings-detail-page" role="main" aria-label="设置详情">
   <view class="hero-card">
     <text class="hero-kicker">{{notice.kicker}}</text>
     <text class="hero-title">{{notice.title}}</text>
@@ -54,6 +54,8 @@
           <text class="notice-text">请向家长获取10位绑定码。完成绑定后，仍需家长单独确认是否同意受保护的数据处理。</text>
           <input
             class="safe-input"
+            aria-label="10位家长绑定码"
+            placeholder-class="ui2-placeholder"
             type="number"
             maxlength="10"
             value="{{bindCodeInput}}"
@@ -190,5 +192,5 @@
     <text class="privacy-boundary">“已完成”只会在管理员按保存规则执行删除或匿名化并生成记录后显示。</text>
   </view>
 
-  <button class="safe-primary-button back-button" bindtap="goBack">返回</button>
+  <button class="safe-secondary-button back-button" bindtap="goBack">返回</button>
 </view>

@@ -395,3 +395,38 @@
   border-radius: 999rpx;
   background: var(--safe-primary-deep);
 }
+.ui2-page.profile-page { background:var(--ui2-canvas); padding-top:48rpx; gap:40rpx; }
+.ui2-page .profile-heading { font-size:44rpx; font-weight:700; line-height:1.6; text-align:center; }
+.ui2-page .user-card,.ui2-page .auth-panel,.ui2-page .claim-card,.ui2-page .researcher-entry { border:0; border-radius:0; box-shadow:none; background:transparent; padding:32rpx 0; border-bottom:1rpx solid var(--ui2-line); }
+.ui2-page .user-name,.ui2-page .auth-title,.ui2-page .claim-title,.ui2-page .row-title { font-size:32rpx; font-weight:700; line-height:1.6; }
+.ui2-page .user-state,.ui2-page .user-role,.ui2-page .streak-text,.ui2-page .auth-text,.ui2-page .claim-text,.ui2-page .row-subtitle,.ui2-page .safety-text { font-size:30rpx; line-height:1.6; color:var(--ui2-muted); }
+.ui2-page .plain-row,.ui2-page .support-row { min-height:112rpx; border-bottom:1rpx solid var(--ui2-line); border-radius:0; background:transparent; }
+.ui2-page .safety-card { padding:32rpx; border:0; border-radius:24rpx; background:var(--ui2-warm); }
+.ui2-page .auth-primary,.ui2-page .safe-primary-button { min-height:96rpx; border-radius:24rpx; }
+
+.ui2-page .user-card { flex-wrap:wrap; padding:32rpx; border:0; border-radius:24rpx; background:var(--ui2-soft); }
+.ui2-page .avatar { position:relative; width:80rpx; height:88rpx; flex-basis:80rpx; background:transparent; }
+.ui2-page .avatar::before,.ui2-page .avatar::after { content:''; position:absolute; border:3rpx solid var(--ui2-primary); border-radius:50%; }
+.ui2-page .avatar::before { width:28rpx; height:28rpx; left:24rpx; top:8rpx; }
+.ui2-page .avatar::after { width:60rpx; height:36rpx; left:8rpx; bottom:4rpx; }
+.ui2-page .user-copy { flex:1 1 260rpx; overflow-wrap:anywhere; }
+.ui2-page .growth-level { max-width:none; background:transparent; padding:0; font-size:26rpx; }
+.ui2-page .user-state,.ui2-page .user-role,.ui2-page .streak-text { font-size:26rpx; }
+.ui2-page .identity-heading,.ui2-page .identity-row,.ui2-page .researcher-entry,.ui2-page .auth-actions,.ui2-page .claim-actions { flex-wrap:wrap; }
+.ui2-page .identity-boundary,.ui2-page .claim-boundary { font-size:28rpx; line-height:1.7; }
+.ui2-page .researcher-entry::before { display:none; }
+.ui2-page .auth-secondary,.ui2-page .identity-action { min-height:96rpx; padding:20rpx 24rpx; font-size:28rpx; line-height:1.6; border-radius:24rpx; }
+.ui2-page .auth-primary { padding:22rpx 24rpx; font-size:30rpx; line-height:1.6; }
+.ui2-page .plain-row,.ui2-page .support-row { padding:24rpx 0; }
+.ui2-page .safety-title { font-size:30rpx; }
+.ui2-page .plain-row:active,.ui2-page .support-row:active { transform:none; background:var(--ui2-soft); }
+
+/* Quiet page ending; not a progress indicator or interaction target. */
+.ui2-page .quiet-arc-footer { position:relative; height:96rpx; margin-top:40rpx; overflow:hidden; pointer-events:none; }
+.ui2-page .quiet-arc-footer::before,.ui2-page .quiet-arc-footer::after { content:''; position:absolute; width:78%; height:160rpx; border:2rpx solid var(--ui2-line); border-radius:50%; }
+.ui2-page .quiet-arc-footer::before { left:8%; top:60rpx; }
+.ui2-page .quiet-arc-footer::after { left:28%; top:36rpx; }
+
+.ui2-page { --ui2-section-accent-display:none; }
+
+.ui2-page .plain-list,.ui2-page .safety-list { border:0; border-radius:0; box-shadow:none; background:transparent; }

@@ -759,7 +759,7 @@
     "home": "387:7",
     "homeHeader": "387:8",
     "homeTitle": "387:9",
-    "activeRoute": "pages/researcher-dashboard/index",
+    "activeRoute": "pages/diary-form/index",
     "login": "392:103",
     "passwordChange": "393:122",
     "homeEntryRow": "388:17",
@@ -916,6 +916,54 @@
         "figma": "542:600",
         "implementation": "implemented_pending_final_check",
         "motion": "one-shot-section-reveal-reduced-motion"
+      },
+      "pages/researcher-dashboard/index": {
+        "figma": "544:600",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "review": "targeted_visual_and_contract_check",
+        "device": "pending",
+        "figmaCoverage": "synthetic_queue_summary_only"
+      },
+      "pages/course/index": {
+        "figma": "545:600",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "review": "targeted_visual_and_contract_check",
+        "device": "pending",
+        "figmaCoverage": "main_layout_not_all_states"
+      },
+      "pages/course-detail/index": {
+        "figma": "546:600",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "review": "targeted_visual_and_contract_check",
+        "device": "pending",
+        "figmaCoverage": "main_layout_not_all_states"
+      },
+      "pages/profile/index": {
+        "figma": "548:600",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "review": "targeted_visual_and_contract_check",
+        "device": "pending",
+        "figmaCoverage": "main_layout_not_all_states"
+      },
+      "pages/settings-detail/index": {
+        "figma": "549:600",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "review": "targeted_visual_and_contract_check",
+        "device": "pending",
+        "figmaCoverage": "privacy_empty_state_only"
+      },
+      "pages/goal-setting/index": {
+        "figma": "550:600",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "review": "targeted_visual_and_contract_check",
+        "device": "pending",
+        "figmaCoverage": "main_layout_not_all_states"
       }
     },
     "register": "394:135",
@@ -999,7 +1047,7 @@
       "status": "current_pages_self_review_in_progress",
       "programList": "local_draft_preview_not_release_approval",
       "programDetail": "readonly_local_draft_content",
-      "remaining_work": "21 routes remain; full state, long content, keyboard/screen reader and device validation pending"
+      "remaining_work": "15 routes remain; complex Figma states, full native runtime, keyboard/screen reader and device validation pending"
     },
     "flowComponents": {
       "choiceSet": "499:447",
@@ -1008,6 +1056,40 @@
       "choiceLabel": "Label#499:0",
       "choiceDescription": "Description#499:1",
       "feedbackLetter": "510:479"
+    },
+    "batch33to38Review": {
+      "date": "2026-09-09",
+      "status": "targeted_checks_pass_not_final_acceptance",
+      "nativeCompile": {
+        "wxml": 13,
+        "wxss": 14,
+        "exit": 0
+      },
+      "pageJS": "six_page_files_unchanged",
+      "browserLayout": {
+        "scenarios": 26,
+        "widths": [
+          320,
+          390
+        ],
+        "kind": "source_derived_synthetic_not_wechat_runtime"
+      },
+      "fixes": [
+        "goal_zero_width_options_and_wrong_labels",
+        "settings_wrong_scope_and_fake_aggregate_design",
+        "course_placeholder_progress_hidden",
+        "researcher_native_else_loop_compile_error",
+        "footer_static_arc_course_and_profile",
+        "control_contrast_and_secondary_actions"
+      ],
+      "remaining": [
+        "researcher_all_workspace_figma_states",
+        "settings_protection_figma_states",
+        "full_native_simulator_and_real_device",
+        "keyboard_screenreader_and_font_scaling"
+      ],
+      "evidence": ".codex_tmp/ui2-review-33-38",
+      "remotePush": "not_attempted"
     }
   }
 }
