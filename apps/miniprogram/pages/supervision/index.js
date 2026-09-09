@@ -1,3 +1,4 @@
+const { ensureServiceConsent, finishServiceConsent } = require("../../utils/serviceConsent");
 const { createSafeHomeApi } = require("../../services/api");
 const { requireLogin } = require("../../utils/authGuard");
 const { createResilientForm } = require("../../utils/resilientForm");
@@ -6,7 +7,10 @@ const api = createSafeHomeApi();
 const DRAFT_FIELDS = ["selectedSource", "message", "contact", "riskHint"];
 
 Page({
+  returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
+  onServiceConsent(event) { finishServiceConsent(this, !!event.detail.agreed); },
   data: {
+    serviceReady: false, serviceEntryError: "", serviceConsent: null,
     diaryId: "",
     sourceOptions: [{ type: "", id: "", title: "不关联具体记录", meta: "单独提交一条人工支持请求", selected: true }],
     selectedSource: { type: "", id: "", title: "不关联具体记录" },
@@ -22,7 +26,27 @@ Page({
     slowSubmitting: false,
   },
 
-  async onLoad(options) {
+  onLoad(options = {}) {
+    this._entryOptions = options;
+    return this.beginServiceEntry();
+  },
+  async beginServiceEntry() {
+    if (this._consentPending || this._consentDisposed) return;
+    const query = Object.entries(this._entryOptions).map(([key, value]) => encodeURIComponent(key) + "=" + encodeURIComponent(value)).join("&");
+    if (!requireLogin({ redirectUrl: "/pages/supervision/index" + (query ? "?" + query : ""), message: "请先登录，再确认本人的知情选择。" })) return;
+    this.setData({ serviceReady: false, serviceEntryError: "" });
+    try {
+      if (!await ensureServiceConsent(this, api, "supervision")) {
+        if (!this._consentDisposed) this.setData({ serviceEntryError: "暂未同意，本页不会恢复或保存草稿。" });
+        return;
+      }
+      this.setData({ serviceReady: true });
+      await this.loadAfterConsent(this._entryOptions);
+    } catch (error) {
+      if (!this._consentDisposed) this.setData({ serviceEntryError: error.message || "知情确认失败，请重试。" });
+    }
+  },
+  async loadAfterConsent(options) {
     const diaryId = decodeURIComponent(options.diary_id || "");
     if (!requireLogin({
       redirectUrl: `/pages/supervision/index?diary_id=${encodeURIComponent(diaryId)}`,
@@ -45,7 +69,7 @@ Page({
   },
 
   onHide() { if (this.draftController && !this.data.submitting) this.setData(this.draftController.flush(this.data)); },
-  onUnload() { if (this.draftController && !this.data.submitting) this.draftController.flush(this.data); },
+  onUnload() { this._consentDisposed = true; finishServiceConsent(this, false); if (this.draftController && !this.data.submitting) this.draftController.flush(this.data); },
 
   scheduleDraftSave() {
     if (!this.draftController) return;
@@ -109,6 +133,7 @@ Page({
   },
 
   async submitSupervision() {
+    if (!this.data.serviceReady || this._consentDisposed) return;
     const message = this.data.message.trim();
 
     if (!message) {

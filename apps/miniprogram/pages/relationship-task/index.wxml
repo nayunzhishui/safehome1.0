@@ -1,3 +1,4 @@
+<view wx:if="{{serviceReady}}">
 <view class="safe-page ui2-page relationship-task-page" role="main" aria-label="关系探索任务">
   <view class="task-hero">
     <text class="task-heading">{{isDrawing ? '关系隐喻互动绘画' : '如果……会怎样'}}</text>
@@ -44,3 +45,7 @@
     <button class="safe-primary-button submit-button" loading="{{saving}}" disabled="{{saving}}" bindtap="saveTask">提交这份材料</button>
   </view>
 </view>
+</view>
+<page-state wx:else kind="{{serviceEntryError ? 'error' : 'loading'}}" title="{{serviceEntryError || '正在核对知情说明'}}" action-label="重新确认" bind:action="beginServiceEntry" />
+<button wx:if="{{!serviceReady}}" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
+<service-consent notice="{{serviceConsent}}" bind:decision="onServiceConsent" />

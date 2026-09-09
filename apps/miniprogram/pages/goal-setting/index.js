@@ -1,3 +1,5 @@
+const { requireLogin } = require("../../utils/authGuard");
+const { ensureServiceConsent, finishServiceConsent } = require("../../utils/serviceConsent");
 const { createSafeHomeApi } = require("../../services/api");
 const { createResilientForm } = require("../../utils/resilientForm");
 
@@ -9,7 +11,10 @@ const newReactionOptions = ["先停三秒", "先说出情绪", "问一个小问�
 const DRAFT_FIELDS = ["selectedScene", "customScene", "oldReaction", "newReaction", "smartGoal"];
 
 Page({
+  returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
+  onServiceConsent(event) { finishServiceConsent(this, !!event.detail.agreed); },
   data: {
+    serviceReady: false, serviceEntryError: "", serviceConsent: null,
     sceneOptions,
     oldReactionOptions,
     newReactionOptions,
@@ -25,7 +30,27 @@ Page({
     slowSubmitting: false,
   },
 
-  onLoad() {
+  onLoad(options = {}) {
+    this._entryOptions = options;
+    return this.beginServiceEntry();
+  },
+  async beginServiceEntry() {
+    if (this._consentPending || this._consentDisposed) return;
+    const query = Object.entries(this._entryOptions).map(([key, value]) => encodeURIComponent(key) + "=" + encodeURIComponent(value)).join("&");
+    if (!requireLogin({ redirectUrl: "/pages/goal-setting/index" + (query ? "?" + query : ""), message: "请先登录，再确认本人的知情选择。" })) return;
+    this.setData({ serviceReady: false, serviceEntryError: "" });
+    try {
+      if (!await ensureServiceConsent(this, api, "goal")) {
+        if (!this._consentDisposed) this.setData({ serviceEntryError: "暂未同意，本页不会恢复或保存草稿。" });
+        return;
+      }
+      this.setData({ serviceReady: true });
+      await this.loadAfterConsent(this._entryOptions);
+    } catch (error) {
+      if (!this._consentDisposed) this.setData({ serviceEntryError: error.message || "知情确认失败，请重试。" });
+    }
+  },
+  loadAfterConsent() {
     this.draftController = createResilientForm({
       storageKey: "safehome:resilientDraft:goal",
       fields: DRAFT_FIELDS,
@@ -37,7 +62,7 @@ Page({
   },
 
   onHide() { if (this.draftController && !this.data.submitting) this.setData(this.draftController.flush(this.data)); },
-  onUnload() { if (this.draftController && !this.data.submitting) this.draftController.flush(this.data); },
+  onUnload() { this._consentDisposed = true; finishServiceConsent(this, false); if (this.draftController && !this.data.submitting) this.draftController.flush(this.data); },
 
   scheduleDraftSave() {
     if (!this.draftController) return;
@@ -63,6 +88,7 @@ Page({
   },
 
   async submitGoal() {
+    if (!this.data.serviceReady || this._consentDisposed) return;
     const scene = (this.data.customScene.trim() || this.data.selectedScene).trim();
     const smartGoal = this.data.smartGoal.trim();
 

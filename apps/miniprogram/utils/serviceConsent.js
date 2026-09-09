@@ -1,14 +1,14 @@
-const VERSION = "2026.09.08-service-notice-v1";
+const VERSION = "2026.09.09-service-notice-v2";
 const LOCAL_NOTICE_KEY = "safehome:serviceNotice:v1";
 const PURPOSES = {
   diary: { title: "情绪记录使用说明", purpose: "diary_record", text: "你填写的事件、感受、身体感觉和回应将与登录账号关联，用于保存记录、生成支持性反馈与练习建议。草稿可能保存在本机。请勿填写他人的真实姓名、学校班级、详细住址或联系方式。" },
   assessment: { title: "支持性测评知情说明", purpose: "supportive_assessment", text: "作答和结果将与登录账号关联，用于生成及回看本次支持性测评结果。结果仅提供阶段性观察线索，不作诊断、标签或排名。草稿可能保存在本机。具体适用范围请阅读当前测评说明。" },
-  goal: { title: "目标记录知情说明", purpose: "practice_goal", text: "你的练习目标、场景与动机将保存到账号，用于练习追踪与回看；不要填写他人身份信息。" },
-  checkin: { title: "练习打卡知情说明", purpose: "practice_checkin", text: "本次练习、完成情况和感受将保存到账号，用于练习追踪和阶段复盘，不用于诊断或排名。" },
+  goal: { title: "目标记录知情说明", purpose: "practice_goal", text: "输入内容可能以草稿保存在本机，仅当前账号可恢复。你的练习目标、场景与动机将保存到账号，用于练习追踪与回看；不要填写他人身份信息。" },
+  checkin: { title: "练习打卡知情说明", purpose: "practice_checkin", text: "输入内容可能以草稿保存在本机，仅当前账号可恢复。本次练习、完成情况和感受将保存到账号，用于练习追踪和阶段复盘，不用于诊断或排名。" },
   thermometer: { title: "情绪温度计知情说明", purpose: "emotion_thermometer", text: "你的情绪强度、记录时间与补充内容将保存到账号，用于回看自己的变化。这是自我观察记录，不是诊断结果。" },
-  supervision: { title: "人工支持知情说明", purpose: "human_support_request", text: "你主动提交的说明及关联记录将用于人工补充理解，并按授权提供给负责人员。这里不是实时危机服务，请不要填写不必要的身份信息。" },
-  relationship: { title: "关系项目参与知情说明", purpose: "relationship_participation", text: "报名与作答将按项目说明保存到账号，用于你选择的关系项目。仍须符合当前项目的年龄、同意与开放条件；本确认不替代监护同意、项目研究同意或其他人的授权。" },
-  program: { title: "项目记录知情说明", purpose: "program_entry", text: "你提交的书写、反思和练习感受将保存到当前项目，用于过程复盘、训练建议及必要的人工支持。项目有单独参与条件时，仍需完成原有确认。" },
+  supervision: { title: "人工支持知情说明", purpose: "human_support_request", text: "输入内容可能以草稿保存在本机，仅当前账号可恢复。你主动提交的说明及关联记录将用于人工补充理解，并按授权提供给负责人员。这里不是实时危机服务，请不要填写不必要的身份信息。" },
+  relationship: { title: "关系项目参与知情说明", purpose: "relationship_participation", text: "输入内容可能以草稿保存在本机，仅当前账号可恢复。报名与作答将按项目说明保存到账号，用于你选择的关系项目。仍须符合当前项目的年龄、同意与开放条件；本确认不替代监护同意、项目研究同意或其他人的授权。" },
+  program: { title: "项目记录知情说明", purpose: "program_entry", text: "输入内容可能以草稿保存在本机，仅当前账号可恢复。你提交的书写、反思和练习感受将保存到当前项目，用于过程复盘、训练建议及必要的人工支持。项目有单独参与条件时，仍需完成原有确认。" },
 };
 const BOUNDARY = "研究、模型训练、AI辅助和关系分析须另行授权，不因点击本按钮一并同意；拒绝可选授权不影响已开放的基础功能。可在隐私中心查看授权、撤回与删除申请。系统不替代诊断、治疗或紧急救助。";
 function hasLocalNotice() { return wx.getStorageSync(LOCAL_NOTICE_KEY) === VERSION; }

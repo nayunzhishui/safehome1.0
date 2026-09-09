@@ -50,6 +50,8 @@ function Assert-PackageSourceMatchesCommit {
     $expected = @{}
     Get-ChildItem -LiteralPath $referenceRoot -Recurse -File -Force | ForEach-Object {
       $relative = $_.FullName.Substring($referencePrefix.Length).Replace("\", "/")
+      # The production builder intentionally excludes test sources.
+      if ($relative.StartsWith("backend/tests/")) { return }
       $expected[$relative] = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
     }
 

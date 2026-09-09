@@ -1,3 +1,4 @@
+<view wx:if="{{serviceReady}}">
 <view class="safe-page supervision-page" role="main" aria-label="人工支持">
   <view class="supervision-hero">
     <view class="hero-copy">
@@ -83,3 +84,7 @@
     <button class="safe-secondary-button back-button" bindtap="goHome">回到首页</button>
   </view>
 </view>
+</view>
+<page-state wx:else kind="{{serviceEntryError ? 'error' : 'loading'}}" title="{{serviceEntryError || '正在核对知情说明'}}" action-label="重新确认" bind:action="beginServiceEntry" />
+<button wx:if="{{!serviceReady}}" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
+<service-consent notice="{{serviceConsent}}" bind:decision="onServiceConsent" />

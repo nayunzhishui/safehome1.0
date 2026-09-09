@@ -43,9 +43,9 @@ async function check(name, fn) { try { await fn(); count++; console.log("PASS " 
  function loadPage(file, api, wxOverrides={}) {
    let definition;
    const w={...global.wx,hideTabBar(){},showTabBar(){},pageScrollTo({complete}){complete();},getWindowInfo(){return {windowHeight:700,windowWidth:390};},createSelectorQuery(){return {in(){return this;},select(){return this;},boundingClientRect(cb){cb({left:20,top:90,bottom:170,width:350,height:80});return this;},exec(){}};},...wxOverrides};
-   const sandbox={wx:w,Page:p=>definition=p,require:name=> name.endsWith("serviceConsent")?consent:name.endsWith("cloudConfig")?{getCloudConfig:()=>({useLocalHttp:false})}:name.endsWith("/api")?{createSafeHomeApi:()=>api}:new Proxy({}, {get:()=>()=>({})}),getApp:()=>({}),console,setTimeout,clearTimeout};
+   const sandbox={wx:w,Page:p=>definition=p,require:name=> name.endsWith("serviceConsent")?consent:name.endsWith("resilientForm")?require("../apps/miniprogram/utils/resilientForm"):name.endsWith("cloudConfig")?{getCloudConfig:()=>({useLocalHttp:false})}:name.endsWith("/api")?{createSafeHomeApi:()=>api}:new Proxy({}, {get:()=>()=>({})}),getApp:()=>({}),console,setTimeout,clearTimeout};
    vm.runInNewContext(fs.readFileSync(path.join(root,file),"utf8"),sandbox,{filename:file});
-   const p={...definition,data:{...definition.data},setData(v){Object.assign(this.data,v);}};return p;
+   const p={...definition,data:{...definition.data},setData(v,callback){Object.assign(this.data,v);if(callback)callback();}};return p;
  }
  await check("cloud identity mode does not require wx.login or submit a fabricated code", async () => {
    let payload,completed=0;
@@ -184,6 +184,38 @@ async function check(name, fn) { try { await fn(); count++; console.log("PASS " 
    const p=loadPage("apps/miniprogram/pages/login/index.js",api,{login:({success})=>success({code:"synthetic-wx-code"})});
    p.completeLogin=()=>{completed++;};p.submitWechatLogin();await tick();assert.equal(payload.code,"synthetic-wx-code");assert.equal(completed,1);
    payload=null;const q=loadPage("apps/miniprogram/pages/login/index.js",api,{login:({success})=>success({})});q.submitWechatLogin();await tick();assert.equal(payload,null);assert.equal(q.data.status,"error");assert.equal(q.data.wechatLoading,false);
+ });
+ for(const name of ["goal-setting","checkin","supervision","program-detail","relationship-task"]) {
+   await check(`${name} waits for consent before initializing or restoring local data`,async()=>{
+     let initialized=0;
+     const p=loadPage(`apps/miniprogram/pages/${name}/index.js`,{listConsentRecords:async()=>({items:[]}),createConsent:async()=>({})});
+     p.loadAfterConsent=()=>{initialized++;};
+     const opening=p.onLoad({id:"synthetic-program",type:"sentence_completion",enrollment_id:"synthetic-enrollment"});await tick();
+     assert.equal(initialized,0);assert.equal(p.data.serviceReady,false);assert.ok(p.data.serviceConsent);
+     if(p.onHide)p.onHide();assert.equal(p.draftController,undefined);
+     consent.finishServiceConsent(p,false);await opening;assert.equal(initialized,0);assert.equal(p.data.serviceReady,false);
+     const retry=p.beginServiceEntry();await tick();consent.finishServiceConsent(p,true);await retry;assert.equal(initialized,1);assert.equal(p.data.serviceReady,true);
+   });
+ }
+ await check("program draft key separates accounts and rejects an old page writer",async()=>{
+   const api={listConsentRecords:async()=>({items:[]}),createConsent:async()=>({})};
+   const make=()=>{const p=loadPage("apps/miniprogram/pages/program-detail/index.js",api,{showToast(){}});p.loadProgram=()=>{};p.loadAfterConsent({id:"synthetic-program"});p.setData({selectedSession:{session_no:1},draftText:"A-only",serviceReady:true});return p;};
+   try {
+     storage.auth_user={id:"synthetic-A"};const a=make();let saving=a.saveDraft();await tick();consent.finishServiceConsent(a,true);await saving;
+     storage.auth_user={id:"synthetic-B"};const b=make();b.loadDraft();assert.equal(b.data.draftText,"");
+     a.setData({draftText:"wrong-owner"});await a.saveDraft();
+     storage.auth_user={id:"synthetic-A"};const restored=make();restored.loadDraft();assert.equal(restored.data.draftText,"A-only");
+   }finally{storage.auth_user={id:"synthetic-user"};}
+ });
+ await check("relationship drafts and home discovery are account scoped",async()=>{
+   const make=()=>{const p=loadPage("apps/miniprogram/pages/relationship-task/index.js",{});p.loadAfterConsent({enrollment_id:"synthetic-enrollment",type:"sentence_completion"});p.setData({serviceReady:true});return p;};
+   try {
+     storage.auth_user={id:"synthetic-A"};const a=make();a.setData({answers:{"争吵":"synthetic-A"},narration:"synthetic-note"});a.persistDraftNow();
+     storage.auth_user={id:"synthetic-B"};const b=make();assert.equal(b.data.draftRestored,false);assert.notEqual(a.draftKey,b.draftKey);
+     const keys=Object.keys(storage).filter(k=>k.startsWith("relationship_task_draft:")||k.startsWith("safehome:programDraft:"));
+     let findDraft;vm.runInNewContext(fs.readFileSync(path.join(root,"apps/miniprogram/pages/home/index.js"),"utf8")+"\nexpose(findLocalDraftAction);",{wx:{...global.wx,getStorageInfoSync:()=>({keys})},require:()=>({createSafeHomeApi:()=>({})}),Page(){},expose:fn=>findDraft=fn});
+     assert.equal(findDraft(),null);storage.auth_user={id:"synthetic-A"};assert.ok(findDraft());
+   }finally{storage.auth_user={id:"synthetic-user"};}
  });
  console.log(`${count} focused checks passed; ${failures} failed`);
  if(failures)process.exitCode=1;

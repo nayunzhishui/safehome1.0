@@ -1,3 +1,4 @@
+<view wx:if="{{serviceReady}}">
 <view class="safe-page ui2-page program-detail-page" wx:if="{{program}}" role="main" aria-label="项目详情">
   <view class="safe-card hero-card">
     <text class="program-title">{{program.title}}</text>
@@ -150,5 +151,7 @@
     <text class="safe-body">没有找到对应项目内容。</text>
   </view>
 </view>
-
+</view>
+<page-state wx:else kind="{{serviceEntryError ? 'error' : 'loading'}}" title="{{serviceEntryError || '正在核对知情说明'}}" action-label="重新确认" bind:action="beginServiceEntry" />
+<button wx:if="{{!serviceReady}}" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
 <service-consent notice="{{serviceConsent}}" bind:decision="onServiceConsent" />

@@ -1,3 +1,5 @@
+const { requireLogin } = require("../../utils/authGuard");
+const { ensureServiceConsent, finishServiceConsent } = require("../../utils/serviceConsent");
 const { createSafeHomeApi } = require("../../services/api");
 
 const api = createSafeHomeApi();
@@ -27,7 +29,11 @@ function createIdempotencyKey(prefix) {
 }
 
 Page({
+  isDraftOwner() { return !!this._draftOwner && String((wx.getStorageSync("auth_user") || {}).id || "") === this._draftOwner; },
+  returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
+  onServiceConsent(event) { finishServiceConsent(this, !!event.detail.agreed); },
   data: {
+    serviceReady: false, serviceEntryError: "", serviceConsent: null,
     enrollmentId: "",
     taskType: "relationship_drawing",
     isDrawing: true,
@@ -52,10 +58,31 @@ Page({
   draftTimer: null,
   submissionKey: "",
 
-  onLoad(options) {
+  onLoad(options = {}) {
+    this._entryOptions = options;
+    return this.beginServiceEntry();
+  },
+  async beginServiceEntry() {
+    if (this._consentPending || this._consentDisposed) return;
+    const query = Object.entries(this._entryOptions).map(([key, value]) => encodeURIComponent(key) + "=" + encodeURIComponent(value)).join("&");
+    if (!requireLogin({ redirectUrl: "/pages/relationship-task/index" + (query ? "?" + query : ""), message: "请先登录，再确认本人的知情选择。" })) return;
+    this.setData({ serviceReady: false, serviceEntryError: "" });
+    try {
+      if (!await ensureServiceConsent(this, api, "relationship")) {
+        if (!this._consentDisposed) this.setData({ serviceEntryError: "暂未同意，本页不会恢复或保存草稿。" });
+        return;
+      }
+      this.setData({ serviceReady: true });
+      await this.loadAfterConsent(this._entryOptions);
+    } catch (error) {
+      if (!this._consentDisposed) this.setData({ serviceEntryError: error.message || "知情确认失败，请重试。" });
+    }
+  },
+  loadAfterConsent(options) {
+    this._draftOwner = String((wx.getStorageSync("auth_user") || {}).id || "");
     const taskType = decodeURIComponent(options.type || "relationship_drawing");
     const enrollmentId = decodeURIComponent(options.enrollment_id || "");
-    this.draftKey = `relationship_task_draft:${enrollmentId}:${taskType}`;
+    this.draftKey = `relationship_task_draft:${enrollmentId}:${taskType}:user:${encodeURIComponent(this._draftOwner)}`;
     this.submissionKey = createIdempotencyKey("relationship-task");
     this.setData(
       {
@@ -77,11 +104,12 @@ Page({
     this.persistDraftNow();
   },
 
-  onUnload() {
+  onUnload() { this._consentDisposed = true; finishServiceConsent(this, false);
     if (this.draftTimer) clearTimeout(this.draftTimer);
   },
 
   restoreDraft() {
+    if (!this.isDraftOwner()) return;
     let draft = null;
     try {
       draft = wx.getStorageSync(this.draftKey);
@@ -127,6 +155,7 @@ Page({
   },
 
   persistDraftNow() {
+    if (!this.data.serviceReady || !this.isDraftOwner()) return;
     if (!this.draftKey || this.data.saving) return;
     if (this.draftTimer) {
       clearTimeout(this.draftTimer);
@@ -299,6 +328,8 @@ Page({
   },
 
   async saveTask() {
+    if (this.data.saving || !this.isDraftOwner()) return;
+    if (!this.data.serviceReady || this._consentDisposed) return;
     if (!this.data.consent) {
       wx.showToast({ title: "请先确认材料授权", icon: "none" });
       return;
@@ -315,6 +346,7 @@ Page({
     this.setData({ saving: true, saveStatus: "正在提交..." });
     try {
       const canvasSize = this.data.isDrawing ? await this.getCanvasSize() : {};
+      if (!this.isDraftOwner() || this._consentDisposed) throw new Error("账号或页面已变化，请重新进入后提交。");
       const saved = await api.createRelationshipTask(this.data.enrollmentId, {
         task_type: this.data.taskType,
         drawing_data: this.data.isDrawing

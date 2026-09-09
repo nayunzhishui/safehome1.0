@@ -1,10 +1,11 @@
+const { requireLogin } = require("../../utils/authGuard");
 const { ensureServiceConsent, finishServiceConsent } = require("../../utils/serviceConsent");
 const { createSafeHomeApi } = require("../../services/api");
 
 const api = createSafeHomeApi();
 
-function draftKey(programId, sessionNo) {
-  return `safehome:programDraft:${programId}:${sessionNo}`;
+function draftKey(programId, sessionNo, ownerId) {
+  return `safehome:programDraft:${programId}:${sessionNo}:user:${encodeURIComponent(ownerId)}`;
 }
 
 function markActiveSessions(sessions, selectedSession) {
@@ -33,10 +34,12 @@ function formatProgram(program) {
 }
 
 Page({
+  isDraftOwner() { return !!this._draftOwner && String((wx.getStorageSync("auth_user") || {}).id || "") === this._draftOwner; },
   onUnload() { this._consentDisposed = true; finishServiceConsent(this, false); },
   returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
   onServiceConsent(event) { finishServiceConsent(this, !!event.detail.agreed); },
   data: {
+    serviceReady: false, serviceEntryError: "", serviceConsent: null,
     programId: "",
     requestedSessionNo: null,
     previewMode: false,
@@ -56,7 +59,33 @@ Page({
     errorMessage: "",
   },
 
-  onLoad(query) {
+  onLoad(options = {}) {
+    this._entryOptions = options;
+    return this.beginServiceEntry();
+  },
+  async beginServiceEntry() {
+    if (this._consentPending || this._consentDisposed) return;
+    if (this._entryOptions.preview === "1") {
+      this.setData({ serviceReady: true });
+      this.loadAfterConsent(this._entryOptions);
+      return;
+    }
+    const query = Object.entries(this._entryOptions).map(([key, value]) => encodeURIComponent(key) + "=" + encodeURIComponent(value)).join("&");
+    if (!requireLogin({ redirectUrl: "/pages/program-detail/index" + (query ? "?" + query : ""), message: "请先登录，再确认本人的知情选择。" })) return;
+    this.setData({ serviceReady: false, serviceEntryError: "" });
+    try {
+      if (!await ensureServiceConsent(this, api, "program")) {
+        if (!this._consentDisposed) this.setData({ serviceEntryError: "暂未同意，本页不会恢复或保存草稿。" });
+        return;
+      }
+      this.setData({ serviceReady: true });
+      await this.loadAfterConsent(this._entryOptions);
+    } catch (error) {
+      if (!this._consentDisposed) this.setData({ serviceEntryError: error.message || "知情确认失败，请重试。" });
+    }
+  },
+  loadAfterConsent(query) {
+    this._draftOwner = String((wx.getStorageSync("auth_user") || {}).id || "");
     const programId = decodeURIComponent(query.id || "");
     const previewMode = query.preview === "1";
     const requestedSessionNo = query.session ? Number(query.session) : null;
@@ -115,11 +144,12 @@ Page({
   },
 
   loadDraft() {
+    if (!this.isDraftOwner() || this.data.previewMode) return;
     const session = this.data.selectedSession;
     if (!this.data.programId || !session) {
       return;
     }
-    const stored = wx.getStorageSync(draftKey(this.data.programId, session.session_no));
+    const stored = wx.getStorageSync(draftKey(this.data.programId, session.session_no, this._draftOwner));
     if (stored && typeof stored === "object") {
       this.setData({
         draftText: stored.draftText || "",
@@ -160,6 +190,7 @@ Page({
   },
 
   async saveDraft() {
+    if (!this.data.serviceReady || this.data.previewMode || !this.isDraftOwner()) return;
     if (this._consentPending) return;
     try { if (!await ensureServiceConsent(this, api, "program")) return; }
     catch (error) { this.setData({ errorMessage: error.message || "知情确认失败，草稿尚未保存。" }); return; }
@@ -167,7 +198,7 @@ Page({
     if (!this.data.programId || !session) {
       return;
     }
-    wx.setStorageSync(draftKey(this.data.programId, session.session_no), {
+    wx.setStorageSync(draftKey(this.data.programId, session.session_no, this._draftOwner), {
       draftText: this.data.draftText || "",
       reflectionAnswers: this.data.reflectionAnswers || {},
     });
@@ -190,6 +221,8 @@ Page({
   },
 
   async submitEntry() {
+    if (this.data.previewMode || !this.isDraftOwner()) return;
+    if (!this.data.serviceReady || this._consentDisposed) return;
     if (this._consentPending || this.data.submitting) return;
     try {
       if (!await ensureServiceConsent(this, api, "program")) return;
@@ -230,7 +263,7 @@ Page({
         adverse_response: this.data.adverseResponse,
         boundary_notice: this.data.program ? this.data.program.boundary_notice : "",
       });
-      wx.removeStorageSync(draftKey(this.data.programId, session.session_no));
+      wx.removeStorageSync(draftKey(this.data.programId, session.session_no, this._draftOwner));
       this.setData({
         draftText: "",
         reflectionAnswers: {},

@@ -1,3 +1,7 @@
 {
-  "navigationBarTitleText": "人工督导入口"
+  "navigationBarTitleText": "人工督导入口",
+  "usingComponents": {
+    "service-consent": "/components/service-consent/index",
+    "page-state": "/components/page-state/index"
+  }
 }

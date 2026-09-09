@@ -94,14 +94,19 @@ function hasDraftContent(stored) {
   if (typeof stored === "string") return !!stored.trim();
   if (typeof stored !== "object") return false;
   if (String(stored.draftText || "").trim()) return true;
+  if (String(stored.narration || "").trim() || (Array.isArray(stored.strokes) && stored.strokes.length)) return true;
+  if (Object.values(stored.answers || {}).some(value => String(value || "").trim())) return true;
   return Object.values(stored.reflectionAnswers || {}).some((value) => String(value || "").trim());
 }
 
 function findLocalDraftAction() {
+  const ownerId = String((wx.getStorageSync("auth_user") || {}).id || "");
+  if (!ownerId) return null;
+  const ownerSuffix = `:user:${encodeURIComponent(ownerId)}`;
   let keys = [];
   try {
     const storageInfo = wx.getStorageInfoSync();
-    keys = Array.isArray(storageInfo.keys) ? storageInfo.keys : [];
+    keys = Array.isArray(storageInfo.keys) ? storageInfo.keys.filter(key => key.endsWith(ownerSuffix)) : [];
   } catch (error) {
     return null;
   }

@@ -1,3 +1,4 @@
+const { ensureServiceConsent, finishServiceConsent } = require("../../utils/serviceConsent");
 const { createSafeHomeApi } = require("../../services/api");
 const { requireLogin } = require("../../utils/authGuard");
 const { createResilientForm } = require("../../utils/resilientForm");
@@ -5,7 +6,10 @@ const { createResilientForm } = require("../../utils/resilientForm");
 const api = createSafeHomeApi();
 
 Page({
+  returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
+  onServiceConsent(event) { finishServiceConsent(this, !!event.detail.agreed); },
   data: {
+    serviceReady: false, serviceEntryError: "", serviceConsent: null,
     cardId: "",
     diaryId: "",
     cardTitle: "这张训练卡",
@@ -34,7 +38,27 @@ Page({
     submitted: false,
   },
 
-  onLoad(options) {
+  onLoad(options = {}) {
+    this._entryOptions = options;
+    return this.beginServiceEntry();
+  },
+  async beginServiceEntry() {
+    if (this._consentPending || this._consentDisposed) return;
+    const query = Object.entries(this._entryOptions).map(([key, value]) => encodeURIComponent(key) + "=" + encodeURIComponent(value)).join("&");
+    if (!requireLogin({ redirectUrl: "/pages/checkin/index" + (query ? "?" + query : ""), message: "请先登录，再确认本人的知情选择。" })) return;
+    this.setData({ serviceReady: false, serviceEntryError: "" });
+    try {
+      if (!await ensureServiceConsent(this, api, "checkin")) {
+        if (!this._consentDisposed) this.setData({ serviceEntryError: "暂未同意，本页不会恢复或保存草稿。" });
+        return;
+      }
+      this.setData({ serviceReady: true });
+      await this.loadAfterConsent(this._entryOptions);
+    } catch (error) {
+      if (!this._consentDisposed) this.setData({ serviceEntryError: error.message || "知情确认失败，请重试。" });
+    }
+  },
+  loadAfterConsent(options) {
     const cardId = decodeURIComponent(options.card_id || "");
     const diaryId = decodeURIComponent(options.diary_id || "");
     const cardTitle = decodeURIComponent(options.card_title || "这张训练卡");
@@ -64,7 +88,7 @@ Page({
   },
 
   onHide() { if (this.draftController && !this.data.submitting && !this.data.submitted) this.setData(this.draftController.flush(this.data)); },
-  onUnload() { if (this.draftController && !this.data.submitting && !this.data.submitted) this.draftController.flush(this.data); },
+  onUnload() { this._consentDisposed = true; finishServiceConsent(this, false); if (this.draftController && !this.data.submitting && !this.data.submitted) this.draftController.flush(this.data); },
 
   scheduleDraftSave() {
     if (!this.draftController || this.data.submitted) return;
@@ -97,6 +121,7 @@ Page({
   },
 
   async submitCheckin() {
+    if (!this.data.serviceReady || this._consentDisposed) return;
     if (this.data.submitting || this.data.submitted) return;
     if (!this.data.cardId) {
       this.setData({ errorMessage: "缺少训练卡信息，请返回重新选择训练卡。" });
