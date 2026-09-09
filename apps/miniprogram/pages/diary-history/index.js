@@ -18,9 +18,10 @@ function formatDateTime(value) {
 }
 
 function normalizeIntensity(value) {
+  if (value === null || value === undefined || value === "") return null;
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) return null;
-  return Math.min(10, Math.max(1, Math.round(numeric)));
+  return Math.min(10, Math.max(0, Math.round(numeric)));
 }
 
 function formatRecord(item) {
@@ -34,10 +35,10 @@ function formatRecord(item) {
     sceneText: item.scene || "未填写场景",
     descriptionText: item.event_description || item.raw_text || "这次记录暂未填写事件描述。",
     emotionText: item.parent_emotion || "情绪待补充",
-    intensityText: intensity ? `强度 ${intensity}/10` : "强度待补充",
+    intensityText: intensity !== null ? `强度 ${intensity}/10` : "强度待补充",
     intensityMarks: Array.from({ length: 10 }, (_, index) => ({
       key: index,
-      active: intensity ? index < intensity : false,
+      active: intensity !== null ? index < intensity : false,
     })),
   };
 }

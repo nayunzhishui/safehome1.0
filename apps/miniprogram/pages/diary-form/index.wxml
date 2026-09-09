@@ -1,12 +1,11 @@
-<view class="safe-page safe-page--with-tabbar diary-page" role="main" aria-label="情绪事件记录">
+<view class="safe-page ui2-page diary-page" role="main" aria-label="情绪事件记录">
   <view class="diary-hero">
     <view class="hero-copy">
       <text class="hero-title">记录情绪事件</text>
       <text wx:if="{{goalId}}" class="goal-hint">已关联本周小目标</text>
-      <text class="privacy-note">请不要填写姓名、学校、电话等可识别身份的信息。</text>
     </view>
   </view>
-
+  <text class="privacy-note">请不要填写姓名、学校、电话等可识别身份的信息。</text>
   <view class="diary-form">
     <view class="diary-section">
       <view class="section-head">
@@ -27,11 +26,11 @@
       </view>
       <view class="field-group">
         <text class="field-label">其他场景</text>
-        <input class="input" value="{{customScene}}" placeholder="如果上面没有合适场景，可以写在这里" bindinput="onTextInput" data-key="customScene" />
+        <input aria-label="其他场景" placeholder-class="ui2-placeholder" class="input" value="{{customScene}}" placeholder="如果上面没有合适场景，可以写在这里" bindinput="onTextInput" data-key="customScene" />
       </view>
       <view class="field-group">
         <text class="field-label">具体经过</text>
-        <textarea
+        <textarea aria-label="具体经过" placeholder-class="ui2-placeholder"
           class="textarea textarea--large"
           value="{{eventDescription}}"
           placeholder="刚才发生了什么？写一个片段就可以，例如：孩子一直没开始写作业，我提醒了几次，声音慢慢变大。"
@@ -40,7 +39,6 @@
         />
       </view>
     </view>
-
     <view class="diary-section">
       <view class="section-head">
         <view class="section-copy">
@@ -62,10 +60,9 @@
         </view>
         <view class="slider-row">
           <text class="slider-label">强度 {{parentEmotionIntensity}} / 10</text>
-          <slider min="0" max="10" step="1" value="{{parentEmotionIntensity}}" activeColor="#5F8F5B" block-color="#5F8F5B" bindchange="onParentIntensityChange" />
+          <slider min="0" max="10" step="1" value="{{parentEmotionIntensity}}" activeColor="#23666E" block-color="#23666E" bindchange="onParentIntensityChange" />
         </view>
       </view>
-
       <view class="field-group">
         <text class="field-label">孩子当时看起来的情绪</text>
         <view class="tag-grid">
@@ -81,15 +78,13 @@
         </view>
         <view class="slider-row slider-row--child">
           <text class="slider-label">强度 {{childEmotionIntensity}} / 10</text>
-          <slider min="0" max="10" step="1" value="{{childEmotionIntensity}}" activeColor="#D7784A" block-color="#D7784A" bindchange="onChildIntensityChange" />
+          <slider min="0" max="10" step="1" value="{{childEmotionIntensity}}" activeColor="#94602C" block-color="#94602C" bindchange="onChildIntensityChange" />
         </view>
       </view>
     </view>
-
-    <button class="more-toggle" bindtap="toggleMoreFields">
+    <button class="more-toggle" aria-expanded="{{showMoreFields}}" bindtap="toggleMoreFields">
       {{showMoreFields ? '收起可选内容' : '还有什么想记录的？（可选）'}}
     </button>
-
     <view wx:if="{{showMoreFields}}" class="diary-section more-section">
       <view class="section-head">
         <view class="section-copy">
@@ -98,7 +93,7 @@
       </view>
       <view class="field-group">
         <text class="field-label">当时心里的第一反应</text>
-        <textarea
+        <textarea aria-label="当时心里的第一反应" placeholder-class="ui2-placeholder"
           class="textarea"
           value="{{automaticThought}}"
           placeholder="例如：再这样下去会不会更难收拾。"
@@ -108,7 +103,7 @@
       </view>
       <view class="field-group">
         <text class="field-label">我当时的做法</text>
-        <textarea
+        <textarea aria-label="我当时的做法" placeholder-class="ui2-placeholder"
           class="textarea"
           value="{{behavior}}"
           placeholder="例如：我提醒了几次，后来声音提高了一些。"
@@ -117,7 +112,6 @@
         />
       </view>
     </view>
-
     <view wx:if="{{showMoreFields}}" class="diary-section more-section">
       <view class="section-head">
         <view class="section-copy">
@@ -137,11 +131,11 @@
             {{item}}
           </button>
         </view>
-        <input class="input" value="{{bodySensationNote}}" placeholder="也可以补充一句身体感觉，可不填" bindinput="onTextInput" data-key="bodySensationNote" />
+        <input aria-label="补充身体感觉" placeholder-class="ui2-placeholder" class="input" value="{{bodySensationNote}}" placeholder="也可以补充一句身体感觉，可不填" bindinput="onTextInput" data-key="bodySensationNote" />
       </view>
       <view class="field-group">
         <text class="field-label">孩子后来的反应</text>
-        <textarea
+        <textarea aria-label="孩子后来的反应" placeholder-class="ui2-placeholder"
           class="textarea"
           value="{{childReaction}}"
           placeholder="孩子后来有什么反应？例如：沉默、争辩、哭了，或暂时离开。"
@@ -151,7 +145,7 @@
       </view>
       <view class="field-group">
         <text class="field-label">当下结果</text>
-        <textarea
+        <textarea aria-label="当下结果" placeholder-class="ui2-placeholder"
           class="textarea"
           value="{{shortTermResult}}"
           placeholder="短期结果：当下有没有暂时停下来，或情绪有没有更强？"
@@ -161,7 +155,7 @@
       </view>
       <view class="field-group">
         <text class="field-label">我担心的长期影响</text>
-        <textarea
+        <textarea aria-label="我担心的长期影响" placeholder-class="ui2-placeholder"
           class="textarea"
           value="{{longTermImpact}}"
           placeholder="如果类似方式经常出现，你担心它可能带来什么影响？"
@@ -170,11 +164,9 @@
         />
       </view>
     </view>
-
     <view wx:if="{{errorMessage}}" class="error-box">
       <text>{{errorMessage}}</text>
     </view>
-
     <view class="submit-area">
       <text class="draft-status" aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
       <text wx:if="{{slowSubmitting}}" class="draft-status draft-status--slow">网络响应较慢，请保持页面打开；草稿仍在本机，不需要重复填写。</text>

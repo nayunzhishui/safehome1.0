@@ -132,6 +132,12 @@ Page({
     } catch (error) {
       this.setData({
         loading: false,
+        needsLogin: !!(error && (
+          error.statusCode === 401
+          || error.status === 401
+          || error.code === "auth_required"
+          || error.code === "unauthorized"
+        )),
         errorMessage: error.message || "内容暂时没能读取，请检查网络后再试一次。",
       });
     }

@@ -1,8 +1,9 @@
-<view class="safe-page hot-topics-page" role="main" aria-label="热门主题">
+<view class="safe-page ui2-page hot-topics-page" role="main" aria-label="陪伴案例">
   <view class="topic-hero">
-    <text class="hero-title">热门主题</text>
+    <text class="hero-title">陪伴案例</text>
   </view>
 
+  <text class="case-source">本地练习案例 · 非实时热榜</text>
   <view class="safe-section">
     <scroll-view class="tag-scroll" scroll-x enhanced show-scrollbar="{{false}}">
       <view class="tag-list">
@@ -11,7 +12,7 @@
           wx:key="*this"
           class="topic-tag {{activeTag === item ? 'active' : ''}}"
           data-tag="{{item}}"
-          bindtap="selectTag"
+          bindtap="selectTag" aria-pressed="{{activeTag === item}}"
         >
           {{item}}
         </button>
@@ -27,7 +28,7 @@
         wx:key="id"
         class="topic-card {{selectedTopic.id === item.id ? 'active' : ''}}"
         data-id="{{item.id}}"
-        bindtap="selectTopic"
+        bindtap="selectTopic" aria-pressed="{{selectedTopic.id === item.id}}"
       >
         <view class="topic-mark"></view>
         <view class="topic-copy">

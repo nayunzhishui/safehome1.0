@@ -484,7 +484,15 @@ Page({
       const scaleVisualization = buildDimensionVisualization(scaleDimensions, worksheet);
       const sourceNotice = buildSourceNotice(worksheet, profileSummary);
       const riskSummary = buildRiskSummary(result);
-      const trainingRecommendation = buildTrainingRecommendation(worksheet, profileSummary, cards);
+      // Apply the existing high-risk boundary before display and local recommendation caching.
+      const highRisk = (riskSummary && riskSummary.riskLevel === "high")
+        || (profileSummary && profileSummary.riskLevel === "high");
+      const trainingRecommendation = highRisk ? null : buildTrainingRecommendation(worksheet, profileSummary, cards);
+      if (highRisk || (profileSummary && !profileSummary.allowAutoFeedback)) {
+        // These are derived suggestions, not the user's assessment or diary records.
+        wx.removeStorageSync(LATEST_TRAINING_RECOMMENDATION_KEY);
+        wx.removeStorageSync(THREE_DAY_LIGHT_PLAN_KEY);
+      }
       const exploratoryAnalysis = buildExploratoryAnalysisView(exploratoryPayload);
       saveLatestTrainingRecommendation(trainingRecommendation);
       this.setData(
@@ -545,9 +553,9 @@ Page({
     this.withCanvasSize(".position-canvas", { width: 320, height: 180 }, ({ width, height }) => {
       const ctx = wx.createCanvasContext("profilePlotCanvas", this);
       ctx.clearRect(0, 0, width, height);
-      ctx.setFillStyle("#f8fbf5");
+      ctx.setFillStyle("#f4f8f8");
       ctx.fillRect(0, 0, width, height);
-      ctx.setStrokeStyle("#dfe5dc");
+      ctx.setStrokeStyle("#d5e3e3");
       ctx.setLineWidth(1);
       ctx.beginPath();
       ctx.moveTo(24, height / 2);
@@ -559,24 +567,24 @@ Page({
       (profilePosition.clusterPoints || []).forEach((point) => {
         const x = (Number(point.xPercent) / 100) * width;
         const y = (Number(point.yPercent) / 100) * height;
-        ctx.setFillStyle("#e8f0ea");
+        ctx.setFillStyle("#e2f0ed");
         ctx.beginPath();
         ctx.arc(x, y, 8, 0, Math.PI * 2);
         ctx.fill();
-        ctx.setFillStyle("#5d725f");
-        ctx.setFontSize(10);
+        ctx.setFillStyle("#536e73");
+        ctx.setFontSize(12);
         ctx.setTextAlign("center");
         ctx.fillText(point.axisLabel || "", x, y + 3);
       });
 
       const ux = (Number(profilePosition.userPoint.xPercent) / 100) * width;
       const uy = (Number(profilePosition.userPoint.yPercent) / 100) * height;
-      ctx.setFillStyle("#4f7c6b");
+      ctx.setFillStyle("#23666e");
       ctx.beginPath();
       ctx.arc(ux, uy, 10, 0, Math.PI * 2);
       ctx.fill();
-      ctx.setFillStyle("#202622");
-      ctx.setFontSize(11);
+      ctx.setFillStyle("#173c43");
+      ctx.setFontSize(12);
       ctx.setTextAlign(ux > width * 0.7 ? "right" : "left");
       ctx.fillText("当前位置", ux > width * 0.7 ? ux - 14 : ux + 14, Math.max(uy - 12, 18));
       ctx.draw();
@@ -596,7 +604,7 @@ Page({
       ctx.fillRect(0, 0, width, height);
 
       [0.33, 0.66, 1].forEach((ratio) => {
-        ctx.setStrokeStyle("#dfe5dc");
+        ctx.setStrokeStyle("#d5e3e3");
         ctx.beginPath();
         features.forEach((_item, index) => {
           const angle = (Math.PI * 2 * index) / features.length - Math.PI / 2;
@@ -609,7 +617,7 @@ Page({
         ctx.stroke();
       });
 
-      ctx.setStrokeStyle("#4f7c6b");
+      ctx.setStrokeStyle("#23666e");
       ctx.setFillStyle("rgba(79, 124, 107, 0.18)");
       ctx.beginPath();
       features.forEach((item, index) => {
@@ -623,8 +631,8 @@ Page({
       ctx.fill();
       ctx.stroke();
 
-      ctx.setFillStyle("#596a5b");
-      ctx.setFontSize(10);
+      ctx.setFillStyle("#536e73");
+      ctx.setFontSize(12);
       ctx.setTextAlign("center");
       features.forEach((item, index) => {
         const angle = (Math.PI * 2 * index) / features.length - Math.PI / 2;
@@ -669,7 +677,7 @@ Page({
       };
 
       ctx.clearRect(0, 0, width, height);
-      ctx.setFillStyle("#fffdf8");
+      ctx.setFillStyle("#f4f8f8");
       ctx.fillRect(0, 0, width, height);
 
       [0.25, 0.5, 0.75, 1].forEach((ratio) => {
@@ -696,10 +704,10 @@ Page({
       });
 
       drawPolygon("referenceValue", "#74add7", "rgba(116, 173, 215, 0.10)", 2);
-      drawPolygon("value", "#4f7c6b", "rgba(79, 124, 107, 0.20)", 2.5);
+      drawPolygon("value", "#23666e", "rgba(79, 124, 107, 0.20)", 2.5);
 
-      ctx.setFillStyle("#23473c");
-      ctx.setFontSize(11);
+      ctx.setFillStyle("#173c43");
+      ctx.setFontSize(12);
       features.forEach((item, index) => {
         const point = pointAt(index, 1, 22);
         const cos = Math.cos(point.angle);
@@ -714,7 +722,8 @@ Page({
 
   openRecommendedCards() {
     const profileSummary = this.data.profileSummary;
-    if (profileSummary && !profileSummary.canOpenRecommendedCards) {
+    if ((this.data.riskSummary && this.data.riskSummary.riskLevel === "high")
+      || (profileSummary && !profileSummary.canOpenRecommendedCards)) {
       wx.showToast({
         title: "当前没有普通训练卡推荐，请先查看现实支持提示。",
         icon: "none",

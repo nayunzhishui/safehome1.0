@@ -759,7 +759,7 @@
     "home": "387:7",
     "homeHeader": "387:8",
     "homeTitle": "387:9",
-    "activeRoute": "pages/diary-form/index",
+    "activeRoute": "pages/task-detail/index",
     "login": "392:103",
     "passwordChange": "393:122",
     "homeEntryRow": "388:17",
@@ -787,7 +787,8 @@
       },
       "pages/support-assistant/index": {
         "figma": "400:184",
-        "implementation": "implemented_pending_final_check"
+        "implementation": "implemented_pending_final_check",
+        "deferConsent": "597:3159"
       },
       "pages/message-detail/index": {
         "figma": "421:287",
@@ -803,7 +804,8 @@
       },
       "pages/getting-started/index": {
         "figma": "430:334",
-        "implementation": "implemented_pending_final_check"
+        "implementation": "implemented_pending_final_check",
+        "privacyLinks": "597:612"
       },
       "pages/thermometer/index": {
         "figma": "433:337",
@@ -955,7 +957,8 @@
         "reviewDate": "2026-09-09",
         "review": "targeted_visual_and_contract_check",
         "device": "pending",
-        "figmaCoverage": "privacy_empty_state_only"
+        "figmaCoverage": "privacy_empty_state_only",
+        "childAssent": "598:612"
       },
       "pages/goal-setting/index": {
         "figma": "550:600",
@@ -964,6 +967,64 @@
         "review": "targeted_visual_and_contract_check",
         "device": "pending",
         "figmaCoverage": "main_layout_not_all_states"
+      },
+      "pages/diary-form/index": {
+        "figma": "574:602",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "figmaCoverage": "main_synthetic_layout_not_all_states",
+        "device": "pending"
+      },
+      "pages/diary-history/index": {
+        "figma": "580:602",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "figmaCoverage": "main_synthetic_layout_not_all_states",
+        "device": "pending"
+      },
+      "pages/feedback-result/index": {
+        "figma": "582:602",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "figmaCoverage": "main_synthetic_layout_not_all_states",
+        "device": "pending",
+        "highRisk": "584:612"
+      },
+      "pages/assessment/index": {
+        "figma": "585:612",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "figmaCoverage": "main_synthetic_layout_not_all_states",
+        "device": "pending"
+      },
+      "pages/assessment-history/index": {
+        "figma": "587:612",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "figmaCoverage": "main_synthetic_layout_not_all_states",
+        "device": "pending"
+      },
+      "pages/assessment-detail/index": {
+        "figma": "589:612",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "figmaCoverage": "first_question_control_layout_not_full_worksheet",
+        "device": "pending"
+      },
+      "pages/assessment-result/index": {
+        "figma": "591:612",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "figmaCoverage": "main_synthetic_layout_not_all_states",
+        "device": "pending",
+        "highRisk": "597:3161"
+      },
+      "pages/hot-topics/index": {
+        "figma": "593:612",
+        "implementation": "implemented_pending_final_check",
+        "reviewDate": "2026-09-09",
+        "figmaCoverage": "main_synthetic_layout_not_all_states",
+        "device": "pending"
       }
     },
     "register": "394:135",
@@ -1047,7 +1108,7 @@
       "status": "current_pages_self_review_in_progress",
       "programList": "local_draft_preview_not_release_approval",
       "programDetail": "readonly_local_draft_content",
-      "remaining_work": "15 routes remain; complex Figma states, full native runtime, keyboard/screen reader and device validation pending"
+      "remaining_work": "7 routes; full Figma variants, general purpose consent UI, first-run completion/skip states, native runtime and real device acceptance pending"
     },
     "flowComponents": {
       "choiceSet": "499:447",
@@ -1089,6 +1150,60 @@
         "keyboard_screenreader_and_font_scaling"
       ],
       "evidence": ".codex_tmp/ui2-review-33-38",
+      "remotePush": "not_attempted"
+    },
+    "batch39to46Review": {
+      "date": "2026-09-09",
+      "status": "targeted_checks_pass_independent_code_review_pass_device_pending",
+      "nativeCompile": {
+        "wxml": 23,
+        "wxss": 24,
+        "exit": 0
+      },
+      "tests": {
+        "node": 11,
+        "existingPythonLayout": 3,
+        "unique": 14
+      },
+      "protectedAttributes": "original_bindings_preserved_plus_empty_worksheet_login",
+      "canvasGeometry": {
+        "nonStyleCalls": 118,
+        "unchanged": true
+      },
+      "syntheticLayout": {
+        "scenarios": 37,
+        "widths": [
+          320,
+          390
+        ],
+        "nativeRuntime": false
+      },
+      "supplemental": {
+        "gettingStartedPrivacyLinks": "597:612",
+        "aiConsentDefer": "597:3159",
+        "childAssent": "598:612"
+      },
+      "independentReview": {
+        "agent": "01a0868e-fe3f-74b3-9b53-e809b33089f8",
+        "model": "gpt-5.6-luna",
+        "reasoningEffort": "high",
+        "initial": "fix_required",
+        "findings": [
+          "stale_recommendation_cache",
+          "worksheet_read_401_login_recovery"
+        ],
+        "fixesApplied": true,
+        "final": "pass",
+        "closedFindings": 2
+      },
+      "evidence": ".codex_tmp/ui2-review-39-46",
+      "newFrontendRegressionTest": "apps/web/tests/miniprogram/ui-product2.test.cjs",
+      "remaining": [
+        "general_purpose_consent_ui_not_implemented",
+        "first_run_completion_skip_not_implemented",
+        "all_figma_states",
+        "native_simulator_real_device_keyboard_screen_reader"
+      ],
       "remotePush": "not_attempted"
     }
   }

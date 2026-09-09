@@ -503,3 +503,34 @@
   background: #fff1f1;
   color: #8a2f2f;
 }
+
+/* UIproduct2: task-scoped visual refinement, no business behavior. */
+.ui2-page { --ui2-section-accent-display:none; --safe-shadow-card:none; --safe-shadow-float:none; box-sizing:border-box; background:var(--ui2-canvas); padding:48rpx 40rpx calc(64rpx + env(safe-area-inset-bottom)); }
+.ui2-page .page-title,.ui2-page .hero-title,.ui2-page .history-title,.ui2-page .result-title { font-size:44rpx; line-height:1.6; font-weight:700; text-align:center; color:var(--ui2-ink); }
+.ui2-page .safe-primary-button,.ui2-page .safe-outline-button { min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; box-shadow:none; }
+.ui2-page .ui2-placeholder { color:var(--ui2-muted); }
+.ui2-page .result-head { padding:0 0 32rpx; }
+.ui2-page .profile-card { padding:24rpx 0; border:0; border-bottom:1rpx solid var(--ui2-line); border-radius:0; background:transparent; box-shadow:none; }
+.ui2-page .profile-display-name { font-size:36rpx; line-height:1.6; }
+.ui2-page .profile-confidence,.ui2-page .profile-meta,.ui2-page .dimension-meta-row,.ui2-page .exploratory-count { font-size:26rpx; line-height:1.6; }
+.ui2-page .profile-explanation,.ui2-page .profile-warning,.ui2-page .profile-boundary,.ui2-page .risk-text,.ui2-page .step-text,.ui2-page .profile-question,.ui2-page .dimension-summary,.ui2-page .dimension-chart-note,.ui2-page .exploratory-reason,.ui2-page .exploratory-boundary,.ui2-page .rec-suggestion { font-size:30rpx; line-height:1.7; }
+.ui2-page .step-label,.ui2-page .risk-title,.ui2-page .dimension-label,.ui2-page .exploratory-status,.ui2-page .rec-card-title { font-size:32rpx; line-height:1.6; font-weight:700; }
+.ui2-page .profile-questions { padding:24rpx 0; background:transparent; border:0; border-top:1rpx solid var(--ui2-line); }
+.ui2-page .profile-questions::before { display:none; }
+.ui2-page .profile-warning { background:var(--ui2-warm); color:#765323; }
+.ui2-page .high-risk .profile-warning,.ui2-page .risk-strip.high { background:#fff4f1; color:#a5453f; }
+.ui2-page .dimension-row,.ui2-page .rec-card-row { border:0; border-bottom:1rpx solid var(--ui2-line); border-radius:0; padding:24rpx 0; background:transparent; }
+.ui2-page .dimension-row-head,.ui2-page .dimension-meta-row,.ui2-page .exploratory-head { flex-wrap:wrap; gap:16rpx; }
+.ui2-page .dimension-score { font-size:30rpx; }
+.ui2-page .exploratory-card { padding:24rpx; border:0; border-radius:24rpx; background:var(--ui2-soft); }
+.ui2-page .exploratory-link,.ui2-page .exploratory-row-meta,.ui2-page .exploratory-empty,.ui2-page .rec-card-purpose { font-size:28rpx; line-height:1.7; }
+.ui2-page .rec-role { font-size:26rpx; }
+.ui2-page .result-actions { display:grid; grid-template-columns:1fr; gap:16rpx; }
+.ui2-page .action-button { width:100%; }
+.ui2-page .source-notice { padding:24rpx 0; border-top:1rpx solid var(--ui2-line); }
+.ui2-page .source-title,.ui2-page .source-copy { display:block; color:var(--ui2-ink); font-size:28rpx; line-height:1.7; }
+.ui2-page .source-title { margin-bottom:12rpx; font-size:32rpx; font-weight:700; }
+.ui2-page .state-box { font-size:30rpx; line-height:1.7; }
+
+.ui2-page .dimension-list { padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; }
+.ui2-page .dimension-chart-card { border:0; box-shadow:none; background:transparent; }

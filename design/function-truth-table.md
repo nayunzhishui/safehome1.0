@@ -2,7 +2,18 @@
 
 > **UIproduct2 当前入口（2026-09-08）**：以本文件“UIproduct2 当前全页功能真值”及当前源码为准。下方旧手工段落保留作历史；“尚无情绪记录页”、旧活动页和 UIproduct 分支限制不适用于本轮。执行顺序为功能核对 → 需求冻结 → Figma → 前端实现 → 全页统一检查 → 用户最终验收；不使用 ImageGen，不逐页等待用户验收。
 
-更新时间：2026-09-08
+更新时间：2026-09-09
+
+### 2026-09-09 首次使用与同意UI配套增量
+
+| 元素 | 真实行为 | 数据/权限边界 |
+|---|---|---|
+| getting-started 知情与边界 | navigator → /pages/settings-detail/index?type=consent | 只读说明；不调用createConsent |
+| getting-started 隐私说明 | navigator → /pages/settings-detail/index?type=privacy | 原隐私说明与删除申请流程；查看不表示同意 |
+| getting-started 参与者保护 | navigator → /pages/settings-detail/index?type=protection | 复用原年龄/绑定/监护人/本人选择门槛 |
+| boundary-note 暂不使用，返回 | !consented且!sending时navigator navigateBack，delta=1 | 不提交同意或拒绝记录；不会修改已存授权；原confirm事件保留 |
+
+一般用途同意记录GET/POST已存在，但本批没有新增设置端用途/版本同步界面；新手完成/跳过持久状态同样未实现，不能将上述阅读导航标记为授权流程完成。
 
 状态：`mandatory_before_imagegen_figma_and_frontend`
 
@@ -1660,6 +1671,8 @@
 
 ### 39 记录情绪事件 — `pages/diary-form/index`
 
+2026-09-09复核：表单滑块允许0–10；隐私提示为录入前说明，不是同意操作。自定义场景优先于已选场景；更多字段收起不清空已填值。历史页目前把0归一到1，属于展示不一致，本批只修正历史显示为0，不改原始记录或接口。
+
 **用户任务：** 记录具体事件和主要感受；选填信息保持可展开，保留目标关联、草稿和提交后反馈。
 - 页面源码：`apps/miniprogram/pages/diary-form/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
 - 实际条件：`{{goalId}}`；`{{showMoreFields}}`；`{{showMoreFields}}`；`{{errorMessage}}`；`{{slowSubmitting}}`
@@ -1718,6 +1731,8 @@
 - 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
 
 ### 41 本次反馈 — `pages/feedback-result/index`
+
+2026-09-09复核：`saveFeedback`只提示原记录已保存，不写收藏状态，按钮改称“查看保存说明”，事件不改。高风险现实支持区前置于共同核对；普通“互动线索/可以练习的位置”组只在非高风险展示，训练门槛仍由原canShowTraining控制。
 
 **用户任务：** 理解这次支持性反馈并选择下一练习/共同核对/人工支持；高风险不生成普通建议。
 - 页面源码：`apps/miniprogram/pages/feedback-result/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
@@ -1800,6 +1815,8 @@
 
 ### 44 填写测评 — `pages/assessment-detail/index`
 
+2026-09-09复核：未登录且worksheet为空时原登录按钮不可见，补空表分支的既有goLogin事件；loadWorksheet读取401也须设置needsLogin，与提交401分支一致。九级原题、value、score、题序及提交结构不改。
+
 **用户任务：** 完成真实题目和选项，保留题序、进度、草稿、校验及提交；不改测量含义。
 - 页面源码：`apps/miniprogram/pages/assessment-detail/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
 - 实际条件：`{{loading}}`；`{{worksheet}}`；`{{worksheet.sensitive_category && worksheet.sensitive_category !== 'none'}}`；`{{item.required}}`；`{{item.type === 'scale'}}`；`{{errorMessage}}`；`{{needsLogin}}`；`{{slowSubmitting}}`
@@ -1826,6 +1843,8 @@
 
 ### 45 测一测结果 — `pages/assessment-result/index`
 
+2026-09-09复核：恢复已有sourceNotice的title/content/reviewNote和学生画像匹配清晰度/人工关注说明，不展示可能误导的sourceNotice.statusText。普通量表high或学生画像high时，前端不生成/缓存普通推荐、不显示训练按钮并阻止处理器跳转；同时清理latestTrainingRecommendation与threeDayLightPlan两份派生缓存，禁止旧建议在训练中心复现，原始记录与草稿不清理。明确禁止自动反馈的学生画像同样清理。后端判定不改。backToAssessment原有navigateBack(delta:2)保留，实际返回目标取决于入口栈，仍需真机核对各入口路径。
+
 **用户任务：** 阅读结果、维度、群体参照及本人结构化情绪/共现线索；低样本、风险暂缓、权限和非诊断边界分开。
 - 页面源码：`apps/miniprogram/pages/assessment-result/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
 - 实际条件：`{{loading}}`；`{{result}}`；`{{riskSummary}}`；`{{profilePosition}}`；`{{!profilePosition.canUseInterpretation}}`；`{{profilePosition.nCasesText}}`；`{{profilePosition.featureText}}`；`{{profilePosition.visualizationState !== 'data'}}`；`{{profilePosition.userPoint}}`；`{{profilePosition.clusterPoints.length}}`；`{{profilePosition.radarFeatures.length >= 3}}`；`{{profilePosition.radarFeatures.length >= 3}}`；`{{profilePosition.radarFeatures.length < 3}}`；`{{profilePosition.explanation}}`；`{{profilePosition.strengthNote \|\| profilePosition.smallStep}}`；`{{profilePosition.strengthNote}}`；`{{profilePosition.smallStep}}`；`{{profilePosition.suggestedQuestions.length}}`；`{{profilePosition.projectTasks.length}}`；`{{profileSummary}}`；`{{profileSummary.supportiveExplanation}}`；`{{profileSummary.strengthNote \|\| profileSummary.smallStep}}`；`{{profileSummary.strengthNote}}`；`{{profileSummary.smallStep}}`；`{{!profileSummary && scaleDimensions.length}}`；`{{scaleVisualization.showRadar}}`；`{{item.hasComparableRange}}`；`{{exploratoryAnalysis}}`；`{{!exploratoryAnalysis.available}}`；`{{exploratoryAnalysis.available}}`；`{{exploratoryAnalysis.interactionEdges.length}}`；`{{trainingRecommendation}}`；`{{trainingRecommendation.todaySuggestion}}`；`{{item.purpose}}`；`{{!profileSummary \|\| profileSummary.canOpenRecommendedCards}}`
@@ -1850,6 +1869,8 @@
 - 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
 
 ### 46 教育热榜 — `pages/hot-topics/index`
+
+2026-09-09页面展示名称改为“陪伴案例”，注明本地案例而非实时热榜；原tags、selectedTopic和练习跳转不变。
 
 **用户任务：** 从本地真实案例阅读拆解并进入对应练习；不包装为实时热榜数据。
 - 页面源码：`apps/miniprogram/pages/hot-topics/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。

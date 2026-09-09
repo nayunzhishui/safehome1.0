@@ -75,7 +75,7 @@
   padding: 0 14rpx;
   border-radius: var(--safe-radius-pill);
   background: var(--safe-orange-soft);
-  color: #b36b1d;
+  color: var(--ui2-training-tag-color,#b36b1d);
   font-size:var(--ui2-caption,20rpx);
   font-weight: 700;
 }

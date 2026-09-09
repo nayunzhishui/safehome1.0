@@ -1,4 +1,4 @@
-<view class="safe-page assessment-detail-page" role="main" aria-label="支持性测评填写">
+<view class="safe-page ui2-page assessment-detail-page" role="main" aria-label="支持性测评填写">
   <view wx:if="{{loading}}" class="state-box">
     <text>正在读取测一测内容...</text>
   </view>
@@ -33,7 +33,7 @@
             data-value="{{opt.value}}"
             data-score="{{opt.score}}"
             role="button"
-            aria-label="选择 {{opt.displayLabel}}"
+            aria-label="选择 {{opt.displayLabel}}" aria-pressed="{{item.answerValue === opt.value}}"
             bindtap="selectOption"
           >
             <text class="option-value">{{opt.value}}</text>
@@ -43,7 +43,7 @@
 
         <textarea
           wx:else
-          class="answer-textarea"
+          class="answer-textarea" aria-label="{{item.prompt}}" placeholder-class="ui2-placeholder"
           value="{{item.answerValue}}"
           placeholder="写下你观察到的情况，简短一点也可以"
           data-index="{{qi}}"
@@ -71,5 +71,6 @@
 
   <view wx:else class="state-box error">
     <text>{{errorMessage || '没有找到工作表内容。'}}</text>
+    <button wx:if="{{needsLogin}}" class="safe-primary-button" bindtap="goLogin">去登录后继续</button>
   </view>
 </view>

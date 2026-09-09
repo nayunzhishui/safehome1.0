@@ -396,3 +396,34 @@
 .action-button {
   width: 100%;
 }
+
+/* UIproduct2: task-scoped visual refinement, no business behavior. */
+.ui2-page { --ui2-section-accent-display:none; --safe-shadow-card:none; --safe-shadow-float:none; box-sizing:border-box; background:var(--ui2-canvas); padding:48rpx 40rpx calc(64rpx + env(safe-area-inset-bottom)); }
+.ui2-page .page-title,.ui2-page .hero-title,.ui2-page .history-title,.ui2-page .result-title { font-size:44rpx; line-height:1.6; font-weight:700; text-align:center; color:var(--ui2-ink); }
+.ui2-page .safe-primary-button,.ui2-page .safe-outline-button { min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; box-shadow:none; }
+.ui2-page .ui2-placeholder { color:var(--ui2-muted); }
+.ui2-page .feedback-hero { padding:0 0 32rpx; }
+.ui2-page .support-card { padding:32rpx; background:var(--ui2-soft); border:0; border-radius:24rpx; }
+.ui2-page .support-card::before,.ui2-page .pattern-card::before,.ui2-page .today-suggestion-card::before { display:none; }
+.ui2-page .support-label,.ui2-page .pattern-title,.ui2-page .today-suggestion-label,.ui2-page .boundary-title,.ui2-page .supervision-title { font-size:32rpx; line-height:1.6; font-weight:700; }
+.ui2-page .support-text,.ui2-page .pattern-text,.ui2-page .trigger-card,.ui2-page .today-suggestion-text,.ui2-page .today-suggestion-reason,.ui2-page .risk-support-text,.ui2-page .boundary-text,.ui2-page .supervision-text { font-size:30rpx; line-height:1.7; }
+.ui2-page .overview-item { min-height:0; background:transparent; border:0; padding:16rpx 0; border-bottom:1rpx solid var(--ui2-line); border-radius:0; }
+.ui2-page .overview-label { font-size:26rpx; }
+.ui2-page .trigger-card,.ui2-page .pattern-card,.ui2-page .boundary-card { padding:24rpx 0; border:0; border-bottom:1rpx solid var(--ui2-line); border-radius:0; background:transparent; box-shadow:none; }
+.ui2-page .today-suggestion-card { padding:32rpx; border:0; border-radius:24rpx; background:var(--ui2-soft); }
+.ui2-page .today-suggestion-boundary,.ui2-page .risk-support-note { font-size:28rpx; line-height:1.7; }
+.ui2-page .practice-main-button { width:100%; min-height:96rpx; padding:22rpx 24rpx; background:var(--ui2-primary); color:white; border-radius:24rpx; font-size:30rpx; line-height:1.6; }
+.ui2-page .supervision-entry { flex-wrap:wrap; border:0; border-top:1rpx solid var(--ui2-line); background:transparent; padding:24rpx 0; }
+.ui2-page .supervision-link { min-height:96rpx; padding:20rpx; font-size:30rpx; line-height:1.6; border-radius:24rpx; }
+.ui2-page .risk-support-card { border:1rpx solid #a5453f; border-radius:24rpx; background:#fff4f1; }
+.ui2-page .risk-support-title { font-size:32rpx; color:#a5453f; }
+.ui2-page .risk-support-actions { display:grid; grid-template-columns:1fr; gap:16rpx; }
+.ui2-page .action-grid { position:static; display:block; margin:24rpx 0; padding:0; background:transparent; border:0; backdrop-filter:none; }
+.ui2-page .action-button { width:100%; }
+
+.ui2-page .support-text,.ui2-page .today-suggestion-text { font-weight:400; }
+.ui2-page .feedback-rating-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16rpx; }
+.ui2-page .feedback-rating-option { width:100%; min-height:96rpx; font-size:30rpx; line-height:1.6; }
+.ui2-page .supervision-link { color:var(--ui2-primary); border-color:var(--ui2-control-border); }
+
+.ui2-page { --ui2-training-tag-color:#765323; }

@@ -211,3 +211,28 @@
 .home-button {
   width: 100%;
 }
+
+/* UIproduct2: task-scoped visual refinement, no business behavior. */
+.ui2-page { --ui2-section-accent-display:none; --safe-shadow-card:none; --safe-shadow-float:none; box-sizing:border-box; background:var(--ui2-canvas); padding:48rpx 40rpx calc(64rpx + env(safe-area-inset-bottom)); }
+.ui2-page .page-title,.ui2-page .hero-title,.ui2-page .history-title,.ui2-page .result-title { font-size:44rpx; line-height:1.6; font-weight:700; text-align:center; color:var(--ui2-ink); }
+.ui2-page .safe-primary-button,.ui2-page .safe-outline-button { min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; box-shadow:none; }
+.ui2-page .ui2-placeholder { color:var(--ui2-muted); }
+.ui2-page .topic-hero { padding:0 0 24rpx; }
+.ui2-page .case-source { display:block; padding:16rpx 0; font-size:26rpx; color:var(--ui2-muted); }
+.ui2-page .topic-tag { min-height:96rpx; padding:20rpx 24rpx; line-height:1.6; font-size:30rpx; border:2rpx solid var(--ui2-control-border); border-radius:24rpx; background:transparent; color:var(--ui2-primary); }
+.ui2-page .topic-tag.active { background:var(--ui2-soft); border-bottom-width:5rpx; }
+.ui2-page .topic-card { padding:28rpx; border:1rpx solid var(--ui2-line); border-radius:24rpx; background:var(--ui2-surface); box-shadow:none; }
+.ui2-page .topic-card.active { background:var(--ui2-soft); border:2rpx solid var(--ui2-primary); }
+.ui2-page .topic-mark { display:none; }
+.ui2-page .topic-title,.ui2-page .detail-title { color:var(--ui2-ink); font-size:32rpx; line-height:1.6; }
+.ui2-page .topic-summary,.ui2-page .detail-text { color:var(--ui2-muted); font-size:30rpx; line-height:1.7; }
+.ui2-page .topic-meta,.ui2-page .topic-meta text:first-child { color:var(--ui2-muted); font-size:26rpx; background:transparent; padding:0; }
+.ui2-page .detail-card,.ui2-page .practice-card { padding:24rpx 0; border:0; border-radius:0; background:transparent; box-shadow:none; }
+.ui2-page .detail-label { font-size:30rpx; color:var(--ui2-ink); }
+.ui2-page .detail-block { border-color:var(--ui2-line); padding:24rpx 0; }
+.ui2-page .detail-block:last-child { padding:28rpx; background:var(--ui2-soft); border:0; border-radius:24rpx; }
+.ui2-page .boundary-card { padding:24rpx 0; border:0; border-radius:0; background:transparent; box-shadow:none; font-size:28rpx; line-height:1.7; color:var(--ui2-muted); }
+.ui2-page .practice-button { width:100%; }
+.ui2-page .topic-card:active,.ui2-page .practice-button:active,.ui2-page .home-button:active { transform:none; }
+
+.ui2-page { --ui2-training-tag-color:#765323; }

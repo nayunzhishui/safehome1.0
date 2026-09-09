@@ -146,6 +146,7 @@ function formatRecentResult(item) {
     ...item,
     is_profile: isProfile,
     badge_text: isProfile ? "阶段性画像" : "测评记录",
+    createdAtText: item.created_at ? String(item.created_at).slice(0, 16).replace("T", " ") : "时间待补充",
     worksheet_title: cleanDisplayTitle(item.worksheet_title || "测一测记录"),
     result_summary: cleanDisplayText(item.result_summary || "已保存本次填写。"),
   };

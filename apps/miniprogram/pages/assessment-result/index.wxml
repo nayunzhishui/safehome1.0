@@ -1,4 +1,4 @@
-<view class="safe-page assessment-result-page">
+<view class="safe-page ui2-page assessment-result-page" role="main" aria-label="支持性测评结果">
   <view wx:if="{{loading}}" class="state-box">
     <text>正在读取结果...</text>
   </view>
@@ -66,6 +66,8 @@
     <view wx:if="{{profileSummary}}" class="safe-section">
       <view class="profile-card {{profileSummary.riskLevel === 'high' ? 'high-risk' : ''}}">
         <text class="profile-display-name">{{profileSummary.profileName}}</text>
+        <text class="profile-confidence">匹配清晰度：{{profileSummary.confidenceText}}</text>
+        <text wx:if="{{profileSummary.riskLevel === 'high' || profileSummary.requiresReview}}" class="profile-warning">{{profileSummary.riskLevelText}}</text>
         <text wx:if="{{profileSummary.supportiveExplanation}}" class="profile-explanation">{{profileSummary.supportiveExplanation}}</text>
         <view wx:if="{{profileSummary.strengthNote || profileSummary.smallStep}}" class="profile-steps">
           <view wx:if="{{profileSummary.strengthNote}}" class="profile-step">
@@ -161,8 +163,14 @@
       </view>
     </view>
 
+    <view wx:if="{{sourceNotice}}" class="source-notice">
+      <text class="source-title">{{sourceNotice.title}}</text>
+      <text class="source-copy">{{sourceNotice.content}}</text>
+      <text wx:if="{{sourceNotice.reviewNote}}" class="source-copy">{{sourceNotice.reviewNote}}</text>
+    </view>
+
     <view class="result-actions">
-      <button wx:if="{{!profileSummary || profileSummary.canOpenRecommendedCards}}" class="safe-primary-button action-button" bindtap="openRecommendedCards">查看可练习任务</button>
+      <button wx:if="{{(!riskSummary || riskSummary.riskLevel !== 'high') && (!profileSummary || profileSummary.canOpenRecommendedCards)}}" class="safe-primary-button action-button" bindtap="openRecommendedCards">查看可练习任务</button>
       <button class="safe-outline-button action-button" bindtap="backToAssessment">返回测一测</button>
     </view>
 
