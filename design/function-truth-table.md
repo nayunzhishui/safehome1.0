@@ -10,7 +10,18 @@
 
 > **UIproduct2 当前入口（2026-09-08）**：以本文件“UIproduct2 当前全页功能真值”及当前源码为准。下方旧手工段落保留作历史；“尚无情绪记录页”、旧活动页和 UIproduct 分支限制不适用于本轮。执行顺序为功能核对 → 需求冻结 → Figma → 前端实现 → 全页统一检查 → 用户最终验收；不使用 ImageGen，不逐页等待用户验收。
 
-更新时间：2026-09-08
+更新时间：2026-09-09
+
+### 2026-09-09 首次使用与同意UI配套增量
+
+| 元素 | 真实行为 | 数据/权限边界 |
+|---|---|---|
+| getting-started 知情与边界 | navigator → /pages/settings-detail/index?type=consent | 只读说明；不调用createConsent |
+| getting-started 隐私说明 | navigator → /pages/settings-detail/index?type=privacy | 原隐私说明与删除申请流程；查看不表示同意 |
+| getting-started 参与者保护 | navigator → /pages/settings-detail/index?type=protection | 复用原年龄/绑定/监护人/本人选择门槛 |
+| boundary-note 暂不使用，返回 | !consented且!sending时navigator navigateBack，delta=1 | 不提交同意或拒绝记录；不会修改已存授权；原confirm事件保留 |
+
+一般用途同意记录GET/POST已存在，但本批没有新增设置端用途/版本同步界面；新手完成/跳过持久状态同样未实现，不能将上述阅读导航标记为授权流程完成。
 
 状态：`mandatory_before_imagegen_figma_and_frontend`
 
@@ -381,6 +392,13 @@
 ## UIproduct2 当前全页功能真值（2026-09-08）
 
 ### 第20–28页复核增量
+
+### 第29–31页复核增量
+
+- 行动回看：三种状态和两种记录类型仍由原有 `selectStatus` / `selectKind` 写入；保存仍先更新行动再创建 followup，失败时保留当前页面错误，不虚构原子提交。
+- 质量与更正：参与者与督导/管理员区块仍由 `isReviewRole`、`isFormalRole` 控制；新增显示字段只做人类可读映射（抽检原因、截止时间、本地时间、投诉类型、通知状态），不改变 API 载荷、角色判断或结案动作。
+- 成长仪表盘：四类分类数量仍按原 `sectionCount` 计算；温度、测评、关系、研究者反馈分别展示，时间线过滤与跳转保持；`hasValue` 仍允许有效的 0 值。
+
 
 - 共同理解总览保留两条路径：进入分步流程、直接提交问题；前者为主要导航，后者为次行动。服务级别仍显示，合同加载不等于正式批准，标题改为“协作规则”。`production_release_approved`在本地合同中仍为false；未改变发布状态。
 - 分步页新增纯展示属性`ui2`，默认false，各页面在Figma完成后显式传true。`description`早已由CONFIG提供并传入组件，本轮将它呈现在正文区；不增加后端字段或新的同意。
@@ -1507,7 +1525,9 @@
 
 ### 34 课程 — `pages/course/index`
 
-**用户任务：** 按主题浏览真实课程与进度，进入课程内容；不是课程商城。
+2026-09-09复核更正：`weeklyProgress.learnedLessons`只在初始data设为0，`formatCourse`也将progress固定为0；本页仅调用listCourses，不读取课程进度。故列表隐藏未接入的统计/进度展示，保留课程数量、主题、描述及进入详情事件。真实进度读取/保存仍只在course-detail，不新增API。
+
+**用户任务：** 按主题浏览真实课程，进入课程内容；进度由详情页读取/保存，列表不冒充已同步统计，不是课程商城。
 - 页面源码：`apps/miniprogram/pages/course/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
 - 实际条件：`{{errorMessage}}`；`{{loading}}`；`{{!loading && !errorMessage}}`；`{{boundaryNotice}}`
 - 组件：`page-state`、`section-title`、`course-card`、`bottom-tip-card`
@@ -1659,6 +1679,8 @@
 
 ### 39 记录情绪事件 — `pages/diary-form/index`
 
+2026-09-09复核：表单滑块允许0–10；隐私提示为录入前说明，不是同意操作。自定义场景优先于已选场景；更多字段收起不清空已填值。历史页目前把0归一到1，属于展示不一致，本批只修正历史显示为0，不改原始记录或接口。
+
 **用户任务：** 记录具体事件和主要感受；选填信息保持可展开，保留目标关联、草稿和提交后反馈。
 - 页面源码：`apps/miniprogram/pages/diary-form/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
 - 实际条件：`{{goalId}}`；`{{showMoreFields}}`；`{{showMoreFields}}`；`{{errorMessage}}`；`{{slowSubmitting}}`
@@ -1717,6 +1739,8 @@
 - 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
 
 ### 41 本次反馈 — `pages/feedback-result/index`
+
+2026-09-09复核：`saveFeedback`只提示原记录已保存，不写收藏状态，按钮改称“查看保存说明”，事件不改。高风险现实支持区前置于共同核对；普通“互动线索/可以练习的位置”组只在非高风险展示，训练门槛仍由原canShowTraining控制。
 
 **用户任务：** 理解这次支持性反馈并选择下一练习/共同核对/人工支持；高风险不生成普通建议。
 - 页面源码：`apps/miniprogram/pages/feedback-result/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
@@ -1799,6 +1823,8 @@
 
 ### 44 填写测评 — `pages/assessment-detail/index`
 
+2026-09-09复核：未登录且worksheet为空时原登录按钮不可见，补空表分支的既有goLogin事件；loadWorksheet读取401也须设置needsLogin，与提交401分支一致。九级原题、value、score、题序及提交结构不改。
+
 **用户任务：** 完成真实题目和选项，保留题序、进度、草稿、校验及提交；不改测量含义。
 - 页面源码：`apps/miniprogram/pages/assessment-detail/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
 - 实际条件：`{{loading}}`；`{{worksheet}}`；`{{worksheet.sensitive_category && worksheet.sensitive_category !== 'none'}}`；`{{item.required}}`；`{{item.type === 'scale'}}`；`{{errorMessage}}`；`{{needsLogin}}`；`{{slowSubmitting}}`
@@ -1825,6 +1851,8 @@
 
 ### 45 测一测结果 — `pages/assessment-result/index`
 
+2026-09-09复核：恢复已有sourceNotice的title/content/reviewNote和学生画像匹配清晰度/人工关注说明，不展示可能误导的sourceNotice.statusText。普通量表high或学生画像high时，前端不生成/缓存普通推荐、不显示训练按钮并阻止处理器跳转；同时清理latestTrainingRecommendation与threeDayLightPlan两份派生缓存，禁止旧建议在训练中心复现，原始记录与草稿不清理。明确禁止自动反馈的学生画像同样清理。后端判定不改。backToAssessment原有navigateBack(delta:2)保留，实际返回目标取决于入口栈，仍需真机核对各入口路径。
+
 **用户任务：** 阅读结果、维度、群体参照及本人结构化情绪/共现线索；低样本、风险暂缓、权限和非诊断边界分开。
 - 页面源码：`apps/miniprogram/pages/assessment-result/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
 - 实际条件：`{{loading}}`；`{{result}}`；`{{riskSummary}}`；`{{profilePosition}}`；`{{!profilePosition.canUseInterpretation}}`；`{{profilePosition.nCasesText}}`；`{{profilePosition.featureText}}`；`{{profilePosition.visualizationState !== 'data'}}`；`{{profilePosition.userPoint}}`；`{{profilePosition.clusterPoints.length}}`；`{{profilePosition.radarFeatures.length >= 3}}`；`{{profilePosition.radarFeatures.length >= 3}}`；`{{profilePosition.radarFeatures.length < 3}}`；`{{profilePosition.explanation}}`；`{{profilePosition.strengthNote \|\| profilePosition.smallStep}}`；`{{profilePosition.strengthNote}}`；`{{profilePosition.smallStep}}`；`{{profilePosition.suggestedQuestions.length}}`；`{{profilePosition.projectTasks.length}}`；`{{profileSummary}}`；`{{profileSummary.supportiveExplanation}}`；`{{profileSummary.strengthNote \|\| profileSummary.smallStep}}`；`{{profileSummary.strengthNote}}`；`{{profileSummary.smallStep}}`；`{{!profileSummary && scaleDimensions.length}}`；`{{scaleVisualization.showRadar}}`；`{{item.hasComparableRange}}`；`{{exploratoryAnalysis}}`；`{{!exploratoryAnalysis.available}}`；`{{exploratoryAnalysis.available}}`；`{{exploratoryAnalysis.interactionEdges.length}}`；`{{trainingRecommendation}}`；`{{trainingRecommendation.todaySuggestion}}`；`{{item.purpose}}`；`{{!profileSummary \|\| profileSummary.canOpenRecommendedCards}}`
@@ -1849,6 +1877,8 @@
 - 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
 
 ### 46 教育热榜 — `pages/hot-topics/index`
+
+2026-09-09页面展示名称改为“陪伴案例”，注明本地案例而非实时热榜；原tags、selectedTopic和练习跳转不变。
 
 **用户任务：** 从本地真实案例阅读拆解并进入对应练习；不包装为实时热榜数据。
 - 页面源码：`apps/miniprogram/pages/hot-topics/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
@@ -1875,6 +1905,8 @@
 ### 47 UP任务卡 — `pages/task-detail/index`
 
 2026-09-10恢复修复冻结：布局沿用现有阅读页，补page-state失败/重试与service-consent输入前确认；不新增视觉方案。旧任务id只用于映射卡id，实际题名、步骤、示例、停止与边界说明以GET /api/cards当次可用结果为准。失效/未知卡、加载失败或旧缓存不得回退到默认练习；onShow重查、onHide/卸载丢弃待返回结果。练习后本页输入须先确认checkin用途，仅留页面内存，不自动传给打卡；进入打卡仍走现有知情与草稿流程。后端POST /api/checkins在新增记录前校验同一开放清单，关闭后保留历史及幂等回放。
+
+2026-09-09复核：startPractice仅Toast“可以从第一步开始”；recordFeeling仅Toast说明感受在本页，不写storage、不提交API；finishPractice只跳打卡，不携带reflection/emotionLevel。UI改称“练习提示”“查看填写状态”“去填写打卡”，明确本页感受不是持久保存，原处理器不改。
 
 **用户任务：** 阅读当前本地任务步骤与示例、做一次记录并进入打卡；不冒充服务端新增任务。
 - 页面源码：`apps/miniprogram/pages/task-detail/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
@@ -1977,6 +2009,8 @@
 
 ### 51 人工督导入口 — `pages/supervision/index`
 
+2026-09-09复核：默认selectedSource“不关联”会抢先匹配，导致URL传入diary_id未自动选中。修正为本页手动选择或确实恢复草稿时优先保留当前选择，否则匹配传入日记；手动“不关联”在重试后不得被URL覆盖。关联列表读取失败增加错误/重试显示，不改API或请求字段。
+
 **用户任务：** 提交非实时人工支持请求，可关联本人记录；紧急边界、提交与失败恢复清楚。
 - 页面源码：`apps/miniprogram/pages/supervision/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
 - 实际条件：`{{successMessage}}`；`{{errorMessage}}`；`{{slowSubmitting}}`
@@ -2058,6 +2092,15 @@
 
 <!-- UI_PRODUCT_AUTO_FACTS:END -->
 
+
+## 2026-09-21：发布整合冻结与真值补充
+
+- 固定输入：登录上线 `dd1f7a1f`（已包含发布分支 `d48791bb`），UI `03142a85`；共同祖先 `b531b9d9`。本轮只整合既有实现和修复审查发现，不新增页面、接口、迁移或视觉方案。
+- assessment-detail / diary-form / goal-setting / checkin / supervision：保留 `serviceReady` 外层与 `service-consent`，未同意不出现表单、不恢复草稿；内部保留 UIproduct2 样式、输入标签和状态。
+- supervision：保留负责人员措辞、关联列表加载/失败/重试、URL默认关联，以及用户手动“不关联”和草稿选择优先规则。
+- task-detail：当次 `GET /api/cards` 决定是否可读；未知或关闭卡不回退本地内容；失败可重试。同意后才可输入本页感受，离开清空，打卡另填；继续使用新版样式、输入标签和实际导航参数。
+- assessment-result：合并后仍保留 high 风险隐藏推荐、清理派生缓存与阻断普通练习；开发/联调页保留源码，仅 production 构建剥离。
+- 历史自动真值表的行号和旧“本地任务内容”说明只作历史；以上接口/同意条件以本轮整合实现为准。没有声称新增 Figma 或真机证据。
 
 ## 2026-09-08：登录与首次使用增量（独立分支，待合入）
 

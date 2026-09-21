@@ -1,4 +1,4 @@
-<view class="safe-page researcher-dashboard-page">
+<view class="safe-page ui2-page researcher-dashboard-page">
   <view class="workbench-hero">
     <view class="workbench-title-group">
       <text class="dashboard-title">研究者工作台</text>
@@ -203,7 +203,9 @@
             </view>
             <text class="boundary-line">{{record.boundary_notice}}</text>
           </view>
-          <text wx:else wx:for="{{record.displayLines}}" wx:for-item="line" wx:key="*this" class="detail-line">{{line}}</text>
+          <block wx:else>
+            <text wx:for="{{record.displayLines}}" wx:for-item="line" wx:key="*this" class="detail-line">{{line}}</text>
+          </block>
         </view>
         <button wx:if="{{participantModule.has_more}}" class="safe-outline-button list-more" data-key="{{participantModule.module}}" data-page="{{participantModule.page + 1}}" bindtap="loadParticipantModule">加载下一页</button>
         <text class="boundary-line">{{participantModule.boundary_notice}}</text>

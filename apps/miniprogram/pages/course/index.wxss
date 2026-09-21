@@ -134,3 +134,29 @@
   font-size: 24rpx;
   font-weight: 800;
 }
+.ui2-page.course-page { background:var(--ui2-canvas); padding-top:48rpx; gap:40rpx; }
+.ui2-page .course-hero { padding:0 0 32rpx; text-align:center; border-bottom:1rpx solid var(--ui2-line); }
+.ui2-page .hero-title { font-size:44rpx; font-weight:700; line-height:1.6; }
+.ui2-page .progress-card { padding:32rpx; border:0; border-radius:24rpx; background:var(--ui2-soft); }
+.ui2-page .progress-number { font-size:32rpx; font-weight:700; line-height:1.6; }
+.ui2-page .progress-text,.ui2-page .course-state-card,.ui2-page .boundary-card { font-size:30rpx; line-height:1.6; color:var(--ui2-muted); }
+.ui2-page .category-chip { min-height:96rpx; padding:20rpx 24rpx; border:2rpx solid var(--ui2-control-border); border-radius:24rpx; background:transparent; color:var(--ui2-primary); font-size:30rpx; }
+.ui2-page .category-chip.active { background:var(--ui2-soft); border-color:var(--ui2-primary); font-weight:700; }
+.ui2-page .safe-section { padding:0; }
+.ui2-page.course-page { --ui2-course-shadow:none; }
+.ui2-page .progress-card { min-height:0; box-shadow:none; }
+.ui2-page .progress-text { max-width:none; }
+.ui2-page .category-chip { margin:0; flex-shrink:0; line-height:1.6; }
+.ui2-page .category-chip.active { border-bottom-width:5rpx; }
+.ui2-page .course-state-card,.ui2-page .boundary-card { border:0; box-shadow:none; background:transparent; padding:20rpx 0; }
+.ui2-page .retry-button { min-height:96rpx; font-size:30rpx; }
+
+/* Quiet page ending; not a progress indicator or interaction target. */
+.ui2-page .quiet-arc-footer { position:relative; height:96rpx; margin-top:40rpx; overflow:hidden; pointer-events:none; }
+.ui2-page .quiet-arc-footer::before,.ui2-page .quiet-arc-footer::after { content:''; position:absolute; width:78%; height:160rpx; border:2rpx solid var(--ui2-line); border-radius:50%; }
+.ui2-page .quiet-arc-footer::before { left:8%; top:60rpx; }
+.ui2-page .quiet-arc-footer::after { left:28%; top:36rpx; }
+
+.ui2-page.course-page { --ui2-reading-line:1.6; }
+
+.ui2-page { --ui2-section-accent-display:none; }

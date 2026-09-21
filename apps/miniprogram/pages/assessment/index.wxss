@@ -437,3 +437,24 @@
   font-size: 24rpx;
   font-weight: 800;
 }
+
+/* UIproduct2: task-scoped visual refinement, no business behavior. */
+.ui2-page { --ui2-section-accent-display:none; --safe-shadow-card:none; --safe-shadow-float:none; box-sizing:border-box; background:var(--ui2-canvas); padding:48rpx 40rpx calc(64rpx + env(safe-area-inset-bottom)); }
+.ui2-page .page-title,.ui2-page .hero-title,.ui2-page .history-title,.ui2-page .result-title { font-size:44rpx; line-height:1.6; font-weight:700; text-align:center; color:var(--ui2-ink); }
+.ui2-page .safe-primary-button,.ui2-page .safe-outline-button { min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; box-shadow:none; }
+.ui2-page .ui2-placeholder { color:var(--ui2-muted); }
+.ui2-page .assessment-head { padding:0 0 32rpx; }
+.ui2-page .audience-tabs { padding:0; gap:8rpx; background:transparent; border-bottom:1rpx solid var(--ui2-line); border-radius:0; }
+.ui2-page .audience-tab { min-height:96rpx; padding:20rpx 4rpx; border-radius:0; font-size:28rpx; line-height:1.5; color:var(--ui2-muted); }
+.ui2-page .audience-tab.active { background:transparent; color:var(--ui2-primary); border-bottom:4rpx solid var(--ui2-primary); }
+.ui2-page .search-row { min-width:0; gap:16rpx; }
+.ui2-page .search-input { height:104rpx; min-width:0; border:2rpx solid var(--ui2-control-border); border-radius:24rpx; background:var(--ui2-surface); padding:0 24rpx; font-size:30rpx; color:var(--ui2-ink); }
+.ui2-page .search-clear,.ui2-page .error-action,.ui2-page .login-link-button { min-height:96rpx; min-width:96rpx; padding:20rpx; border-radius:24rpx; font-size:28rpx; line-height:1.6; }
+.ui2-page .loading-box,.ui2-page .error-box,.ui2-page .empty-section-card,.ui2-page .recent-login-card { padding:24rpx 0; border:0; box-shadow:none; background:transparent; font-size:30rpx; line-height:1.7; }
+.ui2-page .recent-card { padding:24rpx 0; border:0; border-bottom:1rpx solid var(--ui2-line); border-radius:0; background:transparent; }
+.ui2-page .recent-title { font-size:32rpx; line-height:1.6; }
+.ui2-page .recent-summary { font-size:30rpx; line-height:1.7; }
+.ui2-page .recent-meta,.ui2-page .recent-badge { font-size:26rpx; color:var(--ui2-muted); }
+.ui2-page { --ui2-worksheet-height:0; --ui2-worksheet-padding:28rpx; --ui2-worksheet-radius:24rpx; --ui2-worksheet-opacity:1; --ui2-worksheet-disabled:#eef3f3; --ui2-worksheet-description-size:30rpx; --ui2-worksheet-description-display:block; --ui2-worksheet-description-overflow:visible; --ui2-worksheet-description-clamp:unset; }
+
+.ui2-page .search-row { padding:0; border:0; background:transparent; box-shadow:none; }

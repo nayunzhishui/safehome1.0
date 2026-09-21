@@ -5,6 +5,14 @@
 
   </view>
 
+  <view class="before-start" aria-label="开始前的说明与保护入口">
+    <text class="before-start-title">开始前，先了解</text>
+    <text class="before-start-copy">查看说明不会自动记录同意；涉及具体用途时，你仍需单独作出选择。</text>
+    <navigator class="before-start-link" url="/pages/settings-detail/index?type=consent">知情与边界 <text aria-hidden="true">›</text></navigator>
+    <navigator class="before-start-link" url="/pages/settings-detail/index?type=privacy">隐私说明 <text aria-hidden="true">›</text></navigator>
+    <navigator class="before-start-link" url="/pages/settings-detail/index?type=protection">参与者保护 <text aria-hidden="true">›</text></navigator>
+  </view>
+
   <view class="practice-list">
     <view class="practice-step">
       <text class="step-number" aria-hidden="true">01</text>

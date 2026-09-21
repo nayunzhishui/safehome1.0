@@ -1,4 +1,4 @@
-<view class="safe-page training-card-page" role="main" aria-label="训练卡">
+<view class="safe-page ui2-page training-card-page" role="main" aria-label="训练卡">
   <view class="detail-hero">
     <view class="hero-copy">
       <text class="hero-title">训练卡</text>
@@ -30,7 +30,7 @@
         <text class="today-text">{{item.todayGoal}}</text>
       </view>
 
-      <button wx:if="{{item.isPrimary}}" class="detail-toggle" data-id="{{item.id}}" bindtap="toggleCardDetails">
+      <button wx:if="{{item.isPrimary}}" class="detail-toggle" aria-expanded="{{expandedCardId === item.id}}" data-id="{{item.id}}" bindtap="toggleCardDetails">
         <text>{{expandedCardId === item.id ? '收起适用与安全说明' : '查看适用与安全说明'}}</text>
         <text class="detail-toggle-icon">{{expandedCardId === item.id ? '−' : '+'}}</text>
       </button>

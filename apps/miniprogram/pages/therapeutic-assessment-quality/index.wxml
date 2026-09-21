@@ -1,4 +1,4 @@
-<view class="safe-page quality-page" role="main" aria-label="治疗性评估质量监督与更正">
+<view class="safe-page ui2-page quality-page" role="main" aria-label="治疗性评估质量监督与更正">
   <view class="quality-hero">
     <text class="quality-title">质量与更正</text>
   </view>
@@ -9,7 +9,7 @@
 
   <view wx:if="{{runtime}}" class="runtime-card {{runtime.paused ? 'runtime-card--paused' : ''}}">
     <text class="runtime-title">{{runtime.paused ? '新协作记录已自动暂停' : '质量队列在承诺范围内'}}</text>
-    <text class="runtime-copy">待处理 {{runtime.pending_count}} · 已超时 {{runtime.overdue_count}} · 规则 {{runtime.policy_version}}</text>
+    <text class="runtime-copy">待处理 {{runtime.pending_count}} · 已超时 {{runtime.overdue_count}}</text><text class="item-meta">规则 {{runtime.policy_version}}</text>
   </view>
 
   <view wx:if="{{errorMessage}}" class="state-card state-card--error">
@@ -43,26 +43,26 @@
   </view>
 
   <view wx:if="{{!loading && cases.length}}" class="quality-card">
-    <text class="section-kicker">更正与投诉</text>
-    <text class="section-title">记录哪里不像，或希望如何处理</text>
+
+    <text class="section-title">提交更正与投诉</text>
     <text class="field-heading">协作记录</text>
     <view class="record-select-row">
-      <view class="record-spine" aria-hidden="true"><view class="record-spine__stem"></view><view class="record-spine__joint record-spine__joint--top"></view><view class="record-spine__tick"></view><view class="record-spine__joint record-spine__joint--bottom"></view></view>
+
       <picker mode="selector" range="{{cases}}" range-key="displayQuestion" value="{{selectedCaseIndex}}" bindchange="onCaseChange">
-        <view class="picker-field">{{cases[selectedCaseIndex].displayQuestion}}</view>
+        <view class="picker-field" role="button"><text class="picker-copy">{{cases[selectedCaseIndex].displayQuestion}}</text><text class="picker-arrow" aria-hidden="true">⌄</text></view>
       </picker>
     </view>
     <text class="field-heading">问题类型</text>
     <picker mode="selector" range="{{incidentCategoryOptions}}" value="{{incidentCategoryIndex}}" bindchange="onIncidentCategory">
-      <view class="picker-field">{{incidentCategoryOptions[incidentCategoryIndex]}}</view>
+      <view class="picker-field" role="button"><text class="picker-copy">{{incidentCategoryOptions[incidentCategoryIndex]}}</text><text class="picker-arrow" aria-hidden="true">⌄</text></view>
     </picker>
     <label class="field-label">
       <text>具体哪里不像或发生了什么</text>
-      <textarea class="text-area" value="{{incidentDescription}}" data-key="incidentDescription" bindinput="onFieldInput" maxlength="4000" placeholder="只写你愿意补充的部分"></textarea>
+      <textarea placeholder-class="quality-placeholder" class="text-area" value="{{incidentDescription}}" data-key="incidentDescription" aria-label="具体哪里不像或发生了什么" bindinput="onFieldInput" maxlength="4000" placeholder="只写你愿意补充的部分"></textarea>
     </label>
     <label class="field-label">
       <text>希望怎样处理</text>
-      <textarea class="text-area text-area--short" value="{{requestedResolution}}" data-key="requestedResolution" bindinput="onFieldInput" maxlength="1000" placeholder="例如：记录不同理解、撤回或重新核对"></textarea>
+      <textarea placeholder-class="quality-placeholder" class="text-area text-area--short" value="{{requestedResolution}}" data-key="requestedResolution" aria-label="希望怎样处理" bindinput="onFieldInput" maxlength="1000" placeholder="例如：记录不同理解、撤回或重新核对"></textarea>
     </label>
     <button class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="submitIncident">提交更正或投诉</button>
     <text class="submission-consequence">原记录会保留，反馈、异议和处理版本不会被覆盖。</text>
@@ -71,7 +71,7 @@
   <view wx:if="{{isReviewRole && !loading}}" class="quality-card">
     <view class="section-heading">
       <view>
-        <text class="section-kicker">抽检队列</text>
+
         <text class="section-title">逐项质量复核</text>
       </view>
       <text class="count-pill">{{reviews.length}} 项</text>
@@ -88,10 +88,11 @@
 
     <view wx:if="{{selectedReview}}" class="quality-detail">
       <view class="review-summary">
-        <view class="record-spine" aria-hidden="true"><view class="record-spine__stem"></view><view class="record-spine__joint record-spine__joint--top"></view><view class="record-spine__tick"></view><view class="record-spine__joint record-spine__joint--bottom"></view></view>
+
         <view class="review-summary__copy">
           <text class="detail-title">{{selectedReview.assessment_question || '协作记录'}}</text>
-          <text class="item-meta">抽检原因：{{selectedReview.sample_reason}} · 截止：{{selectedReview.due_at}}</text>
+          <text class="review-timing">抽检原因：{{selectedReview.sampleReasonText}}</text>
+          <text class="review-timing">截止（本地时间）：{{selectedReview.dueAtText}}</text>
         </view>
       </view>
       <button wx:if="{{selectedReview.status === 'pending'}}" class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="claimReview">认领这项复核</button>
@@ -99,16 +100,16 @@
         <view wx:for="{{reviewDimensions}}" wx:key="key" class="dimension-card">
           <text class="dimension-title">{{item.label}}</text>
           <picker mode="selector" range="{{statusOptions}}" value="{{item.statusIndex}}" data-index="{{index}}" bindchange="onDimensionStatus">
-            <view class="picker-field">结论：{{item.statusLabel}}</view>
+            <view class="picker-field" role="button"><text class="picker-copy">结论：{{item.statusLabel}}</text><text class="picker-arrow" aria-hidden="true">⌄</text></view>
           </picker>
           <view wx:if="{{item.status === 'concern'}}" class="dimension-fields">
-            <input class="text-input" value="{{item.note}}" data-index="{{index}}" data-key="note" bindinput="onDimensionInput" placeholder="说明需要修复的位置" />
-            <input class="text-input" value="{{item.evidenceRef}}" data-index="{{index}}" data-key="evidenceRef" bindinput="onDimensionInput" placeholder="填写可追溯依据" />
+            <input placeholder-class="quality-placeholder" class="text-input" value="{{item.note}}" data-index="{{index}}" data-key="note" aria-label="{{item.label}}：需要修复的位置" bindinput="onDimensionInput" placeholder="说明需要修复的位置" />
+            <input placeholder-class="quality-placeholder" class="text-input" value="{{item.evidenceRef}}" data-index="{{index}}" data-key="evidenceRef" aria-label="{{item.label}}：可追溯依据" bindinput="onDimensionInput" placeholder="填写可追溯依据" />
           </view>
         </view>
         <label class="field-label">
           <text>修复说明（有修复项时必填）</text>
-          <textarea class="text-area text-area--short" value="{{remediationSummary}}" data-key="remediationSummary" bindinput="onFieldInput"></textarea>
+          <textarea placeholder-class="quality-placeholder" class="text-area text-area--short" value="{{remediationSummary}}" data-key="remediationSummary" aria-label="修复说明，有修复项时必填" bindinput="onFieldInput"></textarea>
         </label>
         <button class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="completeReview">提交质量结论</button>
       </view>
@@ -118,7 +119,7 @@
   <view wx:if="{{isReviewRole && !loading}}" class="quality-card">
     <view class="section-heading">
       <view>
-        <text class="section-kicker">问题修复</text>
+
         <text class="section-title">影响分析与独立结案</text>
       </view>
       <text class="count-pill">{{incidents.length}} 项</text>
@@ -129,7 +130,7 @@
     <scroll-view wx:else scroll-x class="item-tabs">
       <button wx:for="{{incidents}}" wx:key="id" class="item-tab {{selectedIncident.id === item.id ? 'is-active' : ''}}" data-id="{{item.id}}" bindtap="selectIncident">
         <text>{{item.statusText}}</text>
-        <text class="item-meta">{{item.category}}</text>
+        <text class="item-meta">{{item.categoryText}}</text>
       </button>
     </scroll-view>
     <view wx:if="{{selectedIncident}}" class="quality-detail">
@@ -138,30 +139,30 @@
       <view wx:if="{{selectedIncident.status === 'reported'}}">
         <label class="field-label">
           <text>立即措施与影响摘要</text>
-          <textarea class="text-area" value="{{impactSummary}}" data-key="impactSummary" bindinput="onFieldInput"></textarea>
+          <textarea placeholder-class="quality-placeholder" class="text-area" value="{{impactSummary}}" data-key="impactSummary" aria-label="立即措施与影响摘要" bindinput="onFieldInput"></textarea>
         </label>
         <button class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="analyzeIncident">保存影响分析</button>
       </view>
       <view wx:if="{{selectedIncident.status === 'independent_review'}}">
         <picker mode="selector" range="{{resolutionActionOptions}}" value="{{resolutionActionIndex}}" bindchange="onResolutionAction">
-          <view class="picker-field">处理动作：{{resolutionActionOptions[resolutionActionIndex]}}</view>
+          <view class="picker-field" role="button"><text class="picker-copy">处理动作：{{resolutionActionOptions[resolutionActionIndex]}}</text><text class="picker-arrow" aria-hidden="true">⌄</text></view>
         </picker>
         <label class="field-label">
           <text>参与者可理解的处理说明</text>
-          <textarea class="text-area" value="{{resolutionSummary}}" data-key="resolutionSummary" bindinput="onFieldInput"></textarea>
+          <textarea placeholder-class="quality-placeholder" class="text-area" value="{{resolutionSummary}}" data-key="resolutionSummary" aria-label="参与者可理解的处理说明" bindinput="onFieldInput"></textarea>
         </label>
         <button class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="resolveIncident">独立结案并通知参与者</button>
       </view>
       <view wx:if="{{selectedIncident.status === 'resolved'}}" class="resolution-card">
         <text class="state-title">已完成处理</text>
         <text class="state-copy">{{selectedIncident.resolution_summary}}</text>
-        <text class="item-meta">通知状态：{{selectedIncident.notification_status}}</text>
+        <text class="item-meta">通知状态：{{selectedIncident.notificationStatusText}}</text>
       </view>
     </view>
   </view>
 
   <view wx:if="{{!loading && incidents.length && !isReviewRole}}" class="quality-card">
-    <text class="section-kicker">历次处理</text>
+
     <text class="section-title">你提交的更正与投诉</text>
     <view wx:for="{{incidents}}" wx:key="id" class="participant-incident">
       <text class="detail-title">{{item.description}}</text>

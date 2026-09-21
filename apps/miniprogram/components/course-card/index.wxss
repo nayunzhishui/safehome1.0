@@ -3,9 +3,9 @@
   display: block;
   padding: 28rpx;
   border: 1rpx solid var(--safe-border);
-  border-radius: 20rpx;
+  border-radius: var(--ui2-button-radius, 20rpx);
   background: var(--safe-card);
-  box-shadow: var(--safe-shadow-card);
+  box-shadow: var(--ui2-course-shadow, var(--safe-shadow-card));
   text-align: left;
 }
 
@@ -19,6 +19,7 @@
 }
 
 .course-bookmark {
+  display: var(--ui2-marker-display, block);
   width: 52rpx;
   height: 10rpx;
   margin-bottom: 18rpx;
@@ -36,11 +37,12 @@
 .course-title {
   flex: 1;
   color: var(--safe-title);
-  font-size: 29rpx;
+  font-size: var(--ui2-section, 29rpx);
   font-weight: 800;
 }
 
 .course-category {
+  flex-shrink: 0;
   min-height: 42rpx;
   display: inline-flex;
   align-items: center;
@@ -48,24 +50,25 @@
   border-radius: var(--safe-radius-pill);
   background: var(--safe-primary-soft);
   color: var(--safe-primary-deep);
-  font-size: 24rpx;
+  font-size: var(--ui2-caption, 24rpx);
 }
 
 .course-description {
   display: block;
   margin-top: 10rpx;
   color: var(--safe-text);
-  font-size: 24rpx;
-  line-height: 1.45;
+  font-size: var(--ui2-body, 24rpx);
+  line-height: var(--ui2-reading-line, 1.45);
 }
 
 .course-meta {
+  flex-wrap: wrap;
   display: flex;
   justify-content: space-between;
   gap: 12rpx;
   margin-top: 16rpx;
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: var(--ui2-caption, 24rpx);
 }
 
 .progress-track {
@@ -86,6 +89,6 @@
   display: inline-flex;
   flex: 0 0 auto;
   color: var(--safe-primary-deep);
-  font-size: 24rpx;
+  font-size: var(--ui2-caption, 24rpx);
   font-weight: 700;
 }

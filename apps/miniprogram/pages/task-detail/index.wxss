@@ -250,3 +250,31 @@
 .soft-action-button::after {
   border: 0;
 }
+
+/* UIproduct2: task-scoped visual refinement, no business behavior. */
+.ui2-page { --ui2-section-accent-display:none; --safe-shadow-card:none; --safe-shadow-float:none; box-sizing:border-box; background:var(--ui2-canvas); padding:48rpx 40rpx calc(64rpx + env(safe-area-inset-bottom)); }
+.ui2-page .page-title,.ui2-page .hero-title,.ui2-page .history-title,.ui2-page .result-title { font-size:44rpx; line-height:1.6; font-weight:700; text-align:center; color:var(--ui2-ink); }
+.ui2-page .safe-primary-button,.ui2-page .safe-outline-button { min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; box-shadow:none; }
+.ui2-page .ui2-placeholder { color:var(--ui2-muted); }
+.ui2-page .overview-card { padding:24rpx 0; border:0; border-radius:0; background:transparent; }
+.ui2-page .task-title { display:block; text-align:center; color:var(--ui2-ink); font-size:44rpx; line-height:1.6; font-weight:700; }
+.ui2-page .task-subtitle { display:block; margin-top:28rpx; color:var(--ui2-muted); font-size:30rpx; line-height:1.7; }
+.ui2-page .overview-grid { display:grid; grid-template-columns:1fr; gap:24rpx; margin-top:24rpx; }
+.ui2-page .overview-item { border:0; background:transparent; padding:0; }
+.ui2-page .overview-item--full { padding:28rpx; border-radius:24rpx; background:var(--ui2-soft); }
+.ui2-page .overview-label { font-size:26rpx; }
+.ui2-page .overview-value,.ui2-page .step-text { font-size:30rpx; line-height:1.7; }
+.ui2-page .step-card { padding:24rpx 0; border:0; border-bottom:1rpx solid var(--ui2-line); border-radius:0; background:transparent; }
+.ui2-page .step-index { color:var(--ui2-primary); font-size:26rpx; background:transparent; }
+.ui2-page .script-card { padding:20rpx 0; border:0; border-radius:0; background:transparent; font-size:30rpx; line-height:1.7; }
+.ui2-page .record-card { padding:24rpx 0; background:transparent; border:0; border-top:1rpx solid var(--ui2-line); border-radius:0; }
+.ui2-page .field-label { font-size:30rpx; line-height:1.6; }
+.ui2-page .local-note { display:block; font-size:28rpx; line-height:1.7; color:var(--ui2-muted); margin-bottom:16rpx; }
+.ui2-page .reflection-input { min-height:240rpx; padding:24rpx; border:2rpx solid var(--ui2-control-border); border-radius:24rpx; background:var(--ui2-surface); font-size:30rpx; line-height:1.7; }
+.ui2-page .action-bar { position:static; padding:24rpx 0 0; margin:0; border:0; background:transparent; backdrop-filter:none; }
+.ui2-page .action-button { width:100%; }
+.ui2-page .soft-action-button,.ui2-page .back-button { min-height:96rpx; min-width:96rpx; padding:20rpx 24rpx; font-size:28rpx; line-height:1.6; border-radius:24rpx; }
+
+.ui2-page .back-button { width:auto; height:auto; min-width:120rpx; white-space:nowrap; }
+.ui2-page .step-card,.ui2-page .script-card,.ui2-page .record-card { box-shadow:none; }
+.ui2-page .overview-item { text-align:left; }

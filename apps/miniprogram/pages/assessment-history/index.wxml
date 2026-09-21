@@ -1,8 +1,8 @@
-<view class="safe-page history-page" role="main" aria-label="测评历史记录">
+<view class="safe-page ui2-page history-page" role="main" aria-label="测评历史记录">
   <view class="history-head">
     <text class="page-title">测评记录</text>
     <view class="history-total">
-      <text class="total-label">共 <text class="total-value">{{total}}</text> 份记录</text>
+      <text class="total-label">{{loading ? "正在读取记录数量" : (errorMessage && !items.length ? "记录数量暂未读取" : "共 " + total + " 份记录")}}</text>
     </view>
   </view>
 

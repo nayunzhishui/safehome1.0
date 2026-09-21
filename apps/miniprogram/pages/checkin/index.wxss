@@ -227,3 +227,34 @@
   font-size: 28rpx;
   font-weight: 700;
 }
+
+/* UIproduct2: task-scoped visual refinement, no business behavior. */
+.ui2-page { --ui2-section-accent-display:none; --safe-shadow-card:none; --safe-shadow-float:none; box-sizing:border-box; background:var(--ui2-canvas); padding:48rpx 40rpx calc(64rpx + env(safe-area-inset-bottom)); }
+.ui2-page .page-title,.ui2-page .hero-title,.ui2-page .history-title,.ui2-page .result-title { font-size:44rpx; line-height:1.6; font-weight:700; text-align:center; color:var(--ui2-ink); }
+.ui2-page .safe-primary-button,.ui2-page .safe-outline-button { min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; box-shadow:none; }
+.ui2-page .ui2-placeholder { color:var(--ui2-muted); }
+.ui2-page.page { min-height:100vh; }
+.ui2-page .hero { padding:0 0 32rpx; text-align:center; }
+.ui2-page .title { display:block; font-size:44rpx; line-height:1.6; font-weight:700; color:var(--ui2-ink); }
+.ui2-page .panel { padding:0; border:0; background:transparent; box-shadow:none; }
+.ui2-page .tip-box { padding:20rpx 0; background:transparent; border:0; }
+.ui2-page .tip-text,.ui2-page .prompt-item { font-size:30rpx; line-height:1.7; color:var(--ui2-muted); }
+.ui2-page .selected-card { padding:28rpx; border:0; border-radius:24rpx; background:var(--ui2-soft); }
+.ui2-page .card-title { font-size:32rpx; line-height:1.6; color:var(--ui2-ink); }
+.ui2-page .field { margin-top:32rpx; padding:24rpx 0; border-bottom:1rpx solid var(--ui2-line); }
+.ui2-page .label { font-size:30rpx; line-height:1.7; color:var(--ui2-ink); }
+.ui2-page .helpfulness-row { display:flex; flex-wrap:wrap; gap:16rpx; }
+.ui2-page .helpfulness-chip { min-height:96rpx; padding:20rpx 24rpx; border:2rpx solid var(--ui2-control-border); border-radius:24rpx; background:transparent; font-size:30rpx; line-height:1.6; color:var(--ui2-primary); }
+.ui2-page .helpfulness-chip--active { background:var(--ui2-soft); border-bottom-width:6rpx; }
+.ui2-page .pause-input,.ui2-page .textarea { box-sizing:border-box; width:100%; min-height:104rpx; padding:24rpx; border:2rpx solid var(--ui2-control-border); border-radius:24rpx; background:var(--ui2-surface); font-size:30rpx; line-height:1.7; color:var(--ui2-ink); }
+.ui2-page .textarea { min-height:240rpx; }
+.ui2-page .primary-button,.ui2-page .secondary-button { width:100%; min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; }
+.ui2-page .primary-button { background:var(--ui2-primary); color:white; }
+.ui2-page .primary-button[disabled] { background:var(--ui2-soft); color:var(--ui2-muted); opacity:1; }
+.ui2-page .secondary-button { background:transparent; border:2rpx solid var(--ui2-control-border); color:var(--ui2-primary); }
+.ui2-page .status { font-size:30rpx; line-height:1.7; }
+.ui2-page .draft-status { font-size:26rpx; }
+.ui2-page .draft-status--slow { font-size:28rpx; }
+
+.ui2-page .primary-button { box-shadow:none; }
+.ui2-page .reflection-prompts { border:0; background:transparent; padding:0; }

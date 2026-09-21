@@ -1,4 +1,4 @@
-<view class="safe-page feedback-page" role="main" aria-label="支持性反馈">
+<view class="safe-page ui2-page feedback-page" role="main" aria-label="支持性反馈">
   <view class="feedback-hero">
     <view class="hero-copy">
       <text class="hero-title">本次反馈</text>
@@ -13,6 +13,18 @@
     <view class="support-card safe-card">
       <text class="support-label">先接住这次感受</text>
       <text class="support-text">{{feedback.supportive_feedback}}</text>
+    </view>
+
+    <view wx:if="{{isHighRisk}}" class="safe-section">
+      <view class="risk-support-card">
+        <text class="risk-support-title">优先联系现实支持</text>
+        <text class="risk-support-text">{{riskSupportText}}</text>
+        <text class="risk-support-note">这里不是实时危机服务，也不替代线下专业支持或当地紧急服务。</text>
+        <view class="risk-support-actions">
+          <button class="safe-primary-button" bindtap="openEmergencyGuide">查看安全指引</button>
+          <button class="safe-outline-button" bindtap="openSupervision">提交人工关注</button>
+        </view>
+      </view>
     </view>
 
     <view class="safe-section">
@@ -40,24 +52,12 @@
       </view>
     </view>
 
-    <view class="safe-section">
+    <view wx:if="{{!isHighRisk}}" class="safe-section">
       <section-title title="互动线索" />
       <view class="pattern-list">
         <view class="pattern-card" wx:for="{{patternCards}}" wx:key="title">
           <text class="pattern-title">{{item.title}}</text>
           <text class="pattern-text">{{item.text}}</text>
-        </view>
-      </view>
-    </view>
-
-    <view wx:if="{{isHighRisk}}" class="safe-section">
-      <view class="risk-support-card">
-        <text class="risk-support-title">优先联系现实支持</text>
-        <text class="risk-support-text">{{riskSupportText}}</text>
-        <text class="risk-support-note">这里不是实时危机服务，也不替代线下专业支持或当地紧急服务。</text>
-        <view class="risk-support-actions">
-          <button class="safe-primary-button" bindtap="openEmergencyGuide">查看安全指引</button>
-          <button class="safe-outline-button" bindtap="openSupervision">提交人工关注</button>
         </view>
       </view>
     </view>
@@ -103,7 +103,7 @@
     </view>
 
     <view class="action-grid">
-      <button class="safe-outline-button action-button" bindtap="saveFeedback">收藏这次反馈</button>
+      <button class="safe-outline-button action-button" bindtap="saveFeedback">查看保存说明</button>
     </view>
 
     <view class="safe-section">

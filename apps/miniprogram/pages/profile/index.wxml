@@ -1,4 +1,4 @@
-<view class="safe-page safe-page--with-tabbar profile-page">
+<view class="safe-page ui2-page safe-page--with-tabbar profile-page">
   <view class="profile-heading">我的</view>
   <view class="user-card safe-card">
     <view class="avatar" aria-hidden="true"></view>
@@ -122,4 +122,5 @@
     </view>
   </view>
 
+  <view class="quiet-arc-footer" aria-hidden="true"></view>
 </view>

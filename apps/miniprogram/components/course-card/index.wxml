@@ -7,10 +7,10 @@
     </view>
     <text class="course-description">{{description}}</text>
     <view class="course-meta">
-      <text>{{lessonCount}} 小节 · 已查看 {{progress}}%</text>
+      <text>{{lessonCount}} 小节<text wx:if="{{showProgress}}"> · 已查看 {{progress}}%</text></text>
       <text class="course-action">{{buttonText}} ›</text>
     </view>
-    <view class="progress-track">
+    <view wx:if="{{showProgress}}" class="progress-track">
       <view class="progress-fill" style="width: {{progress}}%;"></view>
     </view>
   </view>

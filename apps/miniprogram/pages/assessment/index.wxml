@@ -1,4 +1,4 @@
-<view class="safe-page assessment-page" role="main" aria-label="支持性测评">
+<view class="safe-page ui2-page assessment-page" role="main" aria-label="支持性测评">
   <view class="assessment-head">
     <text class="page-title">支持性测评</text>
   </view>
@@ -11,11 +11,11 @@
           wx:key="key"
           class="audience-tab {{activeAudience === item.key ? 'active' : ''}}"
           data-key="{{item.key}}"
-          bindtap="switchAudience"
+          bindtap="switchAudience" aria-pressed="{{activeAudience === item.key}}"
         >{{item.label}}</button>
       </view>
       <view class="search-row">
-        <input class="search-input" value="{{searchKeyword}}" placeholder="搜索量表、主题或关键词" bindinput="onSearchInput" />
+        <input class="search-input" aria-label="搜索测评内容" placeholder-class="ui2-placeholder" value="{{searchKeyword}}" placeholder="搜索量表、主题或关键词" bindinput="onSearchInput" />
         <button wx:if="{{searchKeyword}}" class="search-clear" bindtap="clearSearch">清除</button>
       </view>
     </view>
@@ -64,7 +64,7 @@
           <text class="recent-action">查看</text>
         </view>
         <text class="recent-title">{{item.worksheet_title}}</text>
-        <text class="recent-meta">{{item.created_at}}</text>
+        <text class="recent-meta">{{item.createdAtText}}</text>
         <text class="recent-summary">{{item.result_summary}}</text>
       </view>
     </view>

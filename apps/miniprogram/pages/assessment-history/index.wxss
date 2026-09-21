@@ -168,3 +168,15 @@
   color: var(--safe-muted);
   font-size: 24rpx;
 }
+
+/* UIproduct2: task-scoped visual refinement, no business behavior. */
+.ui2-page { --ui2-section-accent-display:none; --safe-shadow-card:none; --safe-shadow-float:none; box-sizing:border-box; background:var(--ui2-canvas); padding:48rpx 40rpx calc(64rpx + env(safe-area-inset-bottom)); }
+.ui2-page .page-title,.ui2-page .hero-title,.ui2-page .history-title,.ui2-page .result-title { font-size:44rpx; line-height:1.6; font-weight:700; text-align:center; color:var(--ui2-ink); }
+.ui2-page .safe-primary-button,.ui2-page .safe-outline-button { min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; box-shadow:none; }
+.ui2-page .ui2-placeholder { color:var(--ui2-muted); }
+.ui2-page .history-head { padding:0 0 24rpx; }
+.ui2-page .total-label,.ui2-page .list-end { font-size:26rpx; line-height:1.6; }
+.ui2-page .state-card { padding:24rpx 0; border:0; background:transparent; }
+.ui2-page .state-title { font-size:32rpx; line-height:1.6; }
+.ui2-page .state-text,.ui2-page .load-error { font-size:30rpx; line-height:1.7; }
+.ui2-page { --ui2-worksheet-height:0; --ui2-worksheet-padding:24rpx 0; --ui2-worksheet-radius:0; --ui2-worksheet-bg:transparent; --ui2-worksheet-border:0; --ui2-worksheet-bottom:1rpx; --ui2-worksheet-description-size:30rpx; --ui2-worksheet-description-display:block; --ui2-worksheet-description-overflow:visible; --ui2-worksheet-description-clamp:unset; }

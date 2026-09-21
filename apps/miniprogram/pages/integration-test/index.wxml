@@ -1,6 +1,7 @@
-<view class="page" role="main" aria-label="接口联调测试">
+<view class="page ui2-page" role="main" aria-label="接口联调测试">
   <view class="panel">
     <text class="title">最小联调测试</text>
+    <text class="dev-notice">开发专用。运行后会创建测试情绪记录并生成反馈，请先确认连接的是测试环境。</text>
 
     <view class="diagnostics">
       <text class="diagnostic-line">env：{{diagnostics.env}}</text>

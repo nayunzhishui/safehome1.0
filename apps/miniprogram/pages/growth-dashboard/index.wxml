@@ -1,4 +1,4 @@
-<view class="safe-page growth-dashboard-page">
+<view class="safe-page ui2-page growth-dashboard-page" role="main" aria-label="我的成长">
   <view class="growth-hero">
     <text class="growth-title">我的成长</text>
   </view>
@@ -72,12 +72,12 @@
 
     <view wx:elif="{{activeSection === 'relationship'}}" class="section-stack">
       <view class="relationship-card">
-        <text class="section-eyebrow">关系探索单独呈现</text>
-        <text class="relationship-title">不与日记次数或测评分值合并</text>
+        <text class="section-title">关系探索单独呈现</text>
+        <text class="section-copy">不与日记次数或测评分值合并</text>
         <view class="relationship-facts">
-          <view class="fact-cell"><text class="fact-value">{{relationshipSummary.task_count || 0}}</text><text class="fact-label">探索任务</text></view>
-          <view class="fact-cell"><text class="fact-value">{{relationshipSummary.longitudinal_count || 0}}</text><text class="fact-label">连续记录</text></view>
-          <view class="fact-cell"><text class="fact-value">{{relationshipSummary.report_count || 0}}</text><text class="fact-label">阶段报告</text></view>
+          <view class="fact-cell"><text class="fact-label">探索任务</text><text class="fact-value">{{relationshipSummary.task_count || 0}}</text></view>
+          <view class="fact-cell"><text class="fact-label">连续记录</text><text class="fact-value">{{relationshipSummary.longitudinal_count || 0}}</text></view>
+          <view class="fact-cell"><text class="fact-label">阶段报告</text><text class="fact-value">{{relationshipSummary.report_count || 0}}</text></view>
         </view>
         <button class="section-action relationship-action" bindtap="openRelationship">{{relationshipSummary.available ? '查看关系探索详情' : '了解关系探索'}}</button>
       </view>
@@ -92,7 +92,7 @@
 
     <view wx:else class="section-stack">
       <view class="feedback-summary-card">
-        <view><text class="section-eyebrow">共同核对</text><text class="relationship-title">研究者反馈 {{feedbackSummary.count || 0}} 条</text></view>
+        <view><text class="relationship-title">研究者反馈 {{feedbackSummary.count || 0}} 条</text></view>
         <status-pill label="{{feedbackSummary.unread_count || 0}} 条未读" tone="warning" aria-label="研究者反馈未读{{feedbackSummary.unread_count || 0}}条" />
       </view>
       <view class="dashboard-section">

@@ -13,6 +13,29 @@ const DIMENSIONS = [
 const STATUS_OPTIONS = ["符合", "需要修复", "不适用"];
 const STATUS_VALUES = ["pass", "concern", "not_applicable"];
 
+const SAMPLE_REASON_LABELS = {
+  mandatory_l2: "L2 逐项复核",
+  mandatory_l3: "L3 逐项复核",
+  deterministic_sample: "按规则抽检",
+};
+const INCIDENT_CATEGORY_LABELS = {
+  complaint: "反馈不像我的感受",
+  correction_request: "希望更正",
+  withdrawal_request: "希望撤回",
+  notification_issue: "没有收到通知",
+  quality_review: "质量复核发现",
+};
+const NOTIFICATION_LABELS = { pending: "待发送", sent: "已发送" };
+
+function localDeadlineText(value) {
+  if (!value) return "未记录";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  const pad = (part) => String(part).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+
 function reviewDimensions() {
   return DIMENSIONS.map((item) => ({
     ...item,
@@ -103,6 +126,8 @@ Page({
         this.data.selectedCaseId || (cases[selectedCaseIndex] && cases[selectedCaseIndex].id) || "";
       const reviews = (reviewResult.items || []).map((item) => ({
         ...item,
+        sampleReasonText: SAMPLE_REASON_LABELS[item.sample_reason] || item.sample_reason || "未说明",
+        dueAtText: localDeadlineText(item.due_at),
         statusText: {
           pending: "待认领",
           in_review: "复核中",
@@ -112,6 +137,8 @@ Page({
       }));
       const incidents = (incidentResult.items || []).map((item) => ({
         ...item,
+        categoryText: INCIDENT_CATEGORY_LABELS[item.category] || item.category,
+        notificationStatusText: NOTIFICATION_LABELS[item.notification_status] || item.notification_status || "未记录",
         statusText: {
           reported: "待影响分析",
           independent_review: "待独立结案",

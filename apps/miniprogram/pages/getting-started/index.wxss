@@ -228,3 +228,12 @@
 
 .getting-page { box-sizing:border-box; padding-left:48rpx; padding-right:48rpx; }
 @media(prefers-reduced-motion:reduce){.primary-action:active,.secondary-action:active{transform:none}}
+
+.before-start { margin:0 0 40rpx; padding:28rpx; border-radius:24rpx; background:var(--ui2-soft); }
+.before-start-title,.before-start-copy { display:block; color:var(--ui2-ink); font-size:30rpx; line-height:1.7; }
+.before-start-title { font-size:32rpx; font-weight:700; }
+.before-start-copy { margin:12rpx 0 20rpx; }
+.before-start-link { display:flex; justify-content:space-between; align-items:center; gap:24rpx; min-height:96rpx; padding:20rpx 0; border-top:1rpx solid var(--ui2-control-border); color:var(--ui2-primary); font-size:30rpx; line-height:1.6; }
+
+.ui2-page .boundary-title { color:#765323; }
+.ui2-page .primary-action,.ui2-page .secondary-action { min-height:96rpx; padding:22rpx 24rpx; line-height:1.6; box-shadow:none; }

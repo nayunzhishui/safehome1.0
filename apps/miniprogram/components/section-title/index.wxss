@@ -17,7 +17,7 @@
   height: 38rpx;
   flex: 0 0 auto;
   margin-top: 1rpx;
-  display: flex;
+  display: var(--ui2-section-accent-display, flex);
   flex-direction: column;
   align-items: center;
 }
