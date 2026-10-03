@@ -297,30 +297,33 @@ def _legacy_phase_checkpoint_is_valid(
         return False
     for binding in checkpoint["legacy_phase_bindings"]:
         baseline_path = (ROOT / binding["baseline_path"]).resolve()
-        if (
-            not _path_within(baseline_path, ROOT)
-            or not baseline_path.is_file()
-            or sha256_bytes(baseline_path.read_bytes())
-            != binding["baseline_sha256"]
-        ):
+        if not _path_within(baseline_path, ROOT):
+            return False
+        commit = binding["commit"]
+        # Historical approval belongs to its immutable commit, not today's baseline.
+        archived = subprocess.run(
+            ["git", "show", f"{commit}:{baseline_path.relative_to(ROOT).as_posix()}"],
+            cwd=ROOT, capture_output=True, check=False,
+        )
+        if archived.returncode != 0:
+            return False
+        baseline_bytes = archived.stdout
+        # These legacy text fingerprints were captured on Windows; Git stores LF.
+        if (sha256_bytes(baseline_bytes) != binding["baseline_sha256"]
+                and sha256_bytes(baseline_bytes.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n"))
+                != binding["baseline_sha256"]):
             return False
         try:
-            baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
+            baseline = json.loads(baseline_bytes.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
             return False
         if (
             baseline.get("phase") != binding["task"].removeprefix("RC0810-")
             or baseline.get("production_gate_eligible") is not False
         ):
             return False
-        commit = binding["commit"]
         if subprocess.run(
             ["git", "merge-base", "--is-ancestor", commit, checkpoint_commit],
-            cwd=ROOT,
-            capture_output=True,
-            check=False,
-        ).returncode != 0 or subprocess.run(
-            ["git", "diff", "--quiet", commit, "--", binding["baseline_path"]],
             cwd=ROOT,
             capture_output=True,
             check=False,
@@ -2508,8 +2511,10 @@ def _historical_checkpoint_evidence_is_valid(
         packet_bytes = packet_path.read_bytes()
         decision_bytes = decision_path.read_bytes()
         if (
-            sha256_bytes(packet_bytes) != binding["review_packet_sha256"]
-            or sha256_bytes(decision_bytes) != binding["decision_sha256"]
+            (sha256_bytes(packet_bytes) != binding["review_packet_sha256"]
+             and sha256_bytes(packet_bytes.replace(b"\r\n", b"\n")) != binding["review_packet_sha256"])
+            or (sha256_bytes(decision_bytes) != binding["decision_sha256"]
+                and sha256_bytes(decision_bytes.replace(b"\r\n", b"\n")) != binding["decision_sha256"])
         ):
             return False
         packet = json.loads(packet_bytes.decode("utf-8"))

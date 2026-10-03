@@ -1170,6 +1170,40 @@ def test_completed_reviewer_replacement_is_not_reapplied_on_same_wave(tmp_path):
     ) is None
 
 
+def test_historical_phase_uses_immutable_commit_when_current_baseline_changes(monkeypatch):
+    spec = __import__("importlib.util").util.spec_from_file_location("historical_phase_source", RUNNER_PATH)
+    module = __import__("importlib.util").util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    wave = registry["review_waves"][2]
+    checkpoint = wave["base_checkpoint"]
+    paths = {ROOT / item["baseline_path"] for item in checkpoint["legacy_phase_bindings"]}
+    original_read = Path.read_bytes
+    monkeypatch.setattr(Path, "read_bytes", lambda path: b'{"current_baseline":"updated"}' if path in paths else original_read(path))
+    assert module._legacy_phase_checkpoint_is_valid(wave, checkpoint)
+    original_run = subprocess.run
+    def changed_commit_blob(args, **kwargs):
+        result = original_run(args, **kwargs)
+        if args[:2] == ["git", "show"]:
+            result.stdout += b"\nchanged historical content"
+        return result
+    monkeypatch.setattr(subprocess, "run", changed_commit_blob)
+    assert not module._legacy_phase_checkpoint_is_valid(wave, checkpoint)
+
+
+def test_historical_review_json_binding_survives_windows_checkout(monkeypatch):
+    spec = __import__("importlib.util").util.spec_from_file_location("historical_review_eol", RUNNER_PATH)
+    module = __import__("importlib.util").util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    checkpoint = registry["review_waves"][1]["base_checkpoint"]
+    binding = checkpoint["evidence_binding"]
+    paths = {ROOT / binding["review_packet_path"], ROOT / binding["decision_path"]}
+    original_read = Path.read_bytes
+    monkeypatch.setattr(Path, "read_bytes", lambda path: original_read(path).replace(b"\r\n", b"\n").replace(b"\n", b"\r\n") if path in paths else original_read(path))
+    assert module._historical_checkpoint_evidence_is_valid(registry, checkpoint)
+
+
 def test_wave_c_legacy_phase_checkpoint_restores_f22b_without_forged_pass():
     spec = __import__("importlib.util").util.spec_from_file_location(
         "rc0810_runner_wave_c_resume", RUNNER_PATH
