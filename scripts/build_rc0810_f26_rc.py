@@ -436,7 +436,7 @@ def build_report(
             "backend_image": {
                 "status": "missing_blocking",
                 "digest": None,
-                "reason": "docker_daemon_unavailable_and_current_image_not_built",
+                "reason": "current_registered_image_digest_not_bound",
             },
         },
         "dependency_locks": {
@@ -514,7 +514,7 @@ def build_report(
             "F22-B security report is bound to an older source tree and is historical only.",
             "F25-B has eight external blockers and no platform or human approval.",
             "This builder does not execute required CI/Harness/regression; missing current evidence remains blocking.",
-            "No current backend image, image digest, container scan or production migration evidence exists.",
+            "This report has no bound registry image digest or current security evidence; local runtime checks do not establish a production migration approval.",
         ],
         "subtasks": [
             {"id": "F26.1", "status": "evidence_ready"},

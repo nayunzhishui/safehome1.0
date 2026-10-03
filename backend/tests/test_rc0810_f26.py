@@ -146,6 +146,15 @@ def test_f26_release_drill_has_72h_observation_rollback_and_side_effect_ledger(f
     assert all(item["status"] == "planned_not_executed" for item in report["irreversible_side_effect_ledger"])
 
 
+def test_f26_unbound_image_does_not_claim_daemon_unavailable(f26):
+    _, report, _, _ = f26
+    assert report["artifacts"]["backend_image"] == {
+        "status": "missing_blocking", "digest": None,
+        "reason": "current_registered_image_digest_not_bound",
+    }
+    assert "No current backend image" not in " ".join(report["known_issues"])
+
+
 def test_f26_four_go_phase_separation_and_review_remain_truthful(f26):
     _, report, _, _ = f26
     assert set(report["four_go"]) == {"product", "platform", "engineering", "professional"}

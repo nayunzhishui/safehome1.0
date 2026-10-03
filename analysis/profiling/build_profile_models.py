@@ -100,7 +100,7 @@ def safe_slug(value: str, max_length: int = 80) -> str:
 
 
 def model_filename(model_id: str, sequence: int | None = None) -> str:
-    digest = hashlib.sha1(model_id.encode("utf-8")).hexdigest()[:10]
+    digest = hashlib.sha1(model_id.encode("utf-8"), usedforsecurity=False).hexdigest()[:10]
     if sequence is None:
         return f"profile_{digest}.json"
     return f"profile_{sequence:03d}_{digest}.json"
