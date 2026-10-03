@@ -253,3 +253,29 @@ def test_f22b_registry_freezes_exact_scope_and_phase_without_business_changes():
     assert task["change_budget"]["expected_files"] == 14
     assert all(not path.startswith("backend/") or path.endswith("test_rc0810_f22.py") for path in task["allowed_files"])
     assert [item["expected_test_count"] for item in task["acceptance_commands"]] == [12, 29, 1, 1, 1]
+
+
+def test_f22b_dependency_inputs_match_the_actual_runner():
+    verifier = load_verifier_module()
+    from run_rc0810_f22b_security import DEPENDENCY_INPUTS
+    assert verifier.EXPECTED_F22B_INPUTS == DEPENDENCY_INPUTS
+    assert "config/rc0810/database_profiles.json" in verifier.EXPECTED_F22B_INPUTS
+    assert "config/rc0810/database_profiles.json" not in verifier.EXPECTED_INPUTS
+
+
+def test_f22_secret_reports_require_static_no_verify_for_both_commands():
+    verifier = load_verifier_module()
+    policy = json.loads(POLICY.read_text(encoding="utf-8"))
+    tree = "a" * 40
+    captured = "2026-10-04T00:00:00+00:00"
+    prefix = f"/.codex_tmp/rc0810/security/f22b/{tree}"
+    baseline = {"phase": "F22-B", "source_tree": tree, "captured_at": captured}
+    for negative in (False, True):
+        target = f"{prefix}/negative-fixtures/fake-secret.txt" if negative else f"{prefix}/staging"
+        report = {"tool": "detect-secrets", "version": policy["tools"]["detect-secrets"],
+                  "source_tree": tree, "captured_at": captured, "exit_code": 0,
+                  "path": f"{prefix}/reports/" + ("negative-" if negative else "") + "detect-secrets.json",
+                  "command": ["python", "-m", "detect_secrets", "scan", "--no-verify", "--all-files", target]}
+        assert verifier.report_contract_errors(report, baseline, policy, negative=negative) == []
+        report["command"].remove("--no-verify")
+        assert "command" in verifier.report_contract_errors(report, baseline, policy, negative=negative)

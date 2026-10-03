@@ -29,6 +29,9 @@ from run_rc0810_f22_scans import (  # noqa: E402
 )
 
 
+from run_rc0810_f22b_security import DEPENDENCY_INPUTS as EXPECTED_F22B_INPUTS  # noqa: E402
+
+
 SCHEMA_PATH = ROOT / "config" / "rc0810" / "security_gate.schema.json"
 POLICY_PATH = ROOT / "config" / "rc0810" / "security_gate_policy.json"
 EXCEPTIONS_PATH = ROOT / "config" / "rc0810" / "security_exception_registry.json"
@@ -165,7 +168,7 @@ def report_contract_errors(
     valid_command = False
     if negative and tool == "detect-secrets":
         valid_command = python_command(
-            argv, "detect_secrets", ["scan", "--all-files", f"{fixture}/fake-secret.txt"]
+            argv, "detect_secrets", ["scan", "--no-verify", "--all-files", f"{fixture}/fake-secret.txt"]
         )
     elif negative and tool == "bandit":
         valid_command = python_command(
@@ -185,7 +188,7 @@ def report_contract_errors(
         )
     elif not negative and tool == "detect-secrets":
         valid_command = python_command(
-            argv, "detect_secrets", ["scan", "--all-files", staging]
+            argv, "detect_secrets", ["scan", "--no-verify", "--all-files", staging]
         )
     elif not negative and tool == "bandit":
         valid_command = python_command(
@@ -315,7 +318,7 @@ def validate_f22b(
         errors.append("policy_hash_mismatch")
     if gate.get("exception_registry_sha256") != sha256_file(EXCEPTIONS_PATH):
         errors.append("exception_registry_hash_mismatch")
-    current_inputs = {item: sha256_file(ROOT / item) for item in EXPECTED_INPUTS}
+    current_inputs = {item: sha256_file(ROOT / item) for item in EXPECTED_F22B_INPUTS}
     if gate.get("dependency_inputs") != current_inputs:
         errors.append("dependency_input_mismatch")
     action_paths = (".github/workflows/security-gate.yml", ".github/workflows/check.yml")
