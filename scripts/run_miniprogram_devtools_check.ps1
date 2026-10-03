@@ -1,12 +1,18 @@
 param(
   [string]$CliPath = $env:WECHAT_DEVTOOLS_CLI,
-  [int]$AutoPort = 9420
+  [int]$AutoPort = 9420,
+  [Parameter(Mandatory = $true)]
+  [string]$ProjectPath
 )
 
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
-$ProjectPath = Join-Path $Root "apps\miniprogram"
 $WebPath = Join-Path $Root "apps\web"
+$ProjectPath = (Resolve-Path -LiteralPath $ProjectPath).Path
+$ProjectConfig = Get-Content -LiteralPath (Join-Path $ProjectPath "project.config.json") -Raw | ConvertFrom-Json
+if ($ProjectConfig.appid -ne "touristappid") {
+  throw "Use an isolated synthetic UI copy with touristappid; do not run this mocked check against a live account project."
+}
 
 if (-not $CliPath) {
   $Candidates = @(
@@ -23,9 +29,10 @@ if (-not $CliPath -or -not (Test-Path -LiteralPath $CliPath)) {
 
 $env:WECHAT_DEVTOOLS_AUTO_PORT = "$AutoPort"
 try {
-  & $CliPath auto --project $ProjectPath --auto-port $AutoPort
-  if ($LASTEXITCODE -ne 0) {
-    throw "WeChat DevTools automation failed to start. Exit code: $LASTEXITCODE"
+  $LaunchOutput = & $CliPath auto --project $ProjectPath --auto-port $AutoPort --trust-project 2>&1
+  $LaunchOutput | ForEach-Object { Write-Host $_ }
+  if ($LASTEXITCODE -ne 0 -or ($LaunchOutput -join "`n") -match '\[error\]|EEXIST') {
+    throw "WeChat DevTools automation failed to start; inspect the CLI error above."
   }
   Push-Location $WebPath
   try {
