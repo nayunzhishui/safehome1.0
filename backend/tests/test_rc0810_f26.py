@@ -18,14 +18,7 @@ BUILDER = ROOT / "scripts" / "build_rc0810_f26_rc.py"
 REGISTRY = ROOT / "content" / "rc0810_release_candidate_registry.json"
 F26_REPORT = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f26_final_rc.json"
 WAVE_C_DECISION = Path("docs/02_专项进度与验收/rc0810_wave_c_review_decision.json")
-WAVE_C_PACKET = (
-    ROOT
-    / ".codex_tmp"
-    / "rc0810"
-    / "run-20260824T090306Z-4c4d4bf8"
-    / "reviews"
-    / "wave-C-f26.json"
-)
+
 
 
 def _load_builder():
@@ -167,38 +160,46 @@ def test_f26_four_go_phase_separation_and_review_remain_truthful(f26):
     assert phases["stable_operation_verified"] is False
 
 
-def test_f26_review_packet_is_prebound_and_rejects_self_reported_or_changed_identity(f26, tmp_path):
-    module, _, _, _ = f26
-    bound = json.loads(F26_REPORT.read_text(encoding="utf-8"))
+def test_f26_review_packet_is_prebound_and_rejects_self_reported_or_changed_identity(f26, monkeypatch):
+    module, report, _, _ = f26
+    # Contract fixture only: no persisted packet and no review approval.
+    bound = copy.deepcopy(report)
     review = bound["wave_c_review"]
-    packet = json.loads(WAVE_C_PACKET.read_text(encoding="utf-8"))
-    assert review["packet_sha256"] == hashlib.sha256(WAVE_C_PACKET.read_bytes()).hexdigest()
-    assert review["packet_nonce"] == packet["packet_nonce"]
-    assert review["packet_head"] == packet["review_head"]["commit"]
-    assert review["harness_binding"]["fixed_reviewer_id"] == "sartre_replacement"
-    assert module.validate_report(F26_REPORT)["valid"] is True
-
-    mutations = {}
-    missing = copy.deepcopy(bound)
-    missing["wave_c_review"]["packet_path"] = ".codex_tmp/rc0810/missing/wave-C-f26.json"
-    mutations["missing"] = missing
-    wrong_hash = copy.deepcopy(bound)
-    wrong_hash["wave_c_review"]["packet_sha256"] = "0" * 64
-    mutations["hash"] = wrong_hash
-    wrong_nonce = copy.deepcopy(bound)
-    wrong_nonce["wave_c_review"]["packet_nonce"] = "forged-nonce-value"
-    mutations["nonce"] = wrong_nonce
-    wrong_head = copy.deepcopy(bound)
-    wrong_head["wave_c_review"]["packet_head"] = bound["candidate"]["source_commit"]
-    mutations["head"] = wrong_head
-    for name, candidate in mutations.items():
-        path = tmp_path / f"{name}.json"
-        path.write_text(json.dumps(candidate, ensure_ascii=False), encoding="utf-8")
-        assert module.validate_report(path)["valid"] is False
-
+    head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    tree = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True).strip()
+    packet_path = ROOT / ".codex_tmp/contract-fixture/wave-C-f26.json"
+    state_path = ROOT / ".codex_tmp/contract-fixture/state.json"
+    pointer = {"run_id": "contract-fixture", "state_sha256": "a" * 64}
+    monkeypatch.setattr(module, "_expected_wave_c_packet_path", lambda: (packet_path, pointer, {}, state_path))
+    packet = {
+        "schema": "safehome.rc0810.wave-review-packet.v2", "wave": "C",
+        "packet_nonce": "synthetic-contract-fixture", "reviewer_id": "sartre_replacement",
+        "base_checkpoint": {"commit": review["base_commit"]},
+        "review_head": {"commit": head, "source_tree": tree},
+        "release_candidate": {"commit": bound["candidate"]["source_commit"], "source_tree": bound["candidate"]["source_tree"]},
+    }
+    digest = hashlib.sha256(json.dumps(packet, sort_keys=True).encode()).hexdigest()
+    review.update({
+        "packet_path": packet_path.relative_to(ROOT).as_posix(), "packet_sha256": digest,
+        "packet_nonce": packet["packet_nonce"], "packet_head": head, "packet_source_tree": tree,
+        "harness_binding": {**pointer, "state_path": state_path.relative_to(ROOT).as_posix(),
+                            "fixed_reviewer_id": "sartre_replacement", "last_review_pass_checkpoint": "RC0810-F21:verified"},
+    })
+    def errors(candidate, path=packet_path):
+        return module._packet_payload_errors(candidate, packet, actual_sha256=digest, packet_path=path)
+    assert errors(bound) == []
+    assert errors(bound, ROOT / ".codex_tmp/self-reported/wave-C-f26.json")
+    assert module._bound_review_packet_errors(bound) == ["review_packet_missing_or_self_reported_path"]
+    for key, value in [("packet_sha256", "0" * 64), ("packet_nonce", "forged-nonce-value"), ("packet_head", "0" * 40)]:
+        changed = copy.deepcopy(bound)
+        changed["wave_c_review"][key] = value
+        assert errors(changed)
+    for key, value in [("source_commit", "0" * 40), ("source_tree", "0" * 40)]:
+        changed = copy.deepcopy(bound)
+        changed["candidate"][key] = value
+        assert errors(changed)
     assert module._review_decision_errors(
-        bound,
-        {"path": ".codex_tmp/self-reported-decision.json", "sha256": "0" * 64},
+        bound, {"path": ".codex_tmp/self-reported-decision.json", "sha256": "0" * 64},
     ) == ["review_decision_path_invalid"]
 
 
