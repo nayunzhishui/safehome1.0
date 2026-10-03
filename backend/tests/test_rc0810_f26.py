@@ -52,6 +52,16 @@ def test_f26_backend_source_archive_covers_docker_copy_inputs():
             ), source
 
 
+def test_f26_missing_ci_is_not_automatically_a_user_waiver():
+    module = _load_builder()
+    checks = module._required_ci({"automatic_acceptance_categories": [
+        {"id": "backend", "title": "后端全量回归", "required": True},
+    ]})
+    assert checks[0]["status"] == "not_run"
+    assert checks[0]["evidence"] is None
+    assert checks[0]["release_effect"] == "blocking"
+
+
 @pytest.fixture(scope="module")
 def f26(tmp_path_factory):
     module = _load_builder()
@@ -105,7 +115,7 @@ def test_f26_required_ci_and_security_gaps_force_no_go(f26):
     _, report, _, _ = f26
     assert report["required_ci"]
     assert all(item["required"] is True for item in report["required_ci"])
-    assert all(item["status"] == "not_run_user_waiver" for item in report["required_ci"])
+    assert all(item["status"] == "not_run" for item in report["required_ci"])
     assert report["security_evidence"]["current_status"] == "stale"
     assert report["artifacts"]["backend_image"]["digest"] is None
     assert report["release_decision"]["recommendation"] == "NO_GO"

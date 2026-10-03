@@ -277,7 +277,7 @@ def _required_ci(policy: dict[str, Any]) -> list[dict[str, Any]]:
             "id": item["id"],
             "title": item["title"],
             "required": item["required"] is True,
-            "status": "not_run_user_waiver",
+            "status": "not_run",
             "evidence": None,
             "release_effect": "blocking",
         }
@@ -494,7 +494,7 @@ def build_report(
             "production_gate_eligible": False,
             "automatic_release_performed": False,
             "blocking_reasons": [
-                "required_ci_not_run_by_user_direction",
+                "required_ci_not_run",
                 "current_security_scan_missing_and_f22_evidence_stale",
                 "backend_image_and_digest_missing",
                 "wechat_platform_real_device_and_human_evidence_missing",
@@ -513,12 +513,12 @@ def build_report(
         "known_issues": [
             "F22-B security report is bound to an older source tree and is historical only.",
             "F25-B has eight external blockers and no platform or human approval.",
-            "Required CI/Harness/regression was not run at F26 by explicit user direction.",
+            "This builder does not execute required CI/Harness/regression; missing current evidence remains blocking.",
             "No current backend image, image digest, container scan or production migration evidence exists.",
         ],
         "subtasks": [
             {"id": "F26.1", "status": "evidence_ready"},
-            {"id": "F26.2", "status": "blocked_user_waiver"},
+            {"id": "F26.2", "status": "blocked_required_ci"},
             {"id": "F26.3", "status": "partial_backend_image_missing"},
             {"id": "F26.4", "status": "partial_image_and_security_missing"},
             {"id": "F26.5", "status": "partial_structural_scan_only"},
@@ -838,7 +838,7 @@ def validate_report(report_path: Path = DEFAULT_REPORT) -> dict[str, Any]:
     expected_ci = {item["id"] for item in policy["automatic_acceptance_categories"]}
     if {item.get("id") for item in required_ci} != expected_ci:
         errors.append("required_ci_catalog_incomplete")
-    if any(item.get("required") is not True or item.get("status") != "not_run_user_waiver" for item in required_ci):
+    if any(item.get("required") is not True or item.get("status") != "not_run" for item in required_ci):
         errors.append("required_ci_must_remain_unverified")
     security = report.get("security_evidence", {})
     if security.get("source_tree") == candidate.get("source_tree") or security.get("current_status") != "stale":
