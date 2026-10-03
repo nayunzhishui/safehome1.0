@@ -28,5 +28,7 @@ backend/tests
 docs
 scripts
 *.md
+!content/consent.md
+!content/privacy.md
 .vscode
 .idea

@@ -4363,6 +4363,7 @@ export const GENERATED_API_ENDPOINTS = [
       "request_id": "string"
     },
     "error_codes": [
+      "card_not_available",
       "forbidden",
       "http_error",
       "idempotency_conflict",
@@ -13998,7 +13999,8 @@ export const GENERATED_API_ENDPOINTS = [
       "forbidden",
       "http_error",
       "internal_error",
-      "unauthorized"
+      "unauthorized",
+      "validation_error"
     ],
     "enum_refs": [],
     "deprecation": {

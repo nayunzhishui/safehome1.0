@@ -1,9 +1,19 @@
+const { captureAuthSession, isCurrentAuthSession } = require("../../utils/authGuard");
 const { createSafeHomeApi } = require("../../services/api");
 
 const api = createSafeHomeApi();
 const LATEST_TRAINING_RECOMMENDATION_KEY = "safehome:latestTrainingRecommendation";
 
 Page({
+  onShow() {
+    this._hidden = false;
+    if (this._readSession && !isCurrentAuthSession(this._readSession)) {
+      this.setData({ feedback: null, trainingRecommendation: null, recommendedTrainings: [], patternCards: [], emotionOverview: null, riskSupportText: "", labelsText: "", nextAction: null, feedbackEvaluation: "", feedbackEvaluationSaving: false, isHighRisk: false, canShowTraining: false });
+      this.loadFeedback(this.data.diaryId);
+    } else if (this.data.loading && this._readSession) { this.loadFeedback(this.data.diaryId); }
+  },
+  onHide() { this._hidden = true; },
+  onUnload() { this._consentDisposed = true; this._hidden = true; },
   data: {
     diaryId: "",
     loading: true,
@@ -30,6 +40,10 @@ Page({
   },
 
   async loadFeedback(diaryId) {
+    const session = captureAuthSession();
+    this._readSession = session;
+    const requestId = this._feedbackRequestId = (this._feedbackRequestId || 0) + 1;
+    const isCurrent = () => !this._hidden && !this._consentDisposed && requestId === this._feedbackRequestId && isCurrentAuthSession(session);
     if (!diaryId) {
       this.setData({
         loading: false,
@@ -43,13 +57,20 @@ Page({
 
     try {
       const feedback = await api.generateFeedback({ diary_id: diaryId });
+      if (!isCurrent()) return;
       const cardResponse = await api.listCards().catch(() => ({ items: [] }));
+      if (!isCurrent()) return;
       const cards = Array.isArray(cardResponse.items) ? cardResponse.items : [];
       const isHighRisk = feedback.risk_level === "high" || (feedback.risk && feedback.risk.allow_recommended_training_cards === false);
       const canShowTraining = !isHighRisk;
       const trainingRecommendation = this.buildTrainingRecommendation(feedback, canShowTraining);
       const recommendedTrainings = this.buildRecommendedTrainings(trainingRecommendation, cards);
-      this.saveLatestTrainingRecommendation(trainingRecommendation, recommendedTrainings);
+      if (isHighRisk) {
+        wx.removeStorageSync(LATEST_TRAINING_RECOMMENDATION_KEY);
+        wx.removeStorageSync("safehome:threeDayLightPlan");
+      } else {
+        this.saveLatestTrainingRecommendation(trainingRecommendation, recommendedTrainings);
+      }
       this.setData({
         feedback,
         isHighRisk,
@@ -66,6 +87,7 @@ Page({
         loading: false,
       });
     } catch (error) {
+      if (!isCurrent()) return;
       this.setData({
         loading: false,
         errorMessage: error.message || "反馈暂时没能生成，请检查网络后再试一次。你的这次记录已经保存好了。",

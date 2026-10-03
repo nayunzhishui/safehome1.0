@@ -1,3 +1,8 @@
+<view wx:if="{{!serviceReady}}" class="safe-page ui2-page" role="main" aria-label="功能知情说明">
+  <page-state kind="error" title="使用前请阅读本功能说明" description="{{errorMessage || '确认数据用途后，再填写和保存；暂不同意可以返回。'}}" action-label="重新确认" bind:action="retryServiceEntry" />
+  <button class="safe-primary-button" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
+</view>
+<block wx:if="{{serviceReady}}">
 <view class="safe-page ui2-page assessment-detail-page" role="main" aria-label="支持性测评填写">
   <view wx:if="{{loading}}" class="state-box">
     <text>正在读取测一测内容...</text>
@@ -74,3 +79,5 @@
     <button wx:if="{{needsLogin}}" class="safe-primary-button" bindtap="goLogin">去登录后继续</button>
   </view>
 </view>
+
+</block>

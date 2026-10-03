@@ -395,6 +395,8 @@ def public_worksheets() -> list[dict]:
         ["emotion_naming", "self_support_statement", "cognitive_flexibility"],
         sensitive_category="screening_or_health",
     )
+    who["instructions"] = "请根据过去两周的真实感受作答，为每句话选择相应情况出现的频率。结果仅用于自我观察和练习参考。"
+    who["source_version"] = f"{VERSION}-review-20261002-v1"
 
     ecs_options = [(1, "几乎从不"), (2, "有时"), (3, "经常"), (4, "几乎总是")]
     ecs_texts = [
@@ -404,7 +406,7 @@ def public_worksheets() -> list[dict]:
         "学习新东西时喜欢去发现有关它的更多东西。",
         "喜欢讨论抽象概念。",
         "遇到问题必须先解决才能休息，甚至为此花费几个小时。",
-        "抽象的概念性问题会让我持续思索如何解答。",
+        "抽象的概念性问题会让我持续思索如何解答。（如：‘有理数的定义’等问题就属于概念性问题）",
         "如果无法解决问题，我会感到挫败，因此我就更加努力地去学习。",
         "在我认为必须解决的问题上会表现得像个工作狂。",
         "为解决问题我需要思考很长时间。",
@@ -434,6 +436,8 @@ def public_worksheets() -> list[dict]:
         "10题均正向计分；总分10-40，兴趣型6-24，剥夺型4-16。分数用于观察好奇方式，不评价学习能力。",
         ["exam_micro_start", "student_two_thoughts", "self_support_statement"],
     )
+    ecs["instructions"] = "请根据自己的真实情况，选择符合你平时实际情况的一项。结果仅用于自我观察和练习参考。"
+    ecs["source_version"] = f"{VERSION}-review-20261002-v1"
 
     tipi_options = [(1, "非常不同意"), (2, "比较不同意"), (3, "有点不同意"), (4, "中立"), (5, "有点同意"), (6, "比较同意"), (7, "非常同意")]
     tipi_texts = [

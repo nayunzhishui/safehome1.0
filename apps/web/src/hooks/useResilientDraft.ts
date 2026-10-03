@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { getStoredAuthToken, getStoredAuthUser } from "../services/authState";
 
 const DRAFT_VERSION = 1;
 
 interface StoredDraft<T> {
+  ownerId: string;
   version: number;
   values: T;
   savedAt: string;
@@ -13,10 +15,11 @@ function createSubmissionId(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
-function readDraft<T>(storageKey: string): StoredDraft<T> | null {
+function readDraft<T>(storageKey: string, ownerId: string): StoredDraft<T> | null {
+  if (!ownerId) return null;
   try {
     const parsed = JSON.parse(window.localStorage.getItem(storageKey) || "null") as StoredDraft<T> | null;
-    return parsed?.version === DRAFT_VERSION && parsed.values ? parsed : null;
+    return parsed?.version === DRAFT_VERSION && parsed.ownerId === ownerId && parsed.values ? parsed : null;
   } catch {
     return null;
   }
@@ -41,7 +44,10 @@ export function useResilientDraft<T>({
   restore: (values: T) => void;
   hasContent: (values: T) => boolean;
 }) {
-  const initial = useMemo(() => readDraft<T>(storageKey), [storageKey]);
+  const owner = useRef({ id: getStoredAuthUser()?.id || "", token: getStoredAuthToken() });
+  const scopedStorageKey = `${storageKey}:user:${encodeURIComponent(owner.current.id)}`;
+  const isOwner = () => Boolean(owner.current.id) && owner.current.id === getStoredAuthUser()?.id && owner.current.token === getStoredAuthToken();
+  const initial = useMemo(() => readDraft<T>(scopedStorageKey, owner.current.id), [scopedStorageKey]);
   const submissionId = useRef(initial?.clientSubmissionId || createSubmissionId(submissionPrefix));
   const restoreRef = useRef(restore);
   const hasContentRef = useRef(hasContent);
@@ -51,7 +57,7 @@ export function useResilientDraft<T>({
   const serialized = JSON.stringify(value);
 
   useEffect(() => {
-    if (initial) restoreRef.current(initial.values);
+    if (initial && isOwner()) restoreRef.current(initial.values);
   }, [initial]);
 
   useEffect(() => {
@@ -60,9 +66,10 @@ export function useResilientDraft<T>({
       return;
     }
     const timer = window.setTimeout(() => {
+      if (!isOwner()) return;
       if (!hasContentRef.current(value)) {
         try {
-          window.localStorage.removeItem(storageKey);
+          window.localStorage.removeItem(scopedStorageKey);
         } catch {
           // Restricted storage must not interrupt the form flow.
         }
@@ -71,18 +78,18 @@ export function useResilientDraft<T>({
       }
       const savedAt = new Date().toISOString();
       try {
-        window.localStorage.setItem(storageKey, JSON.stringify({ version: DRAFT_VERSION, values: value, savedAt, clientSubmissionId: submissionId.current }));
+        window.localStorage.setItem(scopedStorageKey, JSON.stringify({ ownerId: owner.current.id, version: DRAFT_VERSION, values: value, savedAt, clientSubmissionId: submissionId.current }));
         setSaveStatus(savedLabel(savedAt));
       } catch {
         setSaveStatus("本机空间不足，暂时无法保存草稿");
       }
     }, 300);
     return () => window.clearTimeout(timer);
-  }, [serialized, storageKey]);
+  }, [serialized, scopedStorageKey]);
 
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
-      if (!hasContentRef.current(value)) return;
+      if (!isOwner() || !hasContentRef.current(value)) return;
       event.preventDefault();
       event.returnValue = "";
     };
@@ -91,10 +98,10 @@ export function useResilientDraft<T>({
   }, [serialized]);
 
   function flush(nextValue: T = value) {
-    if (!hasContentRef.current(nextValue)) return;
+    if (!isOwner() || !hasContentRef.current(nextValue)) return;
     const savedAt = new Date().toISOString();
     try {
-      window.localStorage.setItem(storageKey, JSON.stringify({ version: DRAFT_VERSION, values: nextValue, savedAt, clientSubmissionId: submissionId.current }));
+      window.localStorage.setItem(scopedStorageKey, JSON.stringify({ ownerId: owner.current.id, version: DRAFT_VERSION, values: nextValue, savedAt, clientSubmissionId: submissionId.current }));
       setSaveStatus(savedLabel(savedAt));
     } catch {
       setSaveStatus("本机空间不足，暂时无法保存草稿");
@@ -102,8 +109,9 @@ export function useResilientDraft<T>({
   }
 
   function clear() {
+    if (!isOwner()) return;
     try {
-      window.localStorage.removeItem(storageKey);
+      window.localStorage.removeItem(scopedStorageKey);
     } catch {
       // Submission success takes precedence over local cleanup failures.
     }

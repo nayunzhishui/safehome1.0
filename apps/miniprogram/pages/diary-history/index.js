@@ -1,5 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
-const { requireLogin } = require("../../utils/authGuard");
+const { requireLogin, captureAuthSession, isCurrentAuthSession } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
 const PAGE_LIMIT = 50;
@@ -69,19 +69,33 @@ Page({
   },
 
   onShow() {
-    if (this._authorized && this._loadedOnce && !this.data.loading) {
+    this._hidden = false;
+    if (this._readSession && !isCurrentAuthSession(this._readSession)) {
+      this.setData({ records: [], loading: false });
+      return this.onLoad();
+    }
+    if (this._authorized && (this._loadedOnce || (this.data.loading && this._readSession))) {
       this.loadRecords();
     }
   },
 
+  onHide() { this._hidden = true; },
+  onUnload() { this._consentDisposed = true; this._hidden = true; },
+
   async loadRecords() {
+    const session = captureAuthSession();
+    this._readSession = session;
+    const requestId = this._historyRequestId = (this._historyRequestId || 0) + 1;
+    const isCurrent = () => !this._hidden && !this._consentDisposed && requestId === this._historyRequestId && isCurrentAuthSession(session);
     this.setData({ loading: true, errorMessage: "", errorTitle: "", errorKind: "error" });
     try {
       const result = await api.listDiaries({ limit: PAGE_LIMIT });
+      if (!isCurrent()) return;
       const items = result && Array.isArray(result.items) ? result.items : [];
       this._loadedOnce = true;
       this.setData({ loading: false, records: items.map(formatRecord) });
     } catch (error) {
+      if (!isCurrent()) return;
       const networkFailure = isNetworkError(error);
       this._loadedOnce = true;
       this.setData({

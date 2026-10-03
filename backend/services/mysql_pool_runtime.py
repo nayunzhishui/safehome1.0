@@ -122,34 +122,46 @@ class PooledMySQLConnection:
         self._connection = _get_pool().connection(shareable=False)
 
     def __enter__(self):
-        self._connection.ping(reconnect=True)
+        try:
+            self._connection.ping(reconnect=True)
+        except Exception:
+            self.close()
+            raise
         return self
 
     def __exit__(self, exc_type, exc, traceback):
-        if exc_type is None:
-            self.commit()
-        else:
-            try:
-                self._connection.rollback()
-            except Exception:
-                pass
-        self.close()
+        try:
+            if exc_type is None:
+                self.commit()
+            else:
+                try:
+                    self._connection.rollback()
+                except Exception:
+                    pass
+        finally:
+            self.close()
         return False
 
     def execute(self, sql: str, params=None):
         # Import lazily to avoid a database -> pool -> database import cycle.
         from database import _mysqlize_query
 
-        self._connection.ping(reconnect=True)
+        self._connection.ping(reconnect=False)
+        if not getattr(self, "_transaction_started", False):
+            # DBUtils requires begin() to suspend transparent retry/reconnect.
+            self._connection.begin()
+            self._transaction_started = True
         cursor = self._connection.cursor()
         cursor.execute(_mysqlize_query(sql), tuple(params or ()))
         return cursor
 
     def commit(self) -> None:
         self._connection.commit()
+        self._transaction_started = False
 
     def rollback(self) -> None:
         self._connection.rollback()
+        self._transaction_started = False
 
     def close(self) -> None:
         # DBUtils returns the physical connection to the process-local pool.

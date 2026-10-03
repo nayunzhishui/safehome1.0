@@ -1,4 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { beginServiceEntry, finishServiceConsent } = require("../../utils/serviceConsent");
 const { requireLogin } = require("../../utils/authGuard");
 const { createResilientForm } = require("../../utils/resilientForm");
 
@@ -6,7 +7,10 @@ const api = createSafeHomeApi();
 const DRAFT_FIELDS = ["selectedSource", "message", "contact", "riskHint"];
 
 Page({
+  retryServiceEntry() { return this.onLoad(this._entryOptions || {}); },
+  returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
   data: {
+    serviceReady: false,
     diaryId: "",
     sourceOptions: [{ type: "", id: "", title: "不关联具体记录", meta: "单独提交一条人工支持请求", selected: true }],
     selectedSource: { type: "", id: "", title: "不关联具体记录" },
@@ -23,7 +27,8 @@ Page({
     slowSubmitting: false,
   },
 
-  async onLoad(options) {
+  onLoad(options = {}) { return beginServiceEntry(this, api, "supervision", options, "/pages/supervision/index"); },
+  async loadAfterConsent(options) {
     const diaryId = decodeURIComponent(options.diary_id || "");
     if (!requireLogin({
       redirectUrl: `/pages/supervision/index?diary_id=${encodeURIComponent(diaryId)}`,
@@ -46,7 +51,7 @@ Page({
   },
 
   onHide() { if (this.draftController && !this.data.submitting) this.setData(this.draftController.flush(this.data)); },
-  onUnload() { if (this.draftController && !this.data.submitting) this.draftController.flush(this.data); },
+  onUnload() { this._consentDisposed = true; finishServiceConsent(this, false); if (this.draftController && !this.data.submitting) this.draftController.flush(this.data); },
 
   scheduleDraftSave() {
     if (!this.draftController) return;

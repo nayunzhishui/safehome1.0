@@ -1,5 +1,6 @@
 const { createSafeHomeApi } = require("../../services/api");
-const { requireLogin } = require("../../utils/authGuard");
+const { beginServiceEntry, finishServiceConsent } = require("../../utils/serviceConsent");
+const { requireLogin, captureAuthSession, isCurrentAuthSession } = require("../../utils/authGuard");
 const { createResilientForm } = require("../../utils/resilientForm");
 
 const api = createSafeHomeApi();
@@ -60,7 +61,10 @@ function withAnswerState(worksheet) {
 }
 
 Page({
+  retryServiceEntry() { return this.onLoad(this._entryOptions || {}); },
+  returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
   data: {
+    serviceReady: false,
     worksheetId: "",
     worksheet: null,
     loading: true,
@@ -72,7 +76,8 @@ Page({
     slowSubmitting: false,
   },
 
-  onLoad(options) {
+  onLoad(options = {}) { return beginServiceEntry(this, api, "assessment", options, "/pages/assessment-detail/index"); },
+  loadAfterConsent(options) {
     const worksheetId = decodeURIComponent(options.id || "");
     if (!requireLogin({
       redirectUrl: `/pages/assessment-detail/index?id=${encodeURIComponent(worksheetId)}`,
@@ -92,19 +97,36 @@ Page({
     this.loadWorksheet(worksheetId);
   },
 
+  onShow() {
+    this._hidden = false;
+    if (this._readSession && !isCurrentAuthSession(this._readSession)) {
+      this.pendingDraft = null; this.draftController = null;
+      this.setData({ worksheet: null, draftRestored: false, serviceReady: false, submitting: false, slowSubmitting: false });
+      return this.onLoad(this._entryOptions || {});
+    }
+    if (this.data.loading && this.data.serviceReady && this.data.worksheetId) this.loadWorksheet(this.data.worksheetId);
+  },
+
   onHide() {
+    this._hidden = true;
     if (this.draftController && !this.data.submitting && this.data.worksheet) {
       this.setData(this.draftController.flush({ answers: this.buildAnswers() }));
     }
   },
 
   onUnload() {
+    this._consentDisposed = true;
+    finishServiceConsent(this, false);
     if (this.draftController && !this.data.submitting && this.data.worksheet) {
       this.draftController.flush({ answers: this.buildAnswers() });
     }
   },
 
   async loadWorksheet(worksheetId) {
+    const session = captureAuthSession();
+    this._readSession = session;
+    const requestId = this._worksheetRequestId = (this._worksheetRequestId || 0) + 1;
+    const isCurrent = () => !this._hidden && !this._consentDisposed && requestId === this._worksheetRequestId && isCurrentAuthSession(session);
     if (!worksheetId) {
       this.setData({ loading: false, errorMessage: "缺少工作表 ID。" });
       return;
@@ -113,6 +135,7 @@ Page({
     this.setData({ loading: true, errorMessage: "" });
     try {
       const worksheet = await api.getAssessment(worksheetId);
+      if (!isCurrent()) return;
       const hydrated = withAnswerState(worksheet);
       const restoredAnswers = this.pendingDraft && this.pendingDraft.values && this.pendingDraft.values.answers;
       if (Array.isArray(restoredAnswers)) {
@@ -130,6 +153,7 @@ Page({
         draftRestored: Boolean(this.pendingDraft),
       });
     } catch (error) {
+      if (!isCurrent()) return;
       this.setData({
         loading: false,
         needsLogin: !!(error && (
@@ -219,6 +243,9 @@ Page({
   },
 
   async submitWorksheet() {
+    const session = captureAuthSession();
+    if (!isCurrentAuthSession(this._readSession) || this._hidden || this._consentDisposed) return;
+    const isCurrent = () => !this._hidden && !this._consentDisposed && isCurrentAuthSession(session);
     const worksheet = this.data.worksheet;
     if (!worksheet || this.data.submitting) return;
 
@@ -231,7 +258,7 @@ Page({
 
     if (this.draftController) this.setData(this.draftController.flush({ answers }));
     this.setData({ submitting: true, slowSubmitting: false, errorMessage: "" });
-    this.slowTimer = setTimeout(() => this.setData({ slowSubmitting: true }), 8000);
+    this.slowTimer = setTimeout(() => { if (isCurrent()) this.setData({ slowSubmitting: true }); }, 8000);
     try {
       const result = worksheet.isStudentProfile
         ? await api.createProfile(this.buildProfilePayload(answers))
@@ -240,6 +267,7 @@ Page({
             answers,
             client_submission_id: this.draftController ? this.draftController.getSubmissionId() : undefined,
           });
+      if (!isCurrent()) return;
       const resultId = worksheet.isStudentProfile ? result.assessment_result_id : result.id;
       if (!resultId) {
         throw new Error("后端未返回结果 ID，请稍后重试。");
@@ -250,6 +278,7 @@ Page({
         url: `/pages/assessment-result/index?id=${encodeURIComponent(resultId)}&worksheet_id=${encodeURIComponent(worksheet.id)}`,
       });
     } catch (error) {
+      if (!isCurrent()) return;
       const needsLogin = error && (
         error.statusCode === 401
         || error.status === 401
@@ -262,7 +291,7 @@ Page({
       });
     } finally {
       if (this.slowTimer) clearTimeout(this.slowTimer);
-      this.setData({ submitting: false, slowSubmitting: false });
+      if (isCurrentAuthSession(session) && !this._consentDisposed) this.setData({ submitting: false, slowSubmitting: false });
     }
   },
 

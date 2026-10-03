@@ -36,6 +36,32 @@ def test_wechat_login_dev_fallback_creates_parent_user(tmp_path, monkeypatch):
     assert data["user"]["nickname"] == "微信家长"
 
 
+def test_production_checkin_rejects_closed_card_without_claim_and_replays_saved_receipt(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    login = client.post("/api/auth/wechat-login", json={"code": "synthetic-card-owner"}).get_json()["data"]
+    app.config.update(APP_ENV="production", MINOR_SAFEGUARDS_ENFORCED=False, SHOWCASE_TRAINING_CARDS_OPEN=False)
+    import services.card_service as cards
+    from database import get_connection
+
+    card = {"id": "synthetic-card", "enabled": False, "review_status": "production_approved"}
+    monkeypatch.setattr(cards, "load_content_json", lambda filename: {"cards": [card]})
+    headers = {"Authorization": "Bearer " + login["token"], "Idempotency-Key": "synthetic-card-checkin"}
+    response = client.post("/api/checkins", json={"card_id": card["id"]}, headers=headers)
+    assert response.status_code == 409
+    assert response.get_json()["error"]["code"] == "card_not_available"
+    with get_connection() as conn:
+        assert conn.execute("SELECT COUNT(*) FROM checkins WHERE user_id = ?", (login["user"]["id"],)).fetchone()[0] == 0
+    card["enabled"] = True
+    saved = client.post("/api/checkins", json={"card_id": card["id"]}, headers=headers)
+    assert saved.status_code == 201
+    card["enabled"] = False
+    replay = client.post("/api/checkins", json={"card_id": card["id"]}, headers=headers)
+    assert replay.status_code == 200
+    assert replay.get_json()["data"]["id"] == saved.get_json()["data"]["id"]
+    assert replay.get_json()["data"]["idempotency_replayed"] is True
+
+
 def test_profile_stats_and_messages_flow(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
@@ -70,7 +96,8 @@ def test_profile_stats_and_messages_flow(tmp_path, monkeypatch):
     assert listed["items"][0]["id"] == owner_message["id"]
 
     forbidden_response = client.get("/api/messages?user_id=demo-parent", headers={"Authorization": f"Bearer {token}"})
-    assert forbidden_response.status_code == 403
+    assert forbidden_response.status_code == 200
+    assert [item["id"] for item in forbidden_response.get_json()["data"]["items"]] == [owner_message["id"]]  # Authenticated identity overrides a forged query owner.
 
     detail_response = client.get(f"/api/messages/{owner_message['id']}?user_id={user_id}", headers={"Authorization": f"Bearer {token}"})
     assert detail_response.status_code == 200

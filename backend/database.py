@@ -217,12 +217,16 @@ MYSQL_VARCHAR_COLUMNS = {
     "purpose",
     "processor",
     "text_hash",
+    "claim_token_digest",
     "event_type",
     "authorization_status",
     "source_type",
     "source_version",
     "source_hash",
     "idempotency_key",
+    "execution_manifest_id",
+    "server_hash",
+    "reproducibility_key",
     "lease_owner",
     "result_artifact_id",
     "artifact_hash",
@@ -587,22 +591,29 @@ class MySQLConnection:
         )
 
     def __enter__(self):
-        self._connection.ping(reconnect=True)
+        try:
+            self._connection.ping(reconnect=True)
+        except Exception:
+            self.close()
+            raise
         return self
 
     def __exit__(self, exc_type, exc, traceback):
-        if exc_type is None:
-            self.commit()
-        else:
-            try:
-                self._connection.rollback()
-            except Exception:
-                pass
-        self.close()
+        try:
+            if exc_type is None:
+                self.commit()
+            else:
+                try:
+                    self._connection.rollback()
+                except Exception:
+                    pass
+        finally:
+            self.close()
         return False
 
     def execute(self, sql: str, params=None):
-        self._connection.ping(reconnect=True)
+        # A reconnect here would discard earlier uncommitted statements.
+        self._connection.ping(reconnect=False)
         cursor = self._connection.cursor()
         cursor.execute(_mysqlize_query(sql), tuple(params or ()))
         return cursor
@@ -654,7 +665,7 @@ def _mysqlize_query(sql: str) -> str:
 
 
 def _mysql_column_line(line: str) -> str:
-    match = re.match(r"^(\s*)([A-Za-z_][A-Za-z0-9_]*)\s+TEXT(\b.*)$", line)
+    match = re.match(r"^(\s*)([A-Za-z_][A-Za-z0-9_]*)\s+TEXT(\b.*)$", line, re.DOTALL)
     if not match:
         return line
 
@@ -679,6 +690,34 @@ def _mysql_column_line(line: str) -> str:
 
 
 def mysqlize_schema_statement(statement: str) -> str:
+    # Explicit migrations may put several columns on one line. Split table
+    # definitions only at top-level commas, preserving literals and constraints.
+    if re.match(r"\s*CREATE\s+TABLE\b", statement, re.IGNORECASE):
+        start, end = statement.find("("), statement.rfind(")")
+        if start >= 0 and end > start:
+            body = statement[start + 1:end]
+            parts, offset, depth, quote = [], 0, 0, None
+            index = 0
+            while index < len(body):
+                char = body[index]
+                if quote:
+                    if char == quote:
+                        if index + 1 < len(body) and body[index + 1] == quote:
+                            index += 1
+                        else:
+                            quote = None
+                elif char in {"'", '"', "`"}:
+                    quote = char
+                elif char == "(":
+                    depth += 1
+                elif char == ")":
+                    depth -= 1
+                elif char == "," and depth == 0:
+                    parts.append(_mysql_column_line(body[offset:index]))
+                    offset = index + 1
+                index += 1
+            parts.append(_mysql_column_line(body[offset:]))
+            return (statement[:start + 1] + ",".join(parts) + statement[end:]).replace("REAL", "DOUBLE")
     lines = [_mysql_column_line(line) for line in statement.splitlines()]
     return "\n".join(lines).replace("REAL", "DOUBLE")
 
@@ -941,9 +980,9 @@ def create_index(conn, statement: str) -> None:
         raise
 
 
-def ensure_mysql_index_columns(conn) -> None:
+def ensure_mysql_index_columns(conn, statements=None) -> None:
     """Convert existing failed-deploy TEXT index columns to VARCHAR before indexing."""
-    for statement in INDEX_SQL:
+    for statement in INDEX_SQL if statements is None else statements:
         parsed = _parse_index_statement(statement)
         if parsed is None:
             continue
@@ -958,6 +997,7 @@ def ensure_mysql_index_columns(conn) -> None:
                 """
             SELECT data_type AS data_type, is_nullable AS is_nullable
                  , character_maximum_length AS character_maximum_length
+                   , column_default AS column_default
             FROM information_schema.columns
                 WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?
                 LIMIT 1
@@ -973,10 +1013,15 @@ def ensure_mysql_index_columns(conn) -> None:
             if data_type == "varchar" and current_length <= MYSQL_INDEXABLE_VARCHAR_LENGTH:
                 continue
             null_clause = "NOT NULL" if row["is_nullable"] == "NO" else "NULL"
+            length_row = conn.execute(f"SELECT MAX(CHAR_LENGTH({column})) AS max_length FROM {table}").fetchone()
+            if length_row and int(length_row.get("max_length") or 0) > MYSQL_INDEXABLE_VARCHAR_LENGTH:
+                raise RuntimeError(f"Cannot safely index {table}.{column}: existing value exceeds VARCHAR({MYSQL_INDEXABLE_VARCHAR_LENGTH})")
+            default = row.get("column_default")
+            default_clause = "" if default is None else " DEFAULT '" + str(default).replace("\\", "\\\\").replace("'", "''") + "'"
             # table/column come from parsed internal INDEX_SQL targets and MYSQL_VARCHAR_COLUMNS allowlist.
             conn.execute(
                 f"ALTER TABLE {table} MODIFY COLUMN {column} "
-                f"VARCHAR({MYSQL_INDEXABLE_VARCHAR_LENGTH}) {null_clause}"
+                f"VARCHAR({MYSQL_INDEXABLE_VARCHAR_LENGTH}) {null_clause}{default_clause}"
             )
 
 
@@ -1798,6 +1843,12 @@ def sync_assessment_worksheets(conn) -> None:
     for worksheet in payload.get("worksheets", []):
         if not isinstance(worksheet, dict) or not worksheet.get("id"):
             continue
+        worksheet_meta = dict(worksheet.get("_meta") or {})
+        # These fields have no separate DB columns; persist the same policy as
+        # file-backed scoring instead of keeping stale metadata or defaults.
+        for field in ("total_score_method", "derived_dimensions"):
+            if field in worksheet:
+                worksheet_meta[field] = worksheet[field]
         existing = conn.execute("SELECT created_at FROM assessment_worksheets WHERE id = ?", (worksheet["id"],)).fetchone()
         row = {
             "id": worksheet["id"],
@@ -1828,7 +1879,7 @@ def sync_assessment_worksheets(conn) -> None:
             "sections_json": json_dumps(worksheet.get("sections", [])),
             "scoring": worksheet.get("scoring"),
             "pages": worksheet.get("pages"),
-            "_meta_json": json_dumps(worksheet.get("_meta", {})),
+            "_meta_json": json_dumps(worksheet_meta),
             "created_at": existing["created_at"] if existing else timestamp,
             "updated_at": timestamp,
         }

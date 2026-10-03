@@ -4,6 +4,8 @@ from datetime import datetime, timedelta, timezone
 
 from flask import Blueprint, request
 
+from services.participant_safeguard_service import ParticipantSafeguardError, assert_participant_capability, safeguards_enforced
+
 from database import ensure_user, get_connection, json_dumps, new_id, now_iso, row_to_dict, write_audit_log
 from routes.auth_utils import AuthError, auth_error_response, require_role, resolve_actor_user_id
 from routes.utils import fail, ok, require_fields
@@ -108,6 +110,11 @@ def create_supervision_request():
         user_id = resolve_actor_user_id(payload=payload)
     except AuthError as exc:
         return auth_error_response(exc)
+    if safeguards_enforced():
+        try:
+            assert_participant_capability(user_id, "sensitive_text")
+        except ParticipantSafeguardError as exc:
+            return fail(exc.code, exc.message, status=exc.status, details=exc.details)
     timestamp = now_iso()
     request_id = new_id("supervision")
     submission_id = str(request.headers.get("Idempotency-Key") or payload.get("client_submission_id") or "").strip()

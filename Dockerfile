@@ -9,7 +9,7 @@ RUN pip install --no-cache-dir -r /app/backend/requirements.txt \
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV APP_ENV=production
-ENV HOME=/app
+ENV HOME=/app/data
 ENV CONTENT_DIR=/app/content
 ENV MAX_REQUEST_BODY_BYTES=1048576
 
@@ -33,6 +33,7 @@ COPY backend /app/backend
 COPY content /app/content
 COPY shared /app/shared
 COPY config/rc0810/database_profiles.json /app/config/rc0810/database_profiles.json
+COPY config/rc0810/operations_reliability_policy.json config/rc0810/research_execution_manifest_policy.json config/rc0810/database_recovery_policy.json /app/config/rc0810/
 COPY deploy/verify_rc0810_f03_images.py /app/verify_rc0810_f03_images.py
 
 RUN addgroup --system safehome \

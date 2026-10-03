@@ -13,14 +13,16 @@ def _fresh_app(tmp_path, monkeypatch, *, app_env="production", content_dir=None)
     for name in list(sys.modules):
         if name in {"app", "config", "database", "models"} or name.startswith("routes.") or name.startswith("services."):
             sys.modules.pop(name, None)
-    monkeypatch.setenv("APP_ENV", app_env)
+    monkeypatch.setenv("APP_ENV", "validation")
+    monkeypatch.setenv("DATABASE_DATA_WATERMARK", "synthetic_validation_only")
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / f"f05-{app_env}.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(content_dir or ROOT / "content"))
     monkeypatch.setenv("DB_PROVIDER", "sqlite")
-    monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
     monkeypatch.setenv("SECRET_KEY", "f05-test-secret-key-that-is-long-enough")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "f05-admin-token")
-    return importlib.import_module("app").app
+    app = importlib.import_module("app").app
+    app.config["APP_ENV"] = app_env
+    return app
 
 
 def test_production_ignores_enabled_showcase_content(tmp_path, monkeypatch):

@@ -12,6 +12,7 @@ from routes.utils import (
     require_admin_token,
     require_fields,
 )
+from services.participant_safeguard_service import ParticipantSafeguardError, assert_participant_capability, safeguards_enforced
 from services.input_validation_service import InputValidationError, validate_diary_payload
 from services.idempotency_service import (
     IdempotencyConflictError,
@@ -28,6 +29,8 @@ bp = Blueprint("diaries", __name__, url_prefix="/api/diaries")
 @bp.post("")
 def create_diary():
     raw_payload = request.get_json(silent=True) or {}
+    if not isinstance(raw_payload, dict):
+        return fail("validation_error", "请求正文必须是JSON对象。", status=400)
     missing = require_fields(raw_payload, ["scene", "event_description", "parent_emotion"])
     if missing:
         return fail("missing_fields", f"缺少必填字段：{', '.join(missing)}")
@@ -40,6 +43,11 @@ def create_diary():
         user_id = resolve_actor_user_id(payload=payload)
     except AuthError as exc:
         return auth_error_response(exc)
+    if safeguards_enforced():
+        try:
+            assert_participant_capability(user_id, "sensitive_text")
+        except ParticipantSafeguardError as exc:
+            return fail(exc.code, exc.message, status=exc.status, details=exc.details)
     timestamp = now_iso()
     diary_id = new_id("diary")
     submission_id = str(request.headers.get("Idempotency-Key") or payload.get("client_submission_id") or "").strip()

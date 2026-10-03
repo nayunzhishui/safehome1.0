@@ -208,6 +208,15 @@
       ]
     },
     {
+      "route": "/api/assessment-results/<result_id>/exploratory-analysis",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "result_id"
+      ]
+    },
+    {
       "route": "/api/assessment-results/<result_id>/profile-position",
       "methods": [
         "GET"
@@ -295,6 +304,15 @@
       ],
       "parameters": [
         "username"
+      ]
+    },
+    {
+      "route": "/api/consent/<consent_record_id>/annotations",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "consent_record_id"
       ]
     },
     {
@@ -1791,32 +1809,47 @@
     },
     {
       "file": "backend/routes/assessments.py",
-      "line": 314,
+      "line": 329,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/assessments.py",
-      "line": 361,
+      "line": 376,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/assessments.py",
-      "line": 378,
+      "line": 393,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/assessments.py",
+      "line": 436,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/auth_utils.py",
-      "line": 85,
+      "line": 83,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/checkins.py",
-      "line": 112,
+      "line": 169,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/consent.py",
-      "line": 106,
+      "line": 47,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/consent.py",
+      "line": 47,
+      "parameter": "subject_id"
+    },
+    {
+      "file": "backend/routes/consent.py",
+      "line": 93,
       "parameter": "user_id"
     },
     {
@@ -1831,12 +1864,12 @@
     },
     {
       "file": "backend/routes/diaries.py",
-      "line": 102,
+      "line": 155,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/emotion_thermometer.py",
-      "line": 194,
+      "line": 203,
       "parameter": "user_id"
     },
     {
@@ -1851,7 +1884,7 @@
     },
     {
       "file": "backend/routes/goals.py",
-      "line": 74,
+      "line": 121,
       "parameter": "user_id"
     },
     {
@@ -1931,12 +1964,12 @@
     },
     {
       "file": "backend/routes/profile.py",
-      "line": 160,
+      "line": 166,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/profile.py",
-      "line": 469,
+      "line": 529,
       "parameter": "user_id"
     },
     {
@@ -1976,7 +2009,7 @@
     },
     {
       "file": "backend/routes/utils.py",
-      "line": 49,
+      "line": 47,
       "parameter": "user_id"
     }
   ]

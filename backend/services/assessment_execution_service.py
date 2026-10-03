@@ -430,6 +430,8 @@ def score_answers(worksheet: dict, answers: list[dict]) -> tuple[dict, int | flo
         if calculated is not None:
             value = calculated
             calculation_method = calculation.get("type", score_method)
+            if calculation_method in {"mean_terms", "mapped_mean_terms"}:
+                item_count = sum(term.get("item") in item_scores for term in calculation.get("terms", []))
         elif score_method == "mean" and item_count:
             value = round(bucket["score"] / item_count, 2)
             calculation_method = score_method
@@ -467,6 +469,8 @@ def score_answers(worksheet: dict, answers: list[dict]) -> tuple[dict, int | flo
         )
 
     persisted_total = total if has_score and total_score_method != "none" else None
+    if persisted_total is not None and total_score_method == "mean":
+        persisted_total = _rounded(total / len(item_scores))
     scores: dict = {"total_score": persisted_total}
     if dimensions:
         scores["dimensions"] = dimensions

@@ -12,11 +12,13 @@ def _fresh_app(tmp_path, monkeypatch, app_env: str = "development"):
     for name in list(sys.modules):
         if name in {"app", "config", "database", "models"} or name.startswith("routes.") or name.startswith("services."):
             sys.modules.pop(name, None)
-    monkeypatch.setenv("APP_ENV", app_env)
+    monkeypatch.setenv("APP_ENV", "validation" if app_env == "production" else app_env)
+    if app_env == "production":
+        monkeypatch.setenv("DATABASE_DATA_WATERMARK", "synthetic_validation_only")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
     if app_env == "production":
         monkeypatch.setenv("DB_PROVIDER", "sqlite")
-        monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+        monkeypatch.delenv("ALLOW_PRODUCTION_SQLITE", raising=False)
         monkeypatch.setenv("SECRET_KEY", "production-test-secret-key-32-chars")
     else:
         monkeypatch.delenv("DB_PROVIDER", raising=False)

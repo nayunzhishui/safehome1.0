@@ -1,3 +1,8 @@
+<view wx:if="{{!serviceReady}}" class="safe-page ui2-page" role="main" aria-label="功能知情说明">
+  <page-state kind="error" title="使用前请阅读本功能说明" description="{{errorMessage || '确认数据用途后，再填写和保存；暂不同意可以返回。'}}" action-label="重新确认" bind:action="retryServiceEntry" />
+  <button class="safe-primary-button" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
+</view>
+<block wx:if="{{serviceReady}}">
 <view class="page ui2-page" role="main" aria-label="训练打卡">
   <view class="hero">
     <text class="title">练习打卡</text>
@@ -71,3 +76,5 @@
     <button class="secondary-button" bindtap="goHome">回到首页</button>
   </view>
 </view>
+
+</block>

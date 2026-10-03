@@ -32,6 +32,23 @@ def _parse_score_dimensions(scores_json: str | None) -> list[dict]:
     return [item for item in dimensions if isinstance(item, dict)]
 
 
+def assessment_comparison_key(row: dict) -> tuple | None:
+    """Historical scores are comparable only with explicit matching provenance."""
+    version = row.get("worksheet_version")
+    scoring = row.get("scoring_version")
+    scale = json_loads(row.get("raw_scale_json"), {})
+    if not version or not scoring or "unversioned" in str(scoring) or not isinstance(scale, dict) or not scale.get("ranges"):
+        return None
+    ranges = tuple((item.get("min"), item.get("max")) for item in scale["ranges"])
+    dimensions = tuple(sorted(str(item.get("key")) for item in _parse_score_dimensions(row.get("scores_json"))))
+    return (str(version), str(scoring), ranges, dimensions)
+
+
+def assessments_comparable(newest: dict, oldest: dict) -> bool:
+    key = assessment_comparison_key(newest)
+    return key is not None and key == assessment_comparison_key(oldest)
+
+
 def _assessment_summary(rows: list[dict]) -> dict:
     by_worksheet: dict[str, list[dict]] = defaultdict(list)
     for row in rows:
@@ -44,8 +61,9 @@ def _assessment_summary(rows: list[dict]) -> dict:
             continue
         newest = items[0]
         oldest = items[-1]
+        comparable = assessments_comparable(newest, oldest)
         delta = None
-        if newest.get("total_score") is not None and oldest.get("total_score") is not None:
+        if comparable and newest.get("total_score") is not None and oldest.get("total_score") is not None:
             delta = float(newest["total_score"]) - float(oldest["total_score"])
         repeated.append(
             {
@@ -55,6 +73,8 @@ def _assessment_summary(rows: list[dict]) -> dict:
                 "latest_score": newest.get("total_score"),
                 "previous_score": oldest.get("total_score"),
                 "score_delta": delta,
+                "comparable": comparable,
+                "comparison_notice": "" if comparable else "版本或量尺不同，或历史来源信息不足，本次不比较分数变化。",
                 "dimension_trends": _dimension_trends(items),
             }
         )
@@ -73,6 +93,8 @@ def _assessment_summary(rows: list[dict]) -> dict:
 
 
 def _dimension_trends(items: list[dict]) -> list[dict]:
+    if not assessments_comparable(items[0], items[-1]):
+        return []
     newest_dimensions = {item.get("key"): item for item in _parse_score_dimensions(items[0].get("scores_json"))}
     oldest_dimensions = {item.get("key"): item for item in _parse_score_dimensions(items[-1].get("scores_json"))}
     trends = []
@@ -201,7 +223,7 @@ def _status(assessment: dict, checkin: dict, thermometer: dict) -> str:
     thermometer_cv = thermometer.get("cv")
     thermometer_range = thermometer.get("range")
     assessment_delta = _assessment_delta_signal(assessment)
-    has_repeated_assessment = bool(assessment.get("repeated_worksheets"))
+    has_repeated_assessment = any(item.get("comparable") for item in assessment.get("repeated_worksheets") or [])
 
     if thermometer_count < MIN_SERIES_POINTS and not has_repeated_assessment:
         return "low_confidence"
@@ -241,7 +263,7 @@ def _summary_text(status: str, diary_summary: dict, assessment_summary: dict) ->
     if status == "stable":
         return "近期记录的波动较小，可以继续保留已经容易完成的小练习。"
     scene = diary_summary.get("frequent_scenes", [[None]])[0][0] if diary_summary.get("frequent_scenes") else None
-    repeated = assessment_summary.get("repeated_worksheets") or []
+    repeated = [item for item in assessment_summary.get("repeated_worksheets") or [] if item.get("comparable")]
     if repeated:
         return f"近期已有重复测评记录，可以先观察“{repeated[0]['title']}”的变化。"
     if scene:
@@ -255,7 +277,8 @@ def build_progress_summary(user_id: str, range_key: str = "7d") -> dict:
         assessment_rows = conn.execute(
             """
             SELECT id, worksheet_id, worksheet_title, scores_json, total_score,
-                   profile_model_id, profile_cluster_id, profile_confidence, created_at
+                   profile_model_id, profile_cluster_id, profile_confidence, created_at,
+                   worksheet_version, scoring_version, raw_scale_json
             FROM assessment_results
             WHERE user_id = ? AND substr(created_at, 1, 10) BETWEEN ? AND ?
             ORDER BY created_at DESC

@@ -1,5 +1,7 @@
 import importlib
 import sys
+
+import pytest
 from pathlib import Path
 
 
@@ -146,3 +148,54 @@ def test_evidence_package_has_external_gates_and_no_approval_action(tmp_path, mo
     assert data["status"] == "draft_for_human_release_review"
     assert data["production_release_approved"] is False
     assert data["external_gates"]
+
+
+@pytest.mark.parametrize("action", ["complete", "fail"])
+@pytest.mark.parametrize("changed_lease", [False, True])
+def test_job_finalization_rejects_expired_or_reassigned_lease(tmp_path, monkeypatch, action, changed_lease):
+    app = _fresh_app(tmp_path, monkeypatch)
+    headers = _actors(app)
+    client = app.test_client()
+    admin = headers["admin-t32"]
+    created = client.post("/api/reliability/jobs", headers=admin, json={
+        "job_type": "notification_delivery", "source_type": "notification_delivery",
+        "source_id": "synthetic-lease-race", "idempotency_key": "lease-race-001",
+    })
+    job_id = created.get_json()["data"]["id"]
+    assert client.post(f"/api/reliability/jobs/{job_id}/claim", headers=admin, json={}).status_code == 200
+    service = importlib.import_module("services.reliability_service")
+    database = importlib.import_module("database")
+    if not changed_lease:
+        with database.get_connection() as conn:
+            conn.execute("UPDATE reliable_jobs SET lease_expires_at = ? WHERE id = ?", ("2000-01-01T00:00:00+00:00", job_id))
+            conn.commit()
+    else:
+        # Simulate another claimant changing the lease after the handler's read.
+        original_connection = service.get_connection
+
+        class InterleavedConnection:
+            def __enter__(self):
+                self.conn = original_connection()
+                self.conn.__enter__()
+                return self
+
+            def __exit__(self, *args):
+                return self.conn.__exit__(*args)
+
+            def execute(self, sql, params=()):
+                if sql.lstrip().startswith("UPDATE reliable_jobs SET status"):
+                    self.conn.execute("UPDATE reliable_jobs SET lease_owner = ? WHERE id = ?", ("researcher-t32", job_id))
+                return self.conn.execute(sql, params)
+
+            def commit(self):
+                return self.conn.commit()
+
+        monkeypatch.setattr(service, "get_connection", InterleavedConnection)
+    response = client.post(f"/api/reliability/jobs/{job_id}/{action}", headers=admin, json={"error_code": "synthetic_failure"})
+    assert response.status_code == 409, response.get_json()
+    assert response.get_json()["error"]["code"] == "job_lease_conflict"
+    with database.get_connection() as conn:
+        row = conn.execute("SELECT status FROM reliable_jobs WHERE id = ?", (job_id,)).fetchone()
+        assert row["status"] == "leased"
+        count = conn.execute("SELECT COUNT(*) AS count FROM reliable_job_actions WHERE job_id = ? AND action IN ('complete', 'fail')", (job_id,)).fetchone()
+        assert count["count"] == 0

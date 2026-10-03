@@ -117,3 +117,27 @@ def test_miniprogram_uses_dedicated_history_page_and_grouped_weekly_dimensions()
     assert "has_more" in history_js
     assert "group.worksheetTitle" in weekly_wxml
     assert "group.dimensions" in weekly_wxml
+
+
+def test_cross_version_or_missing_provenance_does_not_generate_score_trend(tmp_path):
+    _fresh_app(tmp_path)
+    from database import json_dumps
+    from services.report_service import _build_assessment_summary
+    from services.progress_summary_service import _assessment_summary, _status
+    def row(version, total, dimension):
+        return {"worksheet_id": "synthetic-uwes", "worksheet_title": "合成问卷", "worksheet_version": version, "scoring_version": f"{version}::worksheet_server_score_v1", "raw_scale_json": json_dumps({"ranges": [{"min": 0, "max": 6}]}), "total_score": total, "scores_json": json_dumps({"dimensions": [{"key": "VIGOR", "score": dimension}]})}
+    newer, older = row("v2", 5, 5), row("v1", 85, 30)
+    weekly = _build_assessment_summary([newer, older])["dimension_summaries"][0]
+    assert weekly["score_delta"] is None
+    assert weekly["direction"] == "暂不比较"
+    progress = _assessment_summary([newer, older])
+    repeated = progress["repeated_worksheets"][0]
+    assert repeated["score_delta"] is None
+    assert repeated["dimension_trends"] == []
+    assert not repeated["comparable"]
+    assert _status(progress, {"completed_count": 1}, {"count": 0}) == "low_confidence"
+    same = _assessment_summary([row("v2", 5, 5), row("v2", 4, 4)])["repeated_worksheets"][0]
+    assert same["score_delta"] == 1
+    assert same["dimension_trends"][0]["score_delta"] == 1
+    newer.pop("worksheet_version")
+    assert not _assessment_summary([newer, row("v2", 4, 4)])["repeated_worksheets"][0]["comparable"]

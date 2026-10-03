@@ -141,6 +141,18 @@
   </view>
 
   <view wx:if="{{noticeType === 'privacy'}}" class="safe-section privacy-control-section">
+    <section-title title="我的可选用途决定" />
+    <text class="privacy-boundary">各用途分别决定。此处只查看已有决定与撤回；浏览说明不会新增同意。撤回不等于即时删除历史数据。</text>
+    <page-state wx:if="{{consentLoading || consentError}}" kind="{{consentLoading ? 'loading' : 'error'}}" title="{{consentLoading ? '正在读取用途决定' : '用途决定暂时不可用'}}" description="{{consentError}}" action-label="{{consentLoading ? '' : '重新读取'}}" bind:action="loadConsentDecisions" />
+    <view wx:elif="{{consentDecisions.length}}">
+      <view wx:for="{{consentDecisions}}" wx:key="id" class="privacy-request-card">
+        <text class="privacy-request-title">{{item.label}}</text>
+        <text class="privacy-boundary">{{item.agreed ? '已记录同意' : '已记录拒绝或撤回'}} · 版本 {{item.consent_version}}</text>
+        <button wx:if="{{item.agreed}}" class="privacy-cancel-button" disabled="{{consentBusy}}" data-id="{{item.id}}" bindtap="withdrawOptionalConsent">撤回这一用途</button>
+      </view>
+    </view>
+    <text wx:else class="privacy-boundary">暂无已记录的可选用途决定；这不代表已经同意。</text>
+
     <section-title title="我的删除申请" />
 
     <page-state

@@ -9,18 +9,22 @@ ROOT = Path(__file__).resolve().parents[2]
 BACKEND = ROOT / "backend"
 
 
-def _fresh_app(tmp_path, monkeypatch, env="pilot"):
+def _fresh_app(tmp_path, monkeypatch, env="validation"):
     sys.path.insert(0, str(BACKEND))
     for name in list(sys.modules):
         if name in {"app", "config", "database", "models"} or name.startswith("routes.") or name.startswith("services."):
             sys.modules.pop(name, None)
     monkeypatch.setenv("APP_ENV", env)
+    monkeypatch.setenv("DATABASE_DATA_WATERMARK", "synthetic_validation_only")
+    monkeypatch.setenv("MINOR_SAFEGUARDS_ENFORCED", "1")
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "security-convergence.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(ROOT / "content"))
     monkeypatch.setenv("DB_PROVIDER", "sqlite")
     monkeypatch.setenv("SECRET_KEY", "security-convergence-secret-key-long-enough")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "legacy-admin-token")
     monkeypatch.delenv("LEGACY_ADMIN_TOKEN_ENABLED", raising=False)
+    config = importlib.import_module("config")
+    monkeypatch.setattr(config.Config, "MINOR_SAFEGUARDS_ENFORCED", True, raising=False)
     return importlib.import_module("app").app
 
 

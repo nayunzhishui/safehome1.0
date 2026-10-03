@@ -10,8 +10,8 @@ def test_supplemental_observation_values_are_outside_slider_tracks():
 
     assert wxml.count('class="micro-value"') == 3
     assert wxml.count('class="micro-slider"') == 3
-    assert "grid-template-columns: minmax(0, 1fr) auto" in wxss
-    assert "grid-column: 1 / -1" in wxss
+    assert wxml.index('class="micro-value"') < wxml.index('class="micro-slider"')
+    assert "width: 100%" in wxss.split(".micro-slider {", 1)[1].split("}", 1)[0]
     assert ".micro-value" in wxss
 
 

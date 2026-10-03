@@ -1,10 +1,13 @@
 """Practice check-in endpoints."""
 
-from flask import Blueprint, request
+from flask import Blueprint, current_app, request
+
+from services.participant_safeguard_service import ParticipantSafeguardError, assert_participant_capability, safeguards_enforced
 
 from database import ensure_user, get_connection, load_content_json, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
 from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
 from routes.utils import fail, ok, parse_bool, parse_int, require_fields
+from services.card_service import list_cards
 from services.idempotency_service import (
     IdempotencyConflictError,
     IdempotencyValidationError,
@@ -29,6 +32,11 @@ def create_checkin():
         user_id = resolve_actor_user_id(payload=payload)
     except AuthError as exc:
         return auth_error_response(exc)
+    if safeguards_enforced():
+        try:
+            assert_participant_capability(user_id, "sensitive_text")
+        except ParticipantSafeguardError as exc:
+            return fail(exc.code, exc.message, status=exc.status, details=exc.details)
     timestamp = now_iso()
     checkin_id = new_id("checkin")
     submission_id = str(request.headers.get("Idempotency-Key") or payload.get("client_submission_id") or "").strip()
@@ -88,6 +96,11 @@ def create_checkin():
                 item = public_idempotent_resource(row_to_dict(existing))
                 item["idempotency_replayed"] = True
                 return ok(item)
+        if str(current_app.config.get("APP_ENV", "development")).lower() == "production":
+            if not any(card.get("id") == payload["card_id"] for card in list_cards(enabled_only=True)):
+                # Reject only new writes; an earlier receipt still replays above.
+                conn.rollback()
+                return fail("card_not_available", "这张训练卡当前未开放，请返回选择可用练习。", status=409)
         conn.execute(
             """
             INSERT INTO checkins (

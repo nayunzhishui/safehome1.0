@@ -125,7 +125,7 @@ def build_worksheet_from_scale(scale: dict, draft: dict, worksheet_id: str | Non
         "search_keywords": scale.get("search_keywords", []),
         "sensitive_category": scale.get("sensitive_category", "none"),
         "pages": 1,
-        "instructions": (
+        "instructions": draft.get("worksheet_instructions") or (
             "请根据最近一段时间的真实情况填写。结果只用于自我观察、画像候选和练习参考，"
             "不用于诊断、筛查或评价人格。"
         ),
@@ -143,7 +143,7 @@ def build_worksheet_from_scale(scale: dict, draft: dict, worksheet_id: str | Non
         "total_score_method": draft.get("total_score_method", "sum"),
         "scoring": build_scoring_text(draft, scale),
         "recommended_card_ids": recommended_card_ids_for(scale, draft),
-        "source_version": f"2026.06-{scale_id}-from-scale-draft",
+        "source_version": draft.get("source_version") or f"2026.06-{scale_id}-from-scale-draft",
         "source_type": scale.get("source_type", "authorized_resource"),
         "review_status": scale.get("review_status", "pilot_review_required"),
         "enabled_for_user": bool(scale.get("enabled", False)),

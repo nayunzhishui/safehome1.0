@@ -11,6 +11,14 @@ const GATE_LABELS: Record<string, string> = {
   horizontal_overflow: "横向溢出", reduced_motion: "减少动画",
 };
 
+const HUMAN_EVIDENCE_LABELS: Record<string, string> = {
+  large_text: "大字号阅读",
+  screen_reader: "屏幕阅读器",
+  wechat_embedded_browser: "微信内置浏览器",
+  android_ios: "Android／iOS真机",
+  formative_cognitive_interviews: "理解与使用访谈",
+};
+
 function messageOf(error: unknown): string {
   return error instanceof Error ? error.message : "体验覆盖暂时无法读取，请稍后重试。";
 }
@@ -92,7 +100,7 @@ export function ExperienceGovernanceWorkbench() {
 
       <section className="panel" aria-labelledby="external-title">
         <div className="panelHeading"><div><span className="panelKicker">不能由系统代签</span><h2 id="external-title">外部证据</h2></div></div>
-        <div className="externalGateList">{(data?.external_gates || []).map((item) => <article key={item.gate}><strong>{item.gate}</strong><span>待真人证据</span></article>)}</div>
+        <div className="externalGateList">{(data?.external_gates || []).map((item) => <article key={item.gate}><strong>{HUMAN_EVIDENCE_LABELS[item.gate] || item.gate}</strong><span>待真人证据</span></article>)}</div>
         {canPackage ? <button className="secondaryButton" type="button" disabled={busy} onClick={() => void packageEvidence()}>生成待人工核对证据包</button> : null}
         <p className="boundaryCallout">证据包不会写入访谈原话、真实参与者文本或签字；“没有投诉”不代表体验已经通过。</p>
       </section>

@@ -15,7 +15,7 @@ App({
         if (!cloudConfig.useLocalHttp) {
           wx.cloud.init({
             env: cloudConfig.cloudEnvId,
-            traceUser: true,
+            traceUser: false,
           });
         }
       } catch (error) {

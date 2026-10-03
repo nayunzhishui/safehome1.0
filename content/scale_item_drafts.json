@@ -1,6 +1,6 @@
 {
-  "version": "2026.06-scale-item-drafts-v1",
-  "updated_at": "2026-07-15",
+  "version": "2026.10-scale-review-corrections-v2",
+  "updated_at": "2026-10-02",
   "boundary_notice": "本文件仅保存量表题项录入草稿，用于人工核对、计分复核和伦理边界审查。所有草稿默认不开放给用户填写，不输出诊断结论，不评价家长、学生或家庭人格。",
   "drafts": [
     {
@@ -53,7 +53,6 @@
         {
           "code": "PRFQ_PM",
           "label": "前心智化模式",
-          "source_label": "PRFQ Pre-Mentalizing Modes",
           "item_codes": [
             "PRFQ01",
             "PRFQ04",
@@ -62,12 +61,12 @@
             "PRFQ13",
             "PRFQ16"
           ],
+          "reverse_item_codes": [],
           "note": "维度名称为 syntax 原始含义直译，正式展示前需要改写为支持性、非评价表达。"
         },
         {
           "code": "PRFQ_CM",
           "label": "对心理状态的确定性",
-          "source_label": "PRFQ Certainty about Mental States",
           "item_codes": [
             "PRFQ02",
             "PRFQ05",
@@ -84,7 +83,6 @@
         {
           "code": "PRFQ_IC",
           "label": "对心理状态的兴趣与好奇",
-          "source_label": "PRFQ Interest and Curiosity in Mental States",
           "item_codes": [
             "PRFQ03",
             "PRFQ06",
@@ -228,11 +226,7 @@
         }
       ],
       "scoring_notes": [
-        "PRFQ11 和 PRFQ18 按 syntax 进行 1-7 反向计分。",
-        "PRFQ_PM = PRFQ1、4、7、10、13、16 的均值。",
-        "PRFQ_CM = PRFQ2、5、8、11rr、14、17 的均值。",
-        "PRFQ_IC = PRFQ3、6、9、12、15、18rr 的均值。",
-        "正式开放前必须由人工核对中文题项、维度译名、计分解释和伦理边界。"
+        "PRFQ11 和 PRFQ18 按 syntax 进行 1-7 反向计分；PRFQ_PM = PRFQ1、4、7、10、13、16 的均值；PRFQ_CM = PRFQ2、5、8、11rr、14、17 的均值；PRFQ_IC = PRFQ3、6、9、12、15、18rr 的均值；正式开放前必须由人工核对中文题项、维度译名、计分解释和伦理边界；仅报告各分量表，不计算跨维度合计分。"
       ],
       "supportive_interpretation_draft": "结果只用于观察家长在理解孩子行为和情绪时可能使用的关注方式，不评价家长好坏，也不构成诊断。正式结果页应使用“可能”“看起来”“可以作为线索”等保守措辞。",
       "recommended_card_ids": [
@@ -244,16 +238,20 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "worksheet_instructions": "请根据自己理解孩子想法、感受和行为原因时的通常情况作答。没有标准答案，请选择最符合近期亲子互动的程度。",
+      "source_version": "2026.06-parent_reflective_functioning_prfq-from-scale-draft-review-20261002-v1",
+      "total_score_method": "none"
     },
     {
       "scale_id": "emotion_regulation_erq_gross",
-      "display_name": "情绪调节问卷（Gross ERQ）",
+      "display_name": "情绪调节问卷（ERQ）",
       "source_folder": "情绪调节问卷-GROSS-GERQ",
       "source_files": [
         "Gross情绪调节问卷.pdf",
         "Gross情绪调节问卷.docx",
-        "指标值计算-Gross情绪调节量表GERQ.sps"
+        "指标值计算-Gross情绪调节量表GERQ.sps",
+        "https://spl.stanford.edu/sites/g/files/sbiybj19321/files/media/file/chinese.pdf"
       ],
       "source_citation": "本地资料说明：由 Gross 编制，王力等人修订；正式开放前需人工补全标准引用和授权边界。",
       "audience": "adult",
@@ -273,7 +271,7 @@
         "将认知重评、表达抑制的用户端解释改写为支持性、非评价、非诊断表达。",
         "确认是否适合进入家长优先版本，或仅作为成人自助/后台候选。"
       ],
-      "instructions": "以下句子描述不同情绪调节方式。请根据同意程度作答。本草稿仅用于人工核对，未开放给用户填写。",
+      "instructions": "请根据自己通常调节与管理情绪的方式作答。这里分别询问内心的情绪体验，以及用言语、姿势或行为表达情绪的方式。相似的题目仍有不同，请逐题选择赞同或不赞同程度。",
       "likert": [
         {
           "value": 1,
@@ -281,7 +279,7 @@
         },
         {
           "value": 2,
-          "label": "不同意"
+          "label": "很不同意"
         },
         {
           "value": 3,
@@ -289,7 +287,7 @@
         },
         {
           "value": 4,
-          "label": "不确定"
+          "label": "中性"
         },
         {
           "value": 5,
@@ -297,7 +295,7 @@
         },
         {
           "value": 6,
-          "label": "同意"
+          "label": "很同意"
         },
         {
           "value": 7,
@@ -308,7 +306,6 @@
         {
           "code": "ERQ_CR",
           "label": "认知重评",
-          "source_label": "Cognitive Reappraisal",
           "item_codes": [
             "ERQ01",
             "ERQ03",
@@ -317,18 +314,19 @@
             "ERQ08",
             "ERQ10"
           ],
+          "reverse_item_codes": [],
           "note": "维度来自本地 PDF 第 2 页和 sps 计分脚本；正式展示前需要改写为支持性、非评价表达。"
         },
         {
           "code": "ERQ_ES",
           "label": "表达抑制",
-          "source_label": "Expressive Suppression",
           "item_codes": [
             "ERQ02",
             "ERQ04",
             "ERQ06",
             "ERQ09"
           ],
+          "reverse_item_codes": [],
           "note": "维度来自本地 PDF 第 2 页和 sps 计分脚本；用户端解释需避免把分数写成好坏判断。"
         }
       ],
@@ -336,86 +334,386 @@
         {
           "item_code": "ERQ01",
           "display_order": 1,
-          "text": "当我想多感受到积极情绪的时候（比如高兴和乐趣），我就改变我所考虑的事情，比如“其实这样也不错”。",
+          "text": "当我想感受一些积极的情绪（如快乐或高兴）时，我会改变自己思考问题的角度。",
           "dimension": "ERQ_CR",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 1,
+              "label": "完全不同意"
+            },
+            {
+              "value": 2,
+              "label": "很不同意"
+            },
+            {
+              "value": 3,
+              "label": "有点不同意"
+            },
+            {
+              "value": 4,
+              "label": "中性"
+            },
+            {
+              "value": 5,
+              "label": "有点同意"
+            },
+            {
+              "value": 6,
+              "label": "很同意"
+            },
+            {
+              "value": 7,
+              "label": "完全同意"
+            }
+          ]
         },
         {
           "item_code": "ERQ02",
           "display_order": 2,
-          "text": "我保持自己的情绪不外露。",
+          "text": "我不会表露自己的情绪。",
           "dimension": "ERQ_ES",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 1,
+              "label": "完全不同意"
+            },
+            {
+              "value": 2,
+              "label": "很不同意"
+            },
+            {
+              "value": 3,
+              "label": "有点不同意"
+            },
+            {
+              "value": 4,
+              "label": "中性"
+            },
+            {
+              "value": 5,
+              "label": "有点同意"
+            },
+            {
+              "value": 6,
+              "label": "很同意"
+            },
+            {
+              "value": 7,
+              "label": "完全同意"
+            }
+          ]
         },
         {
           "item_code": "ERQ03",
           "display_order": 3,
-          "text": "当我想少感受一些消极情绪的时候（比如悲伤或愤怒），我会改变我对所考虑事情的看法。",
+          "text": "当我想少感受一些消极的情绪（如悲伤或愤怒）时，我会改变自己思考问题的角度。",
           "dimension": "ERQ_CR",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 1,
+              "label": "完全不同意"
+            },
+            {
+              "value": 2,
+              "label": "很不同意"
+            },
+            {
+              "value": 3,
+              "label": "有点不同意"
+            },
+            {
+              "value": 4,
+              "label": "中性"
+            },
+            {
+              "value": 5,
+              "label": "有点同意"
+            },
+            {
+              "value": 6,
+              "label": "很同意"
+            },
+            {
+              "value": 7,
+              "label": "完全同意"
+            }
+          ]
         },
         {
           "item_code": "ERQ04",
           "display_order": 4,
-          "text": "当我正感受到积极情绪时，我很小心地不让它们表露出来。",
+          "text": "当感受到积极情绪时，我会很小心的不让它们表露出来。",
           "dimension": "ERQ_ES",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 1,
+              "label": "完全不同意"
+            },
+            {
+              "value": 2,
+              "label": "很不同意"
+            },
+            {
+              "value": 3,
+              "label": "有点不同意"
+            },
+            {
+              "value": 4,
+              "label": "中性"
+            },
+            {
+              "value": 5,
+              "label": "有点同意"
+            },
+            {
+              "value": 6,
+              "label": "很同意"
+            },
+            {
+              "value": 7,
+              "label": "完全同意"
+            }
+          ]
         },
         {
           "item_code": "ERQ05",
           "display_order": 5,
-          "text": "当我面对压力的时候，我使自己以一种有助于保持平衡的方式考虑它。",
+          "text": "在面对压力情境时，我会使自己以一种有助于保持平静的方式来考虑它。",
           "dimension": "ERQ_CR",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 1,
+              "label": "完全不同意"
+            },
+            {
+              "value": 2,
+              "label": "很不同意"
+            },
+            {
+              "value": 3,
+              "label": "有点不同意"
+            },
+            {
+              "value": 4,
+              "label": "中性"
+            },
+            {
+              "value": 5,
+              "label": "有点同意"
+            },
+            {
+              "value": 6,
+              "label": "很同意"
+            },
+            {
+              "value": 7,
+              "label": "完全同意"
+            }
+          ]
         },
         {
           "item_code": "ERQ06",
           "display_order": 6,
-          "text": "通过不表达自己，我控制了自己的情绪。",
+          "text": "我控制自己情绪的方式是不表达它们。",
           "dimension": "ERQ_ES",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 1,
+              "label": "完全不同意"
+            },
+            {
+              "value": 2,
+              "label": "很不同意"
+            },
+            {
+              "value": 3,
+              "label": "有点不同意"
+            },
+            {
+              "value": 4,
+              "label": "中性"
+            },
+            {
+              "value": 5,
+              "label": "有点同意"
+            },
+            {
+              "value": 6,
+              "label": "很同意"
+            },
+            {
+              "value": 7,
+              "label": "完全同意"
+            }
+          ]
         },
         {
           "item_code": "ERQ07",
           "display_order": 7,
-          "text": "当我想要感受到积极情绪的时候，我改变自己对处境的考虑方式。",
+          "text": "当我想多感受一些积极的情绪时，我会改变自己对情境的考虑方式。",
           "dimension": "ERQ_CR",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 1,
+              "label": "完全不同意"
+            },
+            {
+              "value": 2,
+              "label": "很不同意"
+            },
+            {
+              "value": 3,
+              "label": "有点不同意"
+            },
+            {
+              "value": 4,
+              "label": "中性"
+            },
+            {
+              "value": 5,
+              "label": "有点同意"
+            },
+            {
+              "value": 6,
+              "label": "很同意"
+            },
+            {
+              "value": 7,
+              "label": "完全同意"
+            }
+          ]
         },
         {
           "item_code": "ERQ08",
           "display_order": 8,
-          "text": "我通过改变自己对处境的考虑方式来控制我的情绪。",
+          "text": "我会通过改变对情境的考虑方式来控制自己的情绪。",
           "dimension": "ERQ_CR",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 1,
+              "label": "完全不同意"
+            },
+            {
+              "value": 2,
+              "label": "很不同意"
+            },
+            {
+              "value": 3,
+              "label": "有点不同意"
+            },
+            {
+              "value": 4,
+              "label": "中性"
+            },
+            {
+              "value": 5,
+              "label": "有点同意"
+            },
+            {
+              "value": 6,
+              "label": "很同意"
+            },
+            {
+              "value": 7,
+              "label": "完全同意"
+            }
+          ]
         },
         {
           "item_code": "ERQ09",
           "display_order": 9,
-          "text": "当我正感到消极情绪的时候，我确保不会表露出来。",
+          "text": "当感受到消极的情绪时，我確定不会表露它们。",
           "dimension": "ERQ_ES",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 1,
+              "label": "完全不同意"
+            },
+            {
+              "value": 2,
+              "label": "很不同意"
+            },
+            {
+              "value": 3,
+              "label": "有点不同意"
+            },
+            {
+              "value": 4,
+              "label": "中性"
+            },
+            {
+              "value": 5,
+              "label": "有点同意"
+            },
+            {
+              "value": 6,
+              "label": "很同意"
+            },
+            {
+              "value": 7,
+              "label": "完全同意"
+            }
+          ]
         },
         {
           "item_code": "ERQ10",
           "display_order": 10,
-          "text": "当我想减少消极的情绪体验的时候，我改变自己对处境的考虑方式。",
+          "text": "当我想少感受一些消极的情绪时，我会改变自己对情境的考虑方式。",
           "dimension": "ERQ_CR",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 1,
+              "label": "完全不同意"
+            },
+            {
+              "value": 2,
+              "label": "很不同意"
+            },
+            {
+              "value": 3,
+              "label": "有点不同意"
+            },
+            {
+              "value": 4,
+              "label": "中性"
+            },
+            {
+              "value": 5,
+              "label": "有点同意"
+            },
+            {
+              "value": 6,
+              "label": "很同意"
+            },
+            {
+              "value": 7,
+              "label": "完全同意"
+            }
+          ]
         }
       ],
       "scoring_notes": [
-        "本地 PDF 第 2 页写明：重新评价 = T1、T3、T5、T7、T8、T10。",
-        "本地 PDF 第 2 页写明：表达抑制 = T2、T4、T6、T9。",
-        "sps 计分脚本写明 gerqcogre = gerq1 + gerq3 + gerq5 + gerq7 + gerq8 + gerq10。",
-        "sps 计分脚本写明 gerqinhib = gerq2 + gerq4 + gerq6 + gerq9。",
-        "未见反向计分说明；正式开放前必须由人工核对题项、计分方式、标准引用和伦理边界。"
+        "题干与1—7同意度采用Stanford作者团队发布的中文译本；保留原10题顺序，无反向。认知重评=1/3/5/7/8/10，表达抑制=2/4/6/9；当前分量表按本地计分脚本求和，分别6—42、4—28，不计算跨维度总分，也不等同于研究中常用的1—7分量表均值。"
       ],
       "supportive_interpretation_draft": "结果只用于观察个人常用的情绪调节方式，不评价好坏，也不构成诊断。用户端解释应使用“可能更常使用某种方式”“可以作为练习选择线索”等保守措辞。",
       "recommended_card_ids": [
         "emotion_naming",
         "cognitive_flexibility"
-      ]
+      ],
+      "worksheet_instructions": "请根据自己通常调节与管理情绪的方式作答。这里分别询问内心的情绪体验，以及用言语、姿势或行为表达情绪的方式。相似的题目仍有不同，请逐题选择赞同或不赞同程度。",
+      "source_version": "2026.06-emotion_regulation_erq_gross-from-scale-draft-review-20261002-v2",
+      "total_score_method": "none",
+      "dimension_score_method": "sum"
     },
     {
       "scale_id": "parental_burnout_pba",
@@ -1015,7 +1313,7 @@
       "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
-      "instructions": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。",
+      "instructions": "请根据自己在最近半年内学习中的实际表现，选择符合你平时情况的一项。答案没有对错，结果只用于自我观察。",
       "likert": [
         {
           "value": 1,
@@ -1048,6 +1346,7 @@
             "AB03",
             "AB04"
           ],
+          "reverse_item_codes": [],
           "note": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
@@ -1091,14 +1390,18 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "worksheet_instructions": "请根据自己在最近半年内学习中的实际表现，选择符合你平时情况的一项。答案没有对错，结果只用于自我观察。",
+      "source_version": "2026.06-academic_buoyancy_4-from-scale-draft-review-20261002-v1",
+      "total_score_method": "sum"
     },
     {
       "scale_id": "afq_y8_avoidance_fusion",
       "display_name": "青少年回避与融合问卷（AFQ-Y8）",
       "source_folder": "学生自助量表/2022年6月施测学生问卷",
       "source_files": [
-        "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx"
+        "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx",
+        "https://www.ruthbaer.com/academics/AFQ-Y.pdf"
       ],
       "audience": "student",
       "theme": "psychological_flexibility",
@@ -1106,27 +1409,27 @@
       "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
-      "instructions": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。",
+      "instructions": "请阅读每句话，选择它与你真实情况的符合程度（0—4）。没有对错，请按自己的体验作答。",
       "likert": [
         {
-          "value": 1,
+          "value": 0,
           "label": "完全不符合"
         },
         {
+          "value": 1,
+          "label": "有一点符合"
+        },
+        {
           "value": 2,
-          "label": "比较不符合"
-        },
-        {
-          "value": 3,
-          "label": "说不清"
-        },
-        {
-          "value": 4,
           "label": "比较符合"
         },
         {
-          "value": 5,
-          "label": "完全符合"
+          "value": 3,
+          "label": "符合"
+        },
+        {
+          "value": 4,
+          "label": "非常符合"
         }
       ],
       "dimensions": [
@@ -1140,10 +1443,11 @@
             "AFQY04",
             "AFQY05",
             "AFQY06",
-            "AFQY07",
-            "AFQY08"
+            "AFQY08",
+            "AFQY07"
           ],
-          "note": "当前只记录题项集合；维度解释和计分方向需人工复核。"
+          "reverse_item_codes": [],
+          "note": "8题按0—4分相加，范围0—32，无反向题；高分表示本次自报中更多被想法和感受限制行动的体验。"
         }
       ],
       "items": [
@@ -1152,60 +1456,236 @@
           "display_order": 1,
           "text": "直到我可以感到快乐，我的生活才会好起来。",
           "dimension": "TOTAL",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "完全不符合"
+            },
+            {
+              "value": 1,
+              "label": "有一点符合"
+            },
+            {
+              "value": 2,
+              "label": "比较符合"
+            },
+            {
+              "value": 3,
+              "label": "符合"
+            },
+            {
+              "value": 4,
+              "label": "非常符合"
+            }
+          ]
         },
         {
           "item_code": "AFQY02",
           "display_order": 2,
           "text": "我的想法和感受让生活一团糟。",
           "dimension": "TOTAL",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "完全不符合"
+            },
+            {
+              "value": 1,
+              "label": "有一点符合"
+            },
+            {
+              "value": 2,
+              "label": "比较符合"
+            },
+            {
+              "value": 3,
+              "label": "符合"
+            },
+            {
+              "value": 4,
+              "label": "非常符合"
+            }
+          ]
         },
         {
           "item_code": "AFQY03",
           "display_order": 3,
-          "text": "我想到的那些与自己有关的.不好的事情一定是真的。",
+          "text": "我想到的那些与自己有关的不好的事情一定是真的。",
           "dimension": "TOTAL",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "完全不符合"
+            },
+            {
+              "value": 1,
+              "label": "有一点符合"
+            },
+            {
+              "value": 2,
+              "label": "比较符合"
+            },
+            {
+              "value": 3,
+              "label": "符合"
+            },
+            {
+              "value": 4,
+              "label": "非常符合"
+            }
+          ]
         },
         {
           "item_code": "AFQY04",
           "display_order": 4,
           "text": "如果我心跳得厉害，那我一定出了什么问题。",
           "dimension": "TOTAL",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "完全不符合"
+            },
+            {
+              "value": 1,
+              "label": "有一点符合"
+            },
+            {
+              "value": 2,
+              "label": "比较符合"
+            },
+            {
+              "value": 3,
+              "label": "符合"
+            },
+            {
+              "value": 4,
+              "label": "非常符合"
+            }
+          ]
         },
         {
           "item_code": "AFQY05",
           "display_order": 5,
           "text": "只要我感觉不好，我就会停止做那些对我来说重要的事情。",
           "dimension": "TOTAL",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "完全不符合"
+            },
+            {
+              "value": 1,
+              "label": "有一点符合"
+            },
+            {
+              "value": 2,
+              "label": "比较符合"
+            },
+            {
+              "value": 3,
+              "label": "符合"
+            },
+            {
+              "value": 4,
+              "label": "非常符合"
+            }
+          ]
         },
         {
           "item_code": "AFQY06",
           "display_order": 6,
           "text": "当悲伤的想法出现时，我在学校的表现会变差。",
           "dimension": "TOTAL",
-          "reverse_scored": false
-        },
-        {
-          "item_code": "AFQY07",
-          "display_order": 7,
-          "text": "当我心烦时，我无法成为一个称职的朋友。",
-          "dimension": "TOTAL",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "完全不符合"
+            },
+            {
+              "value": 1,
+              "label": "有一点符合"
+            },
+            {
+              "value": 2,
+              "label": "比较符合"
+            },
+            {
+              "value": 3,
+              "label": "符合"
+            },
+            {
+              "value": 4,
+              "label": "非常符合"
+            }
+          ]
         },
         {
           "item_code": "AFQY08",
-          "display_order": 8,
+          "display_order": 7,
           "text": "我害怕自己的感受。",
           "dimension": "TOTAL",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "完全不符合"
+            },
+            {
+              "value": 1,
+              "label": "有一点符合"
+            },
+            {
+              "value": 2,
+              "label": "比较符合"
+            },
+            {
+              "value": 3,
+              "label": "符合"
+            },
+            {
+              "value": 4,
+              "label": "非常符合"
+            }
+          ]
+        },
+        {
+          "item_code": "AFQY07",
+          "display_order": 8,
+          "text": "当我心烦时，我无法成为一个称职的朋友。",
+          "dimension": "TOTAL",
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "完全不符合"
+            },
+            {
+              "value": 1,
+              "label": "有一点符合"
+            },
+            {
+              "value": 2,
+              "label": "比较符合"
+            },
+            {
+              "value": 3,
+              "label": "符合"
+            },
+            {
+              "value": 4,
+              "label": "非常符合"
+            }
+          ]
         }
       ],
       "scoring_notes": [
-        "源文件写明 8 题、1-5 分，分数越高心理僵化程度越高、心理灵活性越低；结果解释必须支持性改写。"
+        "采用作者AFQ-Y8的0—4编码、8题求和0—32、无反向；保留稳定题目ID，按原短版顺序展示（项目AFQY08为原第7题，AFQY07为原第8题）。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
@@ -1214,14 +1694,19 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "worksheet_instructions": "请阅读每句话，选择它与你真实情况的符合程度（0—4）。没有对错，请按自己的体验作答。",
+      "source_version": "2026.06-afq_y8_avoidance_fusion-from-scale-draft-review-20261002-v2",
+      "total_score_method": "sum",
+      "dimension_score_method": "sum"
     },
     {
       "scale_id": "cfi2_cognitive_flexibility",
-      "display_name": "认知灵活性问卷中文版（CFI-2）",
+      "display_name": "认知灵活性问卷（CFS，中文12题改编候选）",
       "source_folder": "学生自助量表/2022年6月施测学生问卷",
       "source_files": [
-        "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx"
+        "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx",
+        "https://psybeh.tjnu.edu.cn/CN/Y2013/V11/I1/120"
       ],
       "audience": "student",
       "theme": "cognitive_flexibility",
@@ -1229,65 +1714,58 @@
       "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
-      "instructions": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。",
+      "instructions": "请逐题判断陈述是否符合自己通常的实际情况，选择六档符合程度之一。没有标准答案。",
       "likert": [
         {
           "value": 1,
-          "label": "完全不符合"
+          "label": "非常不符合"
         },
         {
           "value": 2,
-          "label": "比较不符合"
+          "label": "不符合"
         },
         {
           "value": 3,
-          "label": "说不清"
+          "label": "有点不符合"
         },
         {
           "value": 4,
-          "label": "比较符合"
+          "label": "有点符合"
         },
         {
           "value": 5,
-          "label": "完全符合"
+          "label": "符合"
+        },
+        {
+          "value": 6,
+          "label": "非常符合"
         }
       ],
       "dimensions": [
         {
-          "code": "CFI_CHOICE",
-          "label": "灵活选择",
+          "code": "TOTAL",
+          "label": "认知灵活性综合自我观察",
           "item_codes": [
             "CFI01",
             "CFI02",
             "CFI03",
+            "CFI04",
             "CFI05",
             "CFI06",
-            "CFI10"
+            "CFI07",
+            "CFI08",
+            "CFI09",
+            "CFI10",
+            "CFI11",
+            "CFI12"
           ],
           "reverse_item_codes": [
             "CFI02",
             "CFI03",
             "CFI05",
             "CFI10"
-          ]
-        },
-        {
-          "code": "CFI_WILLINGNESS",
-          "label": "灵活意愿",
-          "item_codes": [
-            "CFI04",
-            "CFI11",
-            "CFI12"
-          ]
-        },
-        {
-          "code": "CFI_EFFICACY",
-          "label": "灵活效能",
-          "item_codes": [
-            "CFI07",
-            "CFI08",
-            "CFI09"
-          ]
+          ],
+          "note": "12题改编候选的单维总分；不能用13题中文验证替代本版验证。"
         }
       ],
       "items": [
@@ -1295,89 +1773,89 @@
           "item_code": "CFI01",
           "display_order": 1,
           "text": "我能以多种不同的方式表达一个想法。",
-          "dimension": "CFI_CHOICE",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "CFI02",
           "display_order": 2,
           "text": "我不喜欢待在不熟悉的环境中。",
-          "dimension": "CFI_CHOICE",
+          "dimension": "TOTAL",
           "reverse_scored": true
         },
         {
           "item_code": "CFI03",
           "display_order": 3,
           "text": "我感觉自己从未真正做出过决定。",
-          "dimension": "CFI_CHOICE",
+          "dimension": "TOTAL",
           "reverse_scored": true
         },
         {
           "item_code": "CFI04",
           "display_order": 4,
           "text": "我能找到有效的方法来应对看似无法解决的问题。",
-          "dimension": "CFI_WILLINGNESS",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "CFI05",
           "display_order": 5,
           "text": "每当需要决定该怎么做时，我很少能想出不同的应对方法。",
-          "dimension": "CFI_CHOICE",
+          "dimension": "TOTAL",
           "reverse_scored": true
         },
         {
           "item_code": "CFI06",
           "display_order": 6,
           "text": "我乐于以创造性的方式解决问题。",
-          "dimension": "CFI_CHOICE",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "CFI07",
           "display_order": 7,
           "text": "无论处于何种情境，我都能采取恰当的行为。",
-          "dimension": "CFI_EFFICACY",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "CFI08",
           "display_order": 8,
           "text": "我所做的事都是经过认真思考决定的。",
-          "dimension": "CFI_EFFICACY",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "CFI09",
           "display_order": 9,
           "text": "无论面对怎样的处境，我都能应对自如。",
-          "dimension": "CFI_EFFICACY",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "CFI10",
           "display_order": 10,
           "text": "我很难将知识应用于实际的生活中。",
-          "dimension": "CFI_CHOICE",
+          "dimension": "TOTAL",
           "reverse_scored": true
         },
         {
           "item_code": "CFI11",
           "display_order": 11,
           "text": "在处理问题时我愿意听取和考虑不同的解决方法。",
-          "dimension": "CFI_WILLINGNESS",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "CFI12",
           "display_order": 12,
           "text": "我有自信心用不同的方法去应对各种问题。",
-          "dimension": "CFI_WILLINGNESS",
+          "dimension": "TOTAL",
           "reverse_scored": false
         }
       ],
       "scoring_notes": [
-        "源文件写明三个因子：灵活选择 1、2、3、5、6、10；灵活意愿 4、11、12；灵活效能 7、8、9；2、3、5、10 反向计分。"
+        "本候选采用本地独立12题空白题本的1—6编码，2/3/5/10反向（7减原分），总分12—72。依据Martin与Rubin的CFS及齐冰等论文采用单一综合分，不继续将本地三组标签称为原版验证维度；不属于Dennis与Vander Wal的20题CFI，也不等同于齐冰等的13题中文版。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [
@@ -1389,7 +1867,11 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "worksheet_instructions": "请逐题判断陈述是否符合自己通常的实际情况，选择六档符合程度之一。没有标准答案。",
+      "source_version": "2026.06-cfi2_cognitive_flexibility-from-scale-draft-review-20261002-v2",
+      "total_score_method": "sum",
+      "dimension_score_method": "sum"
     },
     {
       "scale_id": "emotional_resilience_11",
@@ -1405,7 +1887,7 @@
       "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
-      "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
+      "instructions": "以下陈述描述日常生活中的心理和行为特点。请根据自己的实际情况，从“完全不符合”到“完全符合”六个选项中选择一项。",
       "likert": [
         {
           "value": 1,
@@ -1442,7 +1924,9 @@
             "ERES04",
             "ERES08",
             "ERES09"
-          ]
+          ],
+          "reverse_item_codes": [],
+          "note": ""
         },
         {
           "code": "ERES_RECOVERY",
@@ -1454,7 +1938,9 @@
             "ERES07",
             "ERES10",
             "ERES11"
-          ]
+          ],
+          "reverse_item_codes": [],
+          "note": ""
         }
       ],
       "items": [
@@ -1549,14 +2035,18 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "worksheet_instructions": "以下陈述描述日常生活中的心理和行为特点。请根据自己的实际情况，从“完全不符合”到“完全符合”六个选项中选择一项。",
+      "source_version": "2026.06-emotional_resilience_11-from-scale-draft-review-20261002-v1",
+      "total_score_method": "sum"
     },
     {
       "scale_id": "study_engagement_uwes_s_17",
-      "display_name": "学习投入量表（UWES-S 中文版）",
+      "display_name": "学习投入问卷（UWES-S，中文改编候选）",
       "source_folder": "学生自助量表/学习投入量表",
       "source_files": [
-        "学习投入量表.docx"
+        "学习投入量表.docx",
+        "https://www.wilmarschaufeli.nl/publications/Schaufeli/Tests/UWES_GB_S_17.pdf"
       ],
       "audience": "student",
       "theme": "study_engagement",
@@ -1564,35 +2054,35 @@
       "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
-      "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
+      "instructions": "这些陈述描述学习中的感受。若从未有过该感受，选0；若有过，请按出现频率选1—6。没有固定“近期”窗口，请结合通常的学习体验作答。",
       "likert": [
         {
-          "value": 1,
+          "value": 0,
           "label": "从来没有"
         },
         {
+          "value": 1,
+          "label": "几乎没有过（一年几次或更少）"
+        },
+        {
           "value": 2,
-          "label": "几乎没有"
+          "label": "很少（一个月一次或更少）"
         },
         {
           "value": 3,
-          "label": "经常没有"
+          "label": "有时（一个月几次）"
         },
         {
           "value": 4,
-          "label": "不确定"
+          "label": "经常（一周一次）"
         },
         {
           "value": 5,
-          "label": "偶尔"
+          "label": "十分频繁（一周几次）"
         },
         {
           "value": 6,
-          "label": "经常"
-        },
-        {
-          "value": 7,
-          "label": "总是"
+          "label": "总是（每天）"
         }
       ],
       "dimensions": [
@@ -1606,18 +2096,22 @@
             "UWES04",
             "UWES05",
             "UWES06"
-          ]
+          ],
+          "reverse_item_codes": [],
+          "note": "所属6题取均值，范围0—6；不套用职场常模。"
         },
         {
           "code": "UWES_DEDICATION",
-          "label": "奉献",
+          "label": "投入",
           "item_codes": [
             "UWES07",
             "UWES08",
             "UWES09",
             "UWES10",
             "UWES11"
-          ]
+          ],
+          "reverse_item_codes": [],
+          "note": "所属5题取均值，范围0—6；不套用职场常模。"
         },
         {
           "code": "UWES_ABSORPTION",
@@ -1629,132 +2123,644 @@
             "UWES15",
             "UWES16",
             "UWES17"
-          ]
+          ],
+          "reverse_item_codes": [],
+          "note": "所属6题取均值，范围0—6；不套用职场常模。"
         }
       ],
       "items": [
         {
-          "item_code": "UWES01",
+          "item_code": "UWES06",
           "display_order": 1,
-          "text": "早晨一起床，我就乐意去学习",
+          "text": "学习时，我浑身有力而且干劲十足。",
           "dimension": "UWES_VIGOR",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
+        },
+        {
+          "item_code": "UWES11",
+          "display_order": 2,
+          "text": "我发现学习目的明确，而且很有意义。",
+          "dimension": "UWES_DEDICATION",
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
+        },
+        {
+          "item_code": "UWES13",
+          "display_order": 3,
+          "text": "学习时，我感到时间过得很快。",
+          "dimension": "UWES_ABSORPTION",
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
         },
         {
           "item_code": "UWES02",
-          "display_order": 2,
+          "display_order": 4,
           "text": "学习时，我感到精力充沛。",
           "dimension": "UWES_VIGOR",
-          "reverse_scored": false
-        },
-        {
-          "item_code": "UWES03",
-          "display_order": 3,
-          "text": "即使学习不顺利，我也毫不气馁，能够坚持不懈。",
-          "dimension": "UWES_VIGOR",
-          "reverse_scored": false
-        },
-        {
-          "item_code": "UWES04",
-          "display_order": 4,
-          "text": "我能持续学习很长时间，中间不需要休息。",
-          "dimension": "UWES_VIGOR",
-          "reverse_scored": false
-        },
-        {
-          "item_code": "UWES05",
-          "display_order": 5,
-          "text": "学习时，即使精神疲劳，我也能很快恢复。",
-          "dimension": "UWES_VIGOR",
-          "reverse_scored": false
-        },
-        {
-          "item_code": "UWES06",
-          "display_order": 6,
-          "text": "学习时，我浑身有力而且干劲十足。",
-          "dimension": "UWES_VIGOR",
-          "reverse_scored": false
-        },
-        {
-          "item_code": "UWES07",
-          "display_order": 7,
-          "text": "我发现学习富有挑战性。",
-          "dimension": "UWES_DEDICATION",
-          "reverse_scored": false
-        },
-        {
-          "item_code": "UWES08",
-          "display_order": 8,
-          "text": "学习激发我的灵感。",
-          "dimension": "UWES_DEDICATION",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
         },
         {
           "item_code": "UWES09",
-          "display_order": 9,
+          "display_order": 5,
           "text": "我对学习充满热情。",
           "dimension": "UWES_DEDICATION",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
+        },
+        {
+          "item_code": "UWES12",
+          "display_order": 6,
+          "text": "学习时，我忘了周围的一切。",
+          "dimension": "UWES_ABSORPTION",
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
+        },
+        {
+          "item_code": "UWES08",
+          "display_order": 7,
+          "text": "学习激发我的灵感。",
+          "dimension": "UWES_DEDICATION",
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
+        },
+        {
+          "item_code": "UWES01",
+          "display_order": 8,
+          "text": "早晨一起床，我就乐意去学习",
+          "dimension": "UWES_VIGOR",
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
+        },
+        {
+          "item_code": "UWES17",
+          "display_order": 9,
+          "text": "全身心投入学习时，我感到快乐。",
+          "dimension": "UWES_ABSORPTION",
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
         },
         {
           "item_code": "UWES10",
           "display_order": 10,
           "text": "我因我的学习而感到自豪。",
           "dimension": "UWES_DEDICATION",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
         },
         {
-          "item_code": "UWES11",
+          "item_code": "UWES16",
           "display_order": 11,
-          "text": "我发现学习目的明确，而且很有意义。",
-          "dimension": "UWES_DEDICATION",
-          "reverse_scored": false
+          "text": "我沉浸在学习中。",
+          "dimension": "UWES_ABSORPTION",
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
         },
         {
-          "item_code": "UWES12",
+          "item_code": "UWES04",
           "display_order": 12,
-          "text": "学习时，我忘了周围的一切。",
-          "dimension": "UWES_ABSORPTION",
-          "reverse_scored": false
+          "text": "我能持续学习很长时间。",
+          "dimension": "UWES_VIGOR",
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
         },
         {
-          "item_code": "UWES13",
+          "item_code": "UWES07",
           "display_order": 13,
-          "text": "学习时，我感到时间过得很快。",
-          "dimension": "UWES_ABSORPTION",
-          "reverse_scored": false
+          "text": "我发现学习富有挑战性。",
+          "dimension": "UWES_DEDICATION",
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
         },
         {
           "item_code": "UWES14",
           "display_order": 14,
-          "text": "学习时，我心里只想着学习。",
+          "text": "学习时，我会达到忘我的境界。",
           "dimension": "UWES_ABSORPTION",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
+        },
+        {
+          "item_code": "UWES05",
+          "display_order": 15,
+          "text": "学习时，即使精神疲劳，我也能很快恢复。",
+          "dimension": "UWES_VIGOR",
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
         },
         {
           "item_code": "UWES15",
-          "display_order": 15,
+          "display_order": 16,
           "text": "我难以放下手中的学习。",
           "dimension": "UWES_ABSORPTION",
-          "reverse_scored": false
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
         },
         {
-          "item_code": "UWES16",
-          "display_order": 16,
-          "text": "我沉浸在学习中。",
-          "dimension": "UWES_ABSORPTION",
-          "reverse_scored": false
-        },
-        {
-          "item_code": "UWES17",
+          "item_code": "UWES03",
           "display_order": 17,
-          "text": "全身心投入学习时，我感到快乐。",
-          "dimension": "UWES_ABSORPTION",
-          "reverse_scored": false
+          "text": "即使学习不顺利，我也毫不气馁，能够坚持不懈。",
+          "dimension": "UWES_VIGOR",
+          "reverse_scored": false,
+          "likert": [
+            {
+              "value": 0,
+              "label": "从来没有"
+            },
+            {
+              "value": 1,
+              "label": "几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": 2,
+              "label": "很少（一个月一次或更少）"
+            },
+            {
+              "value": 3,
+              "label": "有时（一个月几次）"
+            },
+            {
+              "value": 4,
+              "label": "经常（一周一次）"
+            },
+            {
+              "value": 5,
+              "label": "十分频繁（一周几次）"
+            },
+            {
+              "value": 6,
+              "label": "总是（每天）"
+            }
+          ]
         }
       ],
       "scoring_notes": [
-        "源文件写明 17 题、7 点计分，1-6 活力、7-11 奉献、12-17 专注。"
+        "按作者17题学生版顺序展示，题目ID与内容保持绑定。活力6题、投入5题、专注6题分别取均值；总分为全部17题均值（均为0—6），无反向题。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [
@@ -1766,7 +2772,11 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "worksheet_instructions": "这些陈述描述学习中的感受。若从未有过该感受，选0；若有过，请按出现频率选1—6。没有固定“近期”窗口，请结合通常的学习体验作答。",
+      "source_version": "2026.06-study_engagement_uwes_s_17-from-scale-draft-review-20261002-v2",
+      "total_score_method": "mean",
+      "dimension_score_method": "mean"
     },
     {
       "scale_id": "cd_risc10_brief_resilience",
@@ -1912,10 +2922,12 @@
     },
     {
       "scale_id": "acceptance_action_aaq2",
-      "display_name": "接纳与行动问卷（AAQ-II）",
+      "display_name": "接纳与行动问卷（AAQ-II，中文候选）",
       "source_folder": "基于情绪反射弧的分类/接纳行动问卷AAQ",
       "source_files": [
-        "2-1-接纳与行动问卷第二版AAQII.docx"
+        "2-1-接纳与行动问卷第二版AAQII.docx",
+        "https://stevenchayes.com/wp-content/uploads/2023/01/The-Acceptance-and-Action-Questionnaire.pdf",
+        "https://contextualscience.org/acceptance_action_questionnaire_aaq_aaqii"
       ],
       "audience": "adult",
       "theme": "psychological_flexibility",
@@ -1923,35 +2935,35 @@
       "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
-      "instructions": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。",
+      "instructions": "请逐题判断陈述在自己通常的生活中有多符合实际情况，不设固定三个月回顾期。结果只用于自我观察。",
       "likert": [
         {
           "value": 1,
-          "label": "从未"
+          "label": "从不符合"
         },
         {
           "value": 2,
-          "label": "很少"
+          "label": "极少符合"
         },
         {
           "value": 3,
-          "label": "偶尔"
+          "label": "很少符合"
         },
         {
           "value": 4,
-          "label": "有时"
+          "label": "有时符合"
         },
         {
           "value": 5,
-          "label": "经常"
+          "label": "经常符合"
         },
         {
           "value": 6,
-          "label": "几乎总是"
+          "label": "几乎总是符合"
         },
         {
           "value": 7,
-          "label": "总是"
+          "label": "总是符合"
         }
       ],
       "dimensions": [
@@ -1967,6 +2979,7 @@
             "AAQ06",
             "AAQ07"
           ],
+          "reverse_item_codes": [],
           "note": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
@@ -2022,7 +3035,7 @@
         }
       ],
       "scoring_notes": [
-        "本地文件可读到 7 个题项和 1-7 选项；正式分数解释需继续核对。"
+        "7题均按1—7真实程度正向求和，总分7—49，无反向；高分表示本次自报中的心理不灵活相关体验较多，不表示疾病或固定特征。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [
@@ -2034,7 +3047,11 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "worksheet_instructions": "请逐题判断陈述在自己通常的生活中有多符合实际情况，不设固定三个月回顾期。结果只用于自我观察。",
+      "source_version": "2026.06-acceptance_action_aaq2-from-scale-draft-review-20261002-v2",
+      "total_score_method": "sum",
+      "dimension_score_method": "sum"
     },
     {
       "scale_id": "regulatory_focus_general_18",
@@ -2274,7 +3291,7 @@
       "review_status": "pilot_approved",
       "item_status": "verified_against_local_pdf",
       "scoring_status": "verified_local_six_dimension_mean_rule",
-      "instructions": "请根据最近一段时间里各陈述与你实际行为频率的符合程度作答，从1（从不如此）到5（总是如此）中选择一项。",
+      "instructions": "请根据自己在困难时通常对待自己的方式作答，选择各陈述与你实际行为频率的符合程度。结果只用于自我观察。",
       "total_score_method": "none",
       "derived_dimensions": [
         {
@@ -2325,11 +3342,13 @@
             "SCS19",
             "SCS23",
             "SCS26"
-          ]
+          ],
+          "reverse_item_codes": [],
+          "note": ""
         },
         {
           "code": "SCS_SJ",
-          "label": "自我批评",
+          "label": "较少自我批评",
           "item_codes": [
             "SCS01",
             "SCS08",
@@ -2343,7 +3362,8 @@
             "SCS11",
             "SCS16",
             "SCS21"
-          ]
+          ],
+          "note": "本维度已按6-原分反向；得分越高表示本次自报中此类体验越少，不是原始频率分。"
         },
         {
           "code": "SCS_CH",
@@ -2353,11 +3373,13 @@
             "SCS07",
             "SCS10",
             "SCS15"
-          ]
+          ],
+          "reverse_item_codes": [],
+          "note": ""
         },
         {
           "code": "SCS_ISO",
-          "label": "自我隔离",
+          "label": "较少孤立感",
           "item_codes": [
             "SCS04",
             "SCS13",
@@ -2369,7 +3391,8 @@
             "SCS13",
             "SCS18",
             "SCS25"
-          ]
+          ],
+          "note": "本维度已按6-原分反向；得分越高表示本次自报中此类体验越少，不是原始频率分。"
         },
         {
           "code": "SCS_MIND",
@@ -2379,11 +3402,13 @@
             "SCS14",
             "SCS17",
             "SCS22"
-          ]
+          ],
+          "reverse_item_codes": [],
+          "note": ""
         },
         {
           "code": "SCS_OVER",
-          "label": "过度沉迷",
+          "label": "较少被情绪卷入",
           "item_codes": [
             "SCS02",
             "SCS06",
@@ -2395,7 +3420,8 @@
             "SCS06",
             "SCS20",
             "SCS24"
-          ]
+          ],
+          "note": "本维度已按6-原分反向；得分越高表示本次自报中此类体验越少，不是原始频率分。"
         }
       ],
       "items": [
@@ -2583,8 +3609,7 @@
         }
       ],
       "scoring_notes": [
-        "六个维度分别取所属题项均值；自我批评、自我隔离、过度沉迷的题项先按1↔5、2↔4反向计分。",
-        "自我关怀综合观察为六个校正后维度均值的平均值，不输出诊断、人格类型或优劣判断。"
+        "六个维度分别取所属题项均值；自我批评、孤立感、被情绪卷入的题项按6-原分反向后，以“较少”命名的维度报告。自我关怀综合观察为六个校正后维度均值的平均值。不输出临床等级。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [
@@ -2596,14 +3621,17 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "worksheet_instructions": "请根据自己在困难时通常对待自己的方式作答，选择各陈述与你实际行为频率的符合程度。结果只用于自我观察。",
+      "source_version": "2026.06-self_compassion_scs_cn-from-scale-draft-review-20261002-v1"
     },
     {
       "scale_id": "mindful_attention_awareness_maas",
       "display_name": "正念注意觉知量表（MAAS）",
       "source_folder": "基于情绪反射弧的分类/正念觉知相关量表",
       "source_files": [
-        "正念注意觉知量表 答题纸.pdf"
+        "正念注意觉知量表 答题纸.pdf",
+        "https://ppc.sas.upenn.edu/sites/default/files/mindfulnessscale.pdf"
       ],
       "audience": "adult",
       "theme": "mindfulness",
@@ -2611,7 +3639,7 @@
       "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
-      "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
+      "instructions": "以下陈述涉及日常体验。请逐题选择自己通常出现该体验的频率，按真实经历作答，不按期望中的自己作答。",
       "likert": [
         {
           "value": 1,
@@ -2641,7 +3669,7 @@
       "dimensions": [
         {
           "code": "TOTAL",
-          "label": "总分",
+          "label": "日常觉察",
           "item_codes": [
             "MAAS01",
             "MAAS02",
@@ -2659,7 +3687,8 @@
             "MAAS14",
             "MAAS15"
           ],
-          "note": "当前只记录题项集合；维度解释和计分方向需人工复核。"
+          "reverse_item_codes": [],
+          "note": "15题取均值，保留原量尺1-6分。"
         }
       ],
       "items": [
@@ -2770,7 +3799,7 @@
         }
       ],
       "scoring_notes": [
-        "本地答题纸可读到 15 题和 1-6 选项；正式均分/总分解释需人工复核。"
+        "15题均按1-6分计分并取平均值，不另作反向处理；均值越高表示本次自报中日常注意与觉察更充分。结果只作阶段性观察。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [
@@ -2782,11 +3811,15 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "worksheet_instructions": "以下陈述涉及日常体验。请逐题选择自己通常出现该体验的频率，按真实经历作答，不按期望中的自己作答。",
+      "source_version": "2026.06-mindful_attention_awareness_maas-from-scale-draft-review-20261002-v2",
+      "total_score_method": "none",
+      "dimension_score_method": "mean"
     },
     {
       "scale_id": "fmi_12_mindfulness",
-      "display_name": "弗赖堡正念调查量表（FMI-12）",
+      "display_name": "正念自我观察（FMI，12题改编候选）",
       "source_folder": "基于情绪反射弧的分类/正念觉知相关量表",
       "source_files": [
         "弗赖堡正念调查量表FMI.pdf"
@@ -2797,7 +3830,7 @@
       "review_status": "pilot_approved",
       "item_status": "verified_against_local_pdf",
       "scoring_status": "verified_local_total_score_rule",
-      "instructions": "请根据最近一周内（包括今天）的实际情况，判断每个描述与你的符合程度。答案没有对错，请从1（很少）到4（总是）中选择一项。",
+      "instructions": "请根据最近一周内（包括今天）的实际情况，判断每个描述与你的符合程度。答案没有对错，请从1（很少）到4（总是）中选择一项。结果只用于阶段性自我观察。",
       "likert": [
         {
           "value": 1,
@@ -2834,6 +3867,7 @@
             "FMI11",
             "FMI12"
           ],
+          "reverse_item_codes": [],
           "note": "12题均按1-4分正向计分，总分为各题得分之和。"
         }
       ],
@@ -2924,7 +3958,7 @@
         }
       ],
       "scoring_notes": [
-        "本地 PDF 第2页明确列出12题和1-4分选项，总分为12题得分之和；不拆分未经来源确认的觉知/接受子维度。"
+        "12题均按1-4分正向计分，总分为各题得分之和；不拆分未经来源确认的子维度。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [
@@ -2936,11 +3970,15 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "worksheet_instructions": "请根据最近一周内（包括今天）的实际情况，判断每个描述与你的符合程度。答案没有对错，请从1（很少）到4（总是）中选择一项。结果只用于阶段性自我观察。",
+      "source_version": "2026.06-fmi_12_mindfulness-from-scale-draft-review-20261002-v2",
+      "dimension_score_method": "sum",
+      "total_score_method": "sum"
     },
     {
       "scale_id": "hplp_c_health_promoting_lifestyle",
-      "display_name": "健康促进生活方式量表（HPLP，40题）",
+      "display_name": "健康促进生活方式自我观察（40题改编候选）",
       "source_folder": "既往调研数据/5 牛至旭【中年女性自我关怀现状及其对主观幸福感的影响】/数据和问卷/问卷",
       "source_files": [
         "四个量表文字版.docx",
@@ -2952,7 +3990,7 @@
       "review_status": "pilot_approved",
       "item_status": "verified_40_items",
       "scoring_status": "six_dimensions_verified",
-      "instructions": "请按最近一段时间的实际频率选择。共40题，所有题项按1-4分正向计分。",
+      "instructions": "以下陈述涉及日常健康促进习惯。请按最近一段时间的实际频率选择“从不、偶尔、经常或总是”。结果用于支持性自我观察和练习参考，不替代医学建议。",
       "likert": [
         {
           "value": 1,
@@ -2985,6 +4023,7 @@
             "HPLP35",
             "HPLP39"
           ],
+          "reverse_item_codes": [],
           "note": "所属题项取均值，保留原量尺1-4分。"
         },
         {
@@ -3001,6 +4040,7 @@
             "HPLP36",
             "HPLP40"
           ],
+          "reverse_item_codes": [],
           "note": "所属题项取均值，保留原量尺1-4分。"
         },
         {
@@ -3016,6 +4056,7 @@
             "HPLP32",
             "HPLP37"
           ],
+          "reverse_item_codes": [],
           "note": "所属题项取均值，保留原量尺1-4分。"
         },
         {
@@ -3028,6 +4069,7 @@
             "HPLP27",
             "HPLP33"
           ],
+          "reverse_item_codes": [],
           "note": "所属题项取均值，保留原量尺1-4分。"
         },
         {
@@ -3040,6 +4082,7 @@
             "HPLP22",
             "HPLP34"
           ],
+          "reverse_item_codes": [],
           "note": "所属题项取均值，保留原量尺1-4分。"
         },
         {
@@ -3052,6 +4095,7 @@
             "HPLP26",
             "HPLP38"
           ],
+          "reverse_item_codes": [],
           "note": "所属题项取均值，保留原量尺1-4分。"
         }
       ],
@@ -3338,8 +4382,7 @@
         }
       ],
       "scoring_notes": [
-        "六个维度分别取所属题项均值；综合观察为六维均值的平均值。",
-        "采用牛至旭资料中的40题版本，原42题草稿退出运行口径。"
+        "40题均按1-4分正向计分。营养8题、健康责任9题、身体活动8题、精神成长5题、人际关系5题、压力管理5题分别取均值；综合观察为六维均值的平均值。分数越高表示该类健康促进行为在本次自报中出现得越频繁，不作诊断或医学风险判断。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
@@ -3348,7 +4391,11 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "worksheet_instructions": "以下陈述涉及日常健康促进习惯。请按最近一段时间的实际频率选择“从不、偶尔、经常或总是”。结果用于支持性自我观察和练习参考，不替代医学建议。",
+      "source_version": "2026.07-hplp-40-niu-zhixu-canonical-review-20261002-v2",
+      "total_score_method": "none",
+      "dimension_score_method": "mean"
     },
     {
       "scale_id": "swls_life_satisfaction",
@@ -3460,7 +4507,7 @@
     },
     {
       "scale_id": "big_five_bfi_60",
-      "display_name": "大五人格问卷（60题简版）",
+      "display_name": "五类特征自我观察（60题，版本待核）",
       "source_folder": "基于情绪反射弧的分类/大五人格",
       "source_files": [
         "大五人格问卷(简版)记分+纬度解释.doc"
@@ -3471,7 +4518,7 @@
       "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "partial_rule_pending_dimension_review",
-      "instructions": "请认真阅读每个句子，判断描述符合你的程度，从1（十分不赞同）到5（十分赞同）中选择一项。答案没有对错，请按真实情况作答。",
+      "instructions": "请认真阅读每个句子，判断描述符合你的程度，从1（十分不赞同）到5（十分赞同）中选择一项。答案没有对错，请按真实情况作答。结果只用于阶段性自我观察。",
       "total_score_method": "none",
       "likert": [
         {
@@ -3518,7 +4565,8 @@
             "BFI06",
             "BFI21",
             "BFI31"
-          ]
+          ],
+          "note": ""
         },
         {
           "code": "BFI_EXTRAVERSION",
@@ -3541,7 +4589,8 @@
             "BFI18",
             "BFI22",
             "BFI47"
-          ]
+          ],
+          "note": ""
         },
         {
           "code": "BFI_OPENNESS",
@@ -3567,7 +4616,8 @@
             "BFI43",
             "BFI53",
             "BFI58"
-          ]
+          ],
+          "note": ""
         },
         {
           "code": "BFI_AGREEABLENESS",
@@ -3595,7 +4645,8 @@
             "BFI44",
             "BFI49",
             "BFI54"
-          ]
+          ],
+          "note": ""
         },
         {
           "code": "BFI_CONSCIENTIOUSNESS",
@@ -3618,7 +4669,8 @@
             "BFI20",
             "BFI30",
             "BFI60"
-          ]
+          ],
+          "note": ""
         }
       ],
       "items": [
@@ -4044,8 +5096,7 @@
         }
       ],
       "scoring_notes": [
-        "本地 Word 含60个中文题项和五个维度计分键；第60题由源文件明显截断的‘安顿下来工’校正为‘安顿下来工作’。",
-        "五个维度分别求和，不计算人格总分，不输出人格类型或优劣标签；版权和心理解释待审核。"
+        "五个维度按本地 Word 题号分别求和并应用各自反向题；不计算人格总分，不输出人格类型或优劣标签。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
@@ -4054,7 +5105,10 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "worksheet_instructions": "请认真阅读每个句子，判断描述符合你的程度，从1（十分不赞同）到5（十分赞同）中选择一项。答案没有对错，请按真实情况作答。结果只用于阶段性自我观察。",
+      "source_version": "2026.06-big_five_bfi_60-from-scale-draft-review-20261002-v2",
+      "dimension_score_method": "sum"
     },
     {
       "scale_id": "attribution_style_student_36",
@@ -4421,11 +5475,13 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "source_version": "2026.06-attribution_style_student_36-from-scale-draft-review-20261002-v1",
+      "total_score_method": "none"
     },
     {
       "scale_id": "ghq12_general_health",
-      "display_name": "一般健康问卷（GHQ-12）",
+      "display_name": "健康体验自我观察（12题改编候选）",
       "source_folder": "基于情绪反射弧的分类/心理健康自评问卷【GHQ12]",
       "source_files": [
         "一般健康问卷GHQ-12.docx"
@@ -4471,6 +5527,14 @@
             "GHQ09",
             "GHQ10",
             "GHQ11",
+            "GHQ12"
+          ],
+          "reverse_item_codes": [
+            "GHQ01",
+            "GHQ03",
+            "GHQ04",
+            "GHQ07",
+            "GHQ08",
             "GHQ12"
           ],
           "note": "12题校正后求和；积极性题项1、3、4、7、8、12反向计分。"
@@ -4563,8 +5627,7 @@
         }
       ],
       "scoring_notes": [
-        "本地 Word 明确写明12题、1-4分；积极性项目1、3、4、7、8、12反向计分后求和。",
-        "原文件中的阈值和异常判断不进入用户端；结果只作阶段性观察，等待心理与伦理审核后再决定是否开放。"
+        "本地 Word 明确写明12题、1-4分；积极性项目1、3、4、7、8、12反向计分后求和。原文件中的阈值和异常判断不进入用户端。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
@@ -4573,11 +5636,15 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "worksheet_instructions": "请根据从两三周前到现在的实际状况回答全部问题，并在每题的四个选项中选择最符合的一项。结果仅用于阶段性自我观察，不构成诊断或筛查结论。",
+      "source_version": "2026.06-ghq12_general_health-from-scale-draft-review-20261002-v2",
+      "total_score_method": "sum",
+      "dimension_score_method": "sum"
     },
     {
       "scale_id": "epq_emotional_stability_24",
-      "display_name": "EPQ 情绪稳定性量表",
+      "display_name": "情绪反应自我观察（EPQ，24题来源待核）",
       "source_folder": "基于情绪反射弧的分类/情绪稳定性-EPQ",
       "source_files": [
         "EPQ 情绪稳定性量表.docx"
@@ -4588,7 +5655,7 @@
       "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "pending_sensitive_review",
-      "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
+      "instructions": "请根据自己通常的情绪反应和行为情况作答，选择“是”或“否”。结果只用于阶段性观察，不形成固定人格标签。",
       "likert": [
         {
           "value": 0,
@@ -4629,6 +5696,7 @@
             "EPQ23",
             "EPQ24"
           ],
+          "reverse_item_codes": [],
           "note": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
@@ -4812,7 +5880,11 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "worksheet_instructions": "请根据自己通常的情绪反应和行为情况作答，选择“是”或“否”。结果只用于阶段性观察，不形成固定人格标签。",
+      "source_version": "2026.06-epq_emotional_stability_24-from-scale-draft-review-20261002-v2",
+      "dimension_score_method": "sum",
+      "total_score_method": "sum"
     },
     {
       "scale_id": "gad7_anxiety",
@@ -5230,11 +6302,12 @@
     },
     {
       "scale_id": "emotional_intelligence_eis_33",
-      "display_name": "青少年情绪智力量表（EIS）",
+      "display_name": "情绪体验问卷（EIS，中文改编候选）",
       "source_folder": "学生自助量表/青少年情绪智力量表（EIS）",
       "source_files": [
         "青少年情绪智力质量EIS.sav",
-        "指标值计算-中学生情绪智力量表（EIS）.sps"
+        "指标值计算-中学生情绪智力量表（EIS）.sps",
+        "https://www.researchgate.net/profile/Navjot-Bhullar-2/publication/216626162_The_Assessing_Emotions_Scale/links/573c33d608aea45ee841556c/The-Assessing-Emotions-Scale.pdf"
       ],
       "audience": "student",
       "theme": "emotional_intelligence",
@@ -5242,93 +6315,74 @@
       "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
-      "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
+      "instructions": "请根据通常的情绪体验及相关反应，逐题选择同意或不同意程度。没有正确或错误答案，请选择最符合实际情况的一项。",
       "likert": [
         {
           "value": 1,
-          "label": "完全不符合"
+          "label": "非常不同意"
         },
         {
           "value": 2,
-          "label": "比较不符合"
+          "label": "比较不同意"
         },
         {
           "value": 3,
-          "label": "说不清"
+          "label": "既不同意也不反对"
         },
         {
           "value": 4,
-          "label": "比较符合"
+          "label": "比较同意"
         },
         {
           "value": 5,
-          "label": "完全符合"
+          "label": "非常同意"
         }
       ],
       "dimensions": [
         {
-          "code": "EIS_EFEEL",
-          "label": "情绪感知能力",
+          "code": "TOTAL",
+          "label": "情绪体验综合自我观察",
           "item_codes": [
             "EIS01",
+            "EIS02",
+            "EIS03",
+            "EIS04",
             "EIS05",
+            "EIS06",
+            "EIS07",
+            "EIS08",
             "EIS09",
+            "EIS10",
+            "EIS11",
+            "EIS12",
+            "EIS13",
+            "EIS14",
             "EIS15",
+            "EIS16",
             "EIS17",
+            "EIS18",
             "EIS19",
+            "EIS20",
+            "EIS21",
             "EIS22",
+            "EIS23",
+            "EIS24",
             "EIS25",
             "EIS26",
+            "EIS27",
+            "EIS28",
             "EIS29",
+            "EIS30",
+            "EIS31",
             "EIS32",
             "EIS33"
           ],
           "reverse_item_codes": [
             "EIS05",
+            "EIS28",
             "EIS33"
-          ]
-        },
-        {
-          "code": "EIS_ESELF",
-          "label": "理解和推理自身情绪的能力",
-          "item_codes": [
-            "EIS02",
-            "EIS06",
-            "EIS07",
-            "EIS10",
-            "EIS12",
-            "EIS14",
-            "EIS21",
-            "EIS28"
           ],
-          "reverse_item_codes": [
-            "EIS28"
-          ]
-        },
-        {
-          "code": "EIS_EOTHER",
-          "label": "理解和推理他人情绪的能力",
-          "item_codes": [
-            "EIS04",
-            "EIS11",
-            "EIS13",
-            "EIS16",
-            "EIS24",
-            "EIS30"
-          ]
-        },
-        {
-          "code": "EIS_EAPPLY",
-          "label": "情绪运用/表达能力",
-          "item_codes": [
-            "EIS03",
-            "EIS08",
-            "EIS18",
-            "EIS20",
-            "EIS23",
-            "EIS27",
-            "EIS31"
-          ]
+          "note": "作者原版推荐总分；中文候选效度仍待确认。"
         }
       ],
       "items": [
@@ -5336,236 +6390,236 @@
           "item_code": "EIS01",
           "display_order": 1,
           "text": "我知道什么时候该和别人谈论我的私人问题",
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS02",
           "display_order": 2,
-          "text": "当我面对某种困难时，我能够回忆起面对同样的困难并克服它们你的时候",
-          "dimension": "EIS_ESELF",
+          "text": "当我面对某种困难时，我能够回忆起面对同样的困难并克服它们的时候",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS03",
           "display_order": 3,
           "text": "我期望我能够做好我想要做的大多数的事情",
-          "dimension": "EIS_EAPPLY",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS04",
           "display_order": 4,
-          "text": "别人很容易信任我",
-          "dimension": "EIS_EOTHER",
+          "text": "别人觉得容易向我倾诉心事。",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS05",
           "display_order": 5,
           "text": "我觉得我很难理解别人的身体语言",
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": true
         },
         {
           "item_code": "EIS06",
           "display_order": 6,
           "text": "我生命中的一些重大事件让我重新评估了什么是重要的什么是不重要的",
-          "dimension": "EIS_ESELF",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS07",
           "display_order": 7,
-          "text": "心境好的时候我就能看到新的希望",
-          "dimension": "EIS_ESELF",
+          "text": "当我的心境发生变化时，我能看到新的可能性。",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS08",
           "display_order": 8,
-          "text": "我的生活是否有意义，情绪是影响因素之一",
-          "dimension": "EIS_EAPPLY",
+          "text": "情绪是使我感到生活值得过下去的因素之一。",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS09",
           "display_order": 9,
           "text": "我能清楚意识到自己体验的情绪",
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS10",
           "display_order": 10,
           "text": "我希望能够有好的事情发生",
-          "dimension": "EIS_ESELF",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS11",
           "display_order": 11,
           "text": "我喜欢和别人分享自己的情感",
-          "dimension": "EIS_EOTHER",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS12",
           "display_order": 12,
           "text": "情绪好的时候，我知道如何把它延长",
-          "dimension": "EIS_ESELF",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS13",
           "display_order": 13,
-          "text": "安排有关事情，我尽可能使别人感到满意",
-          "dimension": "EIS_EOTHER",
+          "text": "我会安排别人喜欢的活动。",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS14",
           "display_order": 14,
           "text": "我会去找一些让我感到开心的活动",
-          "dimension": "EIS_ESELF",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS15",
           "display_order": 15,
           "text": "我很清楚我传递给别人的非言语信息",
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS16",
           "display_order": 16,
-          "text": "我尽量做的好一些，以给别人留下好的印象",
-          "dimension": "EIS_EOTHER",
+          "text": "我以能给别人留下好印象的方式展现自己。",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS17",
           "display_order": 17,
           "text": "当我心情好的时候，解决问题对我来说很容易",
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS18",
           "display_order": 18,
           "text": "通过观察面部表情，我可以辨别别人的情绪",
-          "dimension": "EIS_EAPPLY",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS19",
           "display_order": 19,
           "text": "我知道自己情绪变化的原因",
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS20",
           "display_order": 20,
           "text": "心情好的时候，新奇的想法就会多一些",
-          "dimension": "EIS_EAPPLY",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS21",
           "display_order": 21,
           "text": "我能够控制自己的情绪",
-          "dimension": "EIS_ESELF",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS22",
           "display_order": 22,
           "text": "我很清楚自己在某一时刻的情绪",
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS23",
           "display_order": 23,
-          "text": "学习时我会想象自己即将取得好成绩，以激励自己",
-          "dimension": "EIS_EAPPLY",
+          "text": "我会想象所承担任务的好结果，以激励自己。",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS24",
           "display_order": 24,
           "text": "当别人在某个方面做的很好时，我会称赞他们",
-          "dimension": "EIS_EOTHER",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS25",
           "display_order": 25,
           "text": "我能够了解别人传递给我的非言语信息",
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS26",
           "display_order": 26,
           "text": "当别人告诉我他人生中的某件重大事件时，我几乎感觉到好像发生在自己身上一样",
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS27",
           "display_order": 27,
           "text": "当我感到情绪变化时，就会涌现一些新颖的想法",
-          "dimension": "EIS_EAPPLY",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS28",
           "display_order": 28,
           "text": "遇到困难时，一想到可能会失败，我就会退却",
-          "dimension": "EIS_ESELF",
+          "dimension": "TOTAL",
           "reverse_scored": true
         },
         {
           "item_code": "EIS29",
           "display_order": 29,
           "text": "只要看一眼，我就知道别人的情绪怎样",
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS30",
           "display_order": 30,
           "text": "当别人消沉时我能够帮助他，使他感觉好一点",
-          "dimension": "EIS_EOTHER",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS31",
           "display_order": 31,
           "text": "在挫折面前，我让自己保持良好的情绪以应对挑战",
-          "dimension": "EIS_EAPPLY",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS32",
           "display_order": 32,
           "text": "我能够通过别人讲话的语调判断他当时的情绪",
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "EIS33",
           "display_order": 33,
-          "text": "我很难理解别人的想法和感受",
-          "dimension": "EIS_EFEEL",
+          "text": "我很难理解别人产生某种感受的原因。",
+          "dimension": "TOTAL",
           "reverse_scored": true
         }
       ],
       "scoring_notes": [
-        "题项来自 EIS .sav 变量标签；维度和反向题来自同目录 SPSS 计分脚本。"
+        "按作者材料推荐的33题总分计算：1—5同意度，5/28/33反向（6减原分），总分33—165。采用单一综合分；不把本地12/8/6/7分组或后来不同研究的四因子键拼接为原版分量表。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
@@ -5574,7 +6628,11 @@
         "reviewed_at": "2026-07-12",
         "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
         "scope": "pilot_release"
-      }
+      },
+      "worksheet_instructions": "请根据通常的情绪体验及相关反应，逐题选择同意或不同意程度。没有正确或错误答案，请选择最符合实际情况的一项。",
+      "source_version": "2026.06-emotional_intelligence_eis_33-from-scale-draft-review-20261002-v2",
+      "total_score_method": "sum",
+      "dimension_score_method": "sum"
     },
     {
       "audience": "student",

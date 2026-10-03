@@ -2,6 +2,7 @@ import importlib
 import sys
 from datetime import date
 from pathlib import Path
+from test_task36_therapeutic_assessment import _grant_case_scope
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -101,6 +102,7 @@ def _ready_case(client, headers):
         },
     )
     case = created.get_json()["data"]
+    _grant_case_scope(client, case["id"], "s-b04")
     assert created.status_code == 201
     assert client.post(
         f"/api/therapeutic-assessment/cases/{case['id']}/assign",
@@ -256,7 +258,7 @@ def test_withdrawal_receipts_and_scope_are_enforced(tmp_path, monkeypatch):
         f"/api/therapeutic-assessment/cases/{case_id}/lifecycle",
         headers=headers["p-b04"],
     )
-    assert other.status_code == 403
+    assert other.status_code == 404
     assert own.status_code == 200
     assert own.get_json()["data"]["delivery_receipts"][0]["status"] == "withdrawn"
     assert own.get_json()["data"]["recovery"]["withdrawal_propagation_ok"] is True

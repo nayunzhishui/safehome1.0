@@ -1,5 +1,6 @@
 const { createSafeHomeApi } = require("../../services/api");
 const { getMinorSafeguardStatus } = require("../../services/minorSafeguardsApi");
+const { getCloudConfig } = require("../../services/cloudConfig");
 
 const api = createSafeHomeApi();
 const PROTECTION_URL = "/pages/settings-detail/index?type=protection";
@@ -59,6 +60,7 @@ Page({
     wechatLoading: false,
     phoneLoading: false,
     wechatAvailable: true,
+    wechatMode: "",
     phoneAvailable: true,
     status: "idle",
     message: "",
@@ -87,7 +89,7 @@ Page({
         } else if (!phoneAvailable) {
           capabilityMessage = "手机号快捷登录尚未完成云端配置，可使用微信或账号密码登录。";
         }
-        this.setData({ capabilityMessage, wechatAvailable, phoneAvailable });
+        this.setData({ capabilityMessage, wechatAvailable, phoneAvailable, wechatMode: capabilities.wechat_login.mode || "" });
       })
       .catch(() => {
         // Older deployments may not expose capability probing yet; login buttons remain usable.
@@ -103,6 +105,7 @@ Page({
   },
 
   submitLogin() {
+    if (this.data.loading || this.data.wechatLoading || this.data.phoneLoading) return;
     const username = this.data.username.trim();
     const password = this.data.password;
     if (!username || !password) {
@@ -154,6 +157,7 @@ Page({
   },
 
   submitPasswordChange() {
+    if (this.data.loading || this.data.wechatLoading || this.data.phoneLoading) return;
     const currentPassword = this.data.currentPassword;
     const newPassword = this.data.newPassword;
     if (!currentPassword || !newPassword) {
@@ -179,6 +183,24 @@ Page({
   },
 
   submitWechatLogin() {
+    if (this.data.loading || this.data.wechatLoading || this.data.phoneLoading) return;
+    let cloudIdentity = false;
+    if (this.data.wechatMode === "cloudbase_identity") {
+      try {
+        cloudIdentity = !getCloudConfig().useLocalHttp;
+      } catch (error) {
+        this.setData({ status: "error", message: error.message || "连接配置不可用，请重新打开页面。" });
+        return;
+      }
+    }
+    if (cloudIdentity) {
+      this.setData({ wechatLoading: true, status: "loading", message: "正在完成微信登录..." });
+      api.wechatLogin({})
+        .then((result) => this.completeLogin(result, "微信登录成功"))
+        .catch((error) => this.setData({ status: "error", message: error.message || "微信登录暂不可用，请稍后重试。" }))
+        .finally(() => this.setData({ wechatLoading: false }));
+      return;
+    }
     if (!wx.login) {
       this.setData({
         status: "error",
@@ -229,6 +251,7 @@ Page({
   },
 
   handlePhoneLogin(event) {
+    if (this.data.loading || this.data.wechatLoading || this.data.phoneLoading) return;
     const detail = event.detail || {};
     const code = detail.code || "";
     if (!code) {

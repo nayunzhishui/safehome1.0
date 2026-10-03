@@ -236,3 +236,25 @@ def test_parent_assessments_summary_export_omits_answers_and_report_json(tmp_pat
     raw_wide_header = raw_wide_csv.splitlines()[0]
     assert "P-PRIVATE-001" not in raw_wide_csv
     assert "participant_code_hash" in raw_wide_header
+
+
+def test_generic_diary_export_excludes_withdrawn_participant(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    revoked_id, revoked_token = _wechat_login(client, "synthetic-withdrawn-export")
+    active_id, active_token = _wechat_login(client, "synthetic-active-export")
+    ids = []
+    for uid, token in [(revoked_id, revoked_token), (active_id, active_token)]:
+        response = client.post("/api/diaries", headers={"Authorization": f"Bearer {token}"}, json={"user_id": uid, "scene": "合成场景", "event_description": "合成测试记录", "parent_emotion": "担心", "parent_emotion_intensity": 0})
+        assert response.status_code == 201, response.get_json()
+        ids.append(response.get_json()["data"]["id"])
+    with app.app_context():
+        from database import get_connection
+        from services.consent_service import append_consent_event
+        with get_connection() as conn:
+            append_consent_event(conn, actor_id=revoked_id, subject_id=revoked_id, consent_type="research_authorization", consent_version="synthetic-v1", agreed=False, source="participant_self")
+            conn.commit()
+    text = _csv(client, "diaries")
+    assert ids[0] not in text
+    assert ids[1] in text
+    assert ids[0] not in _csv(client, "diaries", f"&user_id={revoked_id}")

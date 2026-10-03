@@ -12,14 +12,17 @@ def _fresh_app(tmp_path, monkeypatch):
     for name in list(sys.modules):
         if name in {"app", "config", "database", "models"} or name.startswith("routes.") or name.startswith("services."):
             sys.modules.pop(name, None)
-    monkeypatch.setenv("APP_ENV", "pilot")
+    monkeypatch.setenv("APP_ENV", "validation")
+    monkeypatch.setenv("DATABASE_DATA_WATERMARK", "synthetic_validation_only")
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "minor-sensitive-writes.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(ROOT / "content"))
     monkeypatch.setenv("DB_PROVIDER", "sqlite")
     monkeypatch.setenv("SECRET_KEY", "minor-sensitive-write-secret-key-long-enough")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "legacy-admin-token")
     monkeypatch.delenv("LEGACY_ADMIN_TOKEN_ENABLED", raising=False)
-    return importlib.import_module("app").app
+    app = importlib.import_module("app").app
+    monkeypatch.setattr(importlib.import_module("config").Config, "MINOR_SAFEGUARDS_ENFORCED", True, raising=False)
+    return app
 
 
 def _register(client, username, role):
@@ -61,6 +64,21 @@ def test_age_confirmation_gates_diary_and_profile_writes(tmp_path, monkeypatch):
     assert blocked_diary.get_json()["error"]["code"] == "age_verification_required"
     assert blocked_profile.status_code == 403
     assert blocked_profile.get_json()["error"]["code"] == "age_verification_required"
+
+    sensitive_payloads = [
+        ("/api/checkins", {"card_id": "pause", "reflection": "今天的练习感受"}, "checkins"),
+        ("/api/feedback/generate", {"event_description": "普通学习事件"}, "feedback_results"),
+        ("/api/emotion-thermometer", {"intensity_level": 5, "brief_text": "今天的情绪"}, "emotion_thermometer"),
+        ("/api/supervision", {"message": "希望老师了解今天的学习情况"}, "supervision_requests"),
+    ]
+    for path, payload, table in sensitive_payloads:
+        denied = client.post(path, headers=headers, json=payload)
+        assert denied.status_code == 403, (path, denied.get_json())
+        assert denied.get_json()["error"]["code"] == "age_verification_required"
+        with app.app_context():
+            from database import get_connection
+            with get_connection() as conn:
+                assert conn.execute(f"SELECT COUNT(*) AS n FROM {table}").fetchone()["n"] == 0
 
     age = client.post(
         "/api/minor-safeguards/age-confirmation",

@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 
 from database import get_connection, rows_to_dicts, write_audit_log
+from services.research_access_service import participant_scope_clause
 from services.research_work_item_service import WORK_ITEM_STATUSES, WorkItemError, ensure_work_item, reconcile_resolved_work_items
 
 
@@ -30,9 +31,7 @@ def _wait_minutes(created_at: object) -> int:
 
 
 def _scoped_user_column(actor: dict, column: str) -> tuple[str, list[str]]:
-    if actor.get("role") != "researcher":
-        return "1 = 1", []
-    return f"{column} IN (SELECT user_id FROM relationship_pilot_enrollments WHERE assigned_researcher_id = ?)", [str(actor["id"])]
+    return participant_scope_clause(actor, column)
 
 
 def _research_authorized_column(column: str) -> str:
@@ -88,9 +87,9 @@ def list_research_queue(actor: dict, *, queue_name: str, page: int, page_size: i
             reconcile_resolved_work_items(conn, queue_name, actor, list(source_by_id))
         item_where = ["queue_type = ?"]
         item_params: list = [queue_name]
-        if actor.get("role") == "researcher":
-            item_where.append("user_id IN (SELECT user_id FROM relationship_pilot_enrollments WHERE assigned_researcher_id = ?)")
-            item_params.append(str(actor["id"]))
+        item_scope, item_scope_params = _scoped_user_column(actor, "user_id")
+        item_where.append(item_scope)
+        item_params.extend(item_scope_params)
         if requested_status == "active":
             placeholders = ",".join("?" for _ in ACTIVE_WORK_ITEM_STATUSES)
             item_where.append(f"status IN ({placeholders})")
@@ -117,4 +116,4 @@ def list_research_queue(actor: dict, *, queue_name: str, page: int, page_size: i
         conn.commit()
     items = [{**item, "title": config["title"], "wait_minutes": _wait_minutes(item.get("created_at"))} for item in items]
     total = int(total_row["count"] if total_row else 0)
-    return {"queue": queue_name, "items": items, "page": page, "page_size": page_size, "total": total, "has_more": offset + len(items) < total, "sync_truncated": sync_truncated, "scope": "assigned_participants" if actor.get("role") == "researcher" else "all_participants", "boundary_notice": "队列只返回必要状态和来源标识，不返回填写原文、消息正文或内部复核备注。"}
+    return {"queue": queue_name, "items": items, "page": page, "page_size": page_size, "total": total, "has_more": offset + len(items) < total, "sync_truncated": sync_truncated, "scope": "assigned_participants" if actor.get("role") in {"researcher", "supervisor"} else "all_participants", "boundary_notice": "队列只返回必要状态和来源标识，不返回填写原文、消息正文或内部复核备注。"}

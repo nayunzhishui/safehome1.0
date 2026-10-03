@@ -64,7 +64,8 @@ const ERROR_MESSAGES_BY_CODE = {
   wechat_login_failed: "微信登录凭证已失效，请重新尝试。",
   wechat_phone_config_missing: "手机号快捷登录尚未开通，请使用微信一键登录或账号密码登录。",
   wechat_phone_config_invalid: "手机号快捷登录暂不可用，请使用其他登录方式。",
-  wechat_phone_exchange_failed: "手机号授权已失效，请重新授权后再试。",
+  wechat_phone_exchange_failed: "手机号验证未完成，请稍后重新授权或使用其他登录方式。",
+  wechat_phone_permission_denied: "手机号登录暂不可用，请使用其他登录方式；平台权限需要项目负责人确认。",
   wechat_phone_invalid: "微信没有返回有效手机号，请重新授权。",
   wechat_service_unavailable: "微信服务暂时没有响应，请稍后重试。",
   wechat_network_unavailable: "服务器暂时无法连接微信服务，请稍后重试或使用账号密码登录。",
@@ -336,7 +337,7 @@ function createSafeHomeApi(options = {}) {
             ...(options.header || {}),
           },
           success(res) {
-            handleResponse(res, resolve, reject, path, method, debug);
+            handleResponse(res, resolve, reject, path, method, debug, authToken);
           },
           fail(err) {
             reject({
@@ -385,7 +386,7 @@ function createSafeHomeApi(options = {}) {
           "X-WX-SERVICE": containerService,
         },
         success(res) {
-          handleResponse(res, resolve, reject, path, method, debug);
+          handleResponse(res, resolve, reject, path, method, debug, authToken);
         },
         fail(err) {
           const debugMessage = `云托管调用失败，请检查云环境 ID、云托管服务名和服务状态。当前 env=${cloudEnvId}，service=${containerService}，path=${path}。`;
@@ -407,13 +408,18 @@ function createSafeHomeApi(options = {}) {
     });
   }
 
-  function handleResponse(res, resolve, reject, path, method, debug) {
+  function handleResponse(res, resolve, reject, path, method, debug, authToken) {
+    if (authToken !== (wx.getStorageSync("auth_token") || "")) {
+      reject({ code: "auth_session_changed", message: "登录状态已变化，请重新打开页面。", status: 409, retryable: false, path, method });
+      return;
+    }
     const statusCode = res.statusCode || 0;
     const payload = res.data;
 
     if (statusCode < 200 || statusCode >= 300) {
       const backendCode = String(payload && payload.error && payload.error.code || "");
-      if (statusCode === 401 && backendCode !== "invalid_credentials") {
+      if (statusCode === 401 && backendCode !== "invalid_credentials"
+          && authToken && authToken === (wx.getStorageSync("auth_token") || "")) {
         clearAuthSession();
       }
       reject(normalizeApiError({
@@ -490,7 +496,7 @@ function createSafeHomeApi(options = {}) {
     return template.replace(":id", encodeURIComponent(id));
   }
 
-  return {
+  const client = {
     getDebugConfig() {
       return {
         cloudEnvId,
@@ -625,9 +631,15 @@ function createSafeHomeApi(options = {}) {
         authToken,
       }).then((result) => {
         clearPendingLogoutForUser(authUser && authUser.id);
+        if ((wx.getStorageSync("auth_token") || "") && authToken !== wx.getStorageSync("auth_token")) {
+          return { tokens_revoked: false, pending_logout: false, session_changed: true };
+        }
         clearAuthSession();
         return { ...result, pending_logout: false };
       }).catch((error) => {
+        if ((wx.getStorageSync("auth_token") || "") && authToken !== wx.getStorageSync("auth_token")) {
+          return { tokens_revoked: false, pending_logout: false, session_changed: true };
+        }
         const pending = authToken ? markPendingLogout(authUser) : null;
         clearAuthSession();
         return {
@@ -1965,6 +1977,27 @@ function createSafeHomeApi(options = {}) {
       return `${httpBaseUrl}${API_ENDPOINTS.adminExport}${queryString(params)}`;
     },
   };
+  const consentFeatures = {
+    createGoal: "goal", createDiary: "diary", createCheckin: "checkin",
+    createEmotionThermometer: "thermometer", createSupervision: "supervision",
+    createProfile: "assessment", createAssessmentResult: "assessment",
+    createProgramEntry: "program", createRelationshipEnrollment: "relationship",
+    createRelationshipTask: "relationship",
+  };
+  Object.entries(consentFeatures).forEach(([name, feature]) => {
+    const submit = client[name];
+    client[name] = async (...args) => {
+      const pages = typeof getCurrentPages === "function" ? getCurrentPages() : [];
+      const page = pages[pages.length - 1];
+      if (!page) throw { code: "consent_required", message: "请在对应功能页面阅读知情说明后再提交。" };
+      const { ensureServiceConsent } = require("../utils/serviceConsent");
+      if (!await ensureServiceConsent(page, client, feature)) {
+        throw { code: "consent_declined", message: "尚未同意本功能的数据处理说明，本次内容未提交。" };
+      }
+      return submit(...args);
+    };
+  });
+  return client;
 }
 
 module.exports = {

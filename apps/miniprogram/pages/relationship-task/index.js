@@ -1,4 +1,6 @@
+const { captureAuthSession, isCurrentAuthSession } = require("../../utils/authGuard");
 const { createSafeHomeApi } = require("../../services/api");
+const { beginServiceEntry, finishServiceConsent } = require("../../utils/serviceConsent");
 
 const api = createSafeHomeApi();
 const CONTEXTS = ["表白", "争吵", "冷战", "靠近", "边界表达", "被拒绝", "真实表达"];
@@ -27,7 +29,11 @@ function createIdempotencyKey(prefix) {
 }
 
 Page({
+  isDraftOwner() { return !!this._draftOwner && String((wx.getStorageSync("auth_user") || {}).id || "") === this._draftOwner; },
+  retryServiceEntry() { return this.onLoad(this._entryOptions || {}); },
+  returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
   data: {
+    serviceReady: false,
     enrollmentId: "",
     taskType: "relationship_drawing",
     isDrawing: true,
@@ -52,10 +58,13 @@ Page({
   draftTimer: null,
   submissionKey: "",
 
-  onLoad(options) {
+  onLoad(options = {}) { return beginServiceEntry(this, api, "relationship", options, "/pages/relationship-task/index"); },
+  loadAfterConsent(options) {
+    this._formSession = captureAuthSession();
+    this._draftOwner = String((wx.getStorageSync("auth_user") || {}).id || "");
     const taskType = decodeURIComponent(options.type || "relationship_drawing");
     const enrollmentId = decodeURIComponent(options.enrollment_id || "");
-    this.draftKey = `relationship_task_draft:${enrollmentId}:${taskType}`;
+    this.draftKey = `relationship_task_draft:${enrollmentId}:${taskType}:user:${encodeURIComponent(this._draftOwner)}`;
     this.submissionKey = createIdempotencyKey("relationship-task");
     this.setData(
       {
@@ -73,15 +82,33 @@ Page({
     }
   },
 
+  onShow() {
+    this._hidden = false;
+    if (this._formSession && !isCurrentAuthSession(this._formSession)) {
+      if (this.draftTimer) clearTimeout(this.draftTimer);
+      this.draftTimer = null;
+      this.strokes = []; this.history = []; this.future = [];
+      this.currentStroke = null; this.strokeSnapshot = null;
+      this.setData({ serviceReady: false, answers: {}, contextItems: contextItemsFromAnswers(), narration: "", narrationCount: 0, consent: false, saving: false, draftRestored: false, hasLocalDraft: false, canUndo: false, canRedo: false, saveStatus: "尚未填写" });
+      this.updateUnloadGuard(false);
+      if (this.data.isDrawing) this.redrawCanvas();
+      return this.onLoad(this._entryOptions || {});
+    }
+  },
+
   onHide() {
+    this._hidden = true;
     this.persistDraftNow();
   },
 
   onUnload() {
+    this._consentDisposed = true;
+    finishServiceConsent(this, false);
     if (this.draftTimer) clearTimeout(this.draftTimer);
   },
 
   restoreDraft() {
+    if (!this.isDraftOwner()) return;
     let draft = null;
     try {
       draft = wx.getStorageSync(this.draftKey);
@@ -127,6 +154,7 @@ Page({
   },
 
   persistDraftNow() {
+    if (!this.isDraftOwner()) return;
     if (!this.draftKey || this.data.saving) return;
     if (this.draftTimer) {
       clearTimeout(this.draftTimer);
@@ -299,6 +327,9 @@ Page({
   },
 
   async saveTask() {
+    const session = captureAuthSession();
+    const isCurrent = () => this.isDraftOwner() && !this._consentDisposed && !this._hidden && isCurrentAuthSession(session);
+    if (this.data.saving || !isCurrent()) return;
     if (!this.data.consent) {
       wx.showToast({ title: "请先确认材料授权", icon: "none" });
       return;
@@ -315,6 +346,7 @@ Page({
     this.setData({ saving: true, saveStatus: "正在提交..." });
     try {
       const canvasSize = this.data.isDrawing ? await this.getCanvasSize() : {};
+      if (!isCurrent()) return;
       const saved = await api.createRelationshipTask(this.data.enrollmentId, {
         task_type: this.data.taskType,
         drawing_data: this.data.isDrawing
@@ -325,6 +357,7 @@ Page({
         material_consent: true,
         idempotency_key: this.submissionKey,
       });
+      if (!isCurrent()) return;
       api.trackProductEvent("relationship_step_completed", {
         action: "task_submitted",
         stage: "exploration",
@@ -341,13 +374,14 @@ Page({
           content: "这份内容不会生成普通自动解释。若你或他人正面临现实安全风险，请优先联系可信的人或当地紧急支持。",
           showCancel: false,
           confirmText: "我知道了",
-          success: () => wx.navigateBack(),
+          success: () => { if (isCurrent()) wx.navigateBack(); },
         });
         return;
       }
       wx.showToast({ title: "已保存", icon: "success" });
-      setTimeout(() => wx.navigateBack(), 500);
+      setTimeout(() => { if (isCurrent()) wx.navigateBack(); }, 500);
     } catch (error) {
+      if (!isCurrent()) return;
       api.trackProductEvent("relationship_task_save_failed", {
         action: "task_submit",
         stage: "exploration",
@@ -359,7 +393,8 @@ Page({
       this.persistDraftNow();
       wx.showToast({ title: error.message || "暂时没能提交，草稿还在", icon: "none" });
       return;
+    } finally {
+      if (this.isDraftOwner() && !this._consentDisposed) this.setData({ saving: false });
     }
-    this.setData({ saving: false });
   },
 });

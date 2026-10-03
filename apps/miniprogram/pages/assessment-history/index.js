@@ -1,5 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
-const { requireLogin } = require("../../utils/authGuard");
+const { requireLogin, captureAuthSession, isCurrentAuthSession } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
 const PAGE_SIZE = 50;
@@ -38,6 +38,15 @@ function formatResult(item) {
 }
 
 Page({
+  onShow() {
+    this._hidden = false;
+    if (this._readSession && !isCurrentAuthSession(this._readSession)) {
+      this.setData({ items: [], total: 0, hasMore: false });
+      this.loadPage(1);
+    } else if ((this.data.loading || this.data.loadingMore) && this._readSession) { this.loadPage(1); }
+  },
+  onHide() { this._hidden = true; },
+  onUnload() { this._consentDisposed = true; this._hidden = true; },
   data: {
     loading: true,
     loadingMore: false,
@@ -60,6 +69,10 @@ Page({
   },
 
   async loadPage(page) {
+    const session = captureAuthSession();
+    this._readSession = session;
+    const requestId = this._historyRequestId = (this._historyRequestId || 0) + 1;
+    const isCurrent = () => !this._hidden && !this._consentDisposed && requestId === this._historyRequestId && isCurrentAuthSession(session);
     const append = page > 1;
     this.setData({
       loading: !append,
@@ -68,6 +81,7 @@ Page({
     });
     try {
       const result = await api.listAssessmentResults({ page, page_size: PAGE_SIZE });
+      if (!isCurrent()) return;
       const nextItems = (result.items || []).map(formatResult);
       this.setData({
         loading: false,
@@ -79,6 +93,7 @@ Page({
         hasMore: Boolean(result.has_more),
       });
     } catch (error) {
+      if (!isCurrent()) return;
       this.setData({
         loading: false,
         loadingMore: false,

@@ -26,6 +26,7 @@ def _fresh_app(tmp_path, monkeypatch, *, build_info=None, content_dir=None):
     monkeypatch.setenv("DATABASE_DATA_WATERMARK", "synthetic_validation_only")
     monkeypatch.setenv("SECRET_KEY", "task36-f09-test-secret-key-that-is-long-enough")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "task36-f09-admin-token")
+    monkeypatch.setenv("OPERATIONS_HEALTH_TOKEN", "task36-f09-health-token")
     if build_info is not None:
         build_path = tmp_path / "build_info.json"
         build_path.write_text(json.dumps(build_info, ensure_ascii=False), encoding="utf-8")
@@ -47,12 +48,12 @@ def _build_info(content_dir=None):
     )
 
 
-def test_healthz_exposes_safe_build_identity_and_response_headers(tmp_path, monkeypatch):
+def test_deep_health_requires_token_and_exposes_safe_build_identity(tmp_path, monkeypatch):
     info = _build_info()
     app = _fresh_app(tmp_path, monkeypatch, build_info=info)
     from database import CURRENT_SCHEMA_NAME, CURRENT_SCHEMA_VERSION
 
-    response = app.test_client().get("/healthz", headers={"X-Request-ID": "f09-health-001"})
+    response = app.test_client().get("/healthz/deep", headers={"X-Request-ID": "f09-health-001", "X-Operations-Token": "task36-f09-health-token"})
     body = response.get_json()
 
     assert response.status_code == 200
@@ -73,7 +74,7 @@ def test_healthz_exposes_safe_build_identity_and_response_headers(tmp_path, monk
 
 def test_validation_readiness_accepts_matching_packaged_fingerprint(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch, build_info=_build_info())
-    response = app.test_client().get("/readyz")
+    response = app.test_client().get("/readyz", headers={"X-Operations-Token": "task36-f09-health-token"})
     deployment = response.get_json()["deployment"]
 
     assert response.status_code == 200
@@ -87,7 +88,7 @@ def test_validation_readiness_accepts_matching_packaged_fingerprint(tmp_path, mo
 def test_validation_readiness_distinguishes_contract_content_and_schema_drift(tmp_path, monkeypatch):
     contract_info = {**_build_info(), "api_contract_hash": "0" * 64}
     contract_app = _fresh_app(tmp_path / "contract", monkeypatch, build_info=contract_info)
-    contract = contract_app.test_client().get("/readyz")
+    contract = contract_app.test_client().get("/readyz", headers={"X-Operations-Token": "task36-f09-health-token"})
     assert contract.status_code == 503
     assert contract.get_json()["deployment"]["diagnosis"] == "backend_contract_mismatch"
 
@@ -99,7 +100,7 @@ def test_validation_readiness_distinguishes_contract_content_and_schema_drift(tm
     cards["version"] = f"{cards.get('version', 'unknown')}-drift"
     cards_path.write_text(json.dumps(cards, ensure_ascii=False), encoding="utf-8")
     content_app = _fresh_app(tmp_path / "content", monkeypatch, build_info=content_info, content_dir=content_dir)
-    content = content_app.test_client().get("/readyz")
+    content = content_app.test_client().get("/readyz", headers={"X-Operations-Token": "task36-f09-health-token"})
     assert content.status_code == 503
     assert content.get_json()["deployment"]["diagnosis"] == "content_manifest_mismatch"
 
@@ -109,7 +110,7 @@ def test_validation_readiness_distinguishes_contract_content_and_schema_drift(tm
         with database.get_connection() as conn:
             conn.execute("DELETE FROM schema_migrations WHERE version = ?", (database.CURRENT_SCHEMA_VERSION,))
             conn.commit()
-    schema = schema_app.test_client().get("/readyz")
+    schema = schema_app.test_client().get("/readyz", headers={"X-Operations-Token": "task36-f09-health-token"})
     assert schema.status_code == 503
     assert schema.get_json()["deployment"]["diagnosis"] == "database_schema_mismatch"
 

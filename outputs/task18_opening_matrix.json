@@ -32,7 +32,7 @@
     {
       "kind": "量表",
       "item_id": "emotion_regulation_erq",
-      "title": "情绪调节问卷（Gross ERQ）",
+      "title": "情绪调节问卷（ERQ）",
       "governance_status": "pilot_approved",
       "enabled_flag": true,
       "technical_chain": "完整",
@@ -87,7 +87,7 @@
     {
       "kind": "量表",
       "item_id": "study_engagement_uwes_s_17",
-      "title": "学习投入量表（UWES-S 中文版）",
+      "title": "学习投入问卷（UWES-S，中文改编候选）",
       "governance_status": "pilot_approved",
       "enabled_flag": true,
       "technical_chain": "完整",
@@ -120,7 +120,7 @@
     {
       "kind": "量表",
       "item_id": "acceptance_action_aaq2",
-      "title": "接纳与行动问卷（AAQ-II）",
+      "title": "接纳与行动问卷（AAQ-II，中文候选）",
       "governance_status": "pilot_approved",
       "enabled_flag": true,
       "technical_chain": "完整",
@@ -164,7 +164,7 @@
     {
       "kind": "量表",
       "item_id": "cfi2_cognitive_flexibility",
-      "title": "认知灵活性问卷中文版（CFI-2）",
+      "title": "认知灵活性问卷（CFS，中文12题改编候选）",
       "governance_status": "pilot_approved",
       "enabled_flag": true,
       "technical_chain": "完整",
@@ -186,7 +186,7 @@
     {
       "kind": "量表",
       "item_id": "fmi_12_mindfulness",
-      "title": "弗赖堡正念调查量表（FMI-12）",
+      "title": "正念自我观察（FMI，12题改编候选）",
       "governance_status": "pilot_approved",
       "enabled_flag": true,
       "technical_chain": "完整",
@@ -197,7 +197,7 @@
     {
       "kind": "量表",
       "item_id": "hplp_c_health_promoting_lifestyle",
-      "title": "健康促进生活方式量表（HPLP，40题）",
+      "title": "健康促进生活方式自我观察（40题改编候选）",
       "governance_status": "pilot_approved",
       "enabled_flag": true,
       "technical_chain": "完整",
@@ -263,7 +263,7 @@
     {
       "kind": "量表",
       "item_id": "big_five_bfi_60",
-      "title": "大五人格问卷（60题简版）",
+      "title": "五类特征自我观察（60题，版本待核）",
       "governance_status": "pilot_approved",
       "enabled_flag": true,
       "technical_chain": "完整",
@@ -285,7 +285,7 @@
     {
       "kind": "量表",
       "item_id": "ghq12_general_health",
-      "title": "一般健康问卷（GHQ-12）",
+      "title": "健康体验自我观察（12题改编候选）",
       "governance_status": "pilot_approved",
       "enabled_flag": true,
       "technical_chain": "完整",
@@ -296,7 +296,7 @@
     {
       "kind": "量表",
       "item_id": "epq_emotional_stability_24",
-      "title": "EPQ 情绪稳定性量表",
+      "title": "情绪反应自我观察（EPQ，24题来源待核）",
       "governance_status": "pilot_approved",
       "enabled_flag": true,
       "technical_chain": "完整",
@@ -307,7 +307,7 @@
     {
       "kind": "量表",
       "item_id": "emotional_intelligence_eis_33",
-      "title": "青少年情绪智力量表（EIS）",
+      "title": "情绪体验问卷（EIS，中文改编候选）",
       "governance_status": "pilot_approved",
       "enabled_flag": true,
       "technical_chain": "完整",
@@ -1056,9 +1056,9 @@
       "kind": "研究分析",
       "item_id": "情感计算聚合",
       "title": "情感计算聚合",
-      "governance_status": "legacy_unverified",
+      "governance_status": "missing",
       "enabled_flag": false,
-      "technical_chain": "离线脚本+研究者只读API",
+      "technical_chain": "离线脚本存在、当前产物缺失",
       "opening_category": "继续隐藏",
       "reason": "产物缺失、样本不足或质量状态未通过",
       "evidence": "analysis/text_analysis；outputs/text_analysis/text_analysis_summary.json；GET /api/text-analysis/summary"
@@ -1091,7 +1091,7 @@
       "title": "小程序页面",
       "governance_status": "implemented",
       "enabled_flag": true,
-      "technical_chain": "51页已注册",
+      "technical_chain": "53页已注册",
       "opening_category": "开放",
       "reason": "页面注册完整，具体内容仍受后端治理",
       "evidence": "apps/miniprogram/app.json"

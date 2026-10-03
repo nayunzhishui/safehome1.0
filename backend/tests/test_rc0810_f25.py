@@ -4,6 +4,7 @@ import subprocess
 import sys
 import copy
 import zipfile
+import re
 from pathlib import Path
 
 
@@ -333,3 +334,29 @@ def test_f25b_rejects_fabricated_device_verification(tmp_path):
     result = module.validate_report(candidate)
     assert result["valid"] is False
     assert "external_evidence_must_remain_pending" in result["errors"]
+
+
+def test_backend_release_inputs_cover_docker_copy_sources():
+    spec = importlib.util.spec_from_file_location("f25b_context_scope", F25B_BUILDER)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    package_script = (ROOT / "scripts/build_task9_cloudbase_package.ps1").read_text(encoding="utf-8")
+    if "$PackageSourcePaths = @(" in package_script:
+        archive_section = package_script.split('$PackageSourcePaths = @(', 1)[1].split(')', 1)[0]
+    else:
+        archive_section = package_script.split('Invoke-Native "git" @(', 1)[1].split('Expand-Archive', 1)[0]
+    package_sources = re.findall(r'"([^"]+)"', archive_section)
+    dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+    for line in dockerfile.splitlines():
+        if not line.startswith("COPY "):
+            continue
+        for source in line.split()[1:-1]:
+            assert any(source == context or source.startswith(context + "/") for context in module.BACKEND_CONTEXTS), source
+            assert any(source == context or source.startswith(context + "/") for context in package_sources), source
+
+
+def test_cloudbase_packager_rejects_uncommitted_source_before_staging():
+    text = (ROOT / "scripts/build_task9_cloudbase_package.ps1").read_text(encoding="utf-8")
+    guard = text.index('diff --quiet HEAD --')
+    assert guard < text.index('New-Item -ItemType Directory -Path $CodexTmp')
+    assert 'ls-files --others --exclude-standard --' in text[:text.index('New-Item -ItemType Directory -Path $CodexTmp')]

@@ -108,7 +108,8 @@ def strip_template_handlers(path: Path, names: list[str]) -> None:
             re.S,
         )
         text, count = pattern.subn("", text)
-        if count != 1:
+        remaining_handler = re.search(rf"bind[\w:]*=[\"']{re.escape(name)}[\"']", text)
+        if count > 1 or remaining_handler:
             raise ValueError(f"cannot strip production-only template handler {name} from {path.as_posix()}")
     path.write_text(text, encoding="utf-8")
 

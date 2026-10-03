@@ -985,6 +985,11 @@ def export_csv():
                     )
                 where_clauses = []
                 params = []
+                if table != "training_cards":
+                    revoked_clause, revoked_params = research_revoked_filter(conn, "user_id")
+                    if revoked_clause:
+                        where_clauses.append(revoked_clause)
+                        params.extend(revoked_params)
                 if user_id and table != "training_cards":
                     where_clauses.append("user_id = ?")
                     params.append(user_id)

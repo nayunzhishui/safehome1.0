@@ -64,6 +64,8 @@ test("体验工作台保持五工作区、四入口和外部门禁", async ({ pa
   expect(semantics.scroll).toBeLessThanOrEqual(semantics.width + 1);
 
   const packageButton = page.getByRole("button", { name: "生成待人工核对证据包" });
+  await expect(page.getByText("大字号阅读", { exact: true })).toBeVisible();
+  await expect(page.getByText("理解与使用访谈", { exact: true })).toBeVisible();
   if (testInfo.project.name === "desktop-chrome") {
     await packageButton.focus();
     const outline = await packageButton.evaluate((node) => getComputedStyle(node).outlineStyle);
@@ -110,13 +112,12 @@ test("关系测评草稿可恢复并复用同一提交标识", async ({ page }) 
   await page.goto("/relationship-assessment", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "关系中的行动方式问卷" })).toBeVisible();
   await page.getByLabel("很符合").check();
-  await page.waitForTimeout(450);
-  const storedBeforeReload = await page.evaluate(() => localStorage.getItem("safehome:draft:relationship-assessment"));
-  expect(storedBeforeReload).toContain("clientSubmissionId");
+  const draftKey = "safehome:draft:relationship-assessment:user:student-t33";
+  await expect.poll(() => page.evaluate(key => localStorage.getItem(key), draftKey)).toContain("clientSubmissionId");
   await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.getByLabel("很符合")).toBeChecked();
   await expect(page.getByText(/已恢复：草稿已于/)).toBeVisible();
   await page.getByRole("button", { name: "提交并查看阶段性画像" }).click();
   await expect.poll(() => submittedKey).toMatch(/^relationship-assessment-/);
-  await expect.poll(async () => page.evaluate(() => localStorage.getItem("safehome:draft:relationship-assessment"))).toBeNull();
+  await expect.poll(() => page.evaluate(key => localStorage.getItem(key), draftKey)).toBeNull();
 });

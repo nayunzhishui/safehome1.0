@@ -184,10 +184,11 @@ def test_f01_source_drift_is_rejected(tmp_path: Path):
     assert any(error.startswith("source_hash_mismatch:") for error in result["errors"])
 
 
-def test_f01_legacy_dockerfile_is_validation_only():
+def test_f01_production_candidate_dockerfile_remains_unapproved():
     inventory = json.loads((CONFIG_ROOT / "environment_inventory.json").read_text(encoding="utf-8"))
     docker = next(item for item in inventory["sources"] if item["path"] == "Dockerfile")
-    assert docker["classification"] == "validation_only_legacy"
+    assert docker["classification"] == "production_candidate_not_approved"
+    assert "ENV APP_ENV=production" in (ROOT / "Dockerfile").read_text(encoding="utf-8")
     assert docker["production_eligible"] is False
 
 

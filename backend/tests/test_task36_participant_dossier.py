@@ -89,4 +89,5 @@ def test_web_shared_and_miniprogram_use_the_same_lazy_module_contract():
     assert "getResearchParticipantModule" in web_api and "getResearchParticipantModule" in mini_api
     assert "loadParticipantModule" in web_page and "loadParticipantModule" in mini_page
     assert "选择一个标签后才会读取详情" in web_page
-    assert "选择标签后才读取详情" in mini_view
+    assert "activeParticipantModule" in mini_view
+    assert "loadParticipantModule" in mini_page

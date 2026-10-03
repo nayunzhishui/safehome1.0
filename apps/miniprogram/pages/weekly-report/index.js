@@ -45,7 +45,7 @@ function formatDimensionSummaries(items = []) {
       key: item.key || item.label,
       label: item.label || item.key,
       direction: item.direction || "暂无变化",
-      deltaText: item.score_delta === null || item.score_delta === undefined ? "暂无复测" : `${item.score_delta > 0 ? "+" : ""}${item.score_delta}`,
+      deltaText: item.score_delta === null || item.score_delta === undefined ? (item.count > 1 ? "暂不比较" : "暂无复测") : `${item.score_delta > 0 ? "+" : ""}${item.score_delta}`,
     });
   });
   return groups;
@@ -120,10 +120,10 @@ Page({
     if (!summary || !summary.count) {
       return "本周还没有情绪温度记录。";
     }
-    const parts = [`平均强度 ${summary.avg_intensity || "-"}`];
-    if (summary.avg_valence) parts.push(`愉悦 ${summary.avg_valence}`);
-    if (summary.avg_arousal) parts.push(`唤起 ${summary.avg_arousal}`);
-    if (summary.avg_control) parts.push(`可控 ${summary.avg_control}`);
+    const parts = [`平均强度 ${summary.avg_intensity ?? "-"}`];
+    if (summary.avg_valence != null) parts.push(`愉悦 ${summary.avg_valence}`);
+    if (summary.avg_arousal != null) parts.push(`唤起 ${summary.avg_arousal}`);
+    if (summary.avg_control != null) parts.push(`可控 ${summary.avg_control}`);
     return parts.join(" · ");
   },
 

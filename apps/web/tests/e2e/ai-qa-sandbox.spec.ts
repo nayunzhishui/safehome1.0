@@ -1,4 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { readFileSync } from "node:fs";
+
+const useCasePolicy = JSON.parse(readFileSync("../../content/ai_use_case_policy.json", "utf8"));
 
 
 test("AI 合成沙盒展示参与者门禁、来源与工程评测边界", async ({ page }, testInfo) => {
@@ -7,6 +10,7 @@ test("AI 合成沙盒展示参与者门禁、来源与工程评测边界", async
   const session = {
     id: "aiqs-e2e",
     user_id: "researcher-e2e",
+    use_case_id: "approved_material_organization",
     mode: "research_sandbox",
     status: "active",
     synthetic_data: 1,
@@ -35,13 +39,21 @@ test("AI 合成沙盒展示参与者门禁、来源与工程评测边界", async
     const fulfill = (data: unknown) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, data }) });
     if (path === "/api/showcase-access") return fulfill({ enabled: false });
     if (path === "/api/auth/me") return fulfill({ user: { id: "researcher-e2e", role: "researcher", nickname: "沙盒研究者" } });
-    if (path === "/api/ai-qa/config") return fulfill({
+    if (path === "/api/ai-qa/config") {
+      const actual = await (await route.fetch()).json();
+      return fulfill({ ...actual.data,
+      use_case_policy: useCasePolicy,
       service_name: "支持性内容助手", participant_enabled: false, sandbox_enabled: true, provider: "fake", stage: "synthetic_research_sandbox",
       governance_status: "blocked_human_review", participant_eligible: false,
       gate_decisions: { provider: { proposed: "undecided", status: "owner_security_review_required" }, human_on_call: { proposed: "undecided", status: "operations_owner_required" } },
       runtime_control: { killed: 0 }, data_policy: { cross_session_memory: false, provider_training: false, real_participant_data: false, write_tools: false },
       boundary_notice: "不构成负责人或生产批准。",
     });
+    }
+    if (path === "/api/ai-qa/providers/evidence") return fulfill({ items: [] });
+    if (path === "/api/ai-qa/providers") return fulfill({ candidates: [] });
+    if (path === "/api/ai-qa/review-cases") return fulfill({ items: [] });
+    if (path === "/api/ai-qa/knowledge") return fulfill({ documents: [], candidates: [], web_candidate_auto_approval: false });
     if (path === "/api/ai-qa/review/evidence") return fulfill({ runs: evaluationCreated ? [run] : [], reviews: [], safety_events: [], provider_events: [], raw_prompts_included: false, actor_scope: "own" });
     if (path === "/api/ai-qa/sessions" && route.request().method() === "GET") return fulfill({ items: sessionCreated ? [session] : [] });
     if (path === "/api/ai-qa/sessions" && route.request().method() === "POST") { sessionCreated = true; return fulfill(session); }
@@ -61,13 +73,13 @@ test("AI 合成沙盒展示参与者门禁、来源与工程评测边界", async
   await page.goto("/ai-sandbox");
   await expect(page.getByRole("heading", { name: "支持性内容助手研究沙盒" })).toBeVisible();
   await expect(page.getByText("参与者入口关闭")).toBeVisible();
-  await page.getByRole("button", { name: "新建会话" }).click();
+  await page.getByRole("button", { name: "按所选用例新建" }).click();
   await page.getByRole("button", { name: "运行问答链路" }).click();
   await expect(page.getByText("可以从训练中心查看已批准训练卡。")).toBeVisible();
   await expect(page.getByText("先暂停一下", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "运行评测" }).click();
   await expect(page.getByText("engineering_threshold_passed")).toBeVisible();
-  await expect(page.getByText("工程阈值通过不等于心理、伦理、隐私、安全或生产批准。")).toBeVisible();
+  await expect(page.getByText(/工程阈值通过仍不等于心理、伦理、隐私、安全或生产批准/)).toBeVisible();
   const dimensions = await page.evaluate(() => ({ width: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
   expect(dimensions.scroll).toBeLessThanOrEqual(dimensions.width + 1);
   await page.screenshot({ path: testInfo.outputPath("ai-qa-sandbox.png"), fullPage: true });

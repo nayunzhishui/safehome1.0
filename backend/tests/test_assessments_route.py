@@ -11,6 +11,309 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 BACKEND_ROOT = PROJECT_ROOT / "backend"
 
 
+def _review_worksheet(worksheet_id):
+    payload = json.loads((PROJECT_ROOT / "content" / "assessment_worksheets.json").read_text(encoding="utf-8"))
+    return next(item for item in payload["worksheets"] if item["id"] == worksheet_id)
+
+
+def _worksheet_importer():
+    import importlib.util
+
+    sys.path.insert(0, str(BACKEND_ROOT))
+    spec = importlib.util.spec_from_file_location("review_worksheet_import", BACKEND_ROOT / "scripts/import_worksheets_to_db.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.mark.parametrize("worksheet_id", ["study_engagement_uwes_s_17", "self_compassion_scs_cn"])
+def test_worksheet_import_uses_source_scoring_over_stale_metadata(worksheet_id):
+    from copy import deepcopy
+
+    importer = _worksheet_importer()
+    from routes.assessments import _db_row_to_worksheet
+    from services.assessment_execution_service import execute_assessment
+
+    worksheet = deepcopy(_review_worksheet(worksheet_id))
+    worksheet["_meta"]["total_score_method"] = "sum"
+    worksheet["derived_dimensions"] = []
+    worksheet["_meta"]["derived_dimensions"] = [{"key": "OLD"}]
+    restored = _db_row_to_worksheet(importer.worksheet_to_row(worksheet, "synthetic"))
+    assert restored["_meta"]["total_score_method"] == worksheet["total_score_method"]
+    assert restored["_meta"]["derived_dimensions"] == []
+    answers = [{"question_id": q["id"], "value": q["options"][0]["value"]} for q in worksheet["questions"]]
+    assert execute_assessment(restored, answers).total_score == execute_assessment(worksheet, answers).total_score
+
+
+def test_worksheet_import_refuses_production_before_any_database_call(monkeypatch):
+    importer = _worksheet_importer()
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setattr(importer, "init_db", lambda: pytest.fail("production initialization reached"))
+    monkeypatch.setattr(importer, "get_connection", lambda: pytest.fail("production connection reached"))
+    with pytest.raises(RuntimeError, match="生产"):
+        importer.import_worksheets()
+
+
+def test_worksheet_import_plan_reads_only_selected_definitions():
+    importer = _worksheet_importer()
+    worksheet = _review_worksheet("study_engagement_uwes_s_17")
+    row = importer.worksheet_to_row(worksheet, "synthetic")
+    row["instructions"] = "合成旧说明"
+
+    class DefinitionConnection:
+        calls = 0
+
+        def execute(self, sql, params):
+            assert sql.strip().startswith("SELECT") and "assessment_worksheets" in sql
+            assert params == (worksheet["id"],)
+            self.calls += 1
+            return self
+
+        def fetchone(self):
+            return row
+
+    conn = DefinitionConnection()
+    assert importer.plan_worksheet_sync(conn, [worksheet], [worksheet["id"], worksheet["id"]]) == [
+        {"id": worksheet["id"], "action": "updated", "changed_fields": ["instructions"]}
+    ]
+    with pytest.raises(ValueError, match="unknown"):
+        importer.plan_worksheet_sync(conn, [worksheet], ["missing"])
+    assert conn.calls == 1
+
+
+def test_worksheet_import_plan_does_not_create_missing_sqlite_file(tmp_path, monkeypatch):
+    import sqlite3
+
+    importer = _worksheet_importer()
+    missing = tmp_path / "missing-parent" / "definitions.sqlite3"
+    monkeypatch.setattr(importer.Config, "DATABASE_PATH", missing)
+    monkeypatch.setattr(importer, "is_mysql_enabled", lambda: False)
+    monkeypatch.setattr(importer, "load_content_json", lambda filename: {"worksheets": [{"id": "synthetic"}]})
+    monkeypatch.setattr(importer, "init_db", lambda: pytest.fail("preview initialized database"))
+    monkeypatch.setattr(sys, "argv", ["import_worksheets_to_db.py", "--plan", "--worksheet-id", "synthetic"])
+    with pytest.raises(sqlite3.OperationalError):
+        importer.main()
+    assert not missing.exists()
+    assert not missing.parent.exists()
+
+
+@pytest.mark.parametrize("raw,expected", [(0, 0), (4, 32)])
+def test_author_afqy8_coding_order_and_bounds(tmp_path, raw, expected):
+    _fresh_app(tmp_path)
+    from services.assessment_execution_service import execute_assessment
+
+    worksheet = _review_worksheet("afq_y8_avoidance_fusion")
+    assert [q["id"] for q in worksheet["questions"]][-2:] == ["AFQY08", "AFQY07"]
+    answers = [{"question_id": q["id"], "value": str(raw)} for q in worksheet["questions"]]
+    assert execute_assessment(worksheet, answers).total_score == expected
+
+
+def test_author_uwes_mean_is_weighted_by_items_and_legacy_snapshot_is_preserved(tmp_path):
+    from copy import deepcopy
+
+    _fresh_app(tmp_path)
+    from services.assessment_execution_service import execute_assessment
+
+    worksheet = _review_worksheet("study_engagement_uwes_s_17")
+    answers = [{"question_id": q["id"], "value": "6" if q["dimension"] == "UWES_VIGOR" else "0"} for q in worksheet["questions"]]
+    result = execute_assessment(worksheet, answers)
+    assert result.total_score == 2.12  # 6 * 6 / 17; not the unweighted mean of three dimensions.
+    assert {d["key"]: d["score"] for d in result.scores["dimensions"]} == {"UWES_VIGOR": 6, "UWES_DEDICATION": 0, "UWES_ABSORPTION": 0}
+    assert [q["id"] for q in worksheet["questions"]] == ["UWES06", "UWES11", "UWES13", "UWES02", "UWES09", "UWES12", "UWES08", "UWES01", "UWES17", "UWES10", "UWES16", "UWES04", "UWES07", "UWES14", "UWES05", "UWES15", "UWES03"]
+    legacy = deepcopy(worksheet)
+    legacy["dimension_score_method"] = "sum"
+    legacy["total_score_method"] = "sum"
+    for q in legacy["questions"]:
+        q["options"] = [{"value": str(i), "score": i, "label": str(i)} for i in range(1, 8)]
+    old_answers = [{"question_id": q["id"], "value": "1"} for q in legacy["questions"]]
+    assert execute_assessment(legacy, old_answers).total_score == 17
+
+
+@pytest.mark.parametrize("worksheet_id,expected_count", [("rfq8_reflective_functioning", 6), ("big_five_tipi_10", 2)])
+def test_custom_mean_dimensions_report_actual_item_count(tmp_path, worksheet_id, expected_count):
+    _fresh_app(tmp_path)
+    from services.assessment_execution_service import execute_assessment
+
+    worksheet = _review_worksheet(worksheet_id)
+    result = execute_assessment(worksheet, [{"question_id": q["id"], "value": "1"} for q in worksheet["questions"]])
+    assert all(d["item_count"] == expected_count for d in result.scores["dimensions"])
+
+
+@pytest.mark.parametrize("worksheet_id,effective,expected", [
+    ("cfi2_cognitive_flexibility", 1, 12),
+    ("cfi2_cognitive_flexibility", 6, 72),
+    ("emotional_intelligence_eis_33", 1, 33),
+    ("emotional_intelligence_eis_33", 5, 165),
+])
+def test_author_total_scales_use_correct_reverse_bounds(tmp_path, worksheet_id, effective, expected):
+    _fresh_app(tmp_path)
+    from services.assessment_execution_service import execute_assessment
+
+    worksheet = _review_worksheet(worksheet_id)
+    upper = 6 if worksheet_id == "cfi2_cognitive_flexibility" else 5
+    answers = [{"question_id": q["id"], "value": str(upper + 1 - effective if q.get("reverse_scored") else effective)} for q in worksheet["questions"]]
+    result = execute_assessment(worksheet, answers)
+    assert result.total_score == expected
+    assert len(result.scores["dimensions"]) == 1
+    assert result.scores["dimensions"][0]["score"] == expected
+    assert result.scores["dimensions"][0]["item_count"] == len(answers)
+
+
+@pytest.mark.parametrize("negative_raw,expected", [(5, 1), (1, 5)])
+def test_scs_reversed_subscales_explicitly_describe_score_direction(tmp_path, negative_raw, expected):
+    _fresh_app(tmp_path)
+    from services.assessment_execution_service import execute_assessment
+
+    worksheet = _review_worksheet("self_compassion_scs_cn")
+    answers = [
+        {"question_id": question["id"], "value": str(negative_raw if question.get("reverse_scored") else expected)}
+        for question in worksheet["questions"]
+    ]
+    result = execute_assessment(worksheet, answers)
+    dimensions = {item["key"]: item for item in result.scores["dimensions"]}
+    assert dimensions["SCS_SJ"]["label"] == "较少自我批评"
+    assert dimensions["SCS_ISO"]["label"] == "较少孤立感"
+    assert dimensions["SCS_OVER"]["label"] == "较少被情绪卷入"
+    for key in ["SCS_SJ", "SCS_ISO", "SCS_OVER", "SCS_TOTAL"]:
+        assert dimensions[key]["score"] == expected
+    assert result.total_score is None
+    assert all(answer["score"] == negative_raw for answer in result.answers if answer["question_id"] == "SCS01")
+
+
+def test_review_corrections_survive_rebuilding_from_drafts():
+    from backend.scripts.build_worksheets import build_worksheet_from_scale
+
+    drafts = json.loads((PROJECT_ROOT / "content" / "scale_item_drafts.json").read_text(encoding="utf-8"))["drafts"]
+    scales = json.loads((PROJECT_ROOT / "content" / "scales_catalog.json").read_text(encoding="utf-8"))["scales"]
+    catalog = {item["id"]: item for item in scales}
+    aliases = {"emotion_regulation_erq_gross": "emotion_regulation_erq"}
+    for scale_id in ["emotion_regulation_erq_gross", "parent_reflective_functioning_prfq", "self_compassion_scs_cn", "mindful_attention_awareness_maas", "acceptance_action_aaq2", "academic_buoyancy_4", "emotional_resilience_11", "emotional_intelligence_eis_33", "cfi2_cognitive_flexibility", "study_engagement_uwes_s_17", "afq_y8_avoidance_fusion"]:
+        draft = next(item for item in drafts if item["scale_id"] == scale_id)
+        worksheet = _review_worksheet(aliases.get(scale_id, scale_id))
+        rebuilt = build_worksheet_from_scale(catalog[scale_id], draft)
+        for field in ["instructions", "source_version", "total_score_method", "dimension_score_method"]:
+            assert rebuilt[field] == worksheet[field], (scale_id, field)
+        assert rebuilt["_meta"]["total_score_method"] == worksheet["total_score_method"]
+        assert rebuilt["dimensions"] == worksheet["dimensions"]
+        assert rebuilt["questions"] == worksheet["questions"]
+
+
+def test_public_worksheet_regeneration_keeps_time_window_and_ecs_example():
+    from backend.scripts.update_task18_assessments import public_worksheets
+
+    for generated in public_worksheets():
+        if generated["id"] not in {"who5_wellbeing", "cognitive_curiosity_student"}:
+            continue
+        current = _review_worksheet(generated["id"])
+        assert generated["instructions"] == current["instructions"]
+        assert generated["questions"] == current["questions"]
+        assert generated["source_version"] == current["source_version"]
+
+
+def test_reviewed_guidance_and_eis_typo_reach_assessment_api(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    markers = {
+        "who5_wellbeing": "过去两周",
+        "cognitive_curiosity_student": "平时",
+        "mindful_attention_awareness_maas": "日常体验",
+        "acceptance_action_aaq2": "不设固定三个月",
+        "academic_buoyancy_4": "最近半年",
+        "self_compassion_scs_cn": "通常",
+        "emotional_resilience_11": "日常生活",
+    }
+    for worksheet_id, marker in markers.items():
+        response = client.get(f"/api/assessments/{worksheet_id}")
+        assert response.status_code == 200
+        data = response.get_json()["data"]
+        assert marker in data["instructions"], worksheet_id
+        assert data["source_version"] == _review_worksheet(worksheet_id)["source_version"]
+    eis = client.get("/api/assessments/emotional_intelligence_eis_33").get_json()["data"]
+    assert "克服它们的时候" in eis["questions"][1]["prompt"]
+    assert "克服它们你" not in eis["questions"][1]["prompt"]
+
+
+def test_new_erq_policy_preserves_original_snapshot_scoring(tmp_path):
+    from copy import deepcopy
+
+    _fresh_app(tmp_path)
+    from database import json_dumps
+    from services.assessment_execution_service import replay_assessment_snapshot
+    from services.psychological_content_governance_service import build_assessment_snapshot, payload_hash
+
+    legacy = deepcopy(_review_worksheet("emotion_regulation_erq"))
+    legacy["total_score_method"] = "sum"
+    legacy["_meta"]["total_score_method"] = "sum"
+    legacy["source_version"] = "test-original-erq-version"
+    snapshot = build_assessment_snapshot(legacy, result_summary="历史合成测试")
+    answers = [{"question_id": question["id"], "value": "2"} for question in legacy["questions"]]
+    replay = replay_assessment_snapshot({
+        "content_snapshot_json": json_dumps(snapshot),
+        "content_snapshot_hash": payload_hash(snapshot),
+        "answers_json": json_dumps(answers),
+    })
+    assert replay["snapshot_valid"] is True
+    assert replay["total_score"] == 20
+    assert replay["worksheet_version"] == "test-original-erq-version"
+
+
+def test_version_conflict_notices_reach_saved_result_summary(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "version-review-synthetic")
+    for worksheet_id, marker in [
+        ("afq_y8_avoidance_fusion", "历史1—5编码结果不能与本版直接比较"),
+        ("emotional_resilience_11", "不能把该维度高分解释为恢复能力更强"),
+    ]:
+        worksheet = _review_worksheet(worksheet_id)
+        response = client.post(
+            "/api/assessment-results",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"worksheet_id": worksheet_id, "answers": [
+                {"question_id": question["id"], "value": question["options"][0]["value"]}
+                for question in worksheet["questions"]
+            ]},
+        )
+        assert response.status_code == 201
+        data = response.get_json()["data"]
+        assert marker in data["result_summary"]
+        assert data["worksheet_version"] == worksheet["source_version"]
+
+
+def test_all_worksheet_scores_survive_database_metadata_roundtrip(tmp_path, monkeypatch):
+    from copy import deepcopy
+
+    app = _fresh_app(tmp_path)
+    import database
+    from services.assessment_execution_service import execute_assessment
+
+    original = json.loads((PROJECT_ROOT / "content" / "assessment_worksheets.json").read_text(encoding="utf-8"))
+    payload = deepcopy(original)
+    # Reproduce the stale/missing metadata present in the review baseline.
+    for worksheet in payload["worksheets"]:
+        if worksheet["id"] in {"mindful_attention_awareness_maas", "attribution_style_student_36", "hplp_c_health_promoting_lifestyle", "student_profile_v1"}:
+            worksheet["_meta"] = {"total_score_method": "sum", "derived_dimensions": []}
+    original_loader = database.load_content_json
+    monkeypatch.setattr(database, "load_content_json", lambda name: payload if name == "assessment_worksheets.json" else original_loader(name))
+    with app.app_context():
+        with database.get_connection() as conn:
+            database.sync_assessment_worksheets(conn)
+            conn.commit()
+    client = app.test_client()
+    for worksheet in original["worksheets"]:
+        response = client.get(f"/api/assessments/{worksheet['id']}")
+        assert response.status_code == 200
+        database_worksheet = response.get_json()["data"]
+        answers = [
+            {"question_id": question["id"], "value": question["options"][0]["value"] if question.get("options") else "合成观察"}
+            for question in worksheet["questions"]
+        ]
+        file_result = execute_assessment(worksheet, answers)
+        database_result = execute_assessment(database_worksheet, answers)
+        assert database_result.scores == file_result.scores, worksheet["id"]
+        assert database_result.total_score == file_result.total_score, worksheet["id"]
+
+
 def _fresh_app(tmp_path):
     sys.path.insert(0, str(BACKEND_ROOT))
     for name in list(sys.modules):
@@ -200,7 +503,13 @@ def test_enabled_student_profile_assessment_result_still_saves(tmp_path):
     assert response.status_code == 201
     data = response.get_json()["data"]
     assert data["worksheet_id"] == "student_profile_v1"
-    assert data["total_score"] == 12
+    assert data["total_score"] is None
+    assert {item["key"]: item["score"] for item in data["scores"]["dimensions"]} == {
+        "test_anxiety": 3,
+        "uncertainty_intolerance": 3,
+        "pressure_alert": 3,
+        "self_support": 3,
+    }
 
 
 def test_assessment_submission_rejects_unknown_question_id(tmp_path):
@@ -290,7 +599,9 @@ def test_assessment_submission_ignores_client_score_and_recalculates_from_option
 
     assert response.status_code == 201
     data = response.get_json()["data"]
-    assert data["total_score"] == 40
+    assert data["total_score"] is None
+    dimensions = {item["key"]: item["score"] for item in data["scores"]["dimensions"]}
+    assert dimensions == {"ERQ_CR": 24, "ERQ_ES": 16}
     assert {answer["score"] for answer in data["answers"]} == {4}
 
 
@@ -398,7 +709,8 @@ def test_erq_submission_scores_each_dimension_separately(tmp_path):
 
     assert response.status_code == 201
     data = response.get_json()["data"]
-    assert data["total_score"] == 6 * 5 + 4 * 2
+    assert data["total_score"] is None
+    assert data["scores"]["total_score"] is None
     dimensions = {item["key"]: item for item in data["scores"]["dimensions"]}
     assert dimensions["ERQ_CR"]["score"] == 30
     assert dimensions["ERQ_CR"]["item_count"] == 6
@@ -441,6 +753,8 @@ def test_prfq_submission_uses_reverse_scoring_and_dimension_mean(tmp_path):
     dimensions = {item["key"]: item for item in data["scores"]["dimensions"]}
 
     # 均值计分
+    assert data["total_score"] is None
+    assert data["scores"]["total_score"] is None
     assert dimensions["PRFQ_PM"]["score_method"] == "mean"
     # PM 无反向题：6 题均为 6 分，均值 6.0
     assert dimensions["PRFQ_PM"]["score"] == 6.0

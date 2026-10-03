@@ -2,6 +2,8 @@
 
 from flask import Blueprint, request
 
+from services.participant_safeguard_service import ParticipantSafeguardError, assert_participant_capability, safeguards_enforced
+
 from database import get_connection, json_dumps, load_content_json, new_id, now_iso, row_to_dict
 from routes.utils import auth_error_response, fail, ok, require_admin_or_owner, require_user_id
 from services.feedback_service import generate_feedback
@@ -125,6 +127,11 @@ def generate():
                 user_id = require_user_id(source_payload)
             except ValueError as exc:
                 return fail("validation_error", str(exc), status=400)
+        if safeguards_enforced():
+            try:
+                assert_participant_capability(user_id, "sensitive_text")
+            except ParticipantSafeguardError as exc:
+                return fail(exc.code, exc.message, status=exc.status, details=exc.details)
         try:
             assert_automation_allowed(conn, "automatic_feedback")
         except SchedulerError as exc:

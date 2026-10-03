@@ -8,7 +8,7 @@
     },
     "api_client": {
       "path": "apps/miniprogram/services/api.js",
-      "sha256": "2242ba9e392ed46c33f13f746e4f723bd42e1b244eff1af8fa9febbc07d431be"
+      "sha256": "5d0fb9da8138d0c9c559eee20eca10c42b0e588372c384ead7f7c359a6209ce4"
     },
     "registered_pages_count": 53,
     "registered_pages_sha256": "2156f9a04788bef886f1d8d5d791c2c15f1941fd1e6a2136763893f8c49b2a78"
@@ -16,9 +16,22 @@
   "capabilities": [
     {
       "id": "account_access",
-      "pages": ["pages/login/index", "pages/register/index"],
-      "apis": ["/api/auth/login", "/api/auth/register", "/api/auth/wechat-login", "/api/auth/phone-login", "/api/auth/logout"],
-      "data_domains": ["users", "sessions", "auth_identities"],
+      "pages": [
+        "pages/login/index",
+        "pages/register/index"
+      ],
+      "apis": [
+        "/api/auth/login",
+        "/api/auth/register",
+        "/api/auth/wechat-login",
+        "/api/auth/phone-login",
+        "/api/auth/logout"
+      ],
+      "data_domains": [
+        "users",
+        "sessions",
+        "auth_identities"
+      ],
       "service_category": null,
       "qualification": null,
       "privacy_declaration": null,
@@ -26,9 +39,15 @@
     },
     {
       "id": "goal_setting",
-      "pages": ["pages/goal-setting/index"],
-      "apis": ["/api/goals"],
-      "data_domains": ["goals"],
+      "pages": [
+        "pages/goal-setting/index"
+      ],
+      "apis": [
+        "/api/goals"
+      ],
+      "data_domains": [
+        "goals"
+      ],
       "service_category": null,
       "qualification": null,
       "privacy_declaration": null,
@@ -36,9 +55,16 @@
     },
     {
       "id": "emotion_diary",
-      "pages": ["pages/diary-form/index", "pages/diary-history/index"],
-      "apis": ["/api/diaries"],
-      "data_domains": ["emotion_diaries"],
+      "pages": [
+        "pages/diary-form/index",
+        "pages/diary-history/index"
+      ],
+      "apis": [
+        "/api/diaries"
+      ],
+      "data_domains": [
+        "emotion_diaries"
+      ],
       "service_category": null,
       "qualification": null,
       "privacy_declaration": null,
@@ -46,9 +72,15 @@
     },
     {
       "id": "supportive_feedback",
-      "pages": ["pages/feedback-result/index"],
-      "apis": ["/api/feedback/generate"],
-      "data_domains": ["feedback_results"],
+      "pages": [
+        "pages/feedback-result/index"
+      ],
+      "apis": [
+        "/api/feedback/generate"
+      ],
+      "data_domains": [
+        "feedback_results"
+      ],
       "service_category": null,
       "qualification": null,
       "privacy_declaration": null,
@@ -56,9 +88,16 @@
     },
     {
       "id": "training_cards",
-      "pages": ["pages/training-card/index"],
-      "apis": ["/api/cards", "/api/cards/recommend"],
-      "data_domains": ["training_cards"],
+      "pages": [
+        "pages/training-card/index"
+      ],
+      "apis": [
+        "/api/cards",
+        "/api/cards/recommend"
+      ],
+      "data_domains": [
+        "training_cards"
+      ],
       "service_category": null,
       "qualification": null,
       "privacy_declaration": null,
@@ -66,9 +105,15 @@
     },
     {
       "id": "practice_checkin",
-      "pages": ["pages/checkin/index"],
-      "apis": ["/api/checkins"],
-      "data_domains": ["checkins"],
+      "pages": [
+        "pages/checkin/index"
+      ],
+      "apis": [
+        "/api/checkins"
+      ],
+      "data_domains": [
+        "checkins"
+      ],
       "service_category": null,
       "qualification": null,
       "privacy_declaration": null,
@@ -76,9 +121,15 @@
     },
     {
       "id": "weekly_report",
-      "pages": ["pages/weekly-report/index"],
-      "apis": ["/api/weekly-report"],
-      "data_domains": ["derived_weekly_report"],
+      "pages": [
+        "pages/weekly-report/index"
+      ],
+      "apis": [
+        "/api/weekly-report"
+      ],
+      "data_domains": [
+        "derived_weekly_report"
+      ],
       "service_category": null,
       "qualification": null,
       "privacy_declaration": null,
@@ -86,9 +137,15 @@
     },
     {
       "id": "human_supervision",
-      "pages": ["pages/supervision/index"],
-      "apis": ["/api/supervision"],
-      "data_domains": ["supervision_requests"],
+      "pages": [
+        "pages/supervision/index"
+      ],
+      "apis": [
+        "/api/supervision"
+      ],
+      "data_domains": [
+        "supervision_requests"
+      ],
       "service_category": null,
       "qualification": null,
       "privacy_declaration": null,
@@ -96,61 +153,278 @@
     }
   ],
   "registered_page_inventory": [
-    {"page": "pages/home/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/login/index", "classification": "public_mapped", "capability_id": "account_access"},
-    {"page": "pages/register/index", "classification": "public_mapped", "capability_id": "account_access"},
-    {"page": "pages/messages/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/support-assistant/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/message-detail/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/emergency-guide/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/emergency-resources/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/getting-started/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/thermometer/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/training/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/training-history/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/personalized-plan/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/program-list/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/program-detail/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/relationship-pilot/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/relationship-report/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/relationship-task/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/relationship-growth/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/therapeutic-assessment/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/therapeutic-assessment-boundary/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/therapeutic-assessment-issue/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/therapeutic-assessment-recent-event/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/therapeutic-assessment-resources/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/therapeutic-assessment-sharing/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/therapeutic-assessment-summary/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/therapeutic-assessment-feedback-check/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/therapeutic-assessment-action-review/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/therapeutic-assessment-action-followup/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/therapeutic-assessment-quality/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/growth-dashboard/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/relationship-narrative/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/researcher-dashboard/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/course/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/course-detail/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/profile/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/settings-detail/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/goal-setting/index", "classification": "public_mapped", "capability_id": "goal_setting"},
-    {"page": "pages/diary-form/index", "classification": "public_mapped", "capability_id": "emotion_diary"},
-    {"page": "pages/diary-history/index", "classification": "public_mapped", "capability_id": "emotion_diary"},
-    {"page": "pages/feedback-result/index", "classification": "public_mapped", "capability_id": "supportive_feedback"},
-    {"page": "pages/assessment/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/assessment-history/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/assessment-detail/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/assessment-result/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/hot-topics/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/task-detail/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/training-card/index", "classification": "public_mapped", "capability_id": "training_cards"},
-    {"page": "pages/checkin/index", "classification": "public_mapped", "capability_id": "practice_checkin"},
-    {"page": "pages/weekly-report/index", "classification": "public_mapped", "capability_id": "weekly_report"},
-    {"page": "pages/supervision/index", "classification": "public_mapped", "capability_id": "human_supervision"},
-    {"page": "pages/debug/index", "classification": "blocker_pending_mapping", "capability_id": null},
-    {"page": "pages/integration-test/index", "classification": "blocker_pending_mapping", "capability_id": null}
+    {
+      "page": "pages/home/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/login/index",
+      "classification": "public_mapped",
+      "capability_id": "account_access"
+    },
+    {
+      "page": "pages/register/index",
+      "classification": "public_mapped",
+      "capability_id": "account_access"
+    },
+    {
+      "page": "pages/messages/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/support-assistant/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/message-detail/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/emergency-guide/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/emergency-resources/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/getting-started/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/thermometer/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/training/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/training-history/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/personalized-plan/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/program-list/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/program-detail/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/relationship-pilot/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/relationship-report/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/relationship-task/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/relationship-growth/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/therapeutic-assessment/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/therapeutic-assessment-boundary/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/therapeutic-assessment-issue/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/therapeutic-assessment-recent-event/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/therapeutic-assessment-resources/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/therapeutic-assessment-sharing/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/therapeutic-assessment-summary/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/therapeutic-assessment-feedback-check/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/therapeutic-assessment-action-review/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/therapeutic-assessment-action-followup/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/therapeutic-assessment-quality/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/growth-dashboard/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/relationship-narrative/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/researcher-dashboard/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/course/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/course-detail/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/profile/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/settings-detail/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/goal-setting/index",
+      "classification": "public_mapped",
+      "capability_id": "goal_setting"
+    },
+    {
+      "page": "pages/diary-form/index",
+      "classification": "public_mapped",
+      "capability_id": "emotion_diary"
+    },
+    {
+      "page": "pages/diary-history/index",
+      "classification": "public_mapped",
+      "capability_id": "emotion_diary"
+    },
+    {
+      "page": "pages/feedback-result/index",
+      "classification": "public_mapped",
+      "capability_id": "supportive_feedback"
+    },
+    {
+      "page": "pages/assessment/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/assessment-history/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/assessment-detail/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/assessment-result/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/hot-topics/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/task-detail/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/training-card/index",
+      "classification": "public_mapped",
+      "capability_id": "training_cards"
+    },
+    {
+      "page": "pages/checkin/index",
+      "classification": "public_mapped",
+      "capability_id": "practice_checkin"
+    },
+    {
+      "page": "pages/weekly-report/index",
+      "classification": "public_mapped",
+      "capability_id": "weekly_report"
+    },
+    {
+      "page": "pages/supervision/index",
+      "classification": "public_mapped",
+      "capability_id": "human_supervision"
+    },
+    {
+      "page": "pages/debug/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    },
+    {
+      "page": "pages/integration-test/index",
+      "classification": "blocker_pending_mapping",
+      "capability_id": null
+    }
   ],
-  "allowed_page_classifications": ["public_mapped", "internal_hidden", "test_only_disabled", "blocker_pending_mapping"],
+  "allowed_page_classifications": [
+    "public_mapped",
+    "internal_hidden",
+    "test_only_disabled",
+    "blocker_pending_mapping"
+  ],
   "unmapped_public_capability_policy": "block_or_hide_before_review",
   "production_gate_eligible": false
 }

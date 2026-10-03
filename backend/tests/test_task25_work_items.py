@@ -52,6 +52,8 @@ def _seed_assigned_supervision(app, researcher_id: str, user_id: str):
                 """,
                 (user_id, timestamp),
             )
+            from services.research_access_service import _insert_assignment
+            _insert_assignment(conn, "task25-enrollment", researcher_id, "researcher", "synthetic-admin", "task25-scope")
             conn.commit()
 
 
@@ -404,3 +406,26 @@ def test_operations_write_switch_keeps_queue_readable_and_blocks_actions(tmp_pat
     )
     assert blocked.status_code == 503
     assert blocked.get_json()["error"]["code"] == "operations_write_disabled"
+
+
+def test_expired_assignment_blocks_queue_detail_actions_and_metrics(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    participant_id, _ = _login(client, "synthetic-expiry-participant")
+    researcher_id, headers = _login(client, "synthetic-expiry-researcher")
+    _seed_assigned_supervision(app, researcher_id, participant_id)
+    item = client.get("/api/research/queues?queue=supervision", headers=headers).get_json()["data"]["items"][0]
+    with app.app_context():
+        from database import get_connection
+        with get_connection() as conn:
+            conn.execute("UPDATE research_scope_assignments SET expires_at = '2000-01-01T00:00:00+00:00' WHERE actor_id = ?", (researcher_id,))
+            conn.commit()
+    queue = client.get("/api/research/queues?queue=supervision", headers=headers)
+    assert queue.status_code == 200
+    assert queue.get_json()["data"]["items"] == []
+    assert client.get(f"/api/research/work-items/{item['id']}", headers=headers).status_code == 403
+    action = client.post(f"/api/research/work-items/{item['id']}/actions", headers={**headers, "Idempotency-Key": "synthetic-expired-claim"}, json={"action": "claim", "expected_version": 0})
+    assert action.status_code == 403
+    metrics = client.get("/api/research/work-items/metrics", headers=headers)
+    assert metrics.status_code == 200
+    assert sum(metrics.get_json()["data"]["totals"].values()) == 0

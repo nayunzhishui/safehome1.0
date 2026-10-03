@@ -10,6 +10,14 @@ function isLoggedIn() {
   return !!getAuthToken();
 }
 
+function captureAuthSession() {
+  return { userId: String((getAuthUser() || {}).id || ""), token: getAuthToken() };
+}
+
+function isCurrentAuthSession(session) {
+  return !!session && session.userId === String((getAuthUser() || {}).id || "") && session.token === getAuthToken();
+}
+
 function requireLogin(options = {}) {
   if (isLoggedIn()) {
     return true;
@@ -47,4 +55,6 @@ module.exports = {
   isLoggedIn,
   requireLogin,
   logout,
+  captureAuthSession,
+  isCurrentAuthSession,
 };

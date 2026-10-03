@@ -327,11 +327,15 @@ def _mask_phone(phone_number: str) -> str:
 
 
 def _wechat_phone_from_code(code: str) -> dict:
-    credential_name, credential = _wechat_api_credential()
-    query = urlencode({credential_name: credential})
+    if current_app.config.get("CLOUDBASE_OPENAPI_ENABLED", False):
+        # Fixed endpoint for the official CloudRun proxy; no secret/token here.
+        endpoint = "http://api.weixin.qq.com/wxa/business/getuserphonenumber"
+    else:
+        credential_name, credential = _wechat_api_credential()
+        endpoint = "https://api.weixin.qq.com/wxa/business/getuserphonenumber?" + urlencode({credential_name: credential})
     request_body = json.dumps({"code": code}, ensure_ascii=False).encode("utf-8")
     api_request = Request(
-        f"https://api.weixin.qq.com/wxa/business/getuserphonenumber?{query}",
+        endpoint,
         data=request_body,
         headers={"Content-Type": "application/json"},
         method="POST",
@@ -341,8 +345,10 @@ def _wechat_phone_from_code(code: str) -> dict:
             payload = _read_json_response(response)
     except (HTTPError, URLError, OSError, json.JSONDecodeError) as exc:
         raise _wechat_transport_error("getuserphonenumber", exc) from exc
+    if payload.get("errcode") == 48001:
+        raise WechatAuthError("wechat_phone_permission_denied", "手机号能力尚未完成平台授权，请使用其他登录方式并联系项目负责人。", 503)
     if payload.get("errcode") not in {None, 0}:
-        raise WechatAuthError("wechat_phone_exchange_failed", "手机号授权已失效，请重新授权后再试。", 400)
+        raise WechatAuthError("wechat_phone_exchange_failed", "手机号验证未完成，请稍后重新授权或使用其他登录方式。", 400)
     phone_info = payload.get("phone_info") or payload.get("phoneInfo") or {}
     phone_number = _normalize_phone_number(
         phone_info.get("purePhoneNumber") or phone_info.get("phoneNumber") or phone_info.get("pure_phone_number")
@@ -380,7 +386,8 @@ def auth_capabilities():
         current_app.config.get("TRUST_CLOUDBASE_IDENTITY_HEADERS", False)
     )
     cloudbase_request_identity = _trusted_cloudbase_openid() is not None
-    cloudbase_phone_token_available = _cloudbase_access_token() is not None
+    cloudbase_openapi = bool(current_app.config.get("CLOUDBASE_OPENAPI_ENABLED", False))
+    cloudbase_phone_token_available = False if cloudbase_openapi else _cloudbase_access_token() is not None
     return ok(
         {
             "account_password": {"available": True},
@@ -395,9 +402,11 @@ def auth_capabilities():
                 ),
             },
             "phone_login": {
-                "available": bool(cloudbase_phone_token_available or standard_wechat_configured),
+                "available": bool(cloudbase_openapi or cloudbase_phone_token_available or standard_wechat_configured),
                 "mode": (
-                    "cloudbase_access_token"
+                    "cloudbase_openapi"
+                    if cloudbase_openapi
+                    else "cloudbase_access_token"
                     if cloudbase_phone_token_available
                     else "wechat_access_token"
                     if standard_wechat_configured

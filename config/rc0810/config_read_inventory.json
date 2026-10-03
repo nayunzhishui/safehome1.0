@@ -37,7 +37,7 @@
     {
       "file": "backend/config.py",
       "profile": "flask_config_source",
-      "source_sha256": "61ecd0a9b1066f063fa3ffa1f9f7553ecb914531d456879391b645ae36fe7f8e",
+      "source_sha256": "037c7af556a9f3cd201a33347ee8d4159f941f1a73ef34efdba956f22db40f4c",
       "reads": [
         {
           "line": 15,
@@ -190,327 +190,332 @@
           "access": "os.environ.get"
         },
         {
-          "line": 66,
+          "line": 67,
+          "name": "CLOUDBASE_OPENAPI_ENABLED",
+          "access": "os.environ.get"
+        },
+        {
+          "line": 68,
           "name": "TRUST_CLOUDBASE_IDENTITY_HEADERS",
           "access": "os.environ.get"
         },
         {
-          "line": 71,
+          "line": 73,
           "name": "ALLOW_PRODUCTION_SQLITE",
           "access": "os.environ.get"
         },
         {
-          "line": 72,
+          "line": 74,
           "name": "CONTENT_GOVERNANCE_ENFORCED",
           "access": "os.environ.get"
         },
         {
-          "line": 77,
+          "line": 79,
           "name": "CONTENT_GOVERNANCE_PUBLISH_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 83,
+          "line": 85,
           "name": "ALLOWED_ORIGINS",
           "access": "os.environ.get"
         },
         {
-          "line": 86,
+          "line": 88,
           "name": "REDIS_URL",
           "access": "os.environ.get"
         },
         {
-          "line": 87,
+          "line": 89,
           "name": "REDIS_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 88,
+          "line": 90,
           "name": "REDIS_LOGIN_RATE_LIMIT_PER_MINUTE",
           "access": "os.environ.get"
         },
         {
-          "line": 89,
+          "line": 91,
           "name": "REDIS_AI_RATE_LIMIT_PER_MINUTE",
           "access": "os.environ.get"
         },
         {
-          "line": 90,
+          "line": 92,
           "name": "DATA_CLAIM_RATE_LIMIT_PER_MINUTE",
           "access": "os.environ.get"
         },
         {
-          "line": 91,
+          "line": 93,
           "name": "DATA_CLAIM_TOKEN_TTL_SECONDS",
           "access": "os.environ.get"
         },
         {
-          "line": 92,
+          "line": 94,
           "name": "DATA_CLAIM_MAX_ATTEMPTS",
           "access": "os.environ.get"
         },
         {
-          "line": 93,
+          "line": 95,
           "name": "MAX_REQUEST_BODY_BYTES",
           "access": "os.environ.get"
         },
         {
-          "line": 94,
+          "line": 96,
           "name": "TRUST_PROXY_HOPS",
           "access": "os.environ.get"
         },
         {
-          "line": 97,
+          "line": 99,
           "name": "WECHAT_APPID",
           "access": "os.environ.get"
         },
         {
-          "line": 98,
+          "line": 100,
           "name": "WECHAT_SECRET",
           "access": "os.environ.get"
         },
         {
-          "line": 99,
+          "line": 101,
           "name": "CLOUDBASE_ACCESS_TOKEN_PATH",
           "access": "os.environ.get"
         },
         {
-          "line": 104,
-          "name": "LEGACY_ADMIN_TOKEN_ENABLED",
-          "access": "os.environ.get"
-        },
-        {
-          "line": 105,
+          "line": 106,
           "name": "LEGACY_ADMIN_TOKEN_ENABLED",
           "access": "os.environ.get"
         },
         {
           "line": 107,
-          "name": "WECHAT_TRAINING_DUE_TEMPLATE_ID",
-          "access": "os.environ.get"
-        },
-        {
-          "line": 108,
-          "name": "WECHAT_TRAINING_DUE_TEMPLATE_FIELDS",
+          "name": "LEGACY_ADMIN_TOKEN_ENABLED",
           "access": "os.environ.get"
         },
         {
           "line": 109,
+          "name": "WECHAT_TRAINING_DUE_TEMPLATE_ID",
+          "access": "os.environ.get"
+        },
+        {
+          "line": 110,
+          "name": "WECHAT_TRAINING_DUE_TEMPLATE_FIELDS",
+          "access": "os.environ.get"
+        },
+        {
+          "line": 111,
           "name": "WECHAT_TRAINING_DUE_PAGE",
           "access": "os.environ.get"
         },
         {
-          "line": 112,
+          "line": 114,
           "name": "WECHAT_SUBSCRIBE_MODE",
           "access": "os.environ.get"
         },
         {
-          "line": 113,
+          "line": 115,
           "name": "WECHAT_SUBSCRIBE_SEND_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 118,
+          "line": 120,
           "name": "NOTIFICATION_SCHEDULER_TOKEN",
           "access": "os.environ.get"
         },
         {
-          "line": 119,
+          "line": 121,
           "name": "PRIVACY_EXECUTION_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 120,
+          "line": 122,
           "name": "PRIVACY_RETENTION_POLICY_APPROVED",
           "access": "os.environ.get"
         },
         {
-          "line": 121,
+          "line": 123,
           "name": "PRIVACY_PRODUCTION_EXECUTION_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 122,
+          "line": 124,
           "name": "PRIVACY_TOMBSTONE_SECRET",
           "access": "os.environ.get"
         },
         {
-          "line": 123,
+          "line": 125,
           "name": "RESEARCH_OPERATIONS_WRITE_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 131,
+          "line": 133,
           "name": "AI_QA_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 133,
+          "line": 135,
           "name": "AI_QA_SANDBOX_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 138,
+          "line": 140,
           "name": "AI_QA_PROVIDER",
           "access": "os.environ.get"
         },
         {
-          "line": 139,
+          "line": 141,
           "name": "AI_QA_REAL_PROVIDER_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 143,
+          "line": 145,
           "name": "AI_QA_REQUESTS_PER_HOUR",
           "access": "os.environ.get"
         },
         {
-          "line": 144,
+          "line": 146,
           "name": "AI_QA_DAILY_BUDGET_MICROS",
           "access": "os.environ.get"
         },
         {
-          "line": 145,
+          "line": 147,
           "name": "AI_QA_TIMEOUT_MS",
           "access": "os.environ.get"
         },
         {
-          "line": 147,
+          "line": 149,
           "name": "AI_QA_CONNECT_TIMEOUT_MS",
           "access": "os.environ.get"
         },
         {
-          "line": 150,
+          "line": 152,
           "name": "AI_QA_READ_TIMEOUT_MS",
           "access": "os.environ.get"
         },
         {
-          "line": 152,
+          "line": 154,
           "name": "AI_QA_PROVIDER_RETRIES",
           "access": "os.environ.get"
         },
         {
-          "line": 153,
+          "line": 155,
           "name": "AI_QA_SYNTHETIC_RETENTION_DAYS",
           "access": "os.environ.get"
         },
         {
-          "line": 154,
+          "line": 156,
           "name": "OFFLINE_BENCHMARK_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 158,
+          "line": 160,
           "name": "OFFLINE_EXTERNAL_INGEST_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 159,
+          "line": 161,
           "name": "OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED",
           "access": "os.environ.get"
         },
         {
-          "line": 160,
+          "line": 162,
           "name": "RESEARCH_METHODOLOGY_WORKBENCH_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 164,
+          "line": 166,
           "name": "RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED",
           "access": "os.environ.get"
         },
         {
-          "line": 165,
+          "line": 167,
           "name": "RESEARCH_OUTCOME_ANALYSIS_ALLOWED",
           "access": "os.environ.get"
         },
         {
-          "line": 166,
+          "line": 168,
           "name": "RESEARCH_ANALYSIS_JOB_EXECUTION_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 170,
+          "line": 172,
           "name": "SECURITY_SCAN_EXECUTION_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 174,
+          "line": 176,
           "name": "RELIABILITY_WORKBENCH_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 178,
+          "line": 180,
           "name": "RELIABILITY_JOB_EXECUTION_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 182,
+          "line": 184,
           "name": "RELIABILITY_FAULT_INJECTION_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 185,
+          "line": 187,
           "name": "RELIABILITY_GRADUAL_RELEASE_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 188,
+          "line": 190,
           "name": "RELIABILITY_PRODUCTION_SLO_FROZEN",
           "access": "os.environ.get"
         },
         {
-          "line": 191,
+          "line": 193,
           "name": "OPERATIONS_HEALTH_TOKEN",
           "access": "os.environ.get"
         },
         {
-          "line": 192,
+          "line": 194,
           "name": "OPERATIONS_HEALTH_TRUSTED_CIDRS",
           "access": "os.environ.get"
         },
         {
-          "line": 196,
+          "line": 198,
           "name": "UX_GOVERNANCE_WORKBENCH_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 200,
+          "line": 202,
           "name": "OPERATIONS_GOVERNANCE_WORKBENCH_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 204,
+          "line": 206,
           "name": "OPERATIONS_LOCAL_RELEASE_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 208,
+          "line": 210,
           "name": "OPERATIONS_PRODUCTION_RELEASE_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 211,
+          "line": 213,
           "name": "PRODUCTION_FEATURES_UNLOCKED",
           "access": "os.environ.get"
         },
         {
-          "line": 214,
+          "line": 216,
           "name": "THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 218,
+          "line": 220,
           "name": "SAFETY_SCHEDULER_ENABLED",
           "access": "os.environ.get"
         },
         {
-          "line": 222,
+          "line": 224,
           "name": "SAFETY_SCHEDULER_LEASE_SECONDS",
           "access": "os.environ.get"
         },
         {
-          "line": 223,
+          "line": 225,
           "name": "SAFETY_SCHEDULER_MAX_ATTEMPTS",
           "access": "os.environ.get"
         }
@@ -575,20 +580,20 @@
     {
       "file": "backend/scripts/build_api_contract.py",
       "profile": "cli_profile",
-      "source_sha256": "e8a64714ad51fa60514f8cb841d70fcc31fcc3a096392bc2e50ac703afb98439",
+      "source_sha256": "f405b4b3323595791bd999fecf06dce418ef4b57050b2e8d4d243b8a957e371b",
       "reads": [
         {
-          "line": 558,
+          "line": 560,
           "name": "APP_ENV",
           "access": "os.environ[]"
         },
         {
-          "line": 559,
+          "line": 561,
           "name": "DATABASE_PATH",
           "access": "os.environ[]"
         },
         {
-          "line": 560,
+          "line": 562,
           "name": "CONTENT_DIR",
           "access": "os.environ[]"
         }
@@ -629,6 +634,18 @@
         {
           "line": 47,
           "name": "DATABASE_PATH",
+          "access": "os.environ.get"
+        }
+      ]
+    },
+    {
+      "file": "backend/scripts/import_worksheets_to_db.py",
+      "profile": "cli_profile",
+      "source_sha256": "ee22a857b32232736b3ee88475fea43277c222921b4b9253be213911c4124293",
+      "reads": [
+        {
+          "line": 162,
+          "name": "APP_ENV",
           "access": "os.environ.get"
         }
       ]
@@ -785,7 +802,7 @@
     {
       "file": "backend/services/mysql_pool_runtime.py",
       "profile": "mysql_infrastructure_profile",
-      "source_sha256": "3afd9e07a4f67a153e748c8e0bb9964df7fee55c87cc66ee2afe428292e9fafb",
+      "source_sha256": "8959f77ee50eb954ad7e49623851bc4f8215de172fadc4f3efcb6b965e01373a",
       "reads": [
         {
           "line": 31,

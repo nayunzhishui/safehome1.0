@@ -23,14 +23,14 @@
     {
       "artifact_type": "content",
       "path": "content/assessment_worksheets.json",
-      "sha256": "98b033d5776f62ccb819c44f15370f8817eec8581cd7ba6596ad8c528f600ad7",
-      "size_bytes": 681670
+      "sha256": "2c6c87550ac2b99dffdd15b7276b702d4d2c9713d251fc9114f8b3cefd611383",
+      "size_bytes": 698056
     },
     {
       "artifact_type": "content",
       "path": "content/scales_catalog.json",
-      "sha256": "31008441e0add2bc110efb2c22ee39ded71ef354a25576f56b09e04833de2070",
-      "size_bytes": 71435
+      "sha256": "c53d1b1b27417d040fffca96f7e3ca1adff4b7c7dc5167b7d05c3ac21ae8df2b",
+      "size_bytes": 76468
     },
     {
       "artifact_type": "content",
@@ -41,8 +41,8 @@
     {
       "artifact_type": "content",
       "path": "content/privacy.md",
-      "sha256": "8021cb639acfba388c33a0a32f6d36c6c596b8d475c2b7f0c4c22cc053f269e7",
-      "size_bytes": 3995
+      "sha256": "08e8d06829a26f3b92923f24338eab200e582efb8c093e8fbc0fe5cf201efb43",
+      "size_bytes": 7837
     },
     {
       "artifact_type": "rule",

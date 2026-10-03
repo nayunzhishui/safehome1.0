@@ -1,11 +1,15 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { beginServiceEntry, finishServiceConsent } = require("../../utils/serviceConsent");
 const { requireLogin } = require("../../utils/authGuard");
 const { createResilientForm } = require("../../utils/resilientForm");
 
 const api = createSafeHomeApi();
 
 Page({
+  retryServiceEntry() { return this.onLoad(this._entryOptions || {}); },
+  returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
   data: {
+    serviceReady: false,
     cardId: "",
     diaryId: "",
     cardTitle: "这张训练卡",
@@ -34,7 +38,8 @@ Page({
     submitted: false,
   },
 
-  onLoad(options) {
+  onLoad(options = {}) { return beginServiceEntry(this, api, "checkin", options, "/pages/checkin/index"); },
+  loadAfterConsent(options) {
     const cardId = decodeURIComponent(options.card_id || "");
     const diaryId = decodeURIComponent(options.diary_id || "");
     const cardTitle = decodeURIComponent(options.card_title || "这张训练卡");
@@ -64,7 +69,7 @@ Page({
   },
 
   onHide() { if (this.draftController && !this.data.submitting && !this.data.submitted) this.setData(this.draftController.flush(this.data)); },
-  onUnload() { if (this.draftController && !this.data.submitting && !this.data.submitted) this.draftController.flush(this.data); },
+  onUnload() { this._consentDisposed = true; finishServiceConsent(this, false); if (this.draftController && !this.data.submitting && !this.data.submitted) this.draftController.flush(this.data); },
 
   scheduleDraftSave() {
     if (!this.draftController || this.data.submitted) return;

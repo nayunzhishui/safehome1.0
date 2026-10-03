@@ -1,3 +1,4 @@
+const { captureAuthSession, isCurrentAuthSession } = require("../../utils/authGuard");
 const { createSafeHomeApi } = require("../../services/api");
 const { buildDimensionVisualization } = require("../../utils/assessment-dimension-visualization");
 
@@ -433,6 +434,15 @@ function saveThreeDayLightPlan(trainingRecommendation) {
 }
 
 Page({
+  onShow() {
+    this._hidden = false;
+    if (this._readSession && !isCurrentAuthSession(this._readSession)) {
+      this.setData({ result: null, worksheet: null, profileSummary: null, profilePosition: null, exploratoryAnalysis: null, scaleDimensions: [], scaleVisualization: null, trainingRecommendation: null, riskSummary: null, sourceNotice: null, totalScoreText: "", recommendedCardsText: "" });
+      this.loadResult();
+    } else if (this.data.loading && this._readSession) { this.loadResult(); }
+  },
+  onHide() { this._hidden = true; },
+  onUnload() { this._consentDisposed = true; this._hidden = true; },
   data: {
     resultId: "",
     worksheetId: "",
@@ -466,6 +476,10 @@ Page({
   },
 
   async loadResult() {
+    const session = captureAuthSession();
+    this._readSession = session;
+    const requestId = this._resultRequestId = (this._resultRequestId || 0) + 1;
+    const isCurrent = () => !this._hidden && !this._consentDisposed && requestId === this._resultRequestId && isCurrentAuthSession(session);
     this.setData({ loading: true, errorMessage: "" });
     try {
       const [result, worksheet, cards, exploratoryPayload] = await Promise.all([
@@ -474,10 +488,12 @@ Page({
         api.listCards().catch(() => ({ items: [] })),
         api.getAssessmentExploratoryAnalysis(this.data.resultId).catch(() => null),
       ]);
+      if (!isCurrent()) return;
       const profileSummary = buildProfileSummary(result);
       let profilePosition = null;
       if (result && !profileSummary) {
         const positionPayload = await api.getAssessmentProfilePosition(result.id).catch(() => null);
+      if (!isCurrent()) return;
         profilePosition = buildProfilePositionSummary(positionPayload);
       }
       const scaleDimensions = buildScaleDimensions(result, profileSummary);
@@ -521,6 +537,7 @@ Page({
         },
       );
     } catch (error) {
+      if (!isCurrent()) return;
       this.setData({
         loading: false,
         errorMessage: error.message || "结果暂时没能读取，请检查网络后再试一次。",

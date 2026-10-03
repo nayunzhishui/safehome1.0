@@ -4,7 +4,7 @@ from collections import Counter
 from datetime import date, datetime, timedelta
 
 from database import get_connection, json_loads, rows_to_dicts
-from services.progress_summary_service import build_training_effectiveness
+from services.progress_summary_service import build_training_effectiveness, assessments_comparable
 
 
 def _parse_date(value: str | None) -> date:
@@ -52,13 +52,15 @@ def _build_assessment_summary(assessments: list[dict]) -> dict:
                     "worksheet_title": item.get("worksheet_title") or worksheet_id,
                     "score": float(score),
                     "created_at": item.get("created_at"),
+                    "provenance": item,
                 }
             )
     dimension_summaries = []
     for (worksheet_id, key), items in dimension_history.items():
         newest = items[0]
         oldest = items[-1]
-        delta = round(newest["score"] - oldest["score"], 2) if len(items) >= 2 else None
+        comparable = len(items) >= 2 and assessments_comparable(newest["provenance"], oldest["provenance"])
+        delta = round(newest["score"] - oldest["score"], 2) if comparable else None
         dimension_summaries.append(
             {
                 "key": key,
@@ -69,7 +71,7 @@ def _build_assessment_summary(assessments: list[dict]) -> dict:
                 "latest_score": newest["score"],
                 "previous_score": oldest["score"] if len(items) >= 2 else None,
                 "score_delta": delta,
-                "direction": _direction(delta),
+                "direction": _direction(delta) if comparable else "暂不比较",
             }
         )
     dimension_summaries.sort(key=lambda item: (item["worksheet_title"], item["label"]))

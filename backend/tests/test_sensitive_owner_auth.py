@@ -82,7 +82,7 @@ def test_profile_detail_and_visuals_require_admin_or_matching_owner(tmp_path):
     assert no_token.status_code == 401
     assert wrong_owner.status_code == 401
     assert owner.status_code == 200
-    assert admin.status_code == 200
+    assert admin.status_code == 200  # Explicit administrator compatibility on the profile route.
     assert visuals_owner.status_code == 200
 
 
@@ -120,7 +120,7 @@ def test_profile_followup_and_sandplay_require_matching_owner(tmp_path):
 
     assert no_sandplay.status_code == 401
     assert owner_sandplay.status_code == 200
-    assert admin_sandplay_post.status_code == 201
+    assert admin_sandplay_post.status_code == 404  # Compatibility admin header is not an assigned human reviewer.
 
 
 def test_parent_assessment_sensitive_reads_require_admin_or_owner(tmp_path):
@@ -140,7 +140,7 @@ def test_parent_assessment_sensitive_reads_require_admin_or_owner(tmp_path):
     assert no_detail_token.status_code == 401
     assert wrong_owner.status_code == 401
     assert owner.status_code == 200
-    assert admin.status_code == 200
+    assert admin.status_code == 404
 
     no_action_owner = client.post(f"/api/parent-assessments/{submission_id}/actions", json={"action_key": "saved"})
     owner_action = client.post(

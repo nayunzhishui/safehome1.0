@@ -37,15 +37,7 @@ WAVE_C_BASE_COMMIT = "908603e1"
 WAVE_C_PENDING_BLOCKER = "wave_c_independent_review_pending"
 WAVE_B_PACKET_SHA256 = "2b7c5c249bc80023c094a0a818f203364989d4ea408f59253ef48153c48c6e21"
 WAVE_B_DECISION_SHA256 = "a24af5a4fb5f713af91c13767ea6b460cf4dea1a3e44544b6ec0b09df3a37feb"
-BACKEND_SOURCE_PATHS = (
-    "Dockerfile",
-    ".dockerignore",
-    "backend",
-    "content",
-    "shared",
-    "config/rc0810/database_profiles.json",
-    "deploy/verify_rc0810_f03_images.py",
-)
+BACKEND_SOURCE_PATHS = f25b.BACKEND_CONTEXTS
 LOCK_PATTERNS = (
     re.compile(r"(^|/)requirements[^/]*\.txt$"),
     re.compile(r"(^|/)package-lock\.json$"),

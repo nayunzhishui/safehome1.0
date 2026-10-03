@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 
 from database import json_dumps, new_id, now_iso, row_to_dict, write_audit_log
+from services.research_access_service import has_participant_scope, participant_scope_clause
 
 
 LEASE_MINUTES = 15
@@ -73,15 +74,8 @@ def _load_accessible(conn, work_item_id: str, actor: dict) -> dict:
     if not item:
         raise WorkItemError("not_found", "没有找到该工作项。", 404)
     role = str(actor.get("role") or "")
-    if role == "researcher":
-        assigned = conn.execute(
-            """
-            SELECT 1 FROM relationship_pilot_enrollments
-            WHERE user_id = ? AND assigned_researcher_id = ? LIMIT 1
-            """,
-            (item["user_id"], actor["id"]),
-        ).fetchone()
-        if not assigned:
+    if role in {"researcher", "supervisor"}:
+        if not has_participant_scope(conn, actor, item["user_id"]):
             raise WorkItemError("forbidden", "该工作项不在你的参与者范围内。", 403)
     elif role not in {"supervisor", "admin"}:
         raise WorkItemError("forbidden", "当前角色不能处理研究运营工作项。", 403)
@@ -163,12 +157,8 @@ def perform_work_item_action(
         target_row = conn.execute("SELECT id, role, status FROM users WHERE id = ?", (target,)).fetchone()
         if not target_row or target_row["status"] != "active" or target_row["role"] not in {"researcher", "supervisor", "admin"}:
             raise WorkItemError("validation_error", "请选择有效的研究处理人员。", 400)
-        if target_row["role"] == "researcher":
-            assigned = conn.execute(
-                "SELECT 1 FROM relationship_pilot_enrollments WHERE user_id = ? AND assigned_researcher_id = ? LIMIT 1",
-                (item["user_id"], target),
-            ).fetchone()
-            if not assigned:
+        if target_row["role"] in {"researcher", "supervisor"}:
+            if not has_participant_scope(conn, dict(target_row), item["user_id"]):
                 raise WorkItemError("forbidden", "目标研究者未获该参与者授权。", 403)
         new_status = "claimed"
         assignee_id = target
@@ -409,11 +399,7 @@ def get_work_item_detail(conn, work_item_id: str, actor: dict) -> dict:
 def get_work_item_metrics(conn, actor: dict, window_days: int = 7) -> dict:
     now = datetime.now(timezone.utc)
     start = (now - timedelta(days=window_days)).isoformat()
-    scope = "1 = 1"
-    params: list = []
-    if actor.get("role") == "researcher":
-        scope = "user_id IN (SELECT user_id FROM relationship_pilot_enrollments WHERE assigned_researcher_id = ?)"
-        params.append(str(actor["id"]))
+    scope, params = participant_scope_clause(actor, "user_id")
     status_rows = conn.execute(
         f"SELECT status, COUNT(*) AS count FROM research_work_items WHERE {scope} GROUP BY status",
         tuple(params),
@@ -465,7 +451,7 @@ def get_work_item_metrics(conn, actor: dict, window_days: int = 7) -> dict:
         trend_by_day[str(row["day"])] = {"day": str(row["day"]), "opened": int(row["count"]), "closed": 0}
     for row in closed_rows:
         trend_by_day.setdefault(str(row["day"]), {"day": str(row["day"]), "opened": 0, "closed": 0})["closed"] = int(row["count"])
-    action_scope = "w.user_id IN (SELECT user_id FROM relationship_pilot_enrollments WHERE assigned_researcher_id = ?)" if actor.get("role") == "researcher" else "1 = 1"
+    action_scope, action_params = participant_scope_clause(actor, "w.user_id")
     workload_rows = conn.execute(
         f"""
         SELECT a.actor_id, a.actor_role, a.action, COUNT(*) AS count
@@ -475,10 +461,10 @@ def get_work_item_metrics(conn, actor: dict, window_days: int = 7) -> dict:
         GROUP BY a.actor_id, a.actor_role, a.action
         ORDER BY a.actor_id, a.action
         """,
-        tuple([*params, start]),
+        tuple([*action_params, start]),
     ).fetchall()
     return {
-        "scope": "assigned_participants" if actor.get("role") == "researcher" else "all_participants",
+        "scope": "assigned_participants" if actor.get("role") in {"researcher", "supervisor"} else "all_participants",
         "generated_at": now.isoformat(),
         "window_days": window_days,
         "totals": totals,
@@ -495,9 +481,9 @@ def reconcile_resolved_work_items(conn, queue_type: str, actor: dict, active_sou
 
     where = ["queue_type = ?", "status IN ('open', 'claimed', 'processing', 'waiting', 'dead_letter')"]
     params: list = [queue_type]
-    if actor.get("role") == "researcher":
-        where.append("user_id IN (SELECT user_id FROM relationship_pilot_enrollments WHERE assigned_researcher_id = ?)")
-        params.append(str(actor["id"]))
+    scope, scope_params = participant_scope_clause(actor, "user_id")
+    where.append(scope)
+    params.extend(scope_params)
     if active_source_ids:
         placeholders = ",".join("?" for _ in active_source_ids)
         where.append(f"source_id NOT IN ({placeholders})")

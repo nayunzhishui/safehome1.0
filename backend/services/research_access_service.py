@@ -125,6 +125,25 @@ def has_object_scope(conn, actor: dict, enrollment: dict) -> bool:
     return bool(active_assignment(conn, str(enrollment["id"]), actor_id, role))
 
 
+def participant_scope_clause(actor: dict, column: str) -> tuple[str, list[str]]:
+    """SQL scope for internal participant columns, using the active assignment contract."""
+    if actor.get("role") == "admin":
+        return "1 = 1", []
+    if actor.get("role") not in ASSIGNMENT_ROLES:
+        return "1 = 0", []
+    return (
+        f"""{column} IN (
+            SELECT enrollment.user_id FROM relationship_pilot_enrollments enrollment
+            JOIN research_scope_assignments assignment ON assignment.enrollment_id = enrollment.id
+            WHERE enrollment.status IN ('enrolled', 'active')
+              AND assignment.actor_id = ? AND assignment.assignment_role = ?
+              AND assignment.status = 'active'
+              AND (assignment.expires_at IS NULL OR assignment.expires_at > ?)
+        )""",
+        [str(actor["id"]), str(actor["role"]), now_iso()],
+    )
+
+
 def has_participant_scope(conn, actor: dict, participant_user_id: str) -> bool:
     """Return whether the actor can access one participant across modules."""
 

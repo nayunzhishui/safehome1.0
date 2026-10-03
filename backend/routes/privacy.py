@@ -54,6 +54,8 @@ def consent_status():
 @bp.post("/revoke-consent")
 def revoke_consent():
     payload = request.get_json(silent=True) or {}
+    if not isinstance(payload, dict):
+        return fail("validation_error", "请求正文必须是JSON对象。", status=400)
     try:
         user_id, actor = resolve_privacy_owner(payload.get("user_id"))
     except AuthError as exc:
@@ -70,6 +72,8 @@ def revoke_consent():
 @bp.post("/delete-my-data")
 def delete_my_data():
     payload = request.get_json(silent=True) or {}
+    if not isinstance(payload, dict):
+        return fail("validation_error", "请求正文必须是JSON对象。", status=400)
     try:
         user_id, actor = resolve_privacy_owner(payload.get("user_id"))
     except AuthError as exc:

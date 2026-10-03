@@ -11,6 +11,14 @@
     </button>
   </view>
 
+  <view wx:if="{{privacyNoticeVisible}}" class="home-privacy-notice" aria-label="首次隐私说明">
+    <text class="home-privacy-title">使用前，先了解记录与隐私</text>
+    <text class="home-privacy-copy">你提交的记录可与账号关联，用于反馈与复盘。这里不做诊断，也不提供实时监护或紧急救助。</text>
+    <text class="home-privacy-copy">查看说明或点“知道了”不代表同意研究、模型训练等可选用途。</text>
+    <button class="home-privacy-link" bindtap="openPrivacyNotice">查看隐私与删除说明</button>
+    <button class="home-privacy-dismiss" bindtap="acknowledgePrivacyNotice">知道了</button>
+  </view>
+
   <page-state
     wx:if="{{homeOverviewError}}"
     kind="error"

@@ -337,7 +337,7 @@ def test_account_credential_tool_can_prepare_old_participant_rotation(tmp_path):
         username="Test1",
         role="parent",
         nickname="Test1",
-        target_environment="production",
+        target_environment="local",
         operation="rotate",
     )
     receipt = json.loads(prepared.read_text(encoding="utf-8"))
@@ -351,7 +351,7 @@ def test_account_credential_tool_can_prepare_old_participant_rotation(tmp_path):
 
 def test_old_participant_rotation_preserves_user_id_and_role(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
-    monkeypatch.setenv("LEGACY_ADMIN_TOKEN_ENABLED", "1")
+    app.config["LEGACY_ADMIN_TOKEN_ENABLED"] = True  # Configure the synthetic app before the request.
     client = app.test_client()
     registered = client.post(
         "/api/auth/register",

@@ -1652,7 +1652,7 @@ export interface AuthSession {
 
 export interface AuthCapabilityStatus {
   available: boolean;
-  mode?: "cloudbase_identity" | "jscode2session" | "cloudbase_access_token" | "wechat_access_token" | "not_configured" | string;
+  mode?: "cloudbase_identity" | "jscode2session" | "cloudbase_openapi" | "cloudbase_access_token" | "wechat_access_token" | "not_configured" | string;
 }
 
 export interface AuthCapabilities {
@@ -2044,6 +2044,8 @@ export interface ProgressSummary {
       worksheet_id: ID;
       title: string;
       count: number;
+      comparable?: boolean;
+      comparison_notice?: string;
       latest_score?: number | null;
       previous_score?: number | null;
       score_delta?: number | null;

@@ -15,14 +15,15 @@ def _fresh_app(tmp_path, monkeypatch, app_env: str = "development"):
     for name in list(sys.modules):
         if name in {"app", "config", "database", "models"} or name.startswith("routes.") or name.startswith("services."):
             sys.modules.pop(name, None)
-    monkeypatch.setenv("APP_ENV", app_env)
+    monkeypatch.setenv("APP_ENV", "validation" if app_env == "production" else app_env)
+    monkeypatch.setenv("DATABASE_DATA_WATERMARK", "synthetic_validation_only" if app_env == "production" else "local_fake_only")
     monkeypatch.delenv("WECHAT_APPID", raising=False)
     monkeypatch.delenv("WECHAT_SECRET", raising=False)
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(PROJECT_ROOT / "content"))
     if app_env == "production":
         monkeypatch.setenv("DB_PROVIDER", "sqlite")
-        monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+        monkeypatch.delenv("ALLOW_PRODUCTION_SQLITE", raising=False)
         monkeypatch.setenv("SECRET_KEY", "production-test-secret-key-32-chars")
         monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
     module = importlib.import_module("app")
@@ -520,3 +521,16 @@ def test_text_analysis_script_outputs_aggregate_without_raw_text(tmp_path, monke
     assert supervisor_reply not in serialized
     assert data["sentiment_summary"]["emotion_keywords"]
     assert data["cooccurrence_network"]["nodes"]
+
+
+def test_invalid_json_and_research_limit_return_validation_error(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    for route in ["/api/diaries", "/api/privacy/delete-my-data", "/api/privacy/revoke-consent"]:
+        response = client.post(route, json=[1])
+        assert response.status_code == 400
+        assert response.get_json()["error"]["code"] == "validation_error"
+    _, token = _wechat_login(client, "synthetic-invalid-limit")
+    response = client.get("/api/research/analysis/jobs?limit=abc", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == 400
+    assert response.get_json()["error"]["code"] == "validation_error"

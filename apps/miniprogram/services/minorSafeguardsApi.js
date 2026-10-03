@@ -55,6 +55,10 @@ function request(path, method = "GET", data = {}) {
       "X-Request-ID": requestId,
     };
     const handle = (res) => {
+      if (token !== (wx.getStorageSync("auth_token") || "")) {
+        reject({ code: "auth_session_changed", message: "登录状态已变化，请重新打开页面。", status: 409, statusCode: 409, retryable: false, path, method, requestId });
+        return;
+      }
       const payload = res.data || {};
       if (res.statusCode >= 200 && res.statusCode < 300 && payload.ok !== false) {
         resolve(payload.data !== undefined ? payload.data : payload);

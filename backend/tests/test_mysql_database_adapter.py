@@ -294,3 +294,37 @@ def test_mysqlize_query_known_limitation_literal_question_mark():
     # Known behavior: the ? inside the string literal is also replaced
     # This test exists to document (not endorse) the current behavior
     assert "is this okay%s" in converted or "is this okay?" in converted
+
+
+def test_mysql_inline_migration_columns_and_digest_are_indexable():
+    database = importlib.import_module("database")
+    converted = database.mysqlize_schema_statement("CREATE TABLE IF NOT EXISTS synthetic_inline (id TEXT PRIMARY KEY, status TEXT NOT NULL DEFAULT 'open', payload_json TEXT DEFAULT '{}', note TEXT DEFAULT 'a,b', started_at TEXT, claim_token_digest TEXT, CHECK (status IN ('open', 'closed')))" )
+    assert "status VARCHAR(191)" in converted
+    assert "started_at VARCHAR(191)" in converted
+    assert "claim_token_digest VARCHAR(191)" in converted
+    assert "payload_json LONGTEXT" in converted
+    assert "CHECK (status IN ('open', 'closed'))" in converted
+    assert database.mysqlize_column_definition("claim_token_digest", "TEXT") == "VARCHAR(191)"
+
+
+def test_mysql_index_repair_stops_before_truncating_existing_values():
+    database = importlib.import_module("database")
+    class Cursor:
+        def __init__(self, row): self.row = row
+        def fetchone(self): return self.row
+    class Connection:
+        def __init__(self, length): self.length, self.statements = length, []
+        def execute(self, sql, params=None):
+            self.statements.append(sql)
+            if "information_schema.columns" in sql:
+                return Cursor({"data_type": "text", "is_nullable": "NO", "column_default": "open"})
+            if "MAX(CHAR_LENGTH" in sql: return Cursor({"max_length": self.length})
+            return Cursor(None)
+    import pytest
+    conn = Connection(192)
+    with pytest.raises(RuntimeError, match="Cannot safely index"):
+        database.ensure_mysql_index_columns(conn, ["CREATE INDEX IF NOT EXISTS idx_synthetic ON synthetic(status)"])
+    assert not any("ALTER TABLE" in sql for sql in conn.statements)
+    conn = Connection(4)
+    database.ensure_mysql_index_columns(conn, ["CREATE INDEX IF NOT EXISTS idx_synthetic ON synthetic(status)"])
+    assert any("VARCHAR(191) NOT NULL DEFAULT 'open'" in sql for sql in conn.statements)

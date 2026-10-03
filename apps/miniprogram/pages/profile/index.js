@@ -1,5 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
-const { getAuthUser, isLoggedIn, logout, requireLogin } = require("../../utils/authGuard");
+const { getAuthUser, isLoggedIn, logout, requireLogin, captureAuthSession, isCurrentAuthSession } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
 
@@ -136,10 +136,19 @@ Page({
   },
 
   onShow() {
+    this._hidden = false;
+    if (this._readSession && !isCurrentAuthSession(this._readSession)) this.setData({ stats: null, dataClaim: null, identityStatus: null, user: {}, loggedIn: false, logoutBusy: false });
     this.loadProfile();
   },
 
+  onHide() { this._hidden = true; },
+  onUnload() { this._consentDisposed = true; this._hidden = true; },
+
   async loadProfile() {
+    const session = captureAuthSession();
+    this._readSession = session;
+    const requestId = this._profileRequestId = (this._profileRequestId || 0) + 1;
+    const isCurrent = () => !this._hidden && !this._consentDisposed && requestId === this._profileRequestId && isCurrentAuthSession(session);
     const storedUser = getAuthUser();
     const loggedIn = isLoggedIn();
     const canClaim = loggedIn && storedUser && ["parent", "student", "user"].includes(storedUser.role);
@@ -149,6 +158,7 @@ Page({
       canClaim ? api.getIdentityStatus().catch(() => null) : Promise.resolve(null),
       api.getAiQaConfig().catch(() => null),
     ]);
+      if (!isCurrent()) return;
     const supportEntries = buildSupportEntries(
       Boolean(aiConfig && aiConfig.participant_entry_visible),
       aiConfig && aiConfig.capability,
@@ -159,6 +169,7 @@ Page({
       : null;
     try {
       const stats = await api.getProfileStats();
+      if (!isCurrent()) return;
       this.setData({
         stats,
         loggedIn,
@@ -176,6 +187,7 @@ Page({
         supportEntries,
       });
     } catch (error) {
+      if (!isCurrent()) return;
       this.setData({
         loggedIn,
         user: {
@@ -301,6 +313,7 @@ Page({
     if (this.data.logoutBusy) return;
     this.setData({ logoutBusy: true });
     const result = await api.logout();
+    if (result.session_changed) return;
     this.setData({ logoutBusy: false });
     wx.showToast({
       title: result.pending_logout ? "已退出，联网后将撤销旧会话" : "已退出",

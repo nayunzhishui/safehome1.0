@@ -6,6 +6,8 @@ from zoneinfo import ZoneInfo
 
 from flask import Blueprint, request
 
+from services.participant_safeguard_service import ParticipantSafeguardError, assert_participant_capability, safeguards_enforced
+
 from database import ensure_user, get_connection, new_id, now_iso, row_to_dict, rows_to_dicts
 from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
 from routes.utils import fail, ok
@@ -33,9 +35,11 @@ def _local_day_key(value: str) -> str:
 
 
 def _normalize_level(value) -> int | None:
+    if isinstance(value, bool) or (isinstance(value, float) and not value.is_integer()):
+        return None
     try:
         level = int(value)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return None
     if level < 1 or level > 10:
         return None
@@ -131,6 +135,11 @@ def create_emotion_thermometer_record():
         user_id = resolve_actor_user_id(payload=payload)
     except AuthError as exc:
         return auth_error_response(exc)
+    if safeguards_enforced():
+        try:
+            assert_participant_capability(user_id, "sensitive_text")
+        except ParticipantSafeguardError as exc:
+            return fail(exc.code, exc.message, status=exc.status, details=exc.details)
 
     level = _normalize_level(payload.get("intensity_level"))
     if level is None:

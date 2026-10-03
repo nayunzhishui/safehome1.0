@@ -4,6 +4,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+import importlib.util
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[2]
 PRODUCTION = ROOT / "Dockerfile"
@@ -165,3 +168,77 @@ def test_f03_runtime_verifier_contract_is_exposed():
     assert "local runtime artifacts found in image filesystem" in text
     assert "runtime capabilities disabled" in text
     assert "forbidden runtime capabilities enabled" in text
+
+
+def test_runtime_policy_files_and_governance_texts_are_packaged():
+    policies = ["operations_reliability_policy.json", "research_execution_manifest_policy.json", "database_recovery_policy.json"]
+    for dockerfile in [PRODUCTION, VALIDATION]:
+        text = dockerfile.read_text(encoding="utf-8")
+        for filename in policies:
+            assert f"config/rc0810/{filename}" in text
+            assert (ROOT / "config/rc0810" / filename).is_file()
+    ignore = (ROOT / ".dockerignore").read_text(encoding="utf-8").splitlines()
+    for filename in ["consent.md", "privacy.md"]:
+        exception = f"!content/{filename}"
+        assert exception in ignore
+        assert ignore.index(exception) > ignore.index("*.md")
+
+
+@pytest.mark.parametrize("dockerfile", [PRODUCTION, VALIDATION])
+def test_gunicorn_home_is_owned_runtime_directory(dockerfile):
+    text = dockerfile.read_text(encoding="utf-8")
+    assert "ENV HOME=/app/data" in text
+    assert "mkdir -p /app/data" in text
+    assert "safehome:safehome /app/data" in text
+    assert "USER safehome" in text
+
+
+@pytest.mark.parametrize("guard_rejected", [False, True])
+def test_runtime_verifier_separates_production_guard_and_synthetic_app(monkeypatch, guard_rejected):
+    spec = importlib.util.spec_from_file_location("f03_runtime_probe", VERIFY)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    policy = json.loads(POLICY.read_text(encoding="utf-8"))
+    calls = []
+
+    def fake_run(command, **_kwargs):
+        calls.append(command)
+        profile = "validation" if any("f03-validation" in str(part) for part in command) else "production"
+        flags = {name: True for name in policy[profile].get("required_enabled_flags", [])}
+        flags.update({name: False for name in policy[profile].get("required_disabled_flags", [])})
+        if command[1:3] == ["image", "inspect"]:
+            payload = [{"Id": "synthetic-image", "Config": {
+                "Entrypoint": ["python", "/app/verify_rc0810_f03_images.py", "--entrypoint", "--profile", profile, "--"],
+                "Cmd": policy["application_command"], "Env": [],
+            }}]
+        elif command[1] == "history":
+            payload = None
+        elif "must-not-run" in command[-1]:
+            return subprocess.CompletedProcess(command, 78, "blocked", "")
+        elif "tests_dir" in command[-1]:
+            payload = {"tests_dir": False, "forbidden": []}
+        elif "from config import Config" in command[-1]:
+            assert "--entrypoint" not in command
+            assert f"APP_ENV={profile}" in command
+            assert "DB_PROVIDER=sqlite" not in command
+            if profile == "production" and guard_rejected:
+                return subprocess.CompletedProcess(command, 78, '{"valid":false}', "")
+            payload = flags
+        elif "from app import app" in command[-1]:
+            assert "--entrypoint" in command
+            assert "APP_ENV=testing" in command
+            assert "DATABASE_DATA_WATERMARK=local_fake_only" in command
+            assert "ALLOW_PRODUCTION_SQLITE=1" not in command
+            payload = {"status_code": 200, "health": {"service": "safehome-backend"}, "routes": ["/healthz"]}
+        else:
+            raise AssertionError("unexpected probe")
+        return subprocess.CompletedProcess(command, 0, "" if payload is None else json.dumps(payload), "")
+
+    monkeypatch.setattr(module.subprocess, "run", fake_run)
+    result = module.verify_runtime_images()
+    assert result["valid"] is (not guard_rejected), result["errors"]
+    assert ("production: image entrypoint guard failed" in result["errors"]) is guard_rejected
+    for profile in ("production", "validation"):
+        assert result["images"][profile]["entrypoint_ready"] is (not guard_rejected or profile == "validation")
+        assert result["images"][profile]["probe_environment"] == "testing"
+    assert len([command for command in calls if "from app import app" in command[-1]]) == 2

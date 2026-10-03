@@ -1,9 +1,11 @@
+const { captureAuthSession, isCurrentAuthSession } = require("../../utils/authGuard");
 const { createSafeHomeApi } = require("../../services/api");
+const { beginServiceEntry, finishServiceConsent } = require("../../utils/serviceConsent");
 
 const api = createSafeHomeApi();
 
-function draftKey(programId, sessionNo) {
-  return `safehome:programDraft:${programId}:${sessionNo}`;
+function draftKey(programId, sessionNo, ownerId) {
+  return `safehome:programDraft:${programId}:${sessionNo}:user:${encodeURIComponent(ownerId)}`;
 }
 
 function markActiveSessions(sessions, selectedSession) {
@@ -32,7 +34,12 @@ function formatProgram(program) {
 }
 
 Page({
+  isDraftOwner() { return !!this._draftOwner && String((wx.getStorageSync("auth_user") || {}).id || "") === this._draftOwner; },
+  onUnload() { this._consentDisposed = true; finishServiceConsent(this, false); },
+  retryServiceEntry() { return this.onLoad(this._entryOptions || {}); },
+  returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
   data: {
+    serviceReady: false,
     programId: "",
     requestedSessionNo: null,
     previewMode: false,
@@ -52,7 +59,23 @@ Page({
     errorMessage: "",
   },
 
-  onLoad(query) {
+  onLoad(query = {}) {
+    this._entryOptions = query;
+    if (query.preview === "1") { this.setData({ serviceReady: true }); return this.loadAfterConsent(query); }
+    return beginServiceEntry(this, api, "program", query, "/pages/program-detail/index");
+  },
+  onShow() {
+    this._hidden = false;
+    if (this._readSession && !isCurrentAuthSession(this._readSession)) {
+      this.setData({ submittedEntries: [], draftText: "", reflectionAnswers: {}, analysisConsent: false, distressBefore: 5, distressAfter: 5, adverseResponse: false, successMessage: "", serviceReady: false, submitting: false });
+      return this.onLoad(this._entryOptions || {});
+    }
+    if (this.data.loading && this.data.programId) this.loadProgram(this.data.programId);
+  },
+  onHide() { this._hidden = true; },
+
+  loadAfterConsent(query) {
+    this._draftOwner = String((wx.getStorageSync("auth_user") || {}).id || "");
     const programId = decodeURIComponent(query.id || "");
     const previewMode = query.preview === "1";
     const requestedSessionNo = query.session ? Number(query.session) : null;
@@ -61,6 +84,10 @@ Page({
   },
 
   loadProgram(programId) {
+    const session = captureAuthSession();
+    this._readSession = session;
+    const requestId = this._programRequestId = (this._programRequestId || 0) + 1;
+    const isCurrent = () => !this._hidden && !this._consentDisposed && requestId === this._programRequestId && isCurrentAuthSession(session);
     if (!programId) {
       this.setData({ loading: false, errorMessage: "缺少项目 ID，请返回后重新打开。" });
       return;
@@ -69,6 +96,7 @@ Page({
     api
       .getProgram(programId, this.data.previewMode ? { include_drafts: true } : {})
       .then((data) => {
+        if (!isCurrent()) return;
         const program = formatProgram(data.program);
         const rawSessions = program.sessions || [];
         const selectedSession = rawSessions.find(
@@ -89,6 +117,7 @@ Page({
         );
       })
       .catch((error) => {
+        if (!isCurrent()) return;
         this.setData({
           loading: false,
           errorMessage: error.message || "项目内容暂时没能读取，请检查网络后再试一次。",
@@ -111,11 +140,12 @@ Page({
   },
 
   loadDraft() {
+    if (this.data.previewMode || !this.isDraftOwner()) return;
     const session = this.data.selectedSession;
     if (!this.data.programId || !session) {
       return;
     }
-    const stored = wx.getStorageSync(draftKey(this.data.programId, session.session_no));
+    const stored = wx.getStorageSync(draftKey(this.data.programId, session.session_no, this._draftOwner));
     if (stored && typeof stored === "object") {
       this.setData({
         draftText: stored.draftText || "",
@@ -156,11 +186,12 @@ Page({
   },
 
   saveDraft() {
+    if (this.data.previewMode || !this.isDraftOwner()) return;
     const session = this.data.selectedSession;
     if (!this.data.programId || !session) {
       return;
     }
-    wx.setStorageSync(draftKey(this.data.programId, session.session_no), {
+    wx.setStorageSync(draftKey(this.data.programId, session.session_no, this._draftOwner), {
       draftText: this.data.draftText || "",
       reflectionAnswers: this.data.reflectionAnswers || {},
     });
@@ -168,8 +199,13 @@ Page({
   },
 
   async loadSubmittedEntries() {
+    const session = captureAuthSession();
+    this._readSession = session;
+    const requestId = this._entriesRequestId = (this._entriesRequestId || 0) + 1;
+    const isCurrent = () => !this._hidden && !this._consentDisposed && requestId === this._entriesRequestId && isCurrentAuthSession(session);
     try {
       const payload = await api.listProgramEntries(this.data.programId);
+      if (!isCurrent()) return;
       this.setData({
         submittedEntries: (payload.items || []).map((item) => ({
           ...item,
@@ -178,22 +214,26 @@ Page({
         })),
       });
     } catch (error) {
+      if (!isCurrent()) return;
       if (error.code !== "auth_required") console.warn("[program entries]", error);
     }
   },
 
   async submitEntry() {
+    if (this.data.previewMode || this.data.submitting || this._hidden || this._consentDisposed || !this.isDraftOwner() || !isCurrentAuthSession(this._readSession)) return;
+    const authSession = captureAuthSession();
+    const isCurrent = () => !this._hidden && !this._consentDisposed && this.isDraftOwner() && isCurrentAuthSession(authSession);
     const session = this.data.selectedSession;
+    if (!this.data.programId || !session) {
+      this.setData({ errorMessage: "缺少项目信息，请返回重新打开。" });
+      return;
+    }
     const draftText = (this.data.draftText || "").trim();
     const reflectionAnswers = (session.reflection_questions || []).map((question, index) => ({
       question,
       answer: String((this.data.reflectionAnswers || {})[index] || "").trim(),
     }));
     const answeredReflections = reflectionAnswers.filter((item) => item.answer);
-    if (!this.data.programId || !session) {
-      this.setData({ errorMessage: "缺少项目信息，请返回重新打开。" });
-      return;
-    }
     if (!draftText && !answeredReflections.length) {
       this.setData({ errorMessage: "请先填写书写内容或至少一个反思问题。" });
       return;
@@ -216,7 +256,8 @@ Page({
         adverse_response: this.data.adverseResponse,
         boundary_notice: this.data.program ? this.data.program.boundary_notice : "",
       });
-      wx.removeStorageSync(draftKey(this.data.programId, session.session_no));
+      if (!isCurrent()) return;
+      if (this.isDraftOwner()) wx.removeStorageSync(draftKey(this.data.programId, session.session_no, this._draftOwner));
       this.setData({
         draftText: "",
         reflectionAnswers: {},
@@ -224,11 +265,12 @@ Page({
       });
       await this.loadSubmittedEntries();
     } catch (error) {
+      if (!isCurrent()) return;
       this.setData({
         errorMessage: error.message || "暂时没能提交，请登录后再试一次。",
       });
     } finally {
-      this.setData({ submitting: false });
+      if (isCurrentAuthSession(authSession) && !this._consentDisposed) this.setData({ submitting: false });
     }
   },
 });

@@ -17,23 +17,23 @@ def test_shared_participant_state_components_are_accessible_and_touch_safe():
 
     assert 'aria-live="polite"' in state_markup
     assert 'aria-label="{{actionAriaLabel || actionLabel}}"' in state_markup
-    assert "min-height: 88rpx" in state_style
+    assert "min-height: var(--safe-touch, 88rpx)" in state_style
     assert 'role="status"' in status_markup
     assert 'aria-label="{{ariaLabel || label}}"' in status_markup
     assert 'aria-label="{{regionAriaLabel}}"' in journey_markup
     assert 'value: "今天的一小步"' in _read("apps/miniprogram/components/journey-action-card/index.js")
     assert "重新读取" in journey_markup
-    assert "min-height: 88rpx" in journey_style
+    assert "min-height: var(--safe-touch, 88rpx)" in journey_style
 
 
 def test_home_uses_one_shared_journey_action_card_in_the_frozen_position():
     markup = _read("apps/miniprogram/pages/home/index.wxml")
     config = _read("apps/miniprogram/pages/home/index.json")
 
-    core_index = markup.index('class="core-actions"')
+    core_index = markup.index('class="home-capture"')
     journey_index = markup.index("<journey-action-card")
-    three_step_index = markup.index('title="三步开始"')
-    assert core_index < journey_index < three_step_index
+    three_step_index = markup.index('title="如何开始"')
+    assert journey_index < core_index < three_step_index
     assert markup.count("<journey-action-card") == 1
     assert 'bind:action="openTodayAction"' in markup
     assert 'bind:retry="retryTodayJourney"' in markup
@@ -55,8 +55,11 @@ def test_growth_and_messages_share_loading_error_empty_and_status_components():
 
     messages_markup = _read("apps/miniprogram/pages/messages/index.wxml")
     messages_config = _read("apps/miniprogram/pages/messages/index.json")
-    assert "<status-pill" in messages_markup
-    assert '"status-pill"' in messages_config
+    assert "<message-row" in messages_markup
+    assert '"message-row"' in messages_config
+    row = _read("apps/miniprogram/components/message-row/index.wxml")
+    assert "message.is_unread" in row and "message.is_withdrawn" in row
+    assert "aria-label=" in row
 
 
 def test_feedback_rating_exposes_selected_state_and_save_status():
@@ -73,7 +76,7 @@ def test_key_participant_pages_keep_bottom_safe_area_and_one_primary_action():
 
     message_markup = _read("apps/miniprogram/pages/message-detail/index.wxml")
     assert message_markup.count('class="safe-primary-button bottom-action"') <= 1
-    assert 'class="safe-outline-button bottom-action"' in message_markup
+    assert 'class="safe-outline-button return-action"' in message_markup
 
 
 def test_visual_audit_covers_required_viewports_overflow_touch_and_names():

@@ -1,6 +1,9 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { captureAuthSession, isCurrentAuthSession } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
+const PRIVACY_NOTICE_VERSION = "2026.10-privacy-notice-v1";
+const PRIVACY_NOTICE_KEY = "safehome_privacy_notice_seen";
 const PROTECTION_URL = "/pages/settings-detail/index?type=protection";
 
 function trackJourneyEvent(eventName, journey, status, extra = {}) {
@@ -93,14 +96,19 @@ function hasDraftContent(stored) {
   if (typeof stored === "string") return !!stored.trim();
   if (typeof stored !== "object") return false;
   if (String(stored.draftText || "").trim()) return true;
+  if (String(stored.narration || "").trim() || (Array.isArray(stored.strokes) && stored.strokes.length)) return true;
+  if (Object.values(stored.answers || {}).some(value => String(value || "").trim())) return true;
   return Object.values(stored.reflectionAnswers || {}).some((value) => String(value || "").trim());
 }
 
 function findLocalDraftAction() {
+  const ownerId = String((wx.getStorageSync("auth_user") || {}).id || "");
+  if (!ownerId) return null;
+  const ownerSuffix = `:user:${encodeURIComponent(ownerId)}`;
   let keys = [];
   try {
     const storageInfo = wx.getStorageInfoSync();
-    keys = Array.isArray(storageInfo.keys) ? storageInfo.keys : [];
+    keys = Array.isArray(storageInfo.keys) ? storageInfo.keys.filter(key => key.endsWith(ownerSuffix)) : [];
   } catch (error) {
     return null;
   }
@@ -155,6 +163,7 @@ function findLocalDraftAction() {
 
 Page({
   data: {
+    privacyNoticeVisible: true,
     todayRecordCount: 0,
     todayRecordCountReady: false,
     thermometerRecordCount: 0,
@@ -189,10 +198,37 @@ Page({
   },
 
   onShow() {
+    this._homeHidden = false;
+    if (!this._homeSession || !isCurrentAuthSession(this._homeSession)) {
+      this.setData({
+        todayRecordCount: 0, todayRecordCountReady: false,
+        thermometerRecordCount: 0, thermometerRecordReady: false, unreadMessageCount: 0,
+        homeOverviewError: "", latestRecord: null, latestRecordReady: false, latestRecordError: "",
+        progressSummary: null, progressSummaryReady: false, progressSummaryError: "",
+        todayJourney: null, todayJourneyLoading: false, todayJourneyError: "",
+      });
+    }
+    this._homeSession = captureAuthSession();
+    this.setData({ privacyNoticeVisible: wx.getStorageSync(PRIVACY_NOTICE_KEY) !== PRIVACY_NOTICE_VERSION });
     this.refreshHomeData();
   },
 
+  onHide() { this._homeHidden = true; },
+  onUnload() { this._homeDisposed = true; },
+
+  openPrivacyNotice() { wx.navigateTo({ url: "/pages/settings-detail/index?type=privacy" }); },
+
+  acknowledgePrivacyNotice() {
+    // Reading this reminder is not agreement to any data purpose.
+    wx.setStorageSync(PRIVACY_NOTICE_KEY, PRIVACY_NOTICE_VERSION);
+    this.setData({ privacyNoticeVisible: false });
+  },
+
   async refreshHomeData() {
+    if (this._homeHidden || this._homeDisposed) return;
+    const session = captureAuthSession();
+    const requestId = this._overviewRequestId = (this._overviewRequestId || 0) + 1;
+    const current = () => !this._homeHidden && !this._homeDisposed && this._overviewRequestId === requestId && isCurrentAuthSession(session);
     this.loadTodayJourney();
     try {
       const todayKey = formatLocalDate(new Date());
@@ -203,6 +239,7 @@ Page({
         api.getEmotionThermometerDay({ date: todayKey }).catch((error) => ({ __error: error })),
         api.getProgressSummary({ range: "7d" }).catch((error) => ({ __error: error })),
       ]);
+      if (!current()) return;
       const todayError = todayResult && todayResult.__error ? todayResult.__error : null;
       const statsError = stats && stats.__error ? stats.__error : null;
       const thermometerError = thermometerDay && thermometerDay.__error ? thermometerDay.__error : null;
@@ -235,6 +272,7 @@ Page({
           : null,
       });
     } catch (error) {
+      if (!current()) return;
       this.setData({
         todayRecordCount: 0,
         todayRecordCountReady: false,
@@ -259,9 +297,14 @@ Page({
   retryHomeData() { this.refreshHomeData(); },
 
   async loadTodayJourney() {
+    if (this._homeHidden || this._homeDisposed) return;
+    const session = captureAuthSession();
+    const requestId = this._journeyRequestId = (this._journeyRequestId || 0) + 1;
+    const current = () => !this._homeHidden && !this._homeDisposed && this._journeyRequestId === requestId && isCurrentAuthSession(session);
     this.setData({ todayJourneyLoading: true, todayJourneyError: "" });
     try {
       const payload = await api.getTodayJourney();
+      if (!current()) return;
       const protectedTypes = new Set(["read_feedback", "read_message", "training_paused", "training_stage_completed", "today_completed"]);
       const localDraft = findLocalDraftAction();
       const serverType = payload && payload.primary_action ? payload.primary_action.type : "";
@@ -270,6 +313,7 @@ Page({
       this.setData({ todayJourney, todayJourneyLoading: false, todayJourneyError: "" });
       trackJourneyEvent("journey_action_impression", todayJourney, "shown");
     } catch (error) {
+      if (!current()) return;
       if (error && error.code === "auth_required") {
         this.setData({
           todayJourney: formatTodayJourney({

@@ -1,6 +1,6 @@
 {
-  "version": "2026.07-task18-reviewed-scales-v1",
-  "updated_at": "2026-07-15",
+  "version": "2026.10-scale-review-corrections-v2",
+  "updated_at": "2026-10-02",
   "source_root": "D:\\codex\\workspace\\safehome1.0其他内容\\夏老师文件\\2026年6月18日发给董俊杰的(1)\\测评问卷-量表",
   "boundary_notice": "量表目录只用于内容盘点、人工审核和后续支持性测评接入规划。未完成授权、题项、计分和伦理复核的量表不得面向用户开放；结果只作自我观察和练习推荐线索，不构成诊断。",
   "review_policy": {
@@ -120,7 +120,7 @@
         "emotion_naming",
         "nonjudgmental_response"
       ],
-      "notes": "已从 PRFQ 中文 docx 抽取 18 个题项草稿，并从 syntax 文件记录三个维度和反向计分；正式开放前必须人工核对中文题项、维度译名、计分解释和伦理边界。已按用户要求由题项草稿进入小程序可填写列表；正式试点前仍需人工复核来源、计分和边界。",
+      "notes": "历史项目负责人试点批准记录保留；2026-10-02按逐题审查修正候选内容。复用历史发布候选的分量表计分修正，取消无同版依据的合计分。本轮工程修正不替代同版中文题本、心理专业与授权核验。",
       "audience_class": "parent",
       "category": "成人自助",
       "reflex_node": "reflection",
@@ -187,14 +187,15 @@
     },
     {
       "id": "emotion_regulation_erq_gross",
-      "display_name": "情绪调节问卷（Gross ERQ）",
+      "display_name": "情绪调节问卷（ERQ）",
       "audience": "adult",
       "theme": "emotion_regulation",
       "source_folder": "情绪调节问卷-GROSS-GERQ",
       "source_files": [
         "Gross情绪调节问卷.docx",
         "Gross情绪调节问卷.pdf",
-        "指标值计算-Gross情绪调节量表GERQ.sps"
+        "指标值计算-Gross情绪调节量表GERQ.sps",
+        "https://spl.stanford.edu/sites/g/files/sbiybj19321/files/media/file/chinese.pdf"
       ],
       "source_type": "authorized_resource",
       "review_status": "pilot_review_required",
@@ -207,7 +208,7 @@
         "emotion_naming",
         "cognitive_flexibility"
       ],
-      "notes": "已从本地 PDF 抽取 10 个题项草稿，并用 PDF 第 2 页和 sps 脚本记录认知重评、表达抑制两个维度；正式开放前必须人工核对题项、计分、标准引用和伦理边界。已按用户要求由题项草稿进入小程序可填写列表；正式试点前仍需人工复核来源、计分和边界。",
+      "notes": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "audience_class": "adult",
       "category": "成人自助",
       "reflex_node": "reflection",
@@ -217,7 +218,7 @@
       ],
       "sensitive_category": "none",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于观察两种情绪调节策略，不评价策略好坏，不构成诊断或人格标签。作者网站明确的使用范围为学术研究；项目数字化与实际用途授权需确认。",
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
         "reviewed_at": "2026-07-12",
@@ -245,7 +246,7 @@
         "self_support_statement",
         "three_second_pause"
       ],
-      "notes": "2026-07-11 已与本地 PDF 逐项核对26题、六维题号、负向题反向规则和综合均值。",
+      "notes": "历史项目负责人试点批准记录保留；2026-10-02按逐题审查修正候选内容。作者允许分量表反向或不反向。本项目保留反向分量表，明确“较少”标签及得分方向，综合分算法不变。本轮工程修正不替代同版中文题本、心理专业与授权核验。",
       "audience_class": "adult",
       "category": "成人自助",
       "reflex_node": "acceptance",
@@ -256,7 +257,7 @@
       ],
       "sensitive_category": "none",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。“较少”开头的三个维度已反向，分数越高表示本次回答中该体验越少；不能据此评价个人好坏。",
       "excluded_from_user_flow": false,
       "not_open_reason": null,
       "exclusion_reason": null,
@@ -311,12 +312,14 @@
     },
     {
       "id": "acceptance_action_aaq2",
-      "display_name": "接纳与行动问卷（AAQ-II）",
+      "display_name": "接纳与行动问卷（AAQ-II，中文候选）",
       "audience": "adult",
       "theme": "psychological_flexibility",
       "source_folder": "基于情绪反射弧的分类/接纳行动问卷AAQ",
       "source_files": [
-        "2-1-接纳与行动问卷第二版AAQII.docx"
+        "2-1-接纳与行动问卷第二版AAQII.docx",
+        "https://stevenchayes.com/wp-content/uploads/2023/01/The-Acceptance-and-Action-Questionnaire.pdf",
+        "https://contextualscience.org/acceptance_action_questionnaire_aaq_aaqii"
       ],
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
@@ -328,7 +331,7 @@
         "cognitive_flexibility",
         "alternative_behavior"
       ],
-      "notes": "2026-07-10 已按项目负责人确认开放试用；已读取 7/7 个题项，计分解释仍需在试点期持续人工复核。",
+      "notes": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "audience_class": "adult",
       "category": "成人自助",
       "reflex_node": "acceptance",
@@ -339,7 +342,7 @@
       ],
       "sensitive_category": "none",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。保留本地7题中文题干，选项按真实程度而非单纯发生频率表述；同版中文验证及本项目实际用途授权需确认。",
       "excluded_from_user_flow": false,
       "not_open_reason": null,
       "exclusion_reason": null,
@@ -357,7 +360,8 @@
       "theme": "mindfulness",
       "source_folder": "基于情绪反射弧的分类/正念觉知相关量表",
       "source_files": [
-        "正念注意觉知量表 答题纸.pdf"
+        "正念注意觉知量表 答题纸.pdf",
+        "https://ppc.sas.upenn.edu/sites/default/files/mindfulnessscale.pdf"
       ],
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
@@ -369,7 +373,7 @@
         "emotion_naming",
         "three_second_pause"
       ],
-      "notes": "已由抽取脚本从本地源文件读取 15/15 个题项；正式开放前仍需人工复核。",
+      "notes": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "audience_class": "adult",
       "category": "成人自助",
       "reflex_node": "awareness",
@@ -380,7 +384,7 @@
       ],
       "sensitive_category": "none",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。本次按原作者日常倾向指导语作答，不设固定一周回顾期；中文同版验证及数字化授权仍待确认。",
       "excluded_from_user_flow": false,
       "not_open_reason": null,
       "exclusion_reason": null,
@@ -582,7 +586,7 @@
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
-      "notes": "2026-07-10 已按项目负责人确认开放试用；已读取 4/4 个题项，计分解释仍需在试点期持续人工复核。",
+      "notes": "历史项目负责人试点批准记录保留；2026-10-02按逐题审查修正候选内容。按报告所指空白题本或已读取公开官方题本修正指导语；只修正明确的回顾期或日常倾向。本轮工程修正不替代同版中文题本、心理专业与授权核验。",
       "excluded_from_user_flow": false,
       "not_open_reason": null,
       "exclusion_reason": null,
@@ -609,7 +613,8 @@
       "sensitive_category": "none",
       "source_folder": "学生自助量表/2022年6月施测学生问卷",
       "source_files": [
-        "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx"
+        "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx",
+        "https://www.ruthbaer.com/academics/AFQ-Y.pdf"
       ],
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
@@ -618,9 +623,9 @@
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察，不构成诊断或人格标签。中文题干来自本地题本，译本效度与数字化展示授权仍待核实；历史1—5编码结果不能与本版直接比较。",
       "recommended_card_ids": [],
-      "notes": "2026-07-10 已按项目负责人确认开放试用；已读取 8/8 个题项，支持性解释仍需在试点期持续人工复核。",
+      "notes": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "excluded_from_user_flow": false,
       "not_open_reason": null,
       "exclusion_reason": null,
@@ -633,7 +638,7 @@
     },
     {
       "id": "cfi2_cognitive_flexibility",
-      "display_name": "认知灵活性问卷中文版（CFI-2）",
+      "display_name": "认知灵活性问卷（CFS，中文12题改编候选）",
       "audience": "student",
       "audience_class": "student",
       "category": "学生自助",
@@ -648,7 +653,8 @@
       "sensitive_category": "none",
       "source_folder": "学生自助量表/2022年6月施测学生问卷",
       "source_files": [
-        "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx"
+        "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx",
+        "https://psybeh.tjnu.edu.cn/CN/Y2013/V11/I1/120"
       ],
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
@@ -657,12 +663,12 @@
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。当前12题中文版本的验证来源与数字化授权未核实，不能套用13题版常模；历史五档三维结果不能与本版直接比较。",
       "recommended_card_ids": [
         "cognitive_flexibility",
         "alternative_behavior"
       ],
-      "notes": "2026-07-10 已按项目负责人确认开放试用；已读取 12/12 个题项，维度与反向计分解释仍需在试点期持续人工复核。",
+      "notes": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "excluded_from_user_flow": false,
       "not_open_reason": null,
       "exclusion_reason": null,
@@ -699,12 +705,12 @@
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。恢复维度的题目方向尚待核对，不能把该维度高分解释为恢复能力更强。",
       "recommended_card_ids": [
         "student_emotion_naming",
         "self_support_statement"
       ],
-      "notes": "已由抽取脚本从本地源文件读取 11/11 个题项；正式开放前仍需人工复核。",
+      "notes": "历史项目负责人试点批准记录保留；2026-10-02按逐题审查修正候选内容。按报告所指空白题本或已读取公开官方题本修正指导语；只修正明确的回顾期或日常倾向。本轮工程修正不替代同版中文题本、心理专业与授权核验。",
       "excluded_from_user_flow": false,
       "not_open_reason": null,
       "exclusion_reason": null,
@@ -719,7 +725,7 @@
     },
     {
       "id": "study_engagement_uwes_s_17",
-      "display_name": "学习投入量表（UWES-S 中文版）",
+      "display_name": "学习投入问卷（UWES-S，中文改编候选）",
       "audience": "student",
       "audience_class": "student",
       "category": "学生自助",
@@ -735,7 +741,8 @@
       "sensitive_category": "none",
       "source_folder": "学生自助量表/学习投入量表",
       "source_files": [
-        "学习投入量表.docx"
+        "学习投入量表.docx",
+        "https://www.wilmarschaufeli.nl/publications/Schaufeli/Tests/UWES_GB_S_17.pdf"
       ],
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
@@ -744,12 +751,12 @@
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于观察学习体验，不构成诊断、能力定论或人格标签。编码和计分依据作者题本与手册；中文学生版为改编候选，尚不能宣称作者认可或经验证。公开职场常模不用于学生；数字化使用与中文改编权限待核实。",
       "recommended_card_ids": [
         "student_emotion_naming",
         "cbt_auto_thought_student"
       ],
-      "notes": "已由抽取脚本从本地源文件读取 17/17 个题项；正式开放前仍需人工复核。",
+      "notes": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "excluded_from_user_flow": false,
       "not_open_reason": null,
       "exclusion_reason": null,
@@ -845,7 +852,7 @@
     },
     {
       "id": "fmi_12_mindfulness",
-      "display_name": "弗赖堡正念调查量表（FMI-12）",
+      "display_name": "正念自我观察（FMI，12题改编候选）",
       "audience": "adult",
       "audience_class": "adult",
       "category": "成人自助",
@@ -869,12 +876,12 @@
       "item_status": "verified_against_local_pdf",
       "scoring_status": "verified_local_total_score_rule",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。本题本的身份或版本存在未决项，当前仅为项目候选内容，不能称为已核实的标准版本。",
       "recommended_card_ids": [
         "emotion_naming",
         "three_second_pause"
       ],
-      "notes": "2026-07-11 已与本地 PDF 第2页逐项核对12题、作答时间和计分；不拆分未经来源确认的子维度。",
+      "notes": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "excluded_from_user_flow": false,
       "not_open_reason": null,
       "exclusion_reason": null,
@@ -887,7 +894,7 @@
     },
     {
       "id": "hplp_c_health_promoting_lifestyle",
-      "display_name": "健康促进生活方式量表（HPLP，40题）",
+      "display_name": "健康促进生活方式自我观察（40题改编候选）",
       "audience": "adult",
       "audience_class": "adult",
       "category": "成人自助",
@@ -912,9 +919,9 @@
       "item_status": "verified_40_items",
       "scoring_status": "six_dimensions_verified",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。不同中文40题版本的题目与维度分组存在差异；本次结果仅对应当前题本，不与其他版本常模比较。本题本的身份或版本存在未决项，当前仅为项目候选内容，不能称为已核实的标准版本。",
       "recommended_card_ids": [],
-      "notes": "采用用户指定的牛至旭40题版本；六维题号按HPLP-II官方计分说明映射，原42题草稿不再用于运行。",
+      "notes": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "excluded_from_user_flow": false,
       "not_open_reason": null,
       "exclusion_reason": null,
@@ -965,7 +972,7 @@
     },
     {
       "id": "big_five_bfi_60",
-      "display_name": "大五人格问卷（60题简版）",
+      "display_name": "五类特征自我观察（60题，版本待核）",
       "audience": "adult",
       "audience_class": "adult",
       "category": "成人自助",
@@ -993,9 +1000,9 @@
       "item_status": "verified_against_local_doc",
       "scoring_status": "verified_local_five_dimension_rule",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。这份60题问卷的版本身份仍待核对，结果只记录本次回答，不用于判定人格类型或与标准常模比较。本题本的身份或版本存在未决项，当前仅为项目候选内容，不能称为已核实的标准版本。",
       "recommended_card_ids": [],
-      "notes": "2026-07-12 已核对60题、五维题号和反向题，并修复第60题源文件截断。",
+      "notes": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "instruction_status": "verified_against_local_doc",
       "review_note": "内容修复完成；待版权和心理解释审核后再开放。",
       "approval": {
@@ -1035,7 +1042,7 @@
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
-      "notes": "已与本地旧版 Word 核对12个情境、12个主要原因输入和36个专属评分项。",
+      "notes": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。2026-10-02工程修正：顶层总分/派生维度策略同步到数据库实际保存的_meta；不改变题目、选项或既有公式。不替代专业或授权审核。",
       "instruction_status": "verified_against_local_doc",
       "review_note": "交互内容修复完成；待综合计分、版权和心理审核后再开放。",
       "approval": {
@@ -1047,7 +1054,7 @@
     },
     {
       "id": "ghq12_general_health",
-      "display_name": "一般健康问卷（GHQ-12）",
+      "display_name": "健康体验自我观察（12题改编候选）",
       "audience": "adult",
       "audience_class": "adult",
       "category": "成人自助",
@@ -1073,9 +1080,9 @@
       "item_status": "verified_against_local_docx",
       "scoring_status": "verified_local_rule_pending_sensitive_review",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。当前题本的回答选项与标准版不同，结果只记录本次回答，不用于筛查或判断疾病严重程度。本题本的身份或版本存在未决项，当前仅为项目候选内容，不能称为已核实的标准版本。",
       "recommended_card_ids": [],
-      "notes": "2026-07-11 已与本地 Word 逐项核对12题、四级选项和反向题；原文件阈值和异常判断不进入用户端。",
+      "notes": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "instruction_status": "verified_against_local_docx",
       "review_note": "内容核对完成；待心理与伦理审核后再决定普通用户开放。",
       "approval": {
@@ -1087,7 +1094,7 @@
     },
     {
       "id": "epq_emotional_stability_24",
-      "display_name": "EPQ 情绪稳定性量表",
+      "display_name": "情绪反应自我观察（EPQ，24题来源待核）",
       "audience": "adult",
       "audience_class": "adult",
       "category": "成人自助",
@@ -1113,9 +1120,9 @@
       "item_status": "draft_extracted",
       "scoring_status": "pending_sensitive_review",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。本题本的身份或版本存在未决项，当前仅为项目候选内容，不能称为已核实的标准版本。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 24/24 个题项；正式开放前仍需人工复核。",
+      "notes": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "instruction_status": "type_specific_draft",
       "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。",
       "approval": {
@@ -1127,7 +1134,7 @@
     },
     {
       "id": "emotional_intelligence_eis_33",
-      "display_name": "青少年情绪智力量表（EIS）",
+      "display_name": "情绪体验问卷（EIS，中文改编候选）",
       "audience": "student",
       "audience_class": "student",
       "category": "学生自助",
@@ -1142,7 +1149,8 @@
       "source_folder": "学生自助量表/青少年情绪智力量表（EIS）",
       "source_files": [
         "青少年情绪智力质量EIS.sav",
-        "指标值计算-中学生情绪智力量表（EIS）.sps"
+        "指标值计算-中学生情绪智力量表（EIS）.sps",
+        "https://www.researchgate.net/profile/Navjot-Bhullar-2/publication/216626162_The_Assessing_Emotions_Scale/links/573c33d608aea45ee841556c/The-Assessing-Emotions-Scale.pdf"
       ],
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
@@ -1154,9 +1162,9 @@
       "item_status": "draft_extracted",
       "scoring_status": "partial_rule_pending_dimension_review",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。部分中文题义按作者英文题本调整，当前仍为中文改编候选，不能标为已验证中文标准版。中文验证与数字化授权待确认；历史四维结果不与本版综合分直接比较。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 33/33 个题项；正式开放前仍需人工复核。",
+      "notes": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "instruction_status": "type_specific_draft",
       "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。",
       "approval": {
@@ -1192,7 +1200,7 @@
       "scoring_status": "verified_public_scoring_rule",
       "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
       "result_disclaimer": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
-      "notes": "题项和计分已与公开来源核对；当前仅按支持性、非诊断方式用于受控试点。",
+      "notes": "历史项目负责人试点批准记录保留；2026-10-02按逐题审查修正候选内容。按报告所指空白题本或已读取公开官方题本修正指导语；只修正明确的回顾期或日常倾向。本轮工程修正不替代同版中文题本、心理专业与授权核验。",
       "not_open_reason": null,
       "exclusion_reason": null,
       "first_batch_candidate": true,
@@ -1364,7 +1372,8 @@
       "source_folder": "公开来源与项目人工复核",
       "source_files": [
         "家长自主量表/反思功能测评/反思功能量表-8题项.docx",
-        "https://peerj.com/articles/5756/"
+        "https://peerj.com/articles/5756/",
+        "https://www.ucl.ac.uk/brain-sciences/pals/psychoanalysis/research/reflective-functioning-questionnaire-rfq"
       ],
       "source_type": "authorized_local_resource_with_public_scoring_reference",
       "review_status": "pilot_approved",
@@ -1378,9 +1387,9 @@
         "one_open_question"
       ],
       "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
-      "result_disclaimer": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "result_disclaimer": "本测评仅作研究候选，不能用于诊断或判断心智化障碍。UCL提示RFQ针对严重心智化困难，一般社区或学生未必适用；当前中文题干和逐题键尚待同版资料确认。两维重编码得分不能直接解释为能力高低或人格特征。",
       "excluded_from_user_flow": false,
-      "notes": "本地中文8题与公开RFQ-8计分表交叉核对；使用RFQc/RFQu非线性重编码均值。",
+      "notes": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "not_open_reason": null,
       "exclusion_reason": null,
       "approval": {
@@ -1422,7 +1431,7 @@
       "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
       "result_disclaimer": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
       "excluded_from_user_flow": false,
-      "notes": "题项和计分已与公开来源核对；当前仅按支持性、非诊断方式用于受控试点。",
+      "notes": "历史项目负责人试点批准记录保留；2026-10-02按逐题审查修正候选内容。按报告所指空白题本或已读取公开官方题本修正指导语；只修正明确的回顾期或日常倾向。本轮工程修正不替代同版中文题本、心理专业与授权核验。",
       "not_open_reason": null,
       "exclusion_reason": null,
       "approval": {

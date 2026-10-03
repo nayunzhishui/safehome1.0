@@ -9,6 +9,12 @@ test("离线基准工作台呈现许可门禁、合成运行和盲标边界", as
   await page.route("**/api/**", async (route) => {
     const path = new URL(route.request().url()).pathname;
     let data: unknown = {};
+    if (["/model-versions", "/shadow-runs", "/shadow-review-queue", "/adjudication-queue"].some((suffix) => path.endsWith(suffix))) {
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, data: { items: [] } }) });
+    }
+    if (path.endsWith("/monitoring")) {
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, data: { runtime_control: { mode: "off", version: 0 }, recent_runs: [] } }) });
+    }
     if (path === "/api/auth/me") data = { user: { id: "admin-e2e", role: "admin", nickname: "方法管理员" } };
     else if (path === "/api/showcase-access") data = { enabled: false };
     else if (path.endsWith("/config")) data = { enabled: true, external_ingest_enabled: false, production_replacement_allowed: false, registry_version: "v1", registry_status: "engineering_registry_ready_human_rights_review_pending", annotation_status: "draft_human_annotation_pending", synthetic_case_count: 240, runtime_control: { disabled: 0 }, boundary_notice: "公开不等于可训练。" };

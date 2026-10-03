@@ -4,6 +4,7 @@ import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from test_task36_therapeutic_assessment import _grant_case_scope
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -62,6 +63,7 @@ def _case(client, headers, key="f11-case"):
         },
     )
     case = created.get_json()["data"]
+    _grant_case_scope(client, case["id"], "s-f11")
     assigned = client.post(
         f"/api/therapeutic-assessment/cases/{case['id']}/assign",
         headers={**headers["s-f11"], "Idempotency-Key": f"{key}-assign"},

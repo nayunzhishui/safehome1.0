@@ -175,7 +175,7 @@ def test_task18_bfi60_repairs_truncated_item_and_disables_total_score():
     assert_pilot_approved(worksheet, catalog_item)
 
 
-def test_task18_scale_audit_has_no_remaining_content_or_governance_issue():
+def test_task18_scale_audit_keeps_unresolved_cfs_scoring_review_blocked():
     payload = MODULE.audit()
-    assert payload["issues"] == []
-    assert payload["affected_count"] == 0
+    assert {(item["worksheet_id"], item["level"], item["area"]) for item in payload["issues"]} == {("cfi2_cognitive_flexibility", "blocker", "scoring")}
+    assert payload["affected_count"] == 1

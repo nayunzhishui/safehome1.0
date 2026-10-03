@@ -8,7 +8,7 @@ from routes.auth_utils import (
     elevate_actor_for_showcase_researcher_platform,
     require_login,
 )
-from routes.utils import fail, ok
+from routes.utils import fail, ok, parse_int
 from services.research_access_service import ResearchAccessError
 from services.research_analysis_service import (
     ResearchAnalysisError,
@@ -60,11 +60,16 @@ def post_snapshot():
 @bp.get("/jobs")
 def get_jobs():
     actor, error = _actor()
+    if error:
+        return error
+    limit = parse_int(request.args.get("limit") or "50", None)
+    if limit is None or not 1 <= limit <= 200:
+        return fail("validation_error", "limit 必须是1至200的整数。", status=400)
     return error or _respond(
         list_jobs,
         actor,
         str(request.args.get("status") or ""),
-        int(request.args.get("limit") or 50),
+        limit,
     )
 
 

@@ -1,5 +1,5 @@
 {
-  "version": "2026.07-task18-reviewed-scales-v1",
+  "version": "2026.10-scale-review-corrections-v2",
   "boundary_notice": "当前测一测内容来自项目内容库和已抽取量表草稿。所有结果只用于自我观察、阶段性画像候选和练习参考，不构成诊断、筛查结论或人格标签。敏感语义量表必须展示边界提示并保留人工复核。",
   "worksheets": [
     {
@@ -179,11 +179,11 @@
         "self_support_statement",
         "sandplay_expression_01"
       ],
-      "source_version": "2026.06-student-profile-v1-draft",
+      "source_version": "2026.06-student-profile-v1-draft-review-20261002-v1",
       "source_type": "project_draft",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。2026-10-02工程修正：顶层总分/派生维度策略同步到数据库实际保存的_meta；不改变题目、选项或既有公式。不替代专业或授权审核。",
       "audience": "student",
       "audience_class": "student",
       "reflex_node": "integrated_profile",
@@ -242,13 +242,18 @@
       ],
       "derived_dimensions": [],
       "dimension_score_method": "mean",
-      "total_score_method": "none"
+      "total_score_method": "none",
+      "_meta": {
+        "total_score_method": "none",
+        "derived_dimensions": [],
+        "scoring_review_note": "顶层总分/派生维度策略同步到数据库实际保存的_meta；不改变题目、选项或既有公式。"
+      }
     },
     {
       "id": "emotion_regulation_erq",
-      "source_file": "Gross情绪调节问卷.pdf；Gross情绪调节问卷.docx；指标值计算-Gross情绪调节量表GERQ.sps",
-      "source_title": "情绪调节问卷（Gross ERQ）",
-      "display_title": "情绪调节问卷（Gross ERQ）",
+      "source_file": "Gross情绪调节问卷.pdf；Gross情绪调节问卷.docx；指标值计算-Gross情绪调节量表GERQ.sps；https://spl.stanford.edu/sites/g/files/sbiybj19321/files/media/file/chinese.pdf",
+      "source_title": "情绪调节问卷（ERQ，Stanford发布中文译本）",
+      "display_title": "情绪调节问卷（ERQ）",
       "category": "成人自助",
       "audience": "adult",
       "audience_class": "adult",
@@ -259,461 +264,461 @@
       ],
       "sensitive_category": "none",
       "pages": 1,
-      "instructions": "请根据自己通常调节情绪的方式作答，选择每句话与日常情况的符合程度。结果只用于观察调节策略，不评价方式好坏。",
+      "instructions": "请根据自己通常调节与管理情绪的方式作答。这里分别询问内心的情绪体验，以及用言语、姿势或行为表达情绪的方式。相似的题目仍有不同，请逐题选择赞同或不赞同程度。",
       "sections": [
         {
           "title": "填写说明",
-          "content": "以下句子描述不同情绪调节方式。请根据同意程度作答。本草稿仅用于人工核对，未开放给用户填写。"
+          "content": "请根据自己通常调节与管理情绪的方式作答。这里分别询问内心的情绪体验，以及用言语、姿势或行为表达情绪的方式。相似的题目仍有不同，请逐题选择赞同或不赞同程度。"
         }
       ],
       "questions": [
         {
           "id": "ERQ01",
-          "prompt": "当我想多感受到积极情绪的时候（比如高兴和乐趣），我就改变我所考虑的事情，比如“其实这样也不错”。",
+          "prompt": "当我想感受一些积极的情绪（如快乐或高兴）时，我会改变自己思考问题的角度。",
           "type": "scale",
           "required": true,
           "dimension": "ERQ_CR",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不同意",
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 完全不同意"
             },
             {
-              "label": "2 不同意",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很不同意"
             },
             {
-              "label": "3 有点不同意",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有点不同意"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 中性"
             },
             {
-              "label": "5 有点同意",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 有点同意"
             },
             {
-              "label": "6 同意",
               "value": "6",
-              "score": 6
+              "score": 6,
+              "label": "6 很同意"
             },
             {
-              "label": "7 完全同意",
               "value": "7",
-              "score": 7
+              "score": 7,
+              "label": "7 完全同意"
             }
           ]
         },
         {
           "id": "ERQ02",
-          "prompt": "我保持自己的情绪不外露。",
+          "prompt": "我不会表露自己的情绪。",
           "type": "scale",
           "required": true,
           "dimension": "ERQ_ES",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不同意",
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 完全不同意"
             },
             {
-              "label": "2 不同意",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很不同意"
             },
             {
-              "label": "3 有点不同意",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有点不同意"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 中性"
             },
             {
-              "label": "5 有点同意",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 有点同意"
             },
             {
-              "label": "6 同意",
               "value": "6",
-              "score": 6
+              "score": 6,
+              "label": "6 很同意"
             },
             {
-              "label": "7 完全同意",
               "value": "7",
-              "score": 7
+              "score": 7,
+              "label": "7 完全同意"
             }
           ]
         },
         {
           "id": "ERQ03",
-          "prompt": "当我想少感受一些消极情绪的时候（比如悲伤或愤怒），我会改变我对所考虑事情的看法。",
+          "prompt": "当我想少感受一些消极的情绪（如悲伤或愤怒）时，我会改变自己思考问题的角度。",
           "type": "scale",
           "required": true,
           "dimension": "ERQ_CR",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不同意",
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 完全不同意"
             },
             {
-              "label": "2 不同意",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很不同意"
             },
             {
-              "label": "3 有点不同意",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有点不同意"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 中性"
             },
             {
-              "label": "5 有点同意",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 有点同意"
             },
             {
-              "label": "6 同意",
               "value": "6",
-              "score": 6
+              "score": 6,
+              "label": "6 很同意"
             },
             {
-              "label": "7 完全同意",
               "value": "7",
-              "score": 7
+              "score": 7,
+              "label": "7 完全同意"
             }
           ]
         },
         {
           "id": "ERQ04",
-          "prompt": "当我正感受到积极情绪时，我很小心地不让它们表露出来。",
+          "prompt": "当感受到积极情绪时，我会很小心的不让它们表露出来。",
           "type": "scale",
           "required": true,
           "dimension": "ERQ_ES",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不同意",
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 完全不同意"
             },
             {
-              "label": "2 不同意",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很不同意"
             },
             {
-              "label": "3 有点不同意",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有点不同意"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 中性"
             },
             {
-              "label": "5 有点同意",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 有点同意"
             },
             {
-              "label": "6 同意",
               "value": "6",
-              "score": 6
+              "score": 6,
+              "label": "6 很同意"
             },
             {
-              "label": "7 完全同意",
               "value": "7",
-              "score": 7
+              "score": 7,
+              "label": "7 完全同意"
             }
           ]
         },
         {
           "id": "ERQ05",
-          "prompt": "当我面对压力的时候，我使自己以一种有助于保持平衡的方式考虑它。",
+          "prompt": "在面对压力情境时，我会使自己以一种有助于保持平静的方式来考虑它。",
           "type": "scale",
           "required": true,
           "dimension": "ERQ_CR",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不同意",
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 完全不同意"
             },
             {
-              "label": "2 不同意",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很不同意"
             },
             {
-              "label": "3 有点不同意",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有点不同意"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 中性"
             },
             {
-              "label": "5 有点同意",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 有点同意"
             },
             {
-              "label": "6 同意",
               "value": "6",
-              "score": 6
+              "score": 6,
+              "label": "6 很同意"
             },
             {
-              "label": "7 完全同意",
               "value": "7",
-              "score": 7
+              "score": 7,
+              "label": "7 完全同意"
             }
           ]
         },
         {
           "id": "ERQ06",
-          "prompt": "通过不表达自己，我控制了自己的情绪。",
+          "prompt": "我控制自己情绪的方式是不表达它们。",
           "type": "scale",
           "required": true,
           "dimension": "ERQ_ES",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不同意",
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 完全不同意"
             },
             {
-              "label": "2 不同意",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很不同意"
             },
             {
-              "label": "3 有点不同意",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有点不同意"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 中性"
             },
             {
-              "label": "5 有点同意",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 有点同意"
             },
             {
-              "label": "6 同意",
               "value": "6",
-              "score": 6
+              "score": 6,
+              "label": "6 很同意"
             },
             {
-              "label": "7 完全同意",
               "value": "7",
-              "score": 7
+              "score": 7,
+              "label": "7 完全同意"
             }
           ]
         },
         {
           "id": "ERQ07",
-          "prompt": "当我想要感受到积极情绪的时候，我改变自己对处境的考虑方式。",
+          "prompt": "当我想多感受一些积极的情绪时，我会改变自己对情境的考虑方式。",
           "type": "scale",
           "required": true,
           "dimension": "ERQ_CR",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不同意",
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 完全不同意"
             },
             {
-              "label": "2 不同意",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很不同意"
             },
             {
-              "label": "3 有点不同意",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有点不同意"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 中性"
             },
             {
-              "label": "5 有点同意",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 有点同意"
             },
             {
-              "label": "6 同意",
               "value": "6",
-              "score": 6
+              "score": 6,
+              "label": "6 很同意"
             },
             {
-              "label": "7 完全同意",
               "value": "7",
-              "score": 7
+              "score": 7,
+              "label": "7 完全同意"
             }
           ]
         },
         {
           "id": "ERQ08",
-          "prompt": "我通过改变自己对处境的考虑方式来控制我的情绪。",
+          "prompt": "我会通过改变对情境的考虑方式来控制自己的情绪。",
           "type": "scale",
           "required": true,
           "dimension": "ERQ_CR",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不同意",
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 完全不同意"
             },
             {
-              "label": "2 不同意",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很不同意"
             },
             {
-              "label": "3 有点不同意",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有点不同意"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 中性"
             },
             {
-              "label": "5 有点同意",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 有点同意"
             },
             {
-              "label": "6 同意",
               "value": "6",
-              "score": 6
+              "score": 6,
+              "label": "6 很同意"
             },
             {
-              "label": "7 完全同意",
               "value": "7",
-              "score": 7
+              "score": 7,
+              "label": "7 完全同意"
             }
           ]
         },
         {
           "id": "ERQ09",
-          "prompt": "当我正感到消极情绪的时候，我确保不会表露出来。",
+          "prompt": "当感受到消极的情绪时，我確定不会表露它们。",
           "type": "scale",
           "required": true,
           "dimension": "ERQ_ES",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不同意",
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 完全不同意"
             },
             {
-              "label": "2 不同意",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很不同意"
             },
             {
-              "label": "3 有点不同意",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有点不同意"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 中性"
             },
             {
-              "label": "5 有点同意",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 有点同意"
             },
             {
-              "label": "6 同意",
               "value": "6",
-              "score": 6
+              "score": 6,
+              "label": "6 很同意"
             },
             {
-              "label": "7 完全同意",
               "value": "7",
-              "score": 7
+              "score": 7,
+              "label": "7 完全同意"
             }
           ]
         },
         {
           "id": "ERQ10",
-          "prompt": "当我想减少消极的情绪体验的时候，我改变自己对处境的考虑方式。",
+          "prompt": "当我想少感受一些消极的情绪时，我会改变自己对情境的考虑方式。",
           "type": "scale",
           "required": true,
           "dimension": "ERQ_CR",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不同意",
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 完全不同意"
             },
             {
-              "label": "2 不同意",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很不同意"
             },
             {
-              "label": "3 有点不同意",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有点不同意"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 中性"
             },
             {
-              "label": "5 有点同意",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 有点同意"
             },
             {
-              "label": "6 同意",
               "value": "6",
-              "score": 6
+              "score": 6,
+              "label": "6 很同意"
             },
             {
-              "label": "7 完全同意",
               "value": "7",
-              "score": 7
+              "score": 7,
+              "label": "7 完全同意"
             }
           ]
         }
@@ -748,23 +753,24 @@
       ],
       "derived_dimensions": [],
       "dimension_score_method": "sum",
-      "total_score_method": "sum",
-      "scoring": "本地 PDF 第 2 页写明：重新评价 = T1、T3、T5、T7、T8、T10；本地 PDF 第 2 页写明：表达抑制 = T2、T4、T6、T9；sps 计分脚本写明 gerqcogre = gerq1 + gerq3 + gerq5 + gerq7 + gerq8 + gerq10；sps 计分脚本写明 gerqinhib = gerq2 + gerq4 + gerq6 + gerq9；未见反向计分说明；正式开放前必须由人工核对题项、计分方式、标准引用和伦理边界。",
+      "total_score_method": "none",
+      "scoring": "题干与1—7同意度采用Stanford作者团队发布的中文译本；保留原10题顺序，无反向。认知重评=1/3/5/7/8/10，表达抑制=2/4/6/9；当前分量表按本地计分脚本求和，分别6—42、4—28，不计算跨维度总分，也不等同于研究中常用的1—7分量表均值。",
       "recommended_card_ids": [
         "emotion_naming",
         "cognitive_flexibility"
       ],
-      "source_version": "2026.06-emotion_regulation_erq_gross-from-scale-draft",
+      "source_version": "2026.06-emotion_regulation_erq_gross-from-scale-draft-review-20261002-v2",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于观察两种情绪调节策略，不评价策略好坏，不构成诊断或人格标签。作者网站明确的使用范围为学术研究；项目数字化与实际用途授权需确认。",
       "profile_model_id": null,
       "_meta": {
-        "total_score_method": "sum",
-        "derived_dimensions": []
+        "total_score_method": "none",
+        "derived_dimensions": [],
+        "scoring_review_note": "复用历史发布候选的分量表计分修正，取消无同版依据的合计分。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -792,7 +798,7 @@
       "sections": [
         {
           "title": "填写说明",
-          "content": "下面所列的是一系列关于您对孩子行为的感受和反应的陈述。请根据同意程度作答。本草稿仅用于人工核对，未开放给用户填写。"
+          "content": "请根据自己理解孩子想法、感受和行为原因时的通常情况作答。没有标准答案，请选择最符合近期亲子互动的程度。"
         }
       ],
       "questions": [
@@ -1657,23 +1663,24 @@
       ],
       "derived_dimensions": [],
       "dimension_score_method": "mean",
-      "total_score_method": "sum",
-      "scoring": "PRFQ11 和 PRFQ18 按 syntax 进行 1-7 反向计分；PRFQ_PM = PRFQ1、4、7、10、13、16 的均值；PRFQ_CM = PRFQ2、5、8、11rr、14、17 的均值；PRFQ_IC = PRFQ3、6、9、12、15、18rr 的均值；正式开放前必须由人工核对中文题项、维度译名、计分解释和伦理边界。",
+      "total_score_method": "none",
+      "scoring": "PRFQ11 和 PRFQ18 按 syntax 进行 1-7 反向计分；PRFQ_PM = PRFQ1、4、7、10、13、16 的均值；PRFQ_CM = PRFQ2、5、8、11rr、14、17 的均值；PRFQ_IC = PRFQ3、6、9、12、15、18rr 的均值；正式开放前必须由人工核对中文题项、维度译名、计分解释和伦理边界；仅报告各分量表，不计算跨维度合计分。",
       "recommended_card_ids": [
         "emotion_naming",
         "nonjudgmental_response"
       ],
-      "source_version": "2026.06-parent_reflective_functioning_prfq-from-scale-draft",
+      "source_version": "2026.06-parent_reflective_functioning_prfq-from-scale-draft-review-20261002-v1",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "历史项目负责人试点批准记录保留；2026-10-02按逐题审查修正候选内容。复用历史发布候选的分量表计分修正，取消无同版依据的合计分。本轮工程修正不替代同版中文题本、心理专业与授权核验。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "profile_model_id": null,
       "_meta": {
-        "total_score_method": "sum",
-        "derived_dimensions": []
+        "total_score_method": "none",
+        "derived_dimensions": [],
+        "scoring_review_note": "复用历史发布候选的分量表计分修正，取消无同版依据的合计分。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -1698,11 +1705,11 @@
       ],
       "sensitive_category": "none",
       "pages": 1,
-      "instructions": "请根据最近一段时间里各陈述与你实际行为频率的符合程度作答，从1（从不如此）到5（总是如此）中选择一项。结果只用于阶段性自我观察。",
+      "instructions": "请根据自己在困难时通常对待自己的方式作答，选择各陈述与你实际行为频率的符合程度。结果只用于自我观察。",
       "sections": [
         {
           "title": "填写说明",
-          "content": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。"
+          "content": "请根据自己在困难时通常对待自己的方式作答，选择各陈述与你实际行为频率的符合程度。结果只用于自我观察。"
         }
       ],
       "questions": [
@@ -2633,7 +2640,7 @@
         },
         {
           "code": "SCS_SJ",
-          "label": "自我批评",
+          "label": "较少自我批评",
           "item_ids": [
             "SCS01",
             "SCS08",
@@ -2648,7 +2655,7 @@
             "SCS16",
             "SCS21"
           ],
-          "description": ""
+          "description": "本维度已按6-原分反向；得分越高表示本次自报中此类体验越少，不是原始频率分。"
         },
         {
           "code": "SCS_CH",
@@ -2664,7 +2671,7 @@
         },
         {
           "code": "SCS_ISO",
-          "label": "自我隔离",
+          "label": "较少孤立感",
           "item_ids": [
             "SCS04",
             "SCS13",
@@ -2677,7 +2684,7 @@
             "SCS18",
             "SCS25"
           ],
-          "description": ""
+          "description": "本维度已按6-原分反向；得分越高表示本次自报中此类体验越少，不是原始频率分。"
         },
         {
           "code": "SCS_MIND",
@@ -2693,7 +2700,7 @@
         },
         {
           "code": "SCS_OVER",
-          "label": "过度沉迷",
+          "label": "较少被情绪卷入",
           "item_ids": [
             "SCS02",
             "SCS06",
@@ -2706,7 +2713,7 @@
             "SCS20",
             "SCS24"
           ],
-          "description": ""
+          "description": "本维度已按6-原分反向；得分越高表示本次自报中此类体验越少，不是原始频率分。"
         }
       ],
       "derived_dimensions": [
@@ -2728,18 +2735,18 @@
       ],
       "dimension_score_method": "mean",
       "total_score_method": "none",
-      "scoring": "六个维度分别取所属题项均值；自我批评、自我隔离、过度沉迷的题项先按1↔5、2↔4反向计分。综合观察为六个校正后维度均值的平均值。",
+      "scoring": "六个维度分别取所属题项均值；自我批评、孤立感、被情绪卷入的题项按6-原分反向后，以“较少”命名的维度报告。自我关怀综合观察为六个校正后维度均值的平均值。不输出临床等级。",
       "recommended_card_ids": [
         "self_support_statement",
         "three_second_pause"
       ],
-      "source_version": "2026.06-self_compassion_scs_cn-from-scale-draft",
+      "source_version": "2026.06-self_compassion_scs_cn-from-scale-draft-review-20261002-v1",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "历史项目负责人试点批准记录保留；2026-10-02按逐题审查修正候选内容。作者允许分量表反向或不反向。本项目保留反向分量表，明确“较少”标签及得分方向，综合分算法不变。本轮工程修正不替代同版中文题本、心理专业与授权核验。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。“较少”开头的三个维度已反向，分数越高表示本次回答中该体验越少；不能据此评价个人好坏。",
       "profile_model_id": null,
       "_meta": {
         "total_score_method": "none",
@@ -2759,7 +2766,8 @@
               ]
             }
           }
-        ]
+        ],
+        "scoring_review_note": "作者允许分量表反向或不反向。本项目保留反向分量表，明确“较少”标签及得分方向，综合分算法不变。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -2770,7 +2778,7 @@
     },
     {
       "id": "mindful_attention_awareness_maas",
-      "source_file": "正念注意觉知量表 答题纸.pdf",
+      "source_file": "正念注意觉知量表 答题纸.pdf；https://ppc.sas.upenn.edu/sites/default/files/mindfulnessscale.pdf",
       "source_title": "正念注意觉知量表（MAAS）",
       "display_title": "正念注意觉知量表（MAAS）",
       "category": "成人自助",
@@ -2784,11 +2792,11 @@
       ],
       "sensitive_category": "none",
       "pages": 1,
-      "instructions": "请根据近期日常生活中这些情况出现的频率作答，从“几乎总是”到“几乎从不”选择最符合的一项。",
+      "instructions": "以下陈述涉及日常体验。请逐题选择自己通常出现该体验的频率，按真实经历作答，不按期望中的自己作答。",
       "sections": [
         {
           "title": "填写说明",
-          "content": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。"
+          "content": "以下陈述涉及日常体验。请逐题选择自己通常出现该体验的频率，按真实经历作答，不按期望中的自己作答。"
         }
       ],
       "questions": [
@@ -3426,17 +3434,18 @@
         "emotion_naming",
         "three_second_pause"
       ],
-      "source_version": "2026.06-mindful_attention_awareness_maas-from-scale-draft",
+      "source_version": "2026.06-mindful_attention_awareness_maas-from-scale-draft-review-20261002-v2",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。本次按原作者日常倾向指导语作答，不设固定一周回顾期；中文同版验证及数字化授权仍待确认。",
       "profile_model_id": null,
       "_meta": {
-        "total_score_method": "sum",
-        "derived_dimensions": []
+        "total_score_method": "none",
+        "derived_dimensions": [],
+        "scoring_review_note": "按报告所指空白题本或已读取公开官方题本修正指导语；只修正明确的回顾期或日常倾向。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。顶层总分/派生维度策略同步到数据库实际保存的_meta；不改变题目、选项或既有公式。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -3461,11 +3470,11 @@
       ],
       "sensitive_category": "none",
       "pages": 1,
-      "instructions": "请根据近期面对情绪波动、压力或挫折时的实际反应作答，选择每句话与自己的符合程度。",
+      "instructions": "以下陈述描述日常生活中的心理和行为特点。请根据自己的实际情况，从“完全不符合”到“完全符合”六个选项中选择一项。",
       "sections": [
         {
           "title": "填写说明",
-          "content": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。"
+          "content": "以下陈述描述日常生活中的心理和行为特点。请根据自己的实际情况，从“完全不符合”到“完全符合”六个选项中选择一项。"
         }
       ],
       "questions": [
@@ -3947,17 +3956,18 @@
         "student_emotion_naming",
         "self_support_statement"
       ],
-      "source_version": "2026.06-emotional_resilience_11-from-scale-draft",
+      "source_version": "2026.06-emotional_resilience_11-from-scale-draft-review-20261002-v1",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "历史项目负责人试点批准记录保留；2026-10-02按逐题审查修正候选内容。按报告所指空白题本或已读取公开官方题本修正指导语；只修正明确的回顾期或日常倾向。本轮工程修正不替代同版中文题本、心理专业与授权核验。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。恢复维度的题目方向尚待核对，不能把该维度高分解释为恢复能力更强。",
       "profile_model_id": null,
       "_meta": {
         "total_score_method": "sum",
-        "derived_dimensions": []
+        "derived_dimensions": [],
+        "scoring_review_note": "按报告所指空白题本或已读取公开官方题本修正指导语；只修正明确的回顾期或日常倾向。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -3968,9 +3978,9 @@
     },
     {
       "id": "study_engagement_uwes_s_17",
-      "source_file": "学习投入量表.docx",
+      "source_file": "学习投入量表.docx；https://www.wilmarschaufeli.nl/publications/Schaufeli/Tests/UWES_GB_S_17.pdf",
       "source_title": "学习投入量表（UWES-S 中文版）",
-      "display_title": "学习投入量表（UWES-S 中文版）",
+      "display_title": "学习投入问卷（UWES-S，中文改编候选）",
       "category": "学生自助",
       "audience": "student",
       "audience_class": "student",
@@ -3984,239 +3994,14 @@
       ],
       "sensitive_category": "none",
       "pages": 1,
-      "instructions": "请根据近期学习时的活力、投入和专注体验作答，选择相应情况出现的频率。",
+      "instructions": "这些陈述描述学习中的感受。若从未有过该感受，选0；若有过，请按出现频率选1—6。没有固定“近期”窗口，请结合通常的学习体验作答。",
       "sections": [
         {
           "title": "填写说明",
-          "content": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。"
+          "content": "这些陈述描述学习中的感受。若从未有过该感受，选0；若有过，请按出现频率选1—6。没有固定“近期”窗口，请结合通常的学习体验作答。"
         }
       ],
       "questions": [
-        {
-          "id": "UWES01",
-          "prompt": "早晨一起床，我就乐意去学习",
-          "type": "scale",
-          "required": true,
-          "dimension": "UWES_VIGOR",
-          "reverse_scored": false,
-          "options": [
-            {
-              "label": "1 从来没有",
-              "value": "1",
-              "score": 1
-            },
-            {
-              "label": "2 几乎没有",
-              "value": "2",
-              "score": 2
-            },
-            {
-              "label": "3 经常没有",
-              "value": "3",
-              "score": 3
-            },
-            {
-              "label": "4 不确定",
-              "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 偶尔",
-              "value": "5",
-              "score": 5
-            },
-            {
-              "label": "6 经常",
-              "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
-            }
-          ]
-        },
-        {
-          "id": "UWES02",
-          "prompt": "学习时，我感到精力充沛。",
-          "type": "scale",
-          "required": true,
-          "dimension": "UWES_VIGOR",
-          "reverse_scored": false,
-          "options": [
-            {
-              "label": "1 从来没有",
-              "value": "1",
-              "score": 1
-            },
-            {
-              "label": "2 几乎没有",
-              "value": "2",
-              "score": 2
-            },
-            {
-              "label": "3 经常没有",
-              "value": "3",
-              "score": 3
-            },
-            {
-              "label": "4 不确定",
-              "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 偶尔",
-              "value": "5",
-              "score": 5
-            },
-            {
-              "label": "6 经常",
-              "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
-            }
-          ]
-        },
-        {
-          "id": "UWES03",
-          "prompt": "即使学习不顺利，我也毫不气馁，能够坚持不懈。",
-          "type": "scale",
-          "required": true,
-          "dimension": "UWES_VIGOR",
-          "reverse_scored": false,
-          "options": [
-            {
-              "label": "1 从来没有",
-              "value": "1",
-              "score": 1
-            },
-            {
-              "label": "2 几乎没有",
-              "value": "2",
-              "score": 2
-            },
-            {
-              "label": "3 经常没有",
-              "value": "3",
-              "score": 3
-            },
-            {
-              "label": "4 不确定",
-              "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 偶尔",
-              "value": "5",
-              "score": 5
-            },
-            {
-              "label": "6 经常",
-              "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
-            }
-          ]
-        },
-        {
-          "id": "UWES04",
-          "prompt": "我能持续学习很长时间，中间不需要休息。",
-          "type": "scale",
-          "required": true,
-          "dimension": "UWES_VIGOR",
-          "reverse_scored": false,
-          "options": [
-            {
-              "label": "1 从来没有",
-              "value": "1",
-              "score": 1
-            },
-            {
-              "label": "2 几乎没有",
-              "value": "2",
-              "score": 2
-            },
-            {
-              "label": "3 经常没有",
-              "value": "3",
-              "score": 3
-            },
-            {
-              "label": "4 不确定",
-              "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 偶尔",
-              "value": "5",
-              "score": 5
-            },
-            {
-              "label": "6 经常",
-              "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
-            }
-          ]
-        },
-        {
-          "id": "UWES05",
-          "prompt": "学习时，即使精神疲劳，我也能很快恢复。",
-          "type": "scale",
-          "required": true,
-          "dimension": "UWES_VIGOR",
-          "reverse_scored": false,
-          "options": [
-            {
-              "label": "1 从来没有",
-              "value": "1",
-              "score": 1
-            },
-            {
-              "label": "2 几乎没有",
-              "value": "2",
-              "score": 2
-            },
-            {
-              "label": "3 经常没有",
-              "value": "3",
-              "score": 3
-            },
-            {
-              "label": "4 不确定",
-              "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 偶尔",
-              "value": "5",
-              "score": 5
-            },
-            {
-              "label": "6 经常",
-              "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
-            }
-          ]
-        },
         {
           "id": "UWES06",
           "prompt": "学习时，我浑身有力而且干劲十足。",
@@ -4226,219 +4011,39 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 从来没有",
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
             },
             {
-              "label": "2 几乎没有",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
             },
             {
-              "label": "3 经常没有",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有时（一个月几次）"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 经常（一周一次）"
             },
             {
-              "label": "5 偶尔",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
             },
             {
-              "label": "6 经常",
               "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
-            }
-          ]
-        },
-        {
-          "id": "UWES07",
-          "prompt": "我发现学习富有挑战性。",
-          "type": "scale",
-          "required": true,
-          "dimension": "UWES_DEDICATION",
-          "reverse_scored": false,
-          "options": [
-            {
-              "label": "1 从来没有",
-              "value": "1",
-              "score": 1
-            },
-            {
-              "label": "2 几乎没有",
-              "value": "2",
-              "score": 2
-            },
-            {
-              "label": "3 经常没有",
-              "value": "3",
-              "score": 3
-            },
-            {
-              "label": "4 不确定",
-              "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 偶尔",
-              "value": "5",
-              "score": 5
-            },
-            {
-              "label": "6 经常",
-              "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
-            }
-          ]
-        },
-        {
-          "id": "UWES08",
-          "prompt": "学习激发我的灵感。",
-          "type": "scale",
-          "required": true,
-          "dimension": "UWES_DEDICATION",
-          "reverse_scored": false,
-          "options": [
-            {
-              "label": "1 从来没有",
-              "value": "1",
-              "score": 1
-            },
-            {
-              "label": "2 几乎没有",
-              "value": "2",
-              "score": 2
-            },
-            {
-              "label": "3 经常没有",
-              "value": "3",
-              "score": 3
-            },
-            {
-              "label": "4 不确定",
-              "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 偶尔",
-              "value": "5",
-              "score": 5
-            },
-            {
-              "label": "6 经常",
-              "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
-            }
-          ]
-        },
-        {
-          "id": "UWES09",
-          "prompt": "我对学习充满热情。",
-          "type": "scale",
-          "required": true,
-          "dimension": "UWES_DEDICATION",
-          "reverse_scored": false,
-          "options": [
-            {
-              "label": "1 从来没有",
-              "value": "1",
-              "score": 1
-            },
-            {
-              "label": "2 几乎没有",
-              "value": "2",
-              "score": 2
-            },
-            {
-              "label": "3 经常没有",
-              "value": "3",
-              "score": 3
-            },
-            {
-              "label": "4 不确定",
-              "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 偶尔",
-              "value": "5",
-              "score": 5
-            },
-            {
-              "label": "6 经常",
-              "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
-            }
-          ]
-        },
-        {
-          "id": "UWES10",
-          "prompt": "我因我的学习而感到自豪。",
-          "type": "scale",
-          "required": true,
-          "dimension": "UWES_DEDICATION",
-          "reverse_scored": false,
-          "options": [
-            {
-              "label": "1 从来没有",
-              "value": "1",
-              "score": 1
-            },
-            {
-              "label": "2 几乎没有",
-              "value": "2",
-              "score": 2
-            },
-            {
-              "label": "3 经常没有",
-              "value": "3",
-              "score": 3
-            },
-            {
-              "label": "4 不确定",
-              "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 偶尔",
-              "value": "5",
-              "score": 5
-            },
-            {
-              "label": "6 经常",
-              "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
+              "score": 6,
+              "label": "6 总是（每天）"
             }
           ]
         },
@@ -4451,84 +4056,39 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 从来没有",
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
             },
             {
-              "label": "2 几乎没有",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
             },
             {
-              "label": "3 经常没有",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有时（一个月几次）"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 经常（一周一次）"
             },
             {
-              "label": "5 偶尔",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
             },
             {
-              "label": "6 经常",
               "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
-            }
-          ]
-        },
-        {
-          "id": "UWES12",
-          "prompt": "学习时，我忘了周围的一切。",
-          "type": "scale",
-          "required": true,
-          "dimension": "UWES_ABSORPTION",
-          "reverse_scored": false,
-          "options": [
-            {
-              "label": "1 从来没有",
-              "value": "1",
-              "score": 1
-            },
-            {
-              "label": "2 几乎没有",
-              "value": "2",
-              "score": 2
-            },
-            {
-              "label": "3 经常没有",
-              "value": "3",
-              "score": 3
-            },
-            {
-              "label": "4 不确定",
-              "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 偶尔",
-              "value": "5",
-              "score": 5
-            },
-            {
-              "label": "6 经常",
-              "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
+              "score": 6,
+              "label": "6 总是（每天）"
             }
           ]
         },
@@ -4541,174 +4101,264 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 从来没有",
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
             },
             {
-              "label": "2 几乎没有",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
             },
             {
-              "label": "3 经常没有",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有时（一个月几次）"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 经常（一周一次）"
             },
             {
-              "label": "5 偶尔",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
             },
             {
-              "label": "6 经常",
               "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
+              "score": 6,
+              "label": "6 总是（每天）"
             }
           ]
         },
         {
-          "id": "UWES14",
-          "prompt": "学习时，我心里只想着学习。",
+          "id": "UWES02",
+          "prompt": "学习时，我感到精力充沛。",
+          "type": "scale",
+          "required": true,
+          "dimension": "UWES_VIGOR",
+          "reverse_scored": false,
+          "options": [
+            {
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
+              "value": "1",
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": "2",
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
+            },
+            {
+              "value": "3",
+              "score": 3,
+              "label": "3 有时（一个月几次）"
+            },
+            {
+              "value": "4",
+              "score": 4,
+              "label": "4 经常（一周一次）"
+            },
+            {
+              "value": "5",
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
+            },
+            {
+              "value": "6",
+              "score": 6,
+              "label": "6 总是（每天）"
+            }
+          ]
+        },
+        {
+          "id": "UWES09",
+          "prompt": "我对学习充满热情。",
+          "type": "scale",
+          "required": true,
+          "dimension": "UWES_DEDICATION",
+          "reverse_scored": false,
+          "options": [
+            {
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
+              "value": "1",
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": "2",
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
+            },
+            {
+              "value": "3",
+              "score": 3,
+              "label": "3 有时（一个月几次）"
+            },
+            {
+              "value": "4",
+              "score": 4,
+              "label": "4 经常（一周一次）"
+            },
+            {
+              "value": "5",
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
+            },
+            {
+              "value": "6",
+              "score": 6,
+              "label": "6 总是（每天）"
+            }
+          ]
+        },
+        {
+          "id": "UWES12",
+          "prompt": "学习时，我忘了周围的一切。",
           "type": "scale",
           "required": true,
           "dimension": "UWES_ABSORPTION",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 从来没有",
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
             },
             {
-              "label": "2 几乎没有",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
             },
             {
-              "label": "3 经常没有",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有时（一个月几次）"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 经常（一周一次）"
             },
             {
-              "label": "5 偶尔",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
             },
             {
-              "label": "6 经常",
               "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
+              "score": 6,
+              "label": "6 总是（每天）"
             }
           ]
         },
         {
-          "id": "UWES15",
-          "prompt": "我难以放下手中的学习。",
+          "id": "UWES08",
+          "prompt": "学习激发我的灵感。",
           "type": "scale",
           "required": true,
-          "dimension": "UWES_ABSORPTION",
+          "dimension": "UWES_DEDICATION",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 从来没有",
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
             },
             {
-              "label": "2 几乎没有",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
             },
             {
-              "label": "3 经常没有",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有时（一个月几次）"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 经常（一周一次）"
             },
             {
-              "label": "5 偶尔",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
             },
             {
-              "label": "6 经常",
               "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
+              "score": 6,
+              "label": "6 总是（每天）"
             }
           ]
         },
         {
-          "id": "UWES16",
-          "prompt": "我沉浸在学习中。",
+          "id": "UWES01",
+          "prompt": "早晨一起床，我就乐意去学习",
           "type": "scale",
           "required": true,
-          "dimension": "UWES_ABSORPTION",
+          "dimension": "UWES_VIGOR",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 从来没有",
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
             },
             {
-              "label": "2 几乎没有",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
             },
             {
-              "label": "3 经常没有",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有时（一个月几次）"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 经常（一周一次）"
             },
             {
-              "label": "5 偶尔",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
             },
             {
-              "label": "6 经常",
               "value": "6",
-              "score": 6
-            },
-            {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
+              "score": 6,
+              "label": "6 总是（每天）"
             }
           ]
         },
@@ -4721,39 +4371,399 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 从来没有",
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
             },
             {
-              "label": "2 几乎没有",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
             },
             {
-              "label": "3 经常没有",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 有时（一个月几次）"
             },
             {
-              "label": "4 不确定",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 经常（一周一次）"
             },
             {
-              "label": "5 偶尔",
               "value": "5",
-              "score": 5
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
             },
             {
-              "label": "6 经常",
               "value": "6",
-              "score": 6
+              "score": 6,
+              "label": "6 总是（每天）"
+            }
+          ]
+        },
+        {
+          "id": "UWES10",
+          "prompt": "我因我的学习而感到自豪。",
+          "type": "scale",
+          "required": true,
+          "dimension": "UWES_DEDICATION",
+          "reverse_scored": false,
+          "options": [
+            {
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
             },
             {
-              "label": "7 总是",
-              "value": "7",
-              "score": 7
+              "value": "1",
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": "2",
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
+            },
+            {
+              "value": "3",
+              "score": 3,
+              "label": "3 有时（一个月几次）"
+            },
+            {
+              "value": "4",
+              "score": 4,
+              "label": "4 经常（一周一次）"
+            },
+            {
+              "value": "5",
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
+            },
+            {
+              "value": "6",
+              "score": 6,
+              "label": "6 总是（每天）"
+            }
+          ]
+        },
+        {
+          "id": "UWES16",
+          "prompt": "我沉浸在学习中。",
+          "type": "scale",
+          "required": true,
+          "dimension": "UWES_ABSORPTION",
+          "reverse_scored": false,
+          "options": [
+            {
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
+              "value": "1",
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": "2",
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
+            },
+            {
+              "value": "3",
+              "score": 3,
+              "label": "3 有时（一个月几次）"
+            },
+            {
+              "value": "4",
+              "score": 4,
+              "label": "4 经常（一周一次）"
+            },
+            {
+              "value": "5",
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
+            },
+            {
+              "value": "6",
+              "score": 6,
+              "label": "6 总是（每天）"
+            }
+          ]
+        },
+        {
+          "id": "UWES04",
+          "prompt": "我能持续学习很长时间。",
+          "type": "scale",
+          "required": true,
+          "dimension": "UWES_VIGOR",
+          "reverse_scored": false,
+          "options": [
+            {
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
+              "value": "1",
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": "2",
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
+            },
+            {
+              "value": "3",
+              "score": 3,
+              "label": "3 有时（一个月几次）"
+            },
+            {
+              "value": "4",
+              "score": 4,
+              "label": "4 经常（一周一次）"
+            },
+            {
+              "value": "5",
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
+            },
+            {
+              "value": "6",
+              "score": 6,
+              "label": "6 总是（每天）"
+            }
+          ]
+        },
+        {
+          "id": "UWES07",
+          "prompt": "我发现学习富有挑战性。",
+          "type": "scale",
+          "required": true,
+          "dimension": "UWES_DEDICATION",
+          "reverse_scored": false,
+          "options": [
+            {
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
+              "value": "1",
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": "2",
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
+            },
+            {
+              "value": "3",
+              "score": 3,
+              "label": "3 有时（一个月几次）"
+            },
+            {
+              "value": "4",
+              "score": 4,
+              "label": "4 经常（一周一次）"
+            },
+            {
+              "value": "5",
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
+            },
+            {
+              "value": "6",
+              "score": 6,
+              "label": "6 总是（每天）"
+            }
+          ]
+        },
+        {
+          "id": "UWES14",
+          "prompt": "学习时，我会达到忘我的境界。",
+          "type": "scale",
+          "required": true,
+          "dimension": "UWES_ABSORPTION",
+          "reverse_scored": false,
+          "options": [
+            {
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
+              "value": "1",
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": "2",
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
+            },
+            {
+              "value": "3",
+              "score": 3,
+              "label": "3 有时（一个月几次）"
+            },
+            {
+              "value": "4",
+              "score": 4,
+              "label": "4 经常（一周一次）"
+            },
+            {
+              "value": "5",
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
+            },
+            {
+              "value": "6",
+              "score": 6,
+              "label": "6 总是（每天）"
+            }
+          ]
+        },
+        {
+          "id": "UWES05",
+          "prompt": "学习时，即使精神疲劳，我也能很快恢复。",
+          "type": "scale",
+          "required": true,
+          "dimension": "UWES_VIGOR",
+          "reverse_scored": false,
+          "options": [
+            {
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
+              "value": "1",
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": "2",
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
+            },
+            {
+              "value": "3",
+              "score": 3,
+              "label": "3 有时（一个月几次）"
+            },
+            {
+              "value": "4",
+              "score": 4,
+              "label": "4 经常（一周一次）"
+            },
+            {
+              "value": "5",
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
+            },
+            {
+              "value": "6",
+              "score": 6,
+              "label": "6 总是（每天）"
+            }
+          ]
+        },
+        {
+          "id": "UWES15",
+          "prompt": "我难以放下手中的学习。",
+          "type": "scale",
+          "required": true,
+          "dimension": "UWES_ABSORPTION",
+          "reverse_scored": false,
+          "options": [
+            {
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
+              "value": "1",
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": "2",
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
+            },
+            {
+              "value": "3",
+              "score": 3,
+              "label": "3 有时（一个月几次）"
+            },
+            {
+              "value": "4",
+              "score": 4,
+              "label": "4 经常（一周一次）"
+            },
+            {
+              "value": "5",
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
+            },
+            {
+              "value": "6",
+              "score": 6,
+              "label": "6 总是（每天）"
+            }
+          ]
+        },
+        {
+          "id": "UWES03",
+          "prompt": "即使学习不顺利，我也毫不气馁，能够坚持不懈。",
+          "type": "scale",
+          "required": true,
+          "dimension": "UWES_VIGOR",
+          "reverse_scored": false,
+          "options": [
+            {
+              "value": "0",
+              "score": 0,
+              "label": "0 从来没有"
+            },
+            {
+              "value": "1",
+              "score": 1,
+              "label": "1 几乎没有过（一年几次或更少）"
+            },
+            {
+              "value": "2",
+              "score": 2,
+              "label": "2 很少（一个月一次或更少）"
+            },
+            {
+              "value": "3",
+              "score": 3,
+              "label": "3 有时（一个月几次）"
+            },
+            {
+              "value": "4",
+              "score": 4,
+              "label": "4 经常（一周一次）"
+            },
+            {
+              "value": "5",
+              "score": 5,
+              "label": "5 十分频繁（一周几次）"
+            },
+            {
+              "value": "6",
+              "score": 6,
+              "label": "6 总是（每天）"
             }
           ]
         }
@@ -4771,11 +4781,11 @@
             "UWES06"
           ],
           "reverse_item_codes": [],
-          "description": ""
+          "description": "所属6题取均值，范围0—6；不套用职场常模。"
         },
         {
           "code": "UWES_DEDICATION",
-          "label": "奉献",
+          "label": "投入",
           "item_ids": [
             "UWES07",
             "UWES08",
@@ -4784,7 +4794,7 @@
             "UWES11"
           ],
           "reverse_item_codes": [],
-          "description": ""
+          "description": "所属5题取均值，范围0—6；不套用职场常模。"
         },
         {
           "code": "UWES_ABSORPTION",
@@ -4798,28 +4808,29 @@
             "UWES17"
           ],
           "reverse_item_codes": [],
-          "description": ""
+          "description": "所属6题取均值，范围0—6；不套用职场常模。"
         }
       ],
       "derived_dimensions": [],
-      "dimension_score_method": "sum",
-      "total_score_method": "sum",
-      "scoring": "源文件写明 17 题、7 点计分，1-6 活力、7-11 奉献、12-17 专注。",
+      "dimension_score_method": "mean",
+      "total_score_method": "mean",
+      "scoring": "按作者17题学生版顺序展示，题目ID与内容保持绑定。活力6题、投入5题、专注6题分别取均值；总分为全部17题均值（均为0—6），无反向题。",
       "recommended_card_ids": [
         "student_emotion_naming",
         "cbt_auto_thought_student"
       ],
-      "source_version": "2026.06-study_engagement_uwes_s_17-from-scale-draft",
+      "source_version": "2026.06-study_engagement_uwes_s_17-from-scale-draft-review-20261002-v2",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于观察学习体验，不构成诊断、能力定论或人格标签。编码和计分依据作者题本与手册；中文学生版为改编候选，尚不能宣称作者认可或经验证。公开职场常模不用于学生；数字化使用与中文改编权限待核实。",
       "profile_model_id": null,
       "_meta": {
-        "total_score_method": "sum",
-        "derived_dimensions": []
+        "total_score_method": "mean",
+        "derived_dimensions": [],
+        "scoring_review_note": "报告已指出版本、选项或计分依据缺口；添加对应解释限制，未自行选择版本、修改阈值或批准专业审核。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -6397,9 +6408,9 @@
     },
     {
       "id": "acceptance_action_aaq2",
-      "source_file": "2-1-接纳与行动问卷第二版AAQII.docx",
+      "source_file": "2-1-接纳与行动问卷第二版AAQII.docx；https://stevenchayes.com/wp-content/uploads/2023/01/The-Acceptance-and-Action-Questionnaire.pdf；https://contextualscience.org/acceptance_action_questionnaire_aaq_aaqii",
       "source_title": "接纳与行动问卷（AAQ-II）",
-      "display_title": "接纳与行动问卷（AAQ-II）",
+      "display_title": "接纳与行动问卷（AAQ-II，中文候选）",
       "category": "成人自助",
       "audience": "adult",
       "audience_class": "adult",
@@ -6411,11 +6422,11 @@
       ],
       "sensitive_category": "none",
       "pages": 1,
-      "instructions": "请根据近期面对不舒服想法和感受时的通常体验作答，选择每句话与自己的符合程度。",
+      "instructions": "请逐题判断陈述在自己通常的生活中有多符合实际情况，不设固定三个月回顾期。结果只用于自我观察。",
       "sections": [
         {
           "title": "填写说明",
-          "content": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。"
+          "content": "请逐题判断陈述在自己通常的生活中有多符合实际情况，不设固定三个月回顾期。结果只用于自我观察。"
         }
       ],
       "questions": [
@@ -6428,37 +6439,37 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 从未",
+              "label": "1 从不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 很少",
+              "label": "2 极少符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 偶尔",
+              "label": "3 很少符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 有时",
+              "label": "4 有时符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 经常",
+              "label": "5 经常符合",
               "value": "5",
               "score": 5
             },
             {
-              "label": "6 几乎总是",
+              "label": "6 几乎总是符合",
               "value": "6",
               "score": 6
             },
             {
-              "label": "7 总是",
+              "label": "7 总是符合",
               "value": "7",
               "score": 7
             }
@@ -6473,37 +6484,37 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 从未",
+              "label": "1 从不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 很少",
+              "label": "2 极少符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 偶尔",
+              "label": "3 很少符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 有时",
+              "label": "4 有时符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 经常",
+              "label": "5 经常符合",
               "value": "5",
               "score": 5
             },
             {
-              "label": "6 几乎总是",
+              "label": "6 几乎总是符合",
               "value": "6",
               "score": 6
             },
             {
-              "label": "7 总是",
+              "label": "7 总是符合",
               "value": "7",
               "score": 7
             }
@@ -6518,37 +6529,37 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 从未",
+              "label": "1 从不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 很少",
+              "label": "2 极少符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 偶尔",
+              "label": "3 很少符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 有时",
+              "label": "4 有时符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 经常",
+              "label": "5 经常符合",
               "value": "5",
               "score": 5
             },
             {
-              "label": "6 几乎总是",
+              "label": "6 几乎总是符合",
               "value": "6",
               "score": 6
             },
             {
-              "label": "7 总是",
+              "label": "7 总是符合",
               "value": "7",
               "score": 7
             }
@@ -6563,37 +6574,37 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 从未",
+              "label": "1 从不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 很少",
+              "label": "2 极少符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 偶尔",
+              "label": "3 很少符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 有时",
+              "label": "4 有时符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 经常",
+              "label": "5 经常符合",
               "value": "5",
               "score": 5
             },
             {
-              "label": "6 几乎总是",
+              "label": "6 几乎总是符合",
               "value": "6",
               "score": 6
             },
             {
-              "label": "7 总是",
+              "label": "7 总是符合",
               "value": "7",
               "score": 7
             }
@@ -6608,37 +6619,37 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 从未",
+              "label": "1 从不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 很少",
+              "label": "2 极少符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 偶尔",
+              "label": "3 很少符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 有时",
+              "label": "4 有时符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 经常",
+              "label": "5 经常符合",
               "value": "5",
               "score": 5
             },
             {
-              "label": "6 几乎总是",
+              "label": "6 几乎总是符合",
               "value": "6",
               "score": 6
             },
             {
-              "label": "7 总是",
+              "label": "7 总是符合",
               "value": "7",
               "score": 7
             }
@@ -6653,37 +6664,37 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 从未",
+              "label": "1 从不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 很少",
+              "label": "2 极少符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 偶尔",
+              "label": "3 很少符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 有时",
+              "label": "4 有时符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 经常",
+              "label": "5 经常符合",
               "value": "5",
               "score": 5
             },
             {
-              "label": "6 几乎总是",
+              "label": "6 几乎总是符合",
               "value": "6",
               "score": 6
             },
             {
-              "label": "7 总是",
+              "label": "7 总是符合",
               "value": "7",
               "score": 7
             }
@@ -6698,37 +6709,37 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 从未",
+              "label": "1 从不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 很少",
+              "label": "2 极少符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 偶尔",
+              "label": "3 很少符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 有时",
+              "label": "4 有时符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 经常",
+              "label": "5 经常符合",
               "value": "5",
               "score": 5
             },
             {
-              "label": "6 几乎总是",
+              "label": "6 几乎总是符合",
               "value": "6",
               "score": 6
             },
             {
-              "label": "7 总是",
+              "label": "7 总是符合",
               "value": "7",
               "score": 7
             }
@@ -6755,22 +6766,23 @@
       "derived_dimensions": [],
       "dimension_score_method": "sum",
       "total_score_method": "sum",
-      "scoring": "本地文件可读到 7 个题项和 1-7 选项；正式分数解释需继续核对。",
+      "scoring": "7题均按1—7真实程度正向求和，总分7—49，无反向；高分表示本次自报中的心理不灵活相关体验较多，不表示疾病或固定特征。",
       "recommended_card_ids": [
         "cognitive_flexibility",
         "alternative_behavior"
       ],
-      "source_version": "2026.06-acceptance_action_aaq2-from-scale-draft",
+      "source_version": "2026.06-acceptance_action_aaq2-from-scale-draft-review-20261002-v2",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。保留本地7题中文题干，选项按真实程度而非单纯发生频率表述；同版中文验证及本项目实际用途授权需确认。",
       "profile_model_id": null,
       "_meta": {
         "total_score_method": "sum",
-        "derived_dimensions": []
+        "derived_dimensions": [],
+        "scoring_review_note": "按报告所指空白题本或已读取公开官方题本修正指导语；只修正明确的回顾期或日常倾向。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -7862,11 +7874,11 @@
       ],
       "sensitive_category": "none",
       "pages": 1,
-      "instructions": "请根据近期处理日常学习挫折、作业压力和考试失误时的实际情况作答。",
+      "instructions": "请根据自己在最近半年内学习中的实际表现，选择符合你平时情况的一项。答案没有对错，结果只用于自我观察。",
       "sections": [
         {
           "title": "填写说明",
-          "content": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。"
+          "content": "请根据自己在最近半年内学习中的实际表现，选择符合你平时情况的一项。答案没有对错，结果只用于自我观察。"
         }
       ],
       "questions": [
@@ -8034,17 +8046,18 @@
         "student_two_thoughts",
         "self_support_statement"
       ],
-      "source_version": "2026.06-academic_buoyancy_4-from-scale-draft",
+      "source_version": "2026.06-academic_buoyancy_4-from-scale-draft-review-20261002-v1",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "历史项目负责人试点批准记录保留；2026-10-02按逐题审查修正候选内容。按报告所指空白题本或已读取公开官方题本修正指导语；只修正明确的回顾期或日常倾向。本轮工程修正不替代同版中文题本、心理专业与授权核验。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "profile_model_id": null,
       "_meta": {
         "total_score_method": "sum",
-        "derived_dimensions": []
+        "derived_dimensions": [],
+        "scoring_review_note": "按报告所指空白题本或已读取公开官方题本修正指导语；只修正明确的回顾期或日常倾向。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -8055,7 +8068,7 @@
     },
     {
       "id": "afq_y8_avoidance_fusion",
-      "source_file": "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx",
+      "source_file": "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx；https://www.ruthbaer.com/academics/AFQ-Y.pdf",
       "source_title": "青少年回避与融合问卷（AFQ-Y8）",
       "display_title": "青少年回避与融合问卷（AFQ-Y8）",
       "category": "学生自助",
@@ -8069,11 +8082,11 @@
       ],
       "sensitive_category": "none",
       "pages": 1,
-      "instructions": "请根据近期被想法或感受影响、以及回避不舒服体验的实际频率作答。",
+      "instructions": "请阅读每句话，选择它与你真实情况的符合程度（0—4）。没有对错，请按自己的体验作答。",
       "sections": [
         {
           "title": "填写说明",
-          "content": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。"
+          "content": "请阅读每句话，选择它与你真实情况的符合程度（0—4）。没有对错，请按自己的体验作答。"
         }
       ],
       "questions": [
@@ -8086,29 +8099,29 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "value": "0",
+              "score": 0,
+              "label": "0 完全不符合"
+            },
+            {
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 有一点符合"
             },
             {
-              "label": "2 比较不符合",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 比较符合"
             },
             {
-              "label": "3 说不清",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 符合"
             },
             {
-              "label": "4 比较符合",
               "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 完全符合",
-              "value": "5",
-              "score": 5
+              "score": 4,
+              "label": "4 非常符合"
             }
           ]
         },
@@ -8121,64 +8134,64 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "value": "0",
+              "score": 0,
+              "label": "0 完全不符合"
+            },
+            {
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 有一点符合"
             },
             {
-              "label": "2 比较不符合",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 比较符合"
             },
             {
-              "label": "3 说不清",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 符合"
             },
             {
-              "label": "4 比较符合",
               "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 完全符合",
-              "value": "5",
-              "score": 5
+              "score": 4,
+              "label": "4 非常符合"
             }
           ]
         },
         {
           "id": "AFQY03",
-          "prompt": "我想到的那些与自己有关的.不好的事情一定是真的。",
+          "prompt": "我想到的那些与自己有关的不好的事情一定是真的。",
           "type": "scale",
           "required": true,
           "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "value": "0",
+              "score": 0,
+              "label": "0 完全不符合"
+            },
+            {
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 有一点符合"
             },
             {
-              "label": "2 比较不符合",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 比较符合"
             },
             {
-              "label": "3 说不清",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 符合"
             },
             {
-              "label": "4 比较符合",
               "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 完全符合",
-              "value": "5",
-              "score": 5
+              "score": 4,
+              "label": "4 非常符合"
             }
           ]
         },
@@ -8191,29 +8204,29 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "value": "0",
+              "score": 0,
+              "label": "0 完全不符合"
+            },
+            {
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 有一点符合"
             },
             {
-              "label": "2 比较不符合",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 比较符合"
             },
             {
-              "label": "3 说不清",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 符合"
             },
             {
-              "label": "4 比较符合",
               "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 完全符合",
-              "value": "5",
-              "score": 5
+              "score": 4,
+              "label": "4 非常符合"
             }
           ]
         },
@@ -8226,29 +8239,29 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "value": "0",
+              "score": 0,
+              "label": "0 完全不符合"
+            },
+            {
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 有一点符合"
             },
             {
-              "label": "2 比较不符合",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 比较符合"
             },
             {
-              "label": "3 说不清",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 符合"
             },
             {
-              "label": "4 比较符合",
               "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 完全符合",
-              "value": "5",
-              "score": 5
+              "score": 4,
+              "label": "4 非常符合"
             }
           ]
         },
@@ -8261,64 +8274,29 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "value": "0",
+              "score": 0,
+              "label": "0 完全不符合"
+            },
+            {
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 有一点符合"
             },
             {
-              "label": "2 比较不符合",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 比较符合"
             },
             {
-              "label": "3 说不清",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 符合"
             },
             {
-              "label": "4 比较符合",
               "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 完全符合",
-              "value": "5",
-              "score": 5
-            }
-          ]
-        },
-        {
-          "id": "AFQY07",
-          "prompt": "当我心烦时，我无法成为一个称职的朋友。",
-          "type": "scale",
-          "required": true,
-          "dimension": "TOTAL",
-          "reverse_scored": false,
-          "options": [
-            {
-              "label": "1 完全不符合",
-              "value": "1",
-              "score": 1
-            },
-            {
-              "label": "2 比较不符合",
-              "value": "2",
-              "score": 2
-            },
-            {
-              "label": "3 说不清",
-              "value": "3",
-              "score": 3
-            },
-            {
-              "label": "4 比较符合",
-              "value": "4",
-              "score": 4
-            },
-            {
-              "label": "5 完全符合",
-              "value": "5",
-              "score": 5
+              "score": 4,
+              "label": "4 非常符合"
             }
           ]
         },
@@ -8331,29 +8309,64 @@
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "value": "0",
+              "score": 0,
+              "label": "0 完全不符合"
+            },
+            {
               "value": "1",
-              "score": 1
+              "score": 1,
+              "label": "1 有一点符合"
             },
             {
-              "label": "2 比较不符合",
               "value": "2",
-              "score": 2
+              "score": 2,
+              "label": "2 比较符合"
             },
             {
-              "label": "3 说不清",
               "value": "3",
-              "score": 3
+              "score": 3,
+              "label": "3 符合"
             },
             {
-              "label": "4 比较符合",
               "value": "4",
-              "score": 4
+              "score": 4,
+              "label": "4 非常符合"
+            }
+          ]
+        },
+        {
+          "id": "AFQY07",
+          "prompt": "当我心烦时，我无法成为一个称职的朋友。",
+          "type": "scale",
+          "required": true,
+          "dimension": "TOTAL",
+          "reverse_scored": false,
+          "options": [
+            {
+              "value": "0",
+              "score": 0,
+              "label": "0 完全不符合"
             },
             {
-              "label": "5 完全符合",
-              "value": "5",
-              "score": 5
+              "value": "1",
+              "score": 1,
+              "label": "1 有一点符合"
+            },
+            {
+              "value": "2",
+              "score": 2,
+              "label": "2 比较符合"
+            },
+            {
+              "value": "3",
+              "score": 3,
+              "label": "3 符合"
+            },
+            {
+              "value": "4",
+              "score": 4,
+              "label": "4 非常符合"
             }
           ]
         }
@@ -8369,33 +8382,34 @@
             "AFQY04",
             "AFQY05",
             "AFQY06",
-            "AFQY07",
-            "AFQY08"
+            "AFQY08",
+            "AFQY07"
           ],
           "reverse_item_codes": [],
-          "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
+          "description": "8题按0—4分相加，范围0—32，无反向题；高分表示本次自报中更多被想法和感受限制行动的体验。"
         }
       ],
       "derived_dimensions": [],
       "dimension_score_method": "sum",
       "total_score_method": "sum",
-      "scoring": "源文件写明 8 题、1-5 分，分数越高心理僵化程度越高、心理灵活性越低；结果解释必须支持性改写。",
+      "scoring": "采用作者AFQ-Y8的0—4编码、8题求和0—32、无反向；保留稳定题目ID，按原短版顺序展示（项目AFQY08为原第7题，AFQY07为原第8题）。",
       "recommended_card_ids": [
         "student_emotion_naming",
         "student_two_thoughts",
         "self_support_statement"
       ],
-      "source_version": "2026.06-afq_y8_avoidance_fusion-from-scale-draft",
+      "source_version": "2026.06-afq_y8_avoidance_fusion-from-scale-draft-review-20261002-v2",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察，不构成诊断或人格标签。中文题干来自本地题本，译本效度与数字化展示授权仍待核实；历史1—5编码结果不能与本版直接比较。",
       "profile_model_id": null,
       "_meta": {
         "total_score_method": "sum",
-        "derived_dimensions": []
+        "derived_dimensions": [],
+        "scoring_review_note": "报告已指出版本、选项或计分依据缺口；添加对应解释限制，未自行选择版本、修改阈值或批准专业审核。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -8406,9 +8420,9 @@
     },
     {
       "id": "cfi2_cognitive_flexibility",
-      "source_file": "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx",
+      "source_file": "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx；https://psybeh.tjnu.edu.cn/CN/Y2013/V11/I1/120",
       "source_title": "认知灵活性问卷中文版（CFI-2）",
-      "display_title": "认知灵活性问卷中文版（CFI-2）",
+      "display_title": "认知灵活性问卷（CFS，中文12题改编候选）",
       "category": "学生自助",
       "audience": "student",
       "audience_class": "student",
@@ -8421,11 +8435,11 @@
       ],
       "sensitive_category": "none",
       "pages": 1,
-      "instructions": "请根据近期遇到问题或变化时看待替代方案、调整想法和采取行动的实际情况作答。",
+      "instructions": "请逐题判断陈述是否符合自己通常的实际情况，选择六档符合程度之一。没有标准答案。",
       "sections": [
         {
           "title": "填写说明",
-          "content": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。"
+          "content": "请逐题判断陈述是否符合自己通常的实际情况，选择六档符合程度之一。没有标准答案。"
         }
       ],
       "questions": [
@@ -8434,33 +8448,38 @@
           "prompt": "我能以多种不同的方式表达一个想法。",
           "type": "scale",
           "required": true,
-          "dimension": "CFI_CHOICE",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 不符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 有点不符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 有点符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 符合",
               "value": "5",
               "score": 5
+            },
+            {
+              "label": "6 非常符合",
+              "value": "6",
+              "score": 6
             }
           ]
         },
@@ -8469,33 +8488,38 @@
           "prompt": "我不喜欢待在不熟悉的环境中。",
           "type": "scale",
           "required": true,
-          "dimension": "CFI_CHOICE",
+          "dimension": "TOTAL",
           "reverse_scored": true,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 不符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 有点不符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 有点符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 符合",
               "value": "5",
               "score": 5
+            },
+            {
+              "label": "6 非常符合",
+              "value": "6",
+              "score": 6
             }
           ]
         },
@@ -8504,33 +8528,38 @@
           "prompt": "我感觉自己从未真正做出过决定。",
           "type": "scale",
           "required": true,
-          "dimension": "CFI_CHOICE",
+          "dimension": "TOTAL",
           "reverse_scored": true,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 不符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 有点不符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 有点符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 符合",
               "value": "5",
               "score": 5
+            },
+            {
+              "label": "6 非常符合",
+              "value": "6",
+              "score": 6
             }
           ]
         },
@@ -8539,33 +8568,38 @@
           "prompt": "我能找到有效的方法来应对看似无法解决的问题。",
           "type": "scale",
           "required": true,
-          "dimension": "CFI_WILLINGNESS",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 不符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 有点不符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 有点符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 符合",
               "value": "5",
               "score": 5
+            },
+            {
+              "label": "6 非常符合",
+              "value": "6",
+              "score": 6
             }
           ]
         },
@@ -8574,33 +8608,38 @@
           "prompt": "每当需要决定该怎么做时，我很少能想出不同的应对方法。",
           "type": "scale",
           "required": true,
-          "dimension": "CFI_CHOICE",
+          "dimension": "TOTAL",
           "reverse_scored": true,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 不符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 有点不符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 有点符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 符合",
               "value": "5",
               "score": 5
+            },
+            {
+              "label": "6 非常符合",
+              "value": "6",
+              "score": 6
             }
           ]
         },
@@ -8609,33 +8648,38 @@
           "prompt": "我乐于以创造性的方式解决问题。",
           "type": "scale",
           "required": true,
-          "dimension": "CFI_CHOICE",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 不符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 有点不符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 有点符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 符合",
               "value": "5",
               "score": 5
+            },
+            {
+              "label": "6 非常符合",
+              "value": "6",
+              "score": 6
             }
           ]
         },
@@ -8644,33 +8688,38 @@
           "prompt": "无论处于何种情境，我都能采取恰当的行为。",
           "type": "scale",
           "required": true,
-          "dimension": "CFI_EFFICACY",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 不符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 有点不符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 有点符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 符合",
               "value": "5",
               "score": 5
+            },
+            {
+              "label": "6 非常符合",
+              "value": "6",
+              "score": 6
             }
           ]
         },
@@ -8679,33 +8728,38 @@
           "prompt": "我所做的事都是经过认真思考决定的。",
           "type": "scale",
           "required": true,
-          "dimension": "CFI_EFFICACY",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 不符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 有点不符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 有点符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 符合",
               "value": "5",
               "score": 5
+            },
+            {
+              "label": "6 非常符合",
+              "value": "6",
+              "score": 6
             }
           ]
         },
@@ -8714,33 +8768,38 @@
           "prompt": "无论面对怎样的处境，我都能应对自如。",
           "type": "scale",
           "required": true,
-          "dimension": "CFI_EFFICACY",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 不符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 有点不符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 有点符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 符合",
               "value": "5",
               "score": 5
+            },
+            {
+              "label": "6 非常符合",
+              "value": "6",
+              "score": 6
             }
           ]
         },
@@ -8749,33 +8808,38 @@
           "prompt": "我很难将知识应用于实际的生活中。",
           "type": "scale",
           "required": true,
-          "dimension": "CFI_CHOICE",
+          "dimension": "TOTAL",
           "reverse_scored": true,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 不符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 有点不符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 有点符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 符合",
               "value": "5",
               "score": 5
+            },
+            {
+              "label": "6 非常符合",
+              "value": "6",
+              "score": 6
             }
           ]
         },
@@ -8784,33 +8848,38 @@
           "prompt": "在处理问题时我愿意听取和考虑不同的解决方法。",
           "type": "scale",
           "required": true,
-          "dimension": "CFI_WILLINGNESS",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 不符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 有点不符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 有点符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 符合",
               "value": "5",
               "score": 5
+            },
+            {
+              "label": "6 非常符合",
+              "value": "6",
+              "score": 6
             }
           ]
         },
@@ -8819,48 +8888,59 @@
           "prompt": "我有自信心用不同的方法去应对各种问题。",
           "type": "scale",
           "required": true,
-          "dimension": "CFI_WILLINGNESS",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不符合",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 不符合",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 有点不符合",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 有点符合",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 符合",
               "value": "5",
               "score": 5
+            },
+            {
+              "label": "6 非常符合",
+              "value": "6",
+              "score": 6
             }
           ]
         }
       ],
       "dimensions": [
         {
-          "code": "CFI_CHOICE",
-          "label": "灵活选择",
+          "code": "TOTAL",
+          "label": "认知灵活性综合自我观察",
           "item_ids": [
             "CFI01",
             "CFI02",
             "CFI03",
+            "CFI04",
             "CFI05",
             "CFI06",
-            "CFI10"
+            "CFI07",
+            "CFI08",
+            "CFI09",
+            "CFI10",
+            "CFI11",
+            "CFI12"
           ],
           "reverse_item_codes": [
             "CFI02",
@@ -8868,50 +8948,29 @@
             "CFI05",
             "CFI10"
           ],
-          "description": ""
-        },
-        {
-          "code": "CFI_WILLINGNESS",
-          "label": "灵活意愿",
-          "item_ids": [
-            "CFI04",
-            "CFI11",
-            "CFI12"
-          ],
-          "reverse_item_codes": [],
-          "description": ""
-        },
-        {
-          "code": "CFI_EFFICACY",
-          "label": "灵活效能",
-          "item_ids": [
-            "CFI07",
-            "CFI08",
-            "CFI09"
-          ],
-          "reverse_item_codes": [],
-          "description": ""
+          "description": "12题改编候选的单维总分；不能用13题中文验证替代本版验证。"
         }
       ],
       "derived_dimensions": [],
       "dimension_score_method": "sum",
       "total_score_method": "sum",
-      "scoring": "源文件写明三个因子：灵活选择 1、2、3、5、6、10；灵活意愿 4、11、12；灵活效能 7、8、9；2、3、5、10 反向计分。",
+      "scoring": "本候选采用本地独立12题空白题本的1—6编码，2/3/5/10反向（7减原分），总分12—72。依据Martin与Rubin的CFS及齐冰等论文采用单一综合分，不继续将本地三组标签称为原版验证维度；不属于Dennis与Vander Wal的20题CFI，也不等同于齐冰等的13题中文版。",
       "recommended_card_ids": [
         "cognitive_flexibility",
         "alternative_behavior"
       ],
-      "source_version": "2026.06-cfi2_cognitive_flexibility-from-scale-draft",
+      "source_version": "2026.06-cfi2_cognitive_flexibility-from-scale-draft-review-20261002-v2",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。当前12题中文版本的验证来源与数字化授权未核实，不能套用13题版常模；历史五档三维结果不能与本版直接比较。",
       "profile_model_id": null,
       "_meta": {
         "total_score_method": "sum",
-        "derived_dimensions": []
+        "derived_dimensions": [],
+        "scoring_review_note": "报告已指出版本、选项或计分依据缺口；添加对应解释限制，未自行选择版本、修改阈值或批准专业审核。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -9823,7 +9882,7 @@
       "id": "fmi_12_mindfulness",
       "source_file": "弗赖堡正念调查量表FMI.pdf",
       "source_title": "弗赖堡正念调查量表（FMI-12）",
-      "display_title": "弗赖堡正念调查量表（FMI-12）",
+      "display_title": "正念自我观察（FMI，12题改编候选）",
       "category": "成人自助",
       "audience": "adult",
       "audience_class": "adult",
@@ -9840,7 +9899,7 @@
       "sections": [
         {
           "title": "填写说明",
-          "content": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。"
+          "content": "请根据最近一周内（包括今天）的实际情况，判断每个描述与你的符合程度。答案没有对错，请从1（很少）到4（总是）中选择一项。结果只用于阶段性自我观察。"
         }
       ],
       "questions": [
@@ -10235,13 +10294,13 @@
         "emotion_naming",
         "three_second_pause"
       ],
-      "source_version": "2026.06-fmi_12_mindfulness-from-scale-draft",
+      "source_version": "2026.06-fmi_12_mindfulness-from-scale-draft-review-20261002-v2",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。本题本的身份或版本存在未决项，当前仅为项目候选内容，不能称为已核实的标准版本。",
       "profile_model_id": null,
       "_meta": {
         "total_score_method": "sum",
@@ -10258,7 +10317,7 @@
       "id": "hplp_c_health_promoting_lifestyle",
       "source_file": "5_牛至旭_中年女性自我关怀现状及其对主观幸福感的影响/数据和问卷/问卷/四个量表文字版.docx",
       "source_title": "健康促进生活方式量表（HPLP，40题）",
-      "display_title": "健康促进生活方式量表（HPLP，40题）",
+      "display_title": "健康促进生活方式自我观察（40题改编候选）",
       "category": "成人自助",
       "audience": "adult",
       "audience_class": "adult",
@@ -10275,7 +10334,7 @@
       "sections": [
         {
           "title": "填写说明",
-          "content": "共40题，所有题项均按1-4分正向计分；六个维度和综合观察均使用均值。"
+          "content": "以下陈述涉及日常健康促进习惯。请按最近一段时间的实际频率选择“从不、偶尔、经常或总是”。结果用于支持性自我观察和练习参考，不替代医学建议。"
         }
       ],
       "questions": [
@@ -11595,19 +11654,38 @@
         "cognitive_flexibility",
         "self_support_statement"
       ],
-      "source_version": "2026.07-hplp-40-niu-zhixu-canonical",
+      "source_version": "2026.07-hplp-40-niu-zhixu-canonical-review-20261002-v2",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。不同中文40题版本的题目与维度分组存在差异；本次结果仅对应当前题本，不与其他版本常模比较。本题本的身份或版本存在未决项，当前仅为项目候选内容，不能称为已核实的标准版本。",
       "profile_model_id": "5_牛至旭_中年女性自我关怀现状及其对主观幸福感的影响__5_牛至旭_中年女性自我关怀现状及其对主观幸福感的影响_数据和问卷_数据_209份最终数据_sav__hplp_c_health_promoting_lifestyle",
       "_meta": {
         "canonical_source": "5_牛至旭资料中的40题版本",
         "dimension_reference": "HPLP-II官方六维计分说明，按本地40题保留项映射",
         "official_scoring_url": "https://deepblue.lib.umich.edu/bitstream/handle/2027.42/85349/HPLP_II-Scoring_Instructions.pdf",
-        "version_conflict_resolution": "按用户指定采用牛至旭40题版本；原42题草稿退出运行口径。"
+        "version_conflict_resolution": "按用户指定采用牛至旭40题版本；原42题草稿退出运行口径。",
+        "scoring_review_note": "报告已指出版本、选项或计分依据缺口；添加对应解释限制，未自行选择版本、修改阈值或批准专业审核。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。顶层总分/派生维度策略同步到数据库实际保存的_meta；不改变题目、选项或既有公式。",
+        "total_score_method": "none",
+        "derived_dimensions": [
+          {
+            "code": "HPLP_TOTAL",
+            "label": "健康促进生活方式综合观察",
+            "calculation": {
+              "type": "mean_dimensions",
+              "dimensions": [
+                "NUTRITION",
+                "HEALTH_RESPONSIBILITY",
+                "PHYSICAL_ACTIVITY",
+                "SPIRITUAL_GROWTH",
+                "INTERPERSONAL_RELATIONS",
+                "STRESS_MANAGEMENT"
+              ]
+            }
+          }
+        ]
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -11931,7 +12009,7 @@
       "sections": [
         {
           "title": "填写说明",
-          "content": "本草稿由研究数据变量映射抽取，正式开放前须人工核对题项原文与计分规则。"
+          "content": "请阅读每一个陈述并选出最能清楚描述你的感觉的一项。不要思考太多，你的第一个感觉通常是最佳的。"
         }
       ],
       "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
@@ -12297,20 +12375,20 @@
           "dimension": "ITEM"
         }
       ],
-      "result_disclaimer": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
-      "source_file": "content/assessment_worksheets.json",
+      "result_disclaimer": "本测评仅作研究候选，不能用于诊断或判断心智化障碍。UCL提示RFQ针对严重心智化困难，一般社区或学生未必适用；当前中文题干和逐题键尚待同版资料确认。两维重编码得分不能直接解释为能力高低或人格特征。",
+      "source_file": "content/assessment_worksheets.json；https://www.ucl.ac.uk/brain-sciences/pals/psychoanalysis/research/reflective-functioning-questionnaire-rfq",
       "scoring": "7点作答不直接相加。RFQc使用1→3、2→2、3→1、4-7→0；RFQu使用1-4→0、5→1、6→2、7→3，题7反向重编码；两个分量表各取6项均值。",
       "recommended_card_ids": [
         "emotion_naming",
         "nonjudgmental_response",
         "one_open_question"
       ],
-      "source_version": "2026.07-task18-reviewed-scales-v1",
+      "source_version": "2026.07-task18-reviewed-scales-v1-review-20261002-v2",
       "source_type": "manual_retained",
       "dimensions": [
         {
           "code": "RFQC",
-          "label": "对心理状态的过度确定倾向",
+          "label": "确定性重编码得分（RFQc）",
           "item_ids": [
             "RFQ01",
             "RFQ02",
@@ -12401,7 +12479,7 @@
         },
         {
           "code": "RFQU",
-          "label": "对心理状态的不确定倾向",
+          "label": "不确定性重编码得分（RFQu）",
           "item_ids": [
             "RFQ02",
             "RFQ04",
@@ -12495,10 +12573,11 @@
       ],
       "dimension_score_method": "mean",
       "total_score_method": "none",
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "_meta": {
         "total_score_method": "none",
-        "derived_dimensions": []
+        "derived_dimensions": [],
+        "scoring_review_note": "报告已指出版本、选项或计分依据缺口；添加对应解释限制，未自行选择版本、修改阈值或批准专业审核。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -13765,7 +13844,7 @@
       "id": "big_five_bfi_60",
       "source_file": "大五人格问卷(简版)记分+纬度解释.doc",
       "source_title": "大五人格问卷（60题简版）",
-      "display_title": "大五人格问卷（60题简版）",
+      "display_title": "五类特征自我观察（60题，版本待核）",
       "category": "成人自助",
       "audience": "adult",
       "audience_class": "adult",
@@ -13783,7 +13862,7 @@
       "sections": [
         {
           "title": "填写说明",
-          "content": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。"
+          "content": "请认真阅读每个句子，判断描述符合你的程度，从1（十分不赞同）到5（十分赞同）中选择一项。答案没有对错，请按真实情况作答。结果只用于阶段性自我观察。"
         }
       ],
       "questions": [
@@ -16028,17 +16107,18 @@
         "cognitive_flexibility",
         "self_support_statement"
       ],
-      "source_version": "2026.06-big_five_bfi_60-from-scale-draft",
+      "source_version": "2026.06-big_five_bfi_60-from-scale-draft-review-20261002-v2",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。这份60题问卷的版本身份仍待核对，结果只记录本次回答，不用于判定人格类型或与标准常模比较。本题本的身份或版本存在未决项，当前仅为项目候选内容，不能称为已核实的标准版本。",
       "profile_model_id": null,
       "_meta": {
         "total_score_method": "none",
-        "derived_dimensions": []
+        "derived_dimensions": [],
+        "scoring_review_note": "报告已指出版本、选项或计分依据缺口；添加对应解释限制，未自行选择版本、修改阈值或批准专业审核。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -17847,17 +17927,18 @@
         "student_two_thoughts",
         "self_support_statement"
       ],
-      "source_version": "2026.06-attribution_style_student_36-from-scale-draft",
+      "source_version": "2026.06-attribution_style_student_36-from-scale-draft-review-20261002-v1",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。2026-10-02工程修正：顶层总分/派生维度策略同步到数据库实际保存的_meta；不改变题目、选项或既有公式。不替代专业或授权审核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "profile_model_id": null,
       "_meta": {
-        "total_score_method": "sum",
-        "derived_dimensions": []
+        "total_score_method": "none",
+        "derived_dimensions": [],
+        "scoring_review_note": "顶层总分/派生维度策略同步到数据库实际保存的_meta；不改变题目、选项或既有公式。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -17870,7 +17951,7 @@
       "id": "ghq12_general_health",
       "source_file": "一般健康问卷GHQ-12.docx",
       "source_title": "一般健康问卷（GHQ-12）",
-      "display_title": "一般健康问卷（GHQ-12）",
+      "display_title": "健康体验自我观察（12题改编候选）",
       "category": "成人自助",
       "audience": "adult",
       "audience_class": "adult",
@@ -17886,7 +17967,7 @@
       "sections": [
         {
           "title": "填写说明",
-          "content": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。"
+          "content": "请根据从两三周前到现在的实际状况回答全部问题，并在每题的四个选项中选择最符合的一项。结果仅用于阶段性自我观察，不构成诊断或筛查结论。"
         }
       ],
       "questions": [
@@ -18289,17 +18370,18 @@
         "cognitive_flexibility",
         "self_support_statement"
       ],
-      "source_version": "2026.06-ghq12_general_health-from-scale-draft",
+      "source_version": "2026.06-ghq12_general_health-from-scale-draft-review-20261002-v2",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。当前题本的回答选项与标准版不同，结果只记录本次回答，不用于筛查或判断疾病严重程度。本题本的身份或版本存在未决项，当前仅为项目候选内容，不能称为已核实的标准版本。",
       "profile_model_id": null,
       "_meta": {
         "total_score_method": "sum",
-        "derived_dimensions": []
+        "derived_dimensions": [],
+        "scoring_review_note": "报告已指出版本、选项或计分依据缺口；添加对应解释限制，未自行选择版本、修改阈值或批准专业审核。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -18312,7 +18394,7 @@
       "id": "epq_emotional_stability_24",
       "source_file": "EPQ 情绪稳定性量表.docx",
       "source_title": "EPQ 情绪稳定性量表",
-      "display_title": "EPQ 情绪稳定性量表",
+      "display_title": "情绪反应自我观察（EPQ，24题来源待核）",
       "category": "成人自助",
       "audience": "adult",
       "audience_class": "adult",
@@ -18328,7 +18410,7 @@
       "sections": [
         {
           "title": "填写说明",
-          "content": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。"
+          "content": "请根据自己通常的情绪反应和行为情况作答，选择“是”或“否”。结果只用于阶段性观察，不形成固定人格标签。"
         }
       ],
       "questions": [
@@ -18856,13 +18938,13 @@
         "cognitive_flexibility",
         "self_support_statement"
       ],
-      "source_version": "2026.06-epq_emotional_stability_24-from-scale-draft",
+      "source_version": "2026.06-epq_emotional_stability_24-from-scale-draft-review-20261002-v2",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。本题本的身份或版本存在未决项，当前仅为项目候选内容，不能称为已核实的标准版本。",
       "profile_model_id": null,
       "_meta": {
         "total_score_method": "sum",
@@ -18877,9 +18959,9 @@
     },
     {
       "id": "emotional_intelligence_eis_33",
-      "source_file": "青少年情绪智力质量EIS.sav；指标值计算-中学生情绪智力量表（EIS）.sps",
+      "source_file": "青少年情绪智力质量EIS.sav；指标值计算-中学生情绪智力量表（EIS）.sps；https://www.researchgate.net/profile/Navjot-Bhullar-2/publication/216626162_The_Assessing_Emotions_Scale/links/573c33d608aea45ee841556c/The-Assessing-Emotions-Scale.pdf",
       "source_title": "青少年情绪智力量表（EIS）",
-      "display_title": "青少年情绪智力量表（EIS）",
+      "display_title": "情绪体验问卷（EIS，中文改编候选）",
       "category": "学生自助",
       "audience": "student",
       "audience_class": "student",
@@ -18891,11 +18973,11 @@
       ],
       "sensitive_category": "none",
       "pages": 1,
-      "instructions": "请根据近期识别、理解和调节自己及他人情绪时的实际情况作答。",
+      "instructions": "请根据通常的情绪体验及相关反应，逐题选择同意或不同意程度。没有正确或错误答案，请选择最符合实际情况的一项。",
       "sections": [
         {
           "title": "填写说明",
-          "content": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。"
+          "content": "请根据通常的情绪体验及相关反应，逐题选择同意或不同意程度。没有正确或错误答案，请选择最符合实际情况的一项。"
         }
       ],
       "questions": [
@@ -18904,31 +18986,31 @@
           "prompt": "我知道什么时候该和别人谈论我的私人问题",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -18936,34 +19018,34 @@
         },
         {
           "id": "EIS02",
-          "prompt": "当我面对某种困难时，我能够回忆起面对同样的困难并克服它们你的时候",
+          "prompt": "当我面对某种困难时，我能够回忆起面对同样的困难并克服它们的时候",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_ESELF",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -18974,31 +19056,31 @@
           "prompt": "我期望我能够做好我想要做的大多数的事情",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EAPPLY",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19006,34 +19088,34 @@
         },
         {
           "id": "EIS04",
-          "prompt": "别人很容易信任我",
+          "prompt": "别人觉得容易向我倾诉心事。",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EOTHER",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19044,31 +19126,31 @@
           "prompt": "我觉得我很难理解别人的身体语言",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": true,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19079,31 +19161,31 @@
           "prompt": "我生命中的一些重大事件让我重新评估了什么是重要的什么是不重要的",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_ESELF",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19111,34 +19193,34 @@
         },
         {
           "id": "EIS07",
-          "prompt": "心境好的时候我就能看到新的希望",
+          "prompt": "当我的心境发生变化时，我能看到新的可能性。",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_ESELF",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19146,34 +19228,34 @@
         },
         {
           "id": "EIS08",
-          "prompt": "我的生活是否有意义，情绪是影响因素之一",
+          "prompt": "情绪是使我感到生活值得过下去的因素之一。",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EAPPLY",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19184,31 +19266,31 @@
           "prompt": "我能清楚意识到自己体验的情绪",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19219,31 +19301,31 @@
           "prompt": "我希望能够有好的事情发生",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_ESELF",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19254,31 +19336,31 @@
           "prompt": "我喜欢和别人分享自己的情感",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EOTHER",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19289,31 +19371,31 @@
           "prompt": "情绪好的时候，我知道如何把它延长",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_ESELF",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19321,34 +19403,34 @@
         },
         {
           "id": "EIS13",
-          "prompt": "安排有关事情，我尽可能使别人感到满意",
+          "prompt": "我会安排别人喜欢的活动。",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EOTHER",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19359,31 +19441,31 @@
           "prompt": "我会去找一些让我感到开心的活动",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_ESELF",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19394,31 +19476,31 @@
           "prompt": "我很清楚我传递给别人的非言语信息",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19426,34 +19508,34 @@
         },
         {
           "id": "EIS16",
-          "prompt": "我尽量做的好一些，以给别人留下好的印象",
+          "prompt": "我以能给别人留下好印象的方式展现自己。",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EOTHER",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19464,31 +19546,31 @@
           "prompt": "当我心情好的时候，解决问题对我来说很容易",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19499,31 +19581,31 @@
           "prompt": "通过观察面部表情，我可以辨别别人的情绪",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EAPPLY",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19534,31 +19616,31 @@
           "prompt": "我知道自己情绪变化的原因",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19569,31 +19651,31 @@
           "prompt": "心情好的时候，新奇的想法就会多一些",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EAPPLY",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19604,31 +19686,31 @@
           "prompt": "我能够控制自己的情绪",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_ESELF",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19639,31 +19721,31 @@
           "prompt": "我很清楚自己在某一时刻的情绪",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19671,34 +19753,34 @@
         },
         {
           "id": "EIS23",
-          "prompt": "学习时我会想象自己即将取得好成绩，以激励自己",
+          "prompt": "我会想象所承担任务的好结果，以激励自己。",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EAPPLY",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19709,31 +19791,31 @@
           "prompt": "当别人在某个方面做的很好时，我会称赞他们",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EOTHER",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19744,31 +19826,31 @@
           "prompt": "我能够了解别人传递给我的非言语信息",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19779,31 +19861,31 @@
           "prompt": "当别人告诉我他人生中的某件重大事件时，我几乎感觉到好像发生在自己身上一样",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19814,31 +19896,31 @@
           "prompt": "当我感到情绪变化时，就会涌现一些新颖的想法",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EAPPLY",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19849,31 +19931,31 @@
           "prompt": "遇到困难时，一想到可能会失败，我就会退却",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_ESELF",
+          "dimension": "TOTAL",
           "reverse_scored": true,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19884,31 +19966,31 @@
           "prompt": "只要看一眼，我就知道别人的情绪怎样",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19919,31 +20001,31 @@
           "prompt": "当别人消沉时我能够帮助他，使他感觉好一点",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EOTHER",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19954,31 +20036,31 @@
           "prompt": "在挫折面前，我让自己保持良好的情绪以应对挑战",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EAPPLY",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -19989,31 +20071,31 @@
           "prompt": "我能够通过别人讲话的语调判断他当时的情绪",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": false,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -20021,34 +20103,34 @@
         },
         {
           "id": "EIS33",
-          "prompt": "我很难理解别人的想法和感受",
+          "prompt": "我很难理解别人产生某种感受的原因。",
           "type": "scale",
           "required": true,
-          "dimension": "EIS_EFEEL",
+          "dimension": "TOTAL",
           "reverse_scored": true,
           "options": [
             {
-              "label": "1 完全不符合",
+              "label": "1 非常不同意",
               "value": "1",
               "score": 1
             },
             {
-              "label": "2 比较不符合",
+              "label": "2 比较不同意",
               "value": "2",
               "score": 2
             },
             {
-              "label": "3 说不清",
+              "label": "3 既不同意也不反对",
               "value": "3",
               "score": 3
             },
             {
-              "label": "4 比较符合",
+              "label": "4 比较同意",
               "value": "4",
               "score": 4
             },
             {
-              "label": "5 完全符合",
+              "label": "5 非常同意",
               "value": "5",
               "score": 5
             }
@@ -20057,96 +20139,72 @@
       ],
       "dimensions": [
         {
-          "code": "EIS_EFEEL",
-          "label": "情绪感知能力",
+          "code": "TOTAL",
+          "label": "情绪体验综合自我观察",
           "item_ids": [
             "EIS01",
+            "EIS02",
+            "EIS03",
+            "EIS04",
             "EIS05",
+            "EIS06",
+            "EIS07",
+            "EIS08",
             "EIS09",
+            "EIS10",
+            "EIS11",
+            "EIS12",
+            "EIS13",
+            "EIS14",
             "EIS15",
+            "EIS16",
             "EIS17",
+            "EIS18",
             "EIS19",
+            "EIS20",
+            "EIS21",
             "EIS22",
+            "EIS23",
+            "EIS24",
             "EIS25",
             "EIS26",
+            "EIS27",
+            "EIS28",
             "EIS29",
+            "EIS30",
+            "EIS31",
             "EIS32",
             "EIS33"
           ],
           "reverse_item_codes": [
             "EIS05",
+            "EIS28",
             "EIS33"
           ],
-          "description": ""
-        },
-        {
-          "code": "EIS_ESELF",
-          "label": "理解和推理自身情绪的能力",
-          "item_ids": [
-            "EIS02",
-            "EIS06",
-            "EIS07",
-            "EIS10",
-            "EIS12",
-            "EIS14",
-            "EIS21",
-            "EIS28"
-          ],
-          "reverse_item_codes": [
-            "EIS28"
-          ],
-          "description": ""
-        },
-        {
-          "code": "EIS_EOTHER",
-          "label": "理解和推理他人情绪的能力",
-          "item_ids": [
-            "EIS04",
-            "EIS11",
-            "EIS13",
-            "EIS16",
-            "EIS24",
-            "EIS30"
-          ],
-          "reverse_item_codes": [],
-          "description": ""
-        },
-        {
-          "code": "EIS_EAPPLY",
-          "label": "情绪运用/表达能力",
-          "item_ids": [
-            "EIS03",
-            "EIS08",
-            "EIS18",
-            "EIS20",
-            "EIS23",
-            "EIS27",
-            "EIS31"
-          ],
-          "reverse_item_codes": [],
-          "description": ""
+          "description": "作者原版推荐总分；中文候选效度仍待确认。"
         }
       ],
       "derived_dimensions": [],
       "dimension_score_method": "sum",
       "total_score_method": "sum",
-      "scoring": "题项来自 EIS .sav 变量标签；维度和反向题来自同目录 SPSS 计分脚本。",
+      "scoring": "按作者材料推荐的33题总分计算：1—5同意度，5/28/33反向（6减原分），总分33—165。采用单一综合分；不把本地12/8/6/7分组或后来不同研究的四因子键拼接为原版分量表。",
       "recommended_card_ids": [
         "student_emotion_naming",
         "student_two_thoughts",
         "self_support_statement"
       ],
-      "source_version": "2026.06-emotional_intelligence_eis_33-from-scale-draft",
+      "source_version": "2026.06-emotional_intelligence_eis_33-from-scale-draft-review-20261002-v2",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "2026-10-02官方依据定向修正；证据与未决项见outputs/问卷题目差异审查_20260929.md。历史试点批准不代表本修订已获专业或正式生产批准。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。部分中文题义按作者英文题本调整，当前仍为中文改编候选，不能标为已验证中文标准版。中文验证与数字化授权待确认；历史四维结果不与本版综合分直接比较。",
       "profile_model_id": null,
       "_meta": {
         "total_score_method": "sum",
-        "derived_dimensions": []
+        "derived_dimensions": [],
+        "scoring_review_note": "仅删除EIS02多余的“你”；其他英文主题偏移等待同版中文题本，不据英文复载重译。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -23575,7 +23633,7 @@
       ],
       "sensitive_category": "screening_or_health",
       "pages": 1,
-      "instructions": "请按最近两周或日常真实情况填写。结果仅用于自我观察和练习参考。",
+      "instructions": "请根据过去两周的真实感受作答，为每句话选择相应情况出现的频率。结果仅用于自我观察和练习参考。",
       "sections": [
         {
           "title": "填写说明",
@@ -23808,16 +23866,17 @@
         "self_support_statement",
         "cognitive_flexibility"
       ],
-      "source_version": "2026.07-task18-reviewed-scales-v1",
+      "source_version": "2026.07-task18-reviewed-scales-v1-review-20261002-v1",
       "source_type": "WHO_CC_BY_NC_SA_3_0",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "历史项目负责人试点批准记录保留；2026-10-02按逐题审查修正候选内容。按报告所指空白题本或已读取公开官方题本修正指导语；只修正明确的回顾期或日常倾向。本轮工程修正不替代同版中文题本、心理专业与授权核验。",
       "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
       "result_disclaimer": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
       "_meta": {
         "total_score_method": "sum",
-        "derived_dimensions": []
+        "derived_dimensions": [],
+        "scoring_review_note": "按报告所指空白题本或已读取公开官方题本修正指导语；只修正明确的回顾期或日常倾向。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -23841,7 +23900,7 @@
       ],
       "sensitive_category": "none",
       "pages": 1,
-      "instructions": "请按最近两周或日常真实情况填写。结果仅用于自我观察和练习参考。",
+      "instructions": "请根据自己的真实情况，选择符合你平时实际情况的一项。结果仅用于自我观察和练习参考。",
       "sections": [
         {
           "title": "填写说明",
@@ -24031,7 +24090,7 @@
         },
         {
           "id": "ECS07",
-          "prompt": "抽象的概念性问题会让我持续思索如何解答。",
+          "prompt": "抽象的概念性问题会让我持续思索如何解答。（如：‘有理数的定义’等问题就属于概念性问题）",
           "type": "scale",
           "required": true,
           "dimension": "INTEREST",
@@ -24187,16 +24246,17 @@
         "student_two_thoughts",
         "self_support_statement"
       ],
-      "source_version": "2026.07-task18-reviewed-scales-v1",
+      "source_version": "2026.07-task18-reviewed-scales-v1-review-20261002-v1",
       "source_type": "public_research_education_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
-      "review_note": "项目负责人已批准进入试点；结果仅作支持性观察，不构成诊断、筛查或固定标签。",
+      "review_note": "历史项目负责人试点批准记录保留；2026-10-02按逐题审查修正候选内容。按报告所指空白题本或已读取公开官方题本修正指导语；只修正明确的回顾期或日常倾向。本轮工程修正不替代同版中文题本、心理专业与授权核验。",
       "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
       "result_disclaimer": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
       "_meta": {
         "total_score_method": "sum",
-        "derived_dimensions": []
+        "derived_dimensions": [],
+        "scoring_review_note": "按报告所指空白题本或已读取公开官方题本修正指导语；只修正明确的回顾期或日常倾向。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -24832,5 +24892,5 @@
       }
     }
   ],
-  "updated_at": "2026-07-15"
+  "updated_at": "2026-10-02"
 }

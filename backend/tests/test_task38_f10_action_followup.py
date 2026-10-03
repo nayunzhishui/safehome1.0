@@ -4,6 +4,7 @@ import subprocess
 import sys
 from datetime import date, timedelta
 from pathlib import Path
+from test_task36_therapeutic_assessment import _grant_case_scope
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -72,6 +73,7 @@ def _ready_case(client, headers):
         headers={**headers["p-f10"], "Idempotency-Key": "f10-case"},
         json={"assessment_question": "我想理解一次沟通", "shared_scope": ["question"], "consent": True},
     ).get_json()["data"]
+    _grant_case_scope(client, created["id"], "s-f10")
     client.post(
         f"/api/therapeutic-assessment/cases/{created['id']}/assign",
         headers={**headers["s-f10"], "Idempotency-Key": "f10-assign"},

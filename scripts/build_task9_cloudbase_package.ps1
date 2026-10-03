@@ -15,6 +15,34 @@ $SourceArchive = Join-Path $CodexTmp "task9-source-head.zip"
 $FingerprintScript = Join-Path $Root "scripts/generate_build_fingerprint.py"
 . (Join-Path $PSScriptRoot "cloudbase_package_source.ps1")
 
+$PackageSourcePaths = @(
+  "Dockerfile", ".dockerignore", "backend", "content", "shared",
+  "config/rc0810/database_profiles.json",
+  "config/rc0810/operations_reliability_policy.json",
+  "config/rc0810/research_execution_manifest_policy.json",
+  "config/rc0810/database_recovery_policy.json",
+  "deploy/verify_rc0810_f03_images.py"
+)
+
+# A HEAD archive must not be presented as the current modified candidate.
+& git -C $Root diff --quiet HEAD -- @PackageSourcePaths
+if ($LASTEXITCODE -ne 0) {
+  throw "Release inputs contain uncommitted changes or cannot be checked; freeze the reviewed source before packaging."
+}
+$untrackedSources = & git -C $Root ls-files --others --exclude-standard -- @PackageSourcePaths
+if ($LASTEXITCODE -ne 0 -or $untrackedSources) {
+  throw "Release inputs contain untracked source or cannot be checked; freeze the reviewed source before packaging."
+}
+
+# Verify computed cleanup paths before any recursive removal.
+$workspacePrefix = [System.IO.Path]::GetFullPath($Root).TrimEnd("\", "/") + [System.IO.Path]::DirectorySeparatorChar
+foreach ($cleanupPath in @($StagingRoot, $SourceArchive)) {
+  $resolvedCleanupPath = [System.IO.Path]::GetFullPath($cleanupPath)
+  if (-not $resolvedCleanupPath.StartsWith($workspacePrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+    throw "Package cleanup target is outside the workspace."
+  }
+}
+
 if ([string]::IsNullOrWhiteSpace($PackageLabel) -or $PackageLabel -match "[`r`n]") {
   throw "PackageLabel must be one non-empty line."
 }
@@ -114,19 +142,12 @@ try {
     Remove-Item -LiteralPath $SourceArchive -Force
   }
   # git archive makes the package source exactly match the recorded commit.
-  Invoke-Native "git" @(
+  Invoke-Native "git" (@(
     "archive",
     "--format=zip",
     "--output=$SourceArchive",
-    $head,
-    "Dockerfile",
-    ".dockerignore",
-    "backend",
-    "content",
-    "shared",
-    "config/rc0810/database_profiles.json",
-    "deploy/verify_rc0810_f03_images.py"
-  )
+    $head
+  ) + $PackageSourcePaths)
   Expand-Archive -LiteralPath $SourceArchive -DestinationPath $StagingRoot -Force
 
   Remove-CloudBasePackageArtifacts -SourceRoot $StagingRoot
@@ -148,7 +169,7 @@ try {
     "Head=$head",
     "SourceMode=git_archive_head",
     "SourceTree=$sourceTree",
-    "Included=Dockerfile,.dockerignore,backend,content,shared,config/rc0810/database_profiles.json,deploy/verify_rc0810_f03_images.py",
+    "Included=$($PackageSourcePaths -join ',')",
     "Excluded=env files, databases, logs, caches, virtualenvs, node build outputs, backups",
     "CloudBaseCompatibility=content/profiles JSON filenames are shortened in the package only; model_id inside each JSON is preserved.",
     "WorkingTreeDirty=$($workingTreeDirty.ToString().ToLowerInvariant())"

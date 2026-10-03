@@ -8,13 +8,13 @@ def _read(relative_path: str) -> str:
     return (PROJECT_ROOT / relative_path).read_text(encoding="utf-8")
 
 
-def test_today_step_card_is_inserted_without_reordering_existing_home_sections():
+def test_today_step_and_core_entries_follow_current_home_order():
     wxml = _read("apps/miniprogram/pages/home/index.wxml")
-    core_index = wxml.index('class="core-actions"')
+    core_index = wxml.index('class="home-capture"')
     today_index = wxml.index("<journey-action-card")
-    three_step_index = wxml.index('title="三步开始"')
-    assert core_index < today_index < three_step_index
-    for required_text in ["情绪天气", "测一测", "情绪日记", "更多", "最近记录", "阶段性反馈"]:
+    three_step_index = wxml.index('title="如何开始"')
+    assert today_index < core_index < three_step_index
+    for required_text in ["情绪温度计", "测一测", "情绪日记", "更多", "最近记录", "阶段性反馈"]:
         assert required_text in wxml
 
 
@@ -44,7 +44,7 @@ def test_today_step_card_has_accessible_action_and_all_states():
     source = _read("apps/miniprogram/pages/home/index.js")
     assert 'action-aria-label="{{todayJourney ? todayJourney.actionAriaLabel' in wxml
     assert 'aria-label="{{actionAriaLabel}}"' in component_wxml
-    assert "min-height: 88rpx" in wxss
+    assert "min-height: var(--safe-touch, 88rpx)" in wxss
     for state in ["loading", "error", "paused", "completed", "not_due"]:
         assert state in source or state in wxml or state in component_wxml or state in wxss
 
@@ -53,12 +53,9 @@ def test_home_progress_fallback_actions_do_not_clip_button_labels():
     wxml = _read("apps/miniprogram/pages/home/index.wxml")
     wxss = _read("apps/miniprogram/pages/home/index.wxss")
 
-    assert 'class="progress-empty-btn"' in wxml
-    assert 'class="progress-empty-btn progress-empty-btn--secondary"' in wxml
-    block = wxss.split(".progress-empty-btn {", 1)[1].split("}", 1)[0]
-    assert "min-height: var(--safe-touch)" in block
-    assert "display: flex" in block
-    assert "align-items: center" in block
-    assert "justify-content: center" in block
-    assert "box-sizing: border-box" in block
-    assert "line-height: 1.3" in block
+    assert 'action-label="查看说明" expanded wrap-title bind:action="openWeeklyReport"' in wxml
+    component = _read("apps/miniprogram/components/entry-row/index.wxss")
+    block = component.split(".entry-title--wrap {", 1)[1].split("}", 1)[0]
+    assert "white-space: normal" in block
+    assert "overflow-wrap: anywhere" in block
+    assert "min-width: 0" in component

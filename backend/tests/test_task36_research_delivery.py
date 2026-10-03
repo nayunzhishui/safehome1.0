@@ -315,4 +315,4 @@ def test_researcher_high_risk_preview_and_revoked_scope_are_blocked(tmp_path, mo
         headers={**researcher_headers, "Idempotency-Key": "f06-scope-send"},
         json={"expected_version": confirmed["version"]},
     )
-    assert denied.status_code == 403
+    assert denied.status_code == 404

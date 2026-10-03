@@ -28,3 +28,24 @@ def test_binary_artifact_hash_preserves_raw_bytes(tmp_path: Path):
 
     assert artifact_sha256(lf) != artifact_sha256(crlf)
     assert artifact_size_bytes(lf) != artifact_size_bytes(crlf)
+
+
+def test_release_package_uses_the_same_text_bytes_as_manifest_binding(tmp_path, monkeypatch):
+    import base64
+    import json
+    from services import operations_governance_service as service
+
+    content = tmp_path / "content"
+    content.mkdir()
+    artifact = content / "sample.json"
+    artifact.write_bytes(b'{\r\n  "ok": true\r\n}\r\n')
+    manifest = content / "manifest.json"
+    manifest.write_text(json.dumps({"artifacts": [{"path": "content/sample.json", "sha256": artifact_sha256(artifact), "size_bytes": artifact_size_bytes(artifact)}]}), encoding="utf-8")
+    monkeypatch.setattr(service, "ROOT", tmp_path)
+    monkeypatch.setattr(service, "RELEASE_MANIFEST_PATH", manifest)
+    from flask import Flask
+    app = Flask(__name__)
+    app.config["CONTENT_DIR"] = content
+    with app.app_context():
+        bundle = service._snapshot_manifest()
+    assert base64.b64decode(bundle["artifacts"][0]["bundle_b64"]) == b'{\n  "ok": true\n}\n'

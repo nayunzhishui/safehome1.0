@@ -7,6 +7,7 @@ from flask import Blueprint, current_app, request
 
 from database import ensure_user, get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, rows_to_dicts
 from services.content_loader import ContentLoadError
+from services.participant_safeguard_service import ParticipantSafeguardError, assert_participant_capability, safeguards_enforced
 from services.psychological_content_governance_service import (
     build_assessment_snapshot,
     payload_hash,
@@ -458,9 +459,14 @@ def create_profile():
     if len(submission_id) > 120:
         return fail("validation_error", "提交标识不能超过120个字符。", status=400)
     try:
-        require_user_id(payload)
+        user_id = require_user_id(payload)
     except ValueError as exc:
         return fail("validation_error", str(exc), status=400)
+    if safeguards_enforced():
+        try:
+            assert_participant_capability(user_id, "profile")
+        except ParticipantSafeguardError as exc:
+            return fail(exc.code, exc.message, status=exc.status, details=exc.details)
     try:
         result = generate_student_profile(payload)
     except ProfileInputError as exc:
@@ -668,6 +674,11 @@ def create_profile_followup(profile_id: str):
             require_admin_or_owner(profile["user_id"])
         except ValueError as exc:
             return auth_error_response(exc)
+        if safeguards_enforced():
+            try:
+                assert_participant_capability(profile["user_id"], "sensitive_text")
+            except ParticipantSafeguardError as exc:
+                return fail(exc.code, exc.message, status=exc.status, details=exc.details)
         profile_item = row_to_dict(profile)
         keywords = extract_keywords(text)
         conn.execute(
@@ -779,6 +790,11 @@ def create_profile_sandplay(profile_id: str):
             require_admin_or_owner(profile["user_id"])
         except ValueError as exc:
             return auth_error_response(exc)
+        if safeguards_enforced():
+            try:
+                assert_participant_capability(profile["user_id"], "sensitive_text")
+            except ParticipantSafeguardError as exc:
+                return fail(exc.code, exc.message, status=exc.status, details=exc.details)
         profile_item = row_to_dict(profile)
         report = json_loads(profile_item.get("report_json"), {})
         task_title = str(payload.get("task_title") or report.get("sandplay_task", {}).get("title") or "沙盘式表达任务")

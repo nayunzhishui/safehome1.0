@@ -1,4 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { beginServiceEntry, finishServiceConsent } = require("../../utils/serviceConsent");
 const { createResilientForm } = require("../../utils/resilientForm");
 
 const api = createSafeHomeApi();
@@ -9,7 +10,10 @@ const newReactionOptions = ["先停三秒", "先说出情绪", "问一个小问�
 const DRAFT_FIELDS = ["selectedScene", "customScene", "oldReaction", "newReaction", "smartGoal"];
 
 Page({
+  retryServiceEntry() { return this.onLoad(this._entryOptions || {}); },
+  returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
   data: {
+    serviceReady: false,
     sceneOptions,
     oldReactionOptions,
     newReactionOptions,
@@ -25,7 +29,8 @@ Page({
     slowSubmitting: false,
   },
 
-  onLoad() {
+  onLoad(options = {}) { return beginServiceEntry(this, api, "goal", options, "/pages/goal-setting/index"); },
+  loadAfterConsent() {
     this.draftController = createResilientForm({
       storageKey: "safehome:resilientDraft:goal",
       fields: DRAFT_FIELDS,
@@ -37,7 +42,7 @@ Page({
   },
 
   onHide() { if (this.draftController && !this.data.submitting) this.setData(this.draftController.flush(this.data)); },
-  onUnload() { if (this.draftController && !this.data.submitting) this.draftController.flush(this.data); },
+  onUnload() { this._consentDisposed = true; finishServiceConsent(this, false); if (this.draftController && !this.data.submitting) this.draftController.flush(this.data); },
 
   scheduleDraftSave() {
     if (!this.draftController) return;

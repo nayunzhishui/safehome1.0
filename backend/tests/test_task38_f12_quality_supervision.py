@@ -4,6 +4,7 @@ import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from test_task36_therapeutic_assessment import _grant_case_scope
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -81,6 +82,7 @@ def _create_ready_case(client, headers, key="f12-case"):
     assert created.status_code == 201
     case_id = created.get_json()["data"]["id"]
     headers["case_id"] = case_id
+    _grant_case_scope(client, case_id, "s-f12")
     assigned = client.post(
         f"/api/therapeutic-assessment/cases/{case_id}/assign",
         headers={**headers["s-f12"], "Idempotency-Key": f"{key}-assign"},
@@ -184,6 +186,7 @@ def test_schema_041_adds_quality_supervision_tables(tmp_path, monkeypatch):
             assert CURRENT_SCHEMA_NAME in {
                 "therapeutic_assessment_final_acceptance",
                 "rc0810_f06_object_scope",
+                "rc0810_f07_consent_provenance",
             }
 
 

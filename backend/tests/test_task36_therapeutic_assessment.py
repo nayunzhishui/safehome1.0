@@ -71,8 +71,26 @@ def _seed(app):
         }
 
 
+
+def _grant_case_scope(client, case_id, supervisor_id):
+    """Seed an assigned synthetic case scope independently of the user's role."""
+    with client.application.app_context():
+        from database import get_connection, now_iso
+        timestamp = now_iso()
+        with get_connection() as conn:
+            conn.execute(
+                "INSERT OR IGNORE INTO therapeutic_assessment_work_queue "
+                "(id, case_id, queue_type, task_code, required_competency, priority, status, "
+                "scope_snapshot_json, assigned_user_id, due_at, version, created_by, created_at, updated_at) "
+                "VALUES (?, ?, 'supervision', 'case_management', 'T3', 'normal', 'claimed', '{}', ?, "
+                "'2099-01-01T00:00:00+00:00', 1, ?, ?, ?)",
+                (f"test-scope-{case_id}-{supervisor_id}", case_id, supervisor_id, supervisor_id, timestamp, timestamp),
+            )
+            conn.commit()
+
+
 def _create(client, headers, key="case-f16", question="我想和研究者一起理解最近一次沟通中的感受。"):
-    return client.post(
+    response = client.post(
         "/api/therapeutic-assessment/cases",
         headers={**headers["participant-f16"], "Idempotency-Key": key},
         json={
@@ -82,6 +100,10 @@ def _create(client, headers, key="case-f16", question="我想和研究者一起�
             "assigned_researcher_id": "researcher-f16",
         },
     )
+
+    if response.status_code in {200, 201}:
+        _grant_case_scope(client, response.get_json()["data"]["id"], "supervisor-f16")
+    return response
 
 
 def _feedback_payload(**overrides):

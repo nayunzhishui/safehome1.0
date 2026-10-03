@@ -40,6 +40,18 @@ def _load_builder():
     return module
 
 
+def test_f26_backend_source_archive_covers_docker_copy_inputs():
+    module = _load_builder()
+    for line in (ROOT / "Dockerfile").read_text(encoding="utf-8").splitlines():
+        if not line.startswith("COPY "):
+            continue
+        for source in line.split()[1:-1]:
+            assert any(
+                source == context or source.startswith(context + "/")
+                for context in module.BACKEND_SOURCE_PATHS
+            ), source
+
+
 @pytest.fixture(scope="module")
 def f26(tmp_path_factory):
     module = _load_builder()

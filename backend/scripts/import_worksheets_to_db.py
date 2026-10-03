@@ -2,14 +2,19 @@
 
 from __future__ import annotations
 
+import argparse
+import os
+import sqlite3
 import sys
+from contextlib import closing
 from pathlib import Path
 
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
-from database import get_connection, init_db, json_dumps, load_content_json, now_iso
+from config import Config
+from database import get_connection, init_db, is_mysql_enabled, json_dumps, load_content_json, now_iso
 
 
 WORKSHEET_COLUMNS = [
@@ -54,6 +59,10 @@ def _as_sensitive_category(value) -> str:
 
 
 def worksheet_to_row(worksheet: dict, timestamp: str) -> dict:
+    metadata = dict(worksheet.get("_meta") or {})
+    for name in ("total_score_method", "derived_dimensions"):
+        if name in worksheet:
+            metadata[name] = worksheet[name]
     return {
         "id": worksheet["id"],
         "display_title": worksheet.get("display_title") or worksheet.get("source_title") or worksheet["id"],
@@ -83,7 +92,7 @@ def worksheet_to_row(worksheet: dict, timestamp: str) -> dict:
         "sections_json": json_dumps(worksheet.get("sections", [])),
         "scoring": worksheet.get("scoring"),
         "pages": worksheet.get("pages"),
-        "_meta_json": json_dumps(worksheet.get("_meta", {})),
+        "_meta_json": json_dumps(metadata),
         "created_at": timestamp,
         "updated_at": timestamp,
     }
@@ -133,7 +142,25 @@ def upsert_worksheet(conn, row: dict) -> str:
     return "updated" if existing is not None else "created"
 
 
+def plan_worksheet_sync(conn, worksheets: list[dict], worksheet_ids: list[str]) -> list[dict]:
+    """Compare selected definitions without initializing or writing tables."""
+    by_id = {worksheet["id"]: worksheet for worksheet in worksheets if isinstance(worksheet, dict) and worksheet.get("id")}
+    unknown = set(worksheet_ids) - set(by_id)
+    if unknown:
+        raise ValueError("unknown worksheet ids: " + ", ".join(sorted(unknown)))
+    planned = []
+    for worksheet_id in dict.fromkeys(worksheet_ids):
+        row = worksheet_to_row(by_id[worksheet_id], "plan-only")
+        stored = conn.execute("SELECT * FROM assessment_worksheets WHERE id = ?", (worksheet_id,)).fetchone()
+        before = dict(stored) if stored is not None else None
+        fields = [column for column in WORKSHEET_COLUMNS if column not in {"created_at", "updated_at"} and (before is None or before.get(column) != row.get(column))]
+        planned.append({"id": worksheet_id, "action": "created" if before is None else "updated" if fields else "skipped", "changed_fields": fields})
+    return planned
+
+
 def import_worksheets() -> dict[str, int]:
+    if str(os.environ.get("APP_ENV", Config.APP_ENV)).strip().lower() == "production":
+        raise RuntimeError("生产环境禁止使用会初始化数据库的旧导入入口；请使用--plan --worksheet-id只读预览，定义同步须另行审查。")
     init_db()
     payload = load_content_json("assessment_worksheets.json")
     stats = {"created": 0, "updated": 0, "skipped": 0}
@@ -149,6 +176,26 @@ def import_worksheets() -> dict[str, int]:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--plan", action="store_true", help="read selected definition differences without initialization or writes")
+    parser.add_argument("--worksheet-id", action="append", default=[])
+    args = parser.parse_args()
+    if args.plan:
+        if not args.worksheet_id:
+            parser.error("--plan requires at least one --worksheet-id")
+        worksheets = load_content_json("assessment_worksheets.json").get("worksheets", [])
+        if is_mysql_enabled():
+            with get_connection() as conn:
+                rows = plan_worksheet_sync(conn, worksheets, args.worksheet_id)
+        else:
+            # mode=ro refuses missing files and cannot initialize a local database.
+            with closing(sqlite3.connect(Path(Config.DATABASE_PATH).resolve().as_uri() + "?mode=ro", uri=True)) as conn:
+                conn.row_factory = sqlite3.Row
+                rows = plan_worksheet_sync(conn, worksheets, args.worksheet_id)
+        print(json_dumps({"mode": "read_only_plan", "items": rows, "production_apply": "not_executed"}))
+        return
+    if args.worksheet_id:
+        parser.error("--worksheet-id requires --plan; scoped production apply is not provided")
     stats = import_worksheets()
     print(
         "assessment_worksheets import: "

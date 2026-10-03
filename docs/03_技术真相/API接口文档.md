@@ -1,5 +1,29 @@
 # API 接口文档
 
+## 2026-10-03 云托管登录合同接续
+
+- 恢复历史候选的`CLOUDBASE_OPENAPI_ENABLED`配置，默认false；只供已确认具备官方开放接口代理的服务版本使用。本轮未开启云端配置。`GET /api/auth/capabilities`对应phone_login.mode=cloudbase_openapi；这个状态表示配置选择，不证明微信资格／接口权限或真实调用已通过。
+- 此模式向固定内部代理地址发出手机号授权code，不读取AppSecret或旧令牌；关闭时继续原HTTPS路径。微信身份头信任规则未改。
+- 手机号交换48001返回503／wechat_phone_permission_denied，提示平台能力待核；48002未取得本场景的同版官方释义，不沿用历史“无权限”分类，使用原通用400／wechat_phone_exchange_failed，文案不断言授权码过期。真实平台权限和官方全文仍待核。
+
+## 2026-10-03 候选补漏合同
+
+- `POST /api/checkins`在生产环境拒绝不在当前有效开放清单中的新打卡：409／card_not_available。先返回原有成功幂等回执，拒绝的新提交会回滚claim；不改变临时开放开关。
+- 登录前端复用现有GET /api/auth/capabilities的wechat_login.mode及POST /api/auth/wechat-login：cloudbase_identity配合云托管直接请求，本地HTTP仍提交微信code；后端身份信任合同未改。
+- 三份机器制品同步新错误代码，API生成器4份检查一致；没有新增接口或身份字段。
+
+## 2026-10-03 本地候选修复增量
+
+- 研究通用CSV个人表导出统一排除已撤回研究用途者；非个人训练卡不套用用户过滤。研究队列／工作项详情、动作、转交与指标使用有效`research_scope_assignments`（角色、报名状态、active、未到期），不再仅依据旧分配字段。
+- 研究作业列表`limit`仅接受1–200整数；日记、用途撤回、删除申请要求JSON对象，非法输入400。未扩大为所有接口均已复验。
+- 周报及进度复测仅在工作表版本、计分版本、量尺范围与维度键可比时计算分差；历史缺版本依据不猜测。进度项新增可选`comparable`、`comparison_notice`；无法比较时`score_delta=null`、维度趋势为空，周报显示“暂不比较”。历史结果原值保留。
+- `POST /api/diaries`、`/api/profile`、画像后续自由文本、`/api/checkins`、`/api/emotion-thermometer`、`/api/supervision`及`/api/feedback/generate`复用既有未成年人保护判定。保护启用时，缺年龄／监护人同意／学生本人决定等返回对应403；不新增同意用途，不改变记录归属。
+- 温度计强度拒绝布尔值和非整数小数，不再静默截断；合法整数与整数形式字符串沿用原合同。
+- 可靠任务`complete`／`fail`必须仍持有未过期且未变更的租约。过期、重新认领或竞争写入返回409 `job_lease_conflict`，不写入该旧租约的完成／失败事件。
+- 小程序隐私页复用`GET /api/consent`与`POST /api/consent`查看和撤回本人的可选用途；撤回携带`expected_latest_id`，409时提示刷新。首页“知道了”仅保存本机已阅读标记，不调用同意接口。
+- 当前机器API合同4份生成产物检查一致。以上是本地代码合同；未验证线上使用版本。
+
+
 最后更新时间：2026-07-24
 
 本文档记录 `safehome1.0 / 安心陪伴 / ReadFeedback` MVP 1.0 当前已经实现的 Flask + SQLite 后端 API。本文档以当前后端真实行为为准，用于小程序端与网页端并行联调。

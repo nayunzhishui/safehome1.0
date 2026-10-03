@@ -1,17 +1,17 @@
 {
   "schema": "safehome.rc0810.f23-mutation-report.v1",
   "seed": 81023,
-  "source_base_commit": "2e234cd0e437f24305d472c6005b7b933a194f21",
+  "source_base_commit": "03142a85dcf9a0b07eb3ee3dbbd50157e40de642",
   "source_files_sha256": {
-    "backend/routes/auth_utils.py": "00002027c2678cfba5691382f4a07b38fef92e62d2af105018989885561de066",
+    "backend/routes/auth_utils.py": "bec6c368be1ff718ff4cd402fdad16cc75febb5c63d0a992d8b96075379a3ae7",
     "backend/routes/consent.py": "7d3b7cd00c6e5f2aafa1ad6961651bd88741f81081e1d88fa021fb0f02f85ef6",
-    "backend/routes/feedback.py": "c8c71f29c88e105bb54ad04fa7013a295af09f0939d620bc461e194076433abd",
+    "backend/routes/feedback.py": "e4bcf3fdeb128be3ca6966dd7f02ec0cf334bfbed97b9085f794d24c5ef09ce7",
     "backend/services/idempotency_service.py": "9b72206e073cc27d4a060c10daa00a72e4d1d26f81c8cffae8f49bf4856886a5",
     "backend/services/research_access_service.py": "23a1cc0180fc2bf6d696c8823786d440d1c89ec42fd2978037a93f545d9816fd",
     "backend/services/therapeutic_assessment_service.py": "3028ab48c2468a7a208a32c6ad9f7d5e6e6b9017383b2764fef48023ab8cb4b7"
   },
-  "source_snapshot_sha256": "d954f3a9b268aa5614e90bed59b892d70f14656f82fe1c16cdbb17250989de58",
-  "api_contract_sha256": "bfb3de2d0a5ee536e22184fb830e65cf135e0b60fba9dc91ced3aafcc6219fa1",
+  "source_snapshot_sha256": "9438a8130a85e4d869fd5de8fd66d11944c9893b655dc44c4c8bce2d4492b844",
+  "api_contract_sha256": "dd56b6cfa81a316d17724b495e0da9779baab8874313de5e8730bce84ecf5a1c",
   "fuzz_corpus_sha256": "226a572ca106fa3b19eba3c5fd3d5a8d1c0d8fcdd919077b9f737c87b19c6406",
   "fuzz_case_count": 10,
   "fuzz_case_ids": [
@@ -81,14 +81,6 @@
       "returncode": 1
     }
   ],
-  "schema_contract_gaps": [
-    {
-      "id": "F23-SCHEMA-01",
-      "status": "open_for_followup",
-      "operation_id": "therapeutic_assessment.post_case_route.post",
-      "finding": "运行时要求JSON字段与Idempotency-Key，但当前API契约仍登记空body_fields且idempotency=false。",
-      "production_gate_blocking": true
-    }
-  ],
+  "schema_contract_gaps": [],
   "replay_command": "python scripts/run_rc0810_f23_mutation.py --report docs/02_专项进度与验收/rc0810_f23_mutation_report.json"
 }

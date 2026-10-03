@@ -157,6 +157,14 @@ def run_mutations(policy_path: Path = DEFAULT_POLICY) -> dict[str, Any]:
                     "returncode": returncode,
                 }
             )
+    contract = json.loads(DEFAULT_CONTRACT.read_text(encoding="utf-8"))
+    operation = next((item for item in contract.get("endpoints", [])
+                      if item.get("path") == "/api/therapeutic-assessment/cases" and item.get("method") == "POST"), {})
+    request_contract = operation.get("request", {})
+    required_fields = {"assessment_question", "complexity_scope", "consent", "enrollment_id", "shared_scope"}
+    idempotency = request_contract.get("idempotency", {})
+    schema_gap_open = (not required_fields.issubset(request_contract.get("body_fields", []))
+                       or not idempotency.get("supported") or not idempotency.get("required"))
     killed = sum(item["classification"] == "killed" for item in results)
     return {
         "schema": "safehome.rc0810.f23-mutation-report.v1",
@@ -182,7 +190,7 @@ def run_mutations(policy_path: Path = DEFAULT_POLICY) -> dict[str, Any]:
                 "finding": "运行时要求JSON字段与Idempotency-Key，但当前API契约仍登记空body_fields且idempotency=false。",
                 "production_gate_blocking": True,
             }
-        ],
+        ] if schema_gap_open else [],
         "replay_command": "python scripts/run_rc0810_f23_mutation.py --report docs/02_专项进度与验收/rc0810_f23_mutation_report.json",
     }
 

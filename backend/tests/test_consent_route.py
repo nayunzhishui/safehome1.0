@@ -13,10 +13,11 @@ def _fresh_app(tmp_path, monkeypatch, app_env: str = "development"):
     for name in list(sys.modules):
         if name in {"app", "config", "database", "models"} or name.startswith("routes.") or name.startswith("services."):
             sys.modules.pop(name, None)
-    monkeypatch.setenv("APP_ENV", app_env)
+    monkeypatch.setenv("APP_ENV", "validation" if app_env == "production" else app_env)
     if app_env == "production":
         monkeypatch.setenv("DB_PROVIDER", "sqlite")
-        monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+        monkeypatch.delenv("ALLOW_PRODUCTION_SQLITE", raising=False)
+        monkeypatch.setenv("DATABASE_DATA_WATERMARK", "synthetic_validation_only")
         monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
         monkeypatch.setenv("SECRET_KEY", "production-test-secret-key-32-chars")
     else:
@@ -148,7 +149,7 @@ def test_task37_data_purposes_have_separate_consent_records(tmp_path, monkeypatc
     }
 
 
-def test_production_consent_requires_authenticated_actor(tmp_path, monkeypatch):
+def test_validation_consent_requires_authenticated_actor(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch, app_env="production")
     client = app.test_client()
 

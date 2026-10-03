@@ -20,7 +20,10 @@ def test_f18_exercises_empty_legacy_repeat_partial_interrupt_and_restore(tmp_pat
     result = exercise(lab)
     assert result["ok"] is True
     assert all(result["scenarios"].values())
-    assert result["target_schema"]["version"] == "2026_07_26_029"
+    assert result["target_schema"]["version"] == "2026_08_24_063"
+    assert result["target_schema"]["explicit_migration_head"] == "2026_08_26_078"
+    assert result["backup_manifest"]["explicit_migration_head"] == result["target_schema"]["explicit_migration_head"]
+    assert result["restore_manifest"]["explicit_migration_head"] == result["backup_manifest"]["explicit_migration_head"]
     assert len(result["backup_manifest"]["sha256"]) == 64
     assert len(result["backup_manifest"]["schema_hash"]) == 64
     assert result["backup_manifest"]["table_row_counts"] == result["restore_manifest"]["table_row_counts"]

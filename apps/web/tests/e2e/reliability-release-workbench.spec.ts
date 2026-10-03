@@ -29,7 +29,7 @@ test("可靠性工作台呈现三段证据路径且不越过人工门禁", async
     } else if (path === "/api/reliability/drills") data = { id: "drill-1", status: "passed" };
     else if (path === "/api/reliability/evidence-packages") data = { id: "pkg-1", status: "draft_external_gates_pending" };
     else if (path === "/api/reliability/workbench") data = {
-      registry, recent_events: [], jobs: [{ id: "job-1", job_type: "notification_delivery", source_type: "notification_delivery", source_id: "synthetic", idempotency_key: "e2e", status: "dead_letter", attempt_count: 2, max_attempts: 2, available_at: "2026-07-20", updated_at: "2026-07-20" }],
+      registry, task36_integration: { version: "synthetic-e2e", journeys: [] }, recent_events: [], jobs: [{ id: "job-1", job_type: "notification_delivery", source_type: "notification_delivery", source_id: "synthetic", idempotency_key: "e2e", status: "dead_letter", attempt_count: 2, max_attempts: 2, available_at: "2026-07-20", updated_at: "2026-07-20" }],
       feature_flags: [{ id: "flag-1", flag_name: "participant_journey", version: 1, enabled: true, role_scope: ["parent", "student"], rollout_percent: 100, reason_code: "registry_default", changed_at: "2026-07-20" }],
       slo_snapshots: snapshots, drill_runs: [], evidence_packages: [], production_slo_frozen: false, gradual_release_enabled: false,
     };

@@ -54,7 +54,7 @@ def _create(client, headers, case_id, **overrides):
         "purpose": "collaborative_assessment",
         "visibility": "private",
         "allowed_viewer_ids": [],
-        "expires_at": "2026-08-27T00:00:00+00:00",
+        "expires_at": "2099-01-01T00:00:00+00:00",
         **overrides,
     }
     return client.post(

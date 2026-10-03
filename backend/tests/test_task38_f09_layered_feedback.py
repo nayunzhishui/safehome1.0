@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from test_task36_therapeutic_assessment import _grant_case_scope
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -79,6 +80,7 @@ def _case(client, headers):
     )
     assert created.status_code == 201
     case = created.get_json()["data"]
+    _grant_case_scope(client, case["id"], "s-f09")
     assigned = client.post(
         f"/api/therapeutic-assessment/cases/{case['id']}/assign",
         headers={**headers["s-f09"], "Idempotency-Key": "f09-assign"},

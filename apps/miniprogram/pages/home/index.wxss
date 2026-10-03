@@ -148,3 +148,10 @@
   --ui2-entry-action-display: none;
   --ui2-entry-title-lines: unset;
 }
+
+.home-privacy-notice { margin-top:24rpx; padding:24rpx; border:1rpx solid var(--ui2-line); border-radius:24rpx; background:var(--ui2-surface); }
+.home-privacy-title { display:block; font-size:32rpx; font-weight:700; line-height:1.6; color:var(--ui2-ink); }
+.home-privacy-copy { display:block; margin-top:12rpx; font-size:30rpx; line-height:1.7; color:var(--ui2-ink); }
+.home-privacy-notice button { min-height:88rpx; padding:18rpx 24rpx; margin-top:16rpx; font-size:30rpx; line-height:1.6; white-space:normal; border-radius:24rpx; }
+.home-privacy-link { color:var(--ui2-primary); background:transparent; border:1rpx solid var(--ui2-control-border); }
+.home-privacy-dismiss { color:var(--ui2-muted); background:transparent; }

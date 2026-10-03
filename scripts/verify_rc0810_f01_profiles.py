@@ -90,9 +90,13 @@ def _source_flags(root: Path) -> set[str]:
         value = ast.get_source_segment(text, node.value) or ""
         if "os.environ.get" not in value:
             continue
-        for target in node.targets:
-            if isinstance(target, ast.Name):
-                names.add(target.id)
+        for call in ast.walk(node.value):
+            if (isinstance(call, ast.Call) and isinstance(call.func, ast.Attribute)
+                and call.func.attr == "get"
+                and ast.get_source_segment(text, call.func.value) == "os.environ"
+                and call.args and isinstance(call.args[0], ast.Constant)
+                and isinstance(call.args[0].value, str)):
+                names.add(call.args[0].value)
     return {
         name
         for name in names

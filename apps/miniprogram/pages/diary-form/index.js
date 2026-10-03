@@ -1,4 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { beginServiceEntry, finishServiceConsent } = require("../../utils/serviceConsent");
 const { requireLogin } = require("../../utils/authGuard");
 const { createResilientForm } = require("../../utils/resilientForm");
 
@@ -11,7 +12,10 @@ const bodySensationOptions = ["胸口紧", "心跳快", "头胀", "肩膀紧", "
 const DRAFT_FIELDS = ["goalId", "selectedScene", "customScene", "eventDescription", "parentEmotion", "parentEmotionIntensity", "childEmotion", "childEmotionIntensity", "automaticThought", "bodySensation", "bodySensationNote", "behavior", "childReaction", "shortTermResult", "longTermImpact", "showMoreFields"];
 
 Page({
+  retryServiceEntry() { return this.onLoad(this._entryOptions || {}); },
+  returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
   data: {
+    serviceReady: false,
     sceneOptions,
     parentEmotionOptions,
     childEmotionOptions,
@@ -39,7 +43,8 @@ Page({
     slowSubmitting: false,
   },
 
-  onLoad(options) {
+  onLoad(options = {}) { return beginServiceEntry(this, api, "diary", options, "/pages/diary-form/index"); },
+  loadAfterConsent(options) {
     const redirect = options && options.goal_id
       ? `/pages/diary-form/index?goal_id=${encodeURIComponent(decodeURIComponent(options.goal_id))}`
       : "/pages/diary-form/index";
@@ -63,7 +68,7 @@ Page({
   },
 
   onHide() { if (this.draftController && !this.data.submitting) this.setData(this.draftController.flush(this.data)); },
-  onUnload() { if (this.draftController && !this.data.submitting) this.draftController.flush(this.data); },
+  onUnload() { this._consentDisposed = true; finishServiceConsent(this, false); if (this.draftController && !this.data.submitting) this.draftController.flush(this.data); },
 
   scheduleDraftSave() {
     if (!this.draftController) return;

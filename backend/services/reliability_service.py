@@ -322,18 +322,24 @@ def fail_job(actor: dict, job_id: str, payload: dict) -> dict:
     with get_connection() as conn:
         row = _get_job(conn, job_id)
         item = row_to_dict(row)
-        if item["status"] != "leased" or item["lease_owner"] != actor["id"]:
+        if (item["status"] != "leased" or item["lease_owner"] != actor["id"]
+                or not item.get("lease_expires_at")
+                or datetime.fromisoformat(str(item["lease_expires_at"])) <= _now()):
             raise ReliabilityError("job_lease_conflict", "只有当前租约持有人可以记录失败。", 409)
         attempts = int(item["attempt_count"] or 0) + 1
         dead = attempts >= int(item["max_attempts"] or 3)
         status = "dead_letter" if dead else "retrying"
         available = _iso(now + timedelta(seconds=min(3600, 60 * (2 ** max(0, attempts - 1)))))
-        conn.execute(
+        updated = conn.execute(
             """UPDATE reliable_jobs SET status = ?, attempt_count = ?, available_at = ?,
                lease_owner = NULL, lease_expires_at = NULL, last_error_code = ?, updated_at = ?,
-               dead_lettered_at = ? WHERE id = ?""",
-            (status, attempts, available, error_code, _iso(now), _iso(now) if dead else None, job_id),
+               dead_lettered_at = ? WHERE id = ? AND status = 'leased'
+               AND lease_owner = ? AND lease_expires_at = ? AND lease_expires_at > ?""",
+            (status, attempts, available, error_code, _iso(now), _iso(now) if dead else None,
+             job_id, actor["id"], item["lease_expires_at"], _iso(now)),
         )
+        if updated.rowcount != 1:
+            raise ReliabilityError("job_lease_conflict", "任务租约已改变，请重新读取任务。", 409)
         _record_job_action(conn, job_id, actor["id"], "fail", "leased", status, error_code, {"attempt_count": attempts, "backoff_seconds": min(3600, 60 * (2 ** max(0, attempts - 1)))})
         write_audit_log(conn, "reliable_job_failed", actor["id"], "reliable_job", job_id, {"status": status, "error_code": error_code, "attempt_count": attempts})
         conn.commit()
@@ -345,9 +351,16 @@ def complete_job(actor: dict, job_id: str) -> dict:
     with get_connection() as conn:
         row = _get_job(conn, job_id)
         item = row_to_dict(row)
-        if item["status"] != "leased" or item["lease_owner"] != actor["id"]:
+        if (item["status"] != "leased" or item["lease_owner"] != actor["id"]
+                or not item.get("lease_expires_at")
+                or datetime.fromisoformat(str(item["lease_expires_at"])) <= _now()):
             raise ReliabilityError("job_lease_conflict", "只有当前租约持有人可以完成任务。", 409)
-        conn.execute("UPDATE reliable_jobs SET status = 'completed', completed_at = ?, lease_owner = NULL, lease_expires_at = NULL, updated_at = ? WHERE id = ?", (timestamp, timestamp, job_id))
+        updated = conn.execute(
+            "UPDATE reliable_jobs SET status = 'completed', completed_at = ?, lease_owner = NULL, lease_expires_at = NULL, updated_at = ? WHERE id = ? AND status = 'leased' AND lease_owner = ? AND lease_expires_at = ? AND lease_expires_at > ?",
+            (timestamp, timestamp, job_id, actor["id"], item["lease_expires_at"], timestamp),
+        )
+        if updated.rowcount != 1:
+            raise ReliabilityError("job_lease_conflict", "任务租约已改变，请重新读取任务。", 409)
         _record_job_action(conn, job_id, actor["id"], "complete", "leased", "completed")
         write_audit_log(conn, "reliable_job_completed", actor["id"], "reliable_job", job_id, {})
         conn.commit()

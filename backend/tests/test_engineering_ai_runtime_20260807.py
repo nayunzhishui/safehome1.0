@@ -128,3 +128,90 @@ def test_rag_v2_tuning_defaults_are_bounded(monkeypatch):
     assert cfg["vector_top_k"] == 30
     assert cfg["final_context_k"] == 6
     assert cfg["rrf_k"] == 60
+
+
+@pytest.mark.parametrize("pooled", [False, True])
+@pytest.mark.parametrize("failure", ["enter", "commit", "rollback"])
+def test_mysql_adapter_releases_connection_on_transaction_failure(pooled, failure):
+    from database import MySQLConnection
+    from services.mysql_pool_runtime import PooledMySQLConnection
+
+    class BrokenConnection:
+        closed = False
+
+        def ping(self, **_kwargs):
+            if failure == "enter":
+                raise OSError("synthetic ping failure")
+
+        def commit(self):
+            if failure == "commit":
+                raise OSError("synthetic commit failure")
+
+        def rollback(self):
+            raise OSError("synthetic rollback failure")
+
+        def close(self):
+            self.closed = True
+
+    adapter_class = PooledMySQLConnection if pooled else MySQLConnection
+    adapter = adapter_class.__new__(adapter_class)
+    connection = BrokenConnection()
+    adapter._connection = connection
+    if failure == "rollback":
+        with pytest.raises(ValueError, match="original transaction failure"):
+            with adapter:
+                raise ValueError("original transaction failure")
+    else:
+        with pytest.raises(OSError, match=f"synthetic {'ping' if failure == 'enter' else 'commit'} failure"):
+            with adapter:
+                pass
+    assert connection.closed
+
+
+@pytest.mark.parametrize("pooled", [False, True])
+def test_mysql_disconnect_between_writes_does_not_commit_partial_transaction(pooled):
+    from database import MySQLConnection
+    from services.mysql_pool_runtime import PooledMySQLConnection
+    class Connection:
+        def __init__(self):
+            self.pending, self.saved, self.pings, self.begins = [], [], [], 0
+            self.lost = self.closed = False
+        def begin(self): self.begins += 1
+        def ping(self, reconnect):
+            self.pings.append(reconnect)
+            if self.lost:
+                self.pending = []
+                if not reconnect: raise OSError("synthetic connection lost")
+                self.lost = False
+        def cursor(self): return self
+        def execute(self, sql, params): self.pending.append(params[0])
+        def commit(self): self.saved.extend(self.pending); self.pending = []
+        def rollback(self): self.pending = []
+        def close(self): self.closed = True
+    adapter_class = PooledMySQLConnection if pooled else MySQLConnection
+    adapter = adapter_class.__new__(adapter_class); adapter._connection = connection = Connection()
+    with pytest.raises(OSError, match="connection lost"):
+        with adapter:
+            adapter.execute("INSERT INTO synthetic VALUES (?)", ["first"])
+            connection.lost = True
+            adapter.execute("INSERT INTO synthetic VALUES (?)", ["second"])
+    assert connection.saved == [] and connection.closed
+    assert connection.pings == [True, False, False]
+    if pooled: assert connection.begins == 1
+
+
+def test_mysql_pool_restarts_transaction_guard_after_explicit_commit():
+    from services.mysql_pool_runtime import PooledMySQLConnection
+    class Connection:
+        def __init__(self): self.begins = 0
+        def begin(self): self.begins += 1
+        def ping(self, reconnect): pass
+        def cursor(self): return self
+        def execute(self, sql, params): pass
+        def commit(self): pass
+        def rollback(self): pass
+    adapter = PooledMySQLConnection.__new__(PooledMySQLConnection); adapter._connection = connection = Connection()
+    adapter.execute("SELECT 1"); adapter.execute("SELECT 2")
+    adapter.commit(); adapter.execute("SELECT 3")
+    adapter.rollback(); adapter.execute("SELECT 4")
+    assert connection.begins == 3

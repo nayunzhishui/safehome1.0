@@ -54,14 +54,19 @@ def _manifest(path: Path) -> dict:
             )
         ]
         latest = None
+        explicit_latest = None
         if "schema_migrations" in tables:
             row = conn.execute("SELECT version FROM schema_migrations ORDER BY version DESC LIMIT 1").fetchone()
             latest = row[0] if row else None
+        if "explicit_schema_migrations" in tables:
+            row = conn.execute("SELECT version FROM explicit_schema_migrations ORDER BY version DESC LIMIT 1").fetchone()
+            explicit_latest = row[0] if row else None
     return {
         "sha256": sha256_file(path),
         "schema_hash": hashlib.sha256("\n".join(schema_lines).encode("utf-8")).hexdigest(),
         "table_row_counts": row_counts,
         "schema_version": latest,
+        "explicit_migration_head": explicit_latest,
         "created_at": database.now_iso(),
     }
 
@@ -78,6 +83,11 @@ def _with_database(path: Path, callback):
 def _apply(path: Path) -> dict:
     def run():
         database.init_db()
+        # Match development/validation startup: explicit migrations follow legacy init.
+        from services.schema_migration_service import apply_pending_schema_migrations
+        with database.get_connection() as conn:
+            apply_pending_schema_migrations(conn)
+            conn.commit()
         return database.check_database_health()
 
     return _with_database(path, run)
@@ -214,6 +224,7 @@ def exercise(work_dir: Path | None = None) -> dict:
             backup_manifest["schema_hash"] == restored_manifest["schema_hash"]
             and backup_manifest["table_row_counts"] == restored_manifest["table_row_counts"]
             and backup_manifest["schema_version"] == restored_manifest["schema_version"]
+            and backup_manifest["explicit_migration_head"] == restored_manifest["explicit_migration_head"]
         )
 
         mysql = mysql57_contract()
@@ -222,6 +233,10 @@ def exercise(work_dir: Path | None = None) -> dict:
             "matrix_version": matrix["version"],
             "target_schema": matrix["target_schema"],
             "scenarios": {
+                "target_migration_heads": (
+                    first_manifest["schema_version"] == matrix["target_schema"]["version"]
+                    and first_manifest["explicit_migration_head"] == matrix["target_schema"]["explicit_migration_head"]
+                ),
                 "empty_database": empty_health["ok"],
                 "legacy_database": legacy_health["ok"] and legacy_preserved,
                 "repeated_apply": repeated_health["ok"] and first_manifest["schema_hash"] == repeated_manifest["schema_hash"],
