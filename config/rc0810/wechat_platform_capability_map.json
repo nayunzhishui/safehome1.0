@@ -4,11 +4,11 @@
   "inventory_sources": {
     "app_json": {
       "path": "apps/miniprogram/app.json",
-      "sha256": "bbd7c09afcb50113f14282f752dc3b026de635ea881a5af0ed6f9cdaaf8b89cc"
+      "sha256": "2dfaa5009db98bd1dcbb7961eda8a1911daf54113b8e2c56ccb645112f8cecaf"
     },
     "api_client": {
       "path": "apps/miniprogram/services/api.js",
-      "sha256": "5d0fb9da8138d0c9c559eee20eca10c42b0e588372c384ead7f7c359a6209ce4"
+      "sha256": "93f509bf9517db304e4fe85e3349fa96fb311fe819dfd43b137e51f4194d0c41"
     },
     "registered_pages_count": 53,
     "registered_pages_sha256": "2156f9a04788bef886f1d8d5d791c2c15f1941fd1e6a2136763893f8c49b2a78"

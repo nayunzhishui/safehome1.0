@@ -201,6 +201,20 @@ def test_f25a_semantics_reject_release_flag_required_outcome_and_invalidation_dr
     assert "review_freeze_invalidation_targets_incomplete" in module.validate_semantics(invalidation_mutation)
 
 
+def test_f25a_source_binding_accepts_git_line_endings_but_rejects_content_change(monkeypatch):
+    module = load_verifier_module()
+    definitions = module.load_definitions()
+    api_path = ROOT / "apps/miniprogram/services/api.js"
+    original_read = Path.read_bytes
+    source = original_read(api_path).replace(b"\r\n", b"\n")
+    definitions["capability"]["inventory_sources"]["api_client"]["sha256"] = module.sha256_bytes(source)
+    for candidate in (source, source.replace(b"\n", b"\r\n")):
+        monkeypatch.setattr(Path, "read_bytes", lambda path: candidate if path == api_path else original_read(path))
+        assert "capability_inventory_source_mismatch" not in module.validate_semantics(definitions)
+    monkeypatch.setattr(Path, "read_bytes", lambda path: source + b"// changed source\n" if path == api_path else original_read(path))
+    assert "capability_inventory_source_mismatch" in module.validate_semantics(definitions)
+
+
 def test_f25a_semantics_reject_duplicate_ids_unknown_states_and_unknown_fields():
     module = load_verifier_module()
     definitions = module.load_definitions()

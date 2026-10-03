@@ -288,8 +288,9 @@ def validate_semantics(definitions: dict[str, dict[str, Any]]) -> list[str]:
     api_path = ROOT / "apps/miniprogram/services/api.js"
     app_pages = load_json(app_path).get("pages", [])
     expected_sources = {
-        "app_json": {"path": "apps/miniprogram/app.json", "sha256": sha256_file(app_path)},
-        "api_client": {"path": "apps/miniprogram/services/api.js", "sha256": sha256_file(api_path)},
+        # Git archives normalize CRLF; bind source text while retaining content drift checks.
+        "app_json": {"path": "apps/miniprogram/app.json", "sha256": sha256_bytes(app_path.read_bytes().replace(b"\r\n", b"\n"))},
+        "api_client": {"path": "apps/miniprogram/services/api.js", "sha256": sha256_bytes(api_path.read_bytes().replace(b"\r\n", b"\n"))},
         "registered_pages_count": len(app_pages),
         "registered_pages_sha256": _canonical_sha256(app_pages),
     }
