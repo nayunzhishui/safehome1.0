@@ -780,21 +780,16 @@
     {
       "file": "backend/services/family_binding_service.py",
       "profile": "binding_security_profile",
-      "source_sha256": "3703888538909f075087cee5dc395634332935ca1f4ecb8ff654983379abea34",
+      "source_sha256": "3646f3cb4b1ad1643738bba4c25ab96f83447e2415ce672d8a6dc9cdb3af6080",
       "reads": [
         {
-          "line": 39,
+          "line": 38,
           "name": "FAMILY_BIND_CODE_PEPPER",
           "access": "os.environ.get"
         },
         {
-          "line": 40,
+          "line": 39,
           "name": "SECRET_KEY",
-          "access": "os.environ.get"
-        },
-        {
-          "line": 131,
-          "name": "APP_ENV",
           "access": "os.environ.get"
         }
       ]
@@ -831,7 +826,7 @@
     {
       "file": "backend/services/redis_service.py",
       "profile": "redis_infrastructure_profile",
-      "source_sha256": "19b097d1d86dfe78b77eef16dccf928107ee88009cc75ea4dcd077637b935d74",
+      "source_sha256": "0790bb40d0aae8edf321317869c849e100680d80ce85da8f896e191a9ffa561d",
       "reads": [
         {
           "line": 25,
@@ -880,10 +875,10 @@
     {
       "file": "backend/services/runtime_bootstrap.py",
       "profile": "pre_app_infrastructure_profile",
-      "source_sha256": "5b09f31a779d62380d3fe9e4bd80ada75dc0b2f3b3113a3d3857e3b44e3acfdd",
+      "source_sha256": "bc3f5502c93a22baecfea8053561855612f63e445b387d815618f052b2e11963",
       "reads": [
         {
-          "line": 20,
+          "line": 21,
           "name": "<dynamic>",
           "access": "os.environ.get"
         }

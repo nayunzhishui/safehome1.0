@@ -27,7 +27,8 @@ from routes.auth_utils import (
 )
 from routes.utils import fail, ok, require_admin_token
 from services.data_claim_service import claim_preview, claim_records, register_claim_candidate
-from services.redis_service import hash_component as redis_hash_component, rate_limit as redis_rate_limit
+from services.redis_service import hash_component
+from services.request_rate_limit_service import rate_limit as database_rate_limit
 from services.identity_lifecycle_service import (
     BACKEND_ROLES,
     PARTICIPANT_ROLES,
@@ -1361,13 +1362,11 @@ def data_claim():
     idempotency_key = str(request.headers.get("Idempotency-Key") or "").strip()
     if not idempotency_key:
         return fail("idempotency_key_required", "匿名认领必须提供 Idempotency-Key", status=400)
-    production = str(current_app.config.get("APP_ENV") or "").lower() == "production"
-    rate_decision = redis_rate_limit(
+    rate_decision = database_rate_limit(
         "data-claim:"
-        + redis_hash_component(f"{actor['id']}:{request.remote_addr or 'unknown'}", salt="data-claim"),
+        + hash_component(f"{actor['id']}:{request.remote_addr or 'unknown'}", salt="data-claim"),
         limit=int(current_app.config.get("DATA_CLAIM_RATE_LIMIT_PER_MINUTE", 10)),
         window_seconds=60,
-        unavailable_policy="deny" if production else "deny_if_enabled",
     )
     if not rate_decision["allowed"]:
         if not rate_decision["available"]:

@@ -355,7 +355,7 @@ def test_downstream_failure_rolls_back_redemption_and_attempt_ledger(tmp_path, m
     assert retried.status_code == 200
 
 
-def test_configured_redis_failure_blocks_redemption_without_mutation(tmp_path, monkeypatch):
+def test_database_counter_failure_blocks_redemption_without_mutation(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
     _, parent_token = _register(client, "f13-parent-redis", "parent")
@@ -367,12 +367,9 @@ def test_configured_redis_failure_blocks_redemption_without_mutation(tmp_path, m
 
     from services import family_binding_service
 
-    monkeypatch.setattr(family_binding_service, "redis_settings", lambda: {"enabled": True})
-    monkeypatch.setattr(
-        family_binding_service,
-        "redis_rate_limit",
-        lambda *_args, **_kwargs: {"available": False, "allowed": True},
-    )
+    def unavailable(*_args, **_kwargs):
+        raise RuntimeError("synthetic counter failure")
+    monkeypatch.setattr(family_binding_service, "_increment_db_limit", unavailable)
     response = client.post(
         "/api/family/bind-student",
         headers={
@@ -395,7 +392,7 @@ def test_configured_redis_failure_blocks_redemption_without_mutation(tmp_path, m
     assert attempt_rows == 0
 
 
-def test_production_without_redis_blocks_redemption_without_mutation(tmp_path, monkeypatch):
+def test_production_without_redis_redeems_with_database_protection(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
     _, parent_token = _register(client, "f13-parent-production-redis", "parent")
@@ -416,16 +413,15 @@ def test_production_without_redis_blocks_redemption_without_mutation(tmp_path, m
         json={"bind_code": created["bind_code"]},
     )
 
-    assert response.status_code == 503
-    assert response.get_json()["error"]["code"] == "family_binding_rate_limit_unavailable"
+    assert response.status_code == 200
 
     import database
 
     with database.get_connection() as conn:
         link = conn.execute("SELECT * FROM family_links WHERE id = ?", (created["id"],)).fetchone()
         attempt_rows = conn.execute("SELECT COUNT(*) AS count FROM family_bind_rate_limits").fetchone()["count"]
-    assert link["status"] == "pending"
-    assert attempt_rows == 0
+    assert link["status"] == "consumed"
+    assert attempt_rows == 4
 
 
 def test_full_binding_code_never_enters_audit_or_request_logs(tmp_path, monkeypatch, caplog):

@@ -10,7 +10,8 @@ from flask import g, jsonify, request
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from services.mysql_pool_runtime import install_mysql_pool, status as mysql_pool_status
-from services.redis_service import health as redis_health, rate_limit
+from services.redis_service import health as redis_health
+from services.request_rate_limit_service import rate_limit
 
 
 _PRE_APP_STATUS: dict[str, Any] = {}
@@ -73,14 +74,12 @@ def configure_app(app) -> dict[str, Any]:
         if spec is None:
             return None
         bucket_name, limit, window = spec
-        production = str(app.config.get("APP_ENV") or "").lower() == "production"
         decision = rate_limit(
             f"{bucket_name}:{_client_key(app)}",
             limit=limit,
             window_seconds=window,
-            unavailable_policy="deny" if production else "deny_if_enabled",
         )
-        g.redis_rate_limit = decision
+        g.request_rate_limit = decision
         if decision["allowed"]:
             return None
         unavailable = not decision.get("available")
@@ -100,7 +99,7 @@ def configure_app(app) -> dict[str, Any]:
 
     @app.after_request
     def add_runtime_rate_headers(response):
-        decision = getattr(g, "redis_rate_limit", None)
+        decision = getattr(g, "request_rate_limit", None)
         if isinstance(decision, dict) and decision.get("available"):
             response.headers["X-RateLimit-Limit"] = str(decision["limit"])
             response.headers["X-RateLimit-Remaining"] = str(decision["remaining"])

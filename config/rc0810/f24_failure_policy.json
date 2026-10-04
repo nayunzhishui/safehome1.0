@@ -3,23 +3,25 @@
   "routes": {
     "/api/auth/login": {
       "risk": "authentication_bruteforce",
-      "redis_unavailable": "fail_closed_503",
-      "development_disabled": "allow_local_only"
+      "counter": "shared_database",
+      "database_unavailable": "fail_closed_503"
     },
     "/api/auth/data-claim": {
       "risk": "bearer_token_guess_or_replay",
-      "redis_unavailable": "fail_closed_503",
-      "database_fallback": "actor_scoped_attempt_lock"
+      "counter": "shared_database",
+      "database_unavailable": "fail_closed_503",
+      "actor_attempt_lock": "retained"
     },
     "/api/ai-qa/*": {
       "risk": "cost_and_abuse",
-      "redis_unavailable": "fail_closed_503",
-      "development_disabled": "allow_local_only"
+      "counter": "shared_database",
+      "database_unavailable": "fail_closed_503"
     },
     "/api/family/bind-student": {
       "risk": "cross_account_binding",
-      "redis_unavailable": "fail_closed_503_when_configured_or_production",
-      "database_fallback": "dimension_rate_limit_ledger"
+      "counter": "shared_database",
+      "database_unavailable": "fail_closed_503",
+      "ledger": "dimension_rate_limit_ledger"
     }
   },
   "ordinary_cache": {

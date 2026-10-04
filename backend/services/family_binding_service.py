@@ -9,9 +9,8 @@ import secrets
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from database import new_id, row_to_dict
-from services.redis_service import rate_limit as redis_rate_limit
-from services.redis_service import settings as redis_settings
+from database import row_to_dict
+from services.request_rate_limit_service import increment_db_limit
 
 
 BIND_CODE_DIGITS = 10
@@ -65,52 +64,8 @@ def _increment_db_limit(
     dimension_hash: str,
     timestamp: str,
 ) -> int:
-    window_key = _window_key(timestamp)
-    params = (
-        new_id("family_limit"),
-        dimension,
-        dimension_hash,
-        window_key,
-        timestamp,
-        timestamp,
-        timestamp,
-    )
-    if getattr(conn, "provider", "sqlite") == "mysql":
-        conn.execute(
-            """
-            INSERT INTO family_bind_rate_limits (
-                id, dimension, dimension_hash, window_key, attempt_count,
-                last_attempt_at, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, 1, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE
-                attempt_count = attempt_count + 1,
-                last_attempt_at = VALUES(last_attempt_at),
-                updated_at = VALUES(updated_at)
-            """,
-            params,
-        )
-    else:
-        conn.execute(
-            """
-            INSERT INTO family_bind_rate_limits (
-                id, dimension, dimension_hash, window_key, attempt_count,
-                last_attempt_at, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, 1, ?, ?, ?)
-            ON CONFLICT(dimension, dimension_hash, window_key) DO UPDATE SET
-                attempt_count = family_bind_rate_limits.attempt_count + 1,
-                last_attempt_at = excluded.last_attempt_at,
-                updated_at = excluded.updated_at
-            """,
-            params,
-        )
-    row = conn.execute(
-        """
-        SELECT attempt_count FROM family_bind_rate_limits
-        WHERE dimension = ? AND dimension_hash = ? AND window_key = ?
-        """,
-        (dimension, dimension_hash, window_key),
-    ).fetchone()
-    return int(row["attempt_count"])
+    return increment_db_limit(conn, dimension=dimension, dimension_hash=dimension_hash,
+                              window_key=_window_key(timestamp), timestamp=timestamp)
 
 
 def enforce_redemption_rate_limits(
@@ -128,31 +83,19 @@ def enforce_redemption_rate_limits(
         "ip": ip_address or "unknown",
         "code": bind_code,
     }
-    redis_required = os.environ.get("APP_ENV", "development").strip().lower() == "production"
-    redis_enabled = bool(redis_settings()["enabled"])
-    if redis_required and not redis_enabled:
-        raise FamilyBindingError("family_binding_rate_limit_unavailable", "绑定保护暂时不可用，请稍后再试。", 503)
-
     blocked = False
-    for dimension, value in values.items():
-        digest = _dimension_hash(dimension, value)
-        limit = RATE_LIMITS[dimension]
-        if redis_enabled:
-            decision = redis_rate_limit(
-                f"family-bind:{dimension}:{digest}",
-                limit=limit,
-                window_seconds=RATE_LIMIT_WINDOW_SECONDS,
+    try:
+        for dimension, value in values.items():
+            count = _increment_db_limit(
+                conn, dimension=dimension, dimension_hash=_dimension_hash(dimension, value),
+                timestamp=timestamp,
             )
-            if not decision["available"]:
-                raise FamilyBindingError("family_binding_rate_limit_unavailable", "绑定保护暂时不可用，请稍后再试。", 503)
-            blocked = blocked or not decision["allowed"]
-        count = _increment_db_limit(
-            conn,
-            dimension=dimension,
-            dimension_hash=digest,
-            timestamp=timestamp,
-        )
-        blocked = blocked or count > limit
+            blocked = blocked or count > RATE_LIMITS[dimension]
+    except Exception as exc:
+        conn.rollback()
+        raise FamilyBindingError(
+            "family_binding_rate_limit_unavailable", "绑定保护暂时不可用，请稍后再试。", 503
+        ) from exc
 
     if blocked:
         code_hash = hash_bind_code(bind_code)

@@ -5,6 +5,9 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
+
+import pytest
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -17,6 +20,7 @@ def _fresh_app(tmp_path):
         if name in {"app", "config", "database", "models"} or name.startswith("routes.") or name.startswith("services."):
             sys.modules.pop(name, None)
     os.environ["APP_ENV"] = "testing"
+    os.environ["DB_PROVIDER"] = "sqlite"
     os.environ["DATABASE_PATH"] = str(tmp_path / "f24.sqlite3")
     os.environ["CONTENT_DIR"] = str(PROJECT_ROOT / "content")
     os.environ.pop("REDIS_URL", None)
@@ -72,18 +76,97 @@ def test_redis_unavailable_policy_distinguishes_disabled_and_broken(monkeypatch)
     assert denied["reason"] == "redis_unavailable"
 
 
-def test_auth_route_fails_closed_when_configured_redis_is_unavailable(tmp_path, monkeypatch):
+@pytest.mark.parametrize('redis_url', ['', 'redis://configured-but-unavailable:6379/0'])
+def test_production_login_uses_database_without_redis(tmp_path, monkeypatch, redis_url):
     app = _fresh_app(tmp_path)
-    monkeypatch.setenv("REDIS_URL", "redis://configured-but-unavailable:6379/0")
+    client = app.test_client()
+    monkeypatch.setenv("REDIS_URL", redis_url)
     redis_service = importlib.import_module("services.redis_service")
     monkeypatch.setattr(redis_service, "get_client", lambda: None)
     importlib.import_module("services.runtime_bootstrap").configure_app(app)
-    response = app.test_client().post(
+    response = client.post('/api/auth/register', json={
+        'username': 'database-login', 'password': 'password-123', 'role': 'parent',
+    })
+    assert response.status_code == 201
+    app.config['APP_ENV'] = 'production'
+    response = client.post(
         "/api/auth/login",
-        json={"username": "nobody", "password": "password-123"},
+        json={"username": "database-login", "password": "password-123"},
     )
-    assert response.status_code == 503
-    assert response.get_json()["error"]["code"] == "rate_limit_unavailable"
+    assert response.status_code == 200
+    assert response.get_json()['data']['user']['username'] == 'database-login'
+
+
+def test_runtime_database_limit_blocks_excess_and_database_failure(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path)
+    app.config['APP_ENV'] = 'production'
+    app.config['REDIS_LOGIN_RATE_LIMIT_PER_MINUTE'] = 2
+    limiter = importlib.import_module('services.request_rate_limit_service')
+    monkeypatch.setattr(limiter.time, 'time', lambda: 1800000000)
+    importlib.import_module('services.runtime_bootstrap').configure_app(app)
+    client = app.test_client()
+    for _ in range(2):
+        assert client.post('/api/auth/login', json={}).status_code == 401
+    denied = client.post('/api/auth/login', json={})
+    assert denied.status_code == 429
+    assert denied.get_json()['error']['code'] == 'rate_limited'
+    assert denied.headers['X-RateLimit-Remaining'] == '0'
+    monkeypatch.setattr(limiter.time, 'time', lambda: 1800000060)
+    assert client.post('/api/auth/login', json={}).status_code == 401
+    def unavailable():
+        raise RuntimeError('synthetic database outage')
+    monkeypatch.setattr(limiter, 'get_connection', unavailable)
+    failed = client.post('/api/auth/login', json={})
+    assert failed.status_code == 503
+    assert failed.get_json()['error']['code'] == 'rate_limit_unavailable'
+
+
+def test_database_limit_counts_concurrent_connections_and_expires_old_buckets(tmp_path, monkeypatch):
+    _fresh_app(tmp_path)
+    limiter = importlib.import_module('services.request_rate_limit_service')
+    monkeypatch.setattr(limiter.time, 'time', lambda: 1800000000)
+    def attempt(_):
+        return limiter.rate_limit('auth-login:synthetic-digest', limit=5, window_seconds=60)
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        decisions = list(pool.map(attempt, range(12)))
+    assert all(d['available'] for d in decisions)
+    assert sum(d['allowed'] for d in decisions) == 5
+    database = importlib.import_module('database')
+    with database.get_connection() as conn:
+        row = conn.execute('SELECT attempt_count FROM family_bind_rate_limits').fetchone()
+        assert row['attempt_count'] == 12
+    monkeypatch.setattr(limiter.time, 'time', lambda: 1800086460)
+    assert attempt(0)['allowed']
+    with database.get_connection() as conn:
+        assert conn.execute('SELECT COUNT(*) AS n FROM family_bind_rate_limits').fetchone()['n'] == 1
+
+
+def test_database_limit_is_shared_between_worker_processes(tmp_path):
+    _fresh_app(tmp_path)
+    code = """import json
+from services import request_rate_limit_service as limiter
+limiter.time.time = lambda: 1800000000
+print(json.dumps([limiter.rate_limit('auth-login:process-digest', limit=4,
+window_seconds=60)['allowed'] for _ in range(3)]))"""
+    results = []
+    for _ in range(2):
+        completed = subprocess.run([sys.executable, '-B', '-c', code], cwd=BACKEND_ROOT,
+            capture_output=True, text=True, check=True, timeout=30)
+        results.extend(json.loads(completed.stdout))
+    assert results == [True, True, True, True, False, False]
+
+
+def test_claim_rate_limit_is_database_backed_without_redis(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    _user_id, headers = _seed_claimable_account(client)
+    preview = client.get('/api/auth/data-claim-preview', headers=headers).get_json()['data']
+    app.config['APP_ENV'] = 'production'
+    response = client.post('/api/auth/data-claim',
+        headers={**headers, 'Idempotency-Key': 'database-claim'},
+        json={'claim_id': preview['claim_id'], 'confirm': True,
+              'expected_version': preview['version']})
+    assert response.status_code == 200
 
 
 def test_claim_token_is_high_entropy_digest_only_and_one_time(tmp_path):
@@ -187,6 +270,9 @@ def test_config_inventory_and_legacy_compatibility_contract_are_current(tmp_path
     inventory = json.loads((PROJECT_ROOT / "config/rc0810/config_read_inventory.json").read_text(encoding="utf-8"))
     assert inventory["unclassified_reads"] == []
     policy = json.loads((PROJECT_ROOT / "config/rc0810/f24_failure_policy.json").read_text(encoding="utf-8"))
-    assert policy["routes"]["/api/auth/login"]["redis_unavailable"] == "fail_closed_503"
+    for route in ('/api/auth/login', '/api/auth/data-claim', '/api/ai-qa/*', '/api/family/bind-student'):
+        assert policy['routes'][route]['counter'] == 'shared_database'
+        assert policy['routes'][route]['database_unavailable'] == 'fail_closed_503'
+        assert 'redis_unavailable' not in policy['routes'][route]
     contract = json.loads((PROJECT_ROOT / "shared/contracts/api-contract.json").read_text(encoding="utf-8"))
     assert any(item["path"] == "/api/auth/data-claim" and item["method"] == "POST" for item in contract["endpoints"])

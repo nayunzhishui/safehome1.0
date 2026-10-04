@@ -1460,7 +1460,9 @@ Invoke-WebRequest `
 | `phone_login.available/mode` | 容器微信令牌文件或标准微信 access token 配置是否可用 |
 | `privacy_notice` | 能力探测的隐私边界 |
 
-该接口用于区分“按钮代码故障”和“CloudBase 外部能力未配置”。即使快捷登录不可用，账号密码登录也必须继续可用。
+该接口用于区分“按钮代码故障”和“CloudBase 外部能力未配置”。即使快捷登录不可用，账号密码登录也必须继续可用。`available` 不代表依赖连通或真实登录已通过。
+
+2026-10-04 实现增量：`POST /api/auth/login` 请求次数改由现有数据库表共享计数，无需 Redis；默认每个客户端摘要每分钟 20 次，超限仍为 `429 rate_limited`，数据库计数不可用仍为 `503 rate_limit_unavailable`。账户原有连续失败锁定、密码验证和会话权限保留。匿名认领及 AI 请求次数保护也使用数据库；兼容保留既有 `REDIS_LOGIN_RATE_LIMIT_PER_MINUTE`／`REDIS_AI_RATE_LIMIT_PER_MINUTE` 配置名称，名称不再代表 Redis 依赖。微信、手机号接口与凭证校验契约未改。此为本地源码行为，尚未部署云端。
 
 ### `POST /api/auth/wechat-login`
 
@@ -2605,5 +2607,5 @@ canonical v1 按字段名排序，保留显式空值，时间字段归一为 UTC
 
 - `POST /api/family/create-bind-code`：仅家长可调用；返回一次性展示的 10 位数字绑定码和 24 小时有效期。重新生成会撤销该家长已有的 `pending/locked` 码。
 - `POST /api/family/bind-student`：仅学生可调用；请求体为 `bind_code`，可带 `X-Device-Id`。兑换按账号、设备、IP 和单码限流，并使用状态、版本、有效期和锁定条件完成原子单次更新。
-- 成功兑换返回 `status=consumed`。错误、过期、撤销和重放统一返回 `bind_code_unavailable`（400），不暴露码是否存在；超限返回 `family_binding_rate_limited`（429）。生产 Redis 未配置或不可用时返回 `family_binding_rate_limit_unavailable`（503）且不兑换。
+- 成功兑换返回 `status=consumed`。错误、过期、撤销和重放统一返回 `bind_code_unavailable`（400），不暴露码是否存在；超限返回 `family_binding_rate_limited`（429）。数据库计数不可用时返回 `family_binding_rate_limit_unavailable`（503）且不兑换；2026-10-04 源码不再要求 Redis。
 - 完整绑定码不得进入数据库业务字段、审计元数据、限流账本或错误响应。未满 14 周岁路径仍先完成年龄确认；绑定成功只建立监护关系，不自动生成监护人敏感数据处理同意。

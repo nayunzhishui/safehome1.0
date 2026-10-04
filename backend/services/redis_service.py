@@ -159,8 +159,8 @@ def rate_limit(
     """Apply a fixed-window limit with an explicit Redis failure policy.
 
     ``deny_if_enabled`` permits intentional local disablement but blocks when a
-    configured Redis instance is unavailable. ``deny`` is used by production
-    authentication and other abuse-sensitive paths.
+    configured Redis instance is unavailable. Callers select their failure
+    policy explicitly; authentication uses the shared database counters.
     """
     if unavailable_policy not in {"allow", "deny", "deny_if_enabled"}:
         raise ValueError("unsupported Redis unavailable policy")
