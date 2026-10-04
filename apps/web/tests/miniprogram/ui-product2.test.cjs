@@ -517,6 +517,104 @@ function homeApi(overrides = {}) {
   };
 }
 
+function homeWithRealApi() {
+  const api = {};
+  const h = pageHarness('home', api);
+  const requests = [];
+  h.context.wx.request = options => requests.push(options);
+  const mod = { exports: {} };
+  vm.runInNewContext(read('services/api.js'), {
+    module: mod, wx: h.context.wx, console,
+    require(name) {
+      if (name === './userIdentity') return { getAnonymousUserId: () => 'synthetic-anonymous' };
+      if (name === './cloudConfig') return {
+        DEFAULT_CLOUD_CONFIG: {},
+        getCloudConfig: () => ({ useLocalHttp: true, localHttpBaseUrl: 'http://synthetic.invalid' }),
+      };
+      throw new Error(name);
+    },
+  });
+  Object.assign(api, mod.exports.createSafeHomeApi());
+  return { ...h, requests };
+}
+
+test('首页登录态：未登录不显示摘要错误或读取个人数据，行动可进入登录', async () => {
+  const h = homeWithRealApi();
+  await h.page.refreshHomeData();
+  await h.page.loadTodayJourney();
+  assert.equal(h.requests.length, 0);
+  assert.equal(h.page.data.homeOverviewError, '');
+  assert.equal(h.page.data.latestRecordError, '');
+  assert.equal(h.page.data.progressSummaryError, '');
+  assert.equal(h.page.data.homeLoginRequired, true);
+  assert.equal(h.page.data.latestRecordReady, true);
+  assert.equal(h.page.data.progressSummaryReady, true);
+  h.page.openTodayAction();
+  assert.equal(h.navigation[0].url, '/pages/login/index');
+  assert.equal(h.requests.length, 0);
+});
+
+test('首页登录态：当前会话401后清旧摘要、结束等待并显示登录入口，保留草稿', async () => {
+  const h = homeWithRealApi(); switchAccount(h, 'A');
+  h.storage.set('safehome:programDraft:own-program:1:user:A', { draftText: 'synthetic-draft' });
+  h.page.data.latestRecord = { mood: 'old-private' };
+  h.page.data.progressSummary = { summaryText: 'old-private' };
+  const run = h.page.refreshHomeData();
+  assert.equal(h.requests.length, 6);
+  for (const request of h.requests) {
+    request.success({ statusCode: 401, data: { error: { code: 'unauthorized' } } });
+  }
+  await run; await new Promise(setImmediate);
+  assert.equal(h.storage.has('auth_token'), false);
+  assert.equal(h.page.data.latestRecord, null);
+  assert.equal(h.page.data.progressSummary, null);
+  assert.equal(h.page.data.todayJourneyLoading, false);
+  assert.equal(h.page.data.homeLoginRequired, true);
+  assert.equal(h.page.data.todayJourney.type, 'login_required');
+  assert.equal(h.page.data.homeOverviewError, '');
+  assert.equal(h.storage.has('safehome:programDraft:own-program:1:user:A'), true);
+});
+
+test('首页登录态：登录后恢复个人读取，普通网络错误仍允许重试', async () => {
+  const h = homeWithRealApi();
+  await h.page.refreshHomeData();
+  switchAccount(h, 'A');
+  const run = h.page.refreshHomeData();
+  assert.equal(h.requests.length, 6);
+  for (const request of h.requests) {
+    request.fail({ errMsg: 'synthetic network failure' });
+  }
+  await run; await new Promise(setImmediate);
+  assert.equal(h.page.data.homeLoginRequired, false);
+  assert.equal(h.storage.get('auth_token'), 'synthetic-A');
+  assert.ok(h.page.data.homeOverviewError);
+  assert.ok(h.page.data.latestRecordError);
+  assert.ok(h.page.data.progressSummaryError);
+  assert.ok(h.page.data.todayJourneyError);
+  const requestCount = h.requests.length;
+  h.page.retryHomeData();
+  assert.equal(h.requests.length, requestCount + 6);
+  for (const request of h.requests.slice(requestCount)) {
+    request.success({ statusCode: 200, data: { ok: true, data: { items: [] } } });
+  }
+  await new Promise(setImmediate);
+  assert.equal(h.page.data.homeOverviewError, '');
+  assert.equal(h.page.data.latestRecordError, '');
+  assert.equal(h.page.data.progressSummaryError, '');
+});
+
+test('首页登录态：最近记录和阶段反馈未登录分支先于读取、错误和空记录', () => {
+  const template = read('pages/home/index.wxml');
+  for (const [heading, loginTitle] of [
+    ['最近记录', '登录后查看最近记录'], ['阶段性反馈', '登录后查看阶段性反馈'],
+  ]) {
+    const section = template.split(`<section-heading title="${heading}" />`)[1].split('</view>')[0];
+    assert.match(section, new RegExp(`wx:if="\\{\\{homeLoginRequired\\}\\}" kind="empty" title="${loginTitle}"`));
+    assert.ok(section.indexOf('homeLoginRequired') < section.indexOf('kind="loading"'));
+    assert.match(section, /wx:elif="\{\{![a-zA-Z]+Ready/);
+  }
+});
+
 test('首页不展示其他账号或无归属草稿的继续入口', async () => {
   const h = pageHarness('home', homeApi()); switchAccount(h, 'A');
   h.storage.set('safehome:programDraft:other-program:1:user:B', { draftText: 'other-owner' });

@@ -44,7 +44,7 @@
   />
 
   <view class="home-capture">
-    <entry-row class="thermometer-entry" icon="thermometer" title="情绪温度计" subtitle="{{thermometerRecordReady ? '今天已记录 ' + thermometerRecordCount + ' 次' : '记录次数待更新'}}" bind:action="openThermometer" />
+    <entry-row class="thermometer-entry" icon="thermometer" title="情绪温度计" subtitle="{{homeLoginRequired ? '登录后记录与查看' : (thermometerRecordReady ? '今天已记录 ' + thermometerRecordCount + ' 次' : '记录次数待更新')}}" bind:action="openThermometer" />
     <dual-entry left-key="assessment" left-icon="assessment" left-title="测一测" left-subtitle="了解此刻状态" right-key="diary" right-icon="diary" right-title="情绪日记" right-subtitle="记录具体小事" bind:action="openCoreEntry" />
   </view>
 
@@ -59,8 +59,9 @@
 
   <view class="home-section">
     <section-heading title="最近记录" />
+    <page-state wx:if="{{homeLoginRequired}}" kind="empty" title="登录后查看最近记录" />
     <page-state
-      wx:if="{{!latestRecordReady && !latestRecordError}}"
+      wx:elif="{{!latestRecordReady && !latestRecordError}}"
       kind="loading"
       title="正在读取最近记录"
     />
@@ -78,8 +79,9 @@
 
   <view class="home-section">
     <section-heading title="阶段性反馈" />
+    <page-state wx:if="{{homeLoginRequired}}" kind="empty" title="登录后查看阶段性反馈" />
     <page-state
-      wx:if="{{!progressSummaryReady && !progressSummaryError}}"
+      wx:elif="{{!progressSummaryReady && !progressSummaryError}}"
       kind="loading"
       title="正在读取阶段性反馈"
     />

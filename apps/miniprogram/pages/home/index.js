@@ -1,5 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
-const { captureAuthSession, isCurrentAuthSession } = require("../../utils/authGuard");
+const { captureAuthSession, isCurrentAuthSession, isLoggedIn } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
 const PRIVACY_NOTICE_VERSION = "2026.10-privacy-notice-v1";
@@ -7,7 +7,7 @@ const PRIVACY_NOTICE_KEY = "safehome_privacy_notice_seen";
 const PROTECTION_URL = "/pages/settings-detail/index?type=protection";
 
 function trackJourneyEvent(eventName, journey, status, extra = {}) {
-  if (!journey) return;
+  if (!journey || journey.type === "login_required") return;
   const clientEventId = [eventName, journey.type || "unknown", journey.sourceId || "none", formatLocalDate(new Date())].join(":");
   api.trackProductEvent(eventName, {
     action: journey.type,
@@ -163,6 +163,7 @@ function findLocalDraftAction() {
 
 Page({
   data: {
+    homeLoginRequired: false,
     privacyNoticeVisible: true,
     todayRecordCount: 0,
     todayRecordCountReady: false,
@@ -224,11 +225,42 @@ Page({
     this.setData({ privacyNoticeVisible: false });
   },
 
+  showLoginRequired() {
+    this._overviewRequestId = (this._overviewRequestId || 0) + 1;
+    this._journeyRequestId = (this._journeyRequestId || 0) + 1;
+    this.setData({
+      homeLoginRequired: true,
+      todayRecordCount: 0, todayRecordCountReady: false,
+      thermometerRecordCount: 0, thermometerRecordReady: false, unreadMessageCount: 0,
+      homeOverviewError: "", latestRecord: null, latestRecordReady: true, latestRecordError: "",
+      progressSummary: null, progressSummaryReady: true, progressSummaryError: "",
+      todayJourney: formatTodayJourney({
+        state: "not_due",
+        primary_action: {
+          type: "login_required",
+          title: "登录后查看今天的一小步",
+          description: "登录后才能根据你的记录和练习节奏整理下一步。",
+          button_label: "去登录",
+          url: "/pages/login/index",
+          source_type: "auth",
+        },
+        boundary_notice: "登录前不会读取或上传本机草稿内容。",
+      }),
+      todayJourneyLoading: false, todayJourneyError: "",
+    });
+  },
+
   async refreshHomeData() {
     if (this._homeHidden || this._homeDisposed) return;
+    if (!isLoggedIn()) { this.showLoginRequired(); return; }
+    this.setData({ homeLoginRequired: false });
     const session = captureAuthSession();
     const requestId = this._overviewRequestId = (this._overviewRequestId || 0) + 1;
-    const current = () => !this._homeHidden && !this._homeDisposed && this._overviewRequestId === requestId && isCurrentAuthSession(session);
+    const current = () => {
+      if (this._homeHidden || this._homeDisposed || this._overviewRequestId !== requestId) return false;
+      if (!isLoggedIn()) { this.showLoginRequired(); return false; }
+      return isCurrentAuthSession(session);
+    };
     this.loadTodayJourney();
     try {
       const todayKey = formatLocalDate(new Date());
@@ -298,9 +330,15 @@ Page({
 
   async loadTodayJourney() {
     if (this._homeHidden || this._homeDisposed) return;
+    if (!isLoggedIn()) { this.showLoginRequired(); return; }
+    this.setData({ homeLoginRequired: false });
     const session = captureAuthSession();
     const requestId = this._journeyRequestId = (this._journeyRequestId || 0) + 1;
-    const current = () => !this._homeHidden && !this._homeDisposed && this._journeyRequestId === requestId && isCurrentAuthSession(session);
+    const current = () => {
+      if (this._homeHidden || this._homeDisposed || this._journeyRequestId !== requestId) return false;
+      if (!isLoggedIn()) { this.showLoginRequired(); return false; }
+      return isCurrentAuthSession(session);
+    };
     this.setData({ todayJourneyLoading: true, todayJourneyError: "" });
     try {
       const payload = await api.getTodayJourney();
@@ -315,22 +353,7 @@ Page({
     } catch (error) {
       if (!current()) return;
       if (error && error.code === "auth_required") {
-        this.setData({
-          todayJourney: formatTodayJourney({
-            state: "not_due",
-            primary_action: {
-              type: "login_required",
-              title: "登录后查看今天的一小步",
-              description: "登录后才能根据你的记录和练习节奏整理下一步。",
-              button_label: "去登录",
-              url: "/pages/login/index",
-              source_type: "auth",
-            },
-            boundary_notice: "登录前不会读取或上传本机草稿内容。",
-          }),
-          todayJourneyLoading: false,
-          todayJourneyError: "",
-        });
+        this.showLoginRequired();
         return;
       }
       if (error && ["age_verification_required", "guardian_link_required", "guardian_consent_required", "child_assent_required", "blocked_withdrawn_or_refused"].includes(error.code)) {
