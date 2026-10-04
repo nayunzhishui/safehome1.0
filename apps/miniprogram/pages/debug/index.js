@@ -88,18 +88,38 @@ Page({
     wx.showToast({ title: "已切换本地后端", icon: "success" });
   },
 
-  useCloudBackend() {
-    saveCloudConfig({
-      ...DEVELOPMENT_CLOUD_TARGET,
-    });
-    this.refreshApi();
+  async useCloudBackend() {
     this.setData({
-      status: "idle",
-      resultTitle: "已切回云托管",
-      resultText: "现在会用 wx.cloud.callContainer 请求 CloudBase 云托管。",
+      status: "running",
+      resultTitle: "正在初始化云托管",
+      resultText: "",
       lastError: null,
     });
-    wx.showToast({ title: "已切回云托管", icon: "success" });
+    try {
+      if (!wx.cloud || typeof wx.cloud.init !== "function") {
+        throw new Error("当前基础库不支持云开发，请检查开发者工具与基础库配置。");
+      }
+      await wx.cloud.init({
+        env: DEVELOPMENT_CLOUD_TARGET.cloudEnvId,
+        traceUser: false,
+      });
+      saveCloudConfig({ ...DEVELOPMENT_CLOUD_TARGET });
+      this.refreshApi();
+      this.setData({
+        status: "idle",
+        resultTitle: "已切回云托管",
+        resultText: "云能力已初始化，可先测试 healthz；返回首页前请重新编译，使首页连接配置生效。",
+        lastError: null,
+      });
+      wx.showToast({ title: "已切回云托管", icon: "success" });
+    } catch (error) {
+      this.setData({
+        status: "error",
+        resultTitle: "云托管初始化未完成",
+        resultText: "请检查当前基础库与云开发环境后重试。",
+        lastError: formatError(error),
+      });
+    }
   },
 
   testAssessments() {

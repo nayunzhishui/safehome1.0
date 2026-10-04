@@ -3,6 +3,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[2]
 BUILDER = ROOT / "scripts" / "build_rc0810_miniprogram.py"
@@ -120,25 +122,56 @@ def test_f04_validation_build_uses_explicit_controlled_cloud_target(tmp_path):
     assert config["containerService"] == target["containerService"]
 
 
-def test_f04_validation_debug_page_can_switch_to_registered_cloud_target(tmp_path):
-    result = run_builder("validation", tmp_path)
-    assert result.returncode == 0, result.stderr
+@pytest.mark.parametrize("profile,init_failure", [("development", False), ("validation", False), ("development", True)])
+def test_f04_validation_debug_page_can_switch_to_registered_cloud_target(tmp_path, profile, init_failure):
+    module = ROOT / "apps" / "miniprogram" / "pages" / "debug" / "index.js"
+    if profile == "validation":
+        result = run_builder("validation", tmp_path)
+        assert result.returncode == 0, result.stderr
+        module = tmp_path / "pages" / "debug" / "index.js"
     script = f"""
-let page = null; let saved = null;
+let page = null; let saved = null; let initialized = false; let initOptions = null;
+const requests = [];
 global.wx = {{
-  getExtConfigSync: () => ({{}}), getStorageSync: () => ({{}}),
-  setStorageSync: (key, value) => {{ saved = value; }}, showToast: () => {{}},
+  getExtConfigSync: () => ({{}}),
+  getStorageSync: (key) => key === 'safehome_cloud_config' ? saved : undefined,
+  setStorageSync: (key, value) => {{ if (key === 'safehome_cloud_config') saved = value; }}, showToast: () => {{}},
+  cloud: {{
+    async init(options) {{
+      initOptions = options;
+      if ({json.dumps(init_failure)}) throw new Error('synthetic cloud initialization failed');
+      initialized = true;
+    }},
+    callContainer(options) {{
+      if (!initialized) throw new Error("Cloud API isn't enabled, please call wx.cloud.init first");
+      requests.push({{ path: options.path, env: options.config.env, service: options.header['X-WX-SERVICE'] }});
+      options.success({{ statusCode: 200, data: {{status:'ok'}}, header: {{}} }});
+    }},
+  }},
 }};
 global.Page = (value) => {{ page = value; }};
-const apiPath = {json.dumps(str(tmp_path / 'services' / 'api.js'))};
-require.cache[require.resolve(apiPath)] = {{ exports: {{ createSafeHomeApi: () => ({{ getDebugConfig: () => saved }}) }} }};
-require({json.dumps(str(tmp_path / 'pages' / 'debug' / 'index.js'))});
-page.setData = () => {{}}; page.refreshApi = () => {{}}; page.useCloudBackend();
-console.log(JSON.stringify(saved));
+require({json.dumps(str(module))});
+page.setData = (patch) => Object.assign(page.data, patch);
+(async () => {{
+  await page.useCloudBackend();
+  if (page.data.status !== 'error') await page.testHealthz();
+  console.log(JSON.stringify({{saved, initialized, initOptions, requests, status:page.data.status, error:page.data.lastError, resultText:page.data.resultText}}));
+}})().catch(error => {{console.error(error.message);process.exitCode = 1;}});
 """
     runtime = subprocess.run(["node", "-e", script], cwd=ROOT, capture_output=True, text=True, encoding="utf-8", check=False)
     assert runtime.returncode == 0, runtime.stderr
-    saved = json.loads(runtime.stdout)
+    outcome = json.loads(runtime.stdout)
+    assert outcome["initOptions"] == {"env": "prod-d3gl35otiaa7c8d24", "traceUser": False}
+    if init_failure:
+        assert outcome["saved"] is None
+        assert outcome["status"] == "error"
+        assert outcome["requests"] == []
+        assert "synthetic cloud initialization failed" in outcome["error"]["message"]
+        return
+    assert outcome["initialized"] is True
+    assert outcome["status"] == "success"
+    assert outcome["requests"] == [{"path": "/healthz", "env": "prod-d3gl35otiaa7c8d24", "service": "flask-gh3l"}]
+    saved = outcome["saved"]
     assert saved["cloudEnvId"] == "prod-d3gl35otiaa7c8d24"
     assert saved["containerService"] == "flask-gh3l"
 

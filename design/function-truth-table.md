@@ -2068,6 +2068,7 @@
 ### 52 云托管诊断 — `pages/debug/index`
 
 **用户任务：** 保留开发配置、诊断、请求与原始技术输出，仅开发用途。
+- 2026-10-04切云事件核对：`useCloudBackend`先调用`wx.cloud.init({env: DEVELOPMENT_CLOUD_TARGET.cloudEnvId, traceUser: false})`，成功后保存`safehome_cloud_config`并重建本页API；失败显示错误，不保存新配置。初始化期间使用已有running状态禁用按钮。同页healthz可立即测试，首页须重新编译加载连接配置；不清用户会话或草稿。合成SDK验证通过，真实云连通未验证。
 - 页面源码：`apps/miniprogram/pages/debug/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
 - 实际条件：`{{lastError}}`
 - 组件：`page-state`
