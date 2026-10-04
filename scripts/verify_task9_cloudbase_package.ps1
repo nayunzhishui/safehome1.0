@@ -11,6 +11,15 @@ $Root = Split-Path -Parent $PSScriptRoot
 $CodexTmp = Join-Path $Root ".codex_tmp"
 . (Join-Path $PSScriptRoot "cloudbase_package_source.ps1")
 
+$PackageSourcePaths = @(
+  "Dockerfile", ".dockerignore", "backend", "content", "shared",
+  "config/rc0810/database_profiles.json",
+  "config/rc0810/operations_reliability_policy.json",
+  "config/rc0810/research_execution_manifest_policy.json",
+  "config/rc0810/database_recovery_policy.json",
+  "deploy/verify_rc0810_f03_images.py"
+)
+
 function Get-ArchiveEntrySha256 {
   param([Parameter(Mandatory = $true)]$Entry)
 
@@ -38,7 +47,7 @@ function Assert-PackageSourceMatchesCommit {
   $referenceRoot = Join-Path $CodexTmp "task9-source-reference-$referenceId"
   $referenceArchive = Join-Path $CodexTmp "task9-source-reference-$referenceId.zip"
   try {
-    & git -C $Root archive --format=zip "--output=$referenceArchive" $Commit Dockerfile .dockerignore backend content shared config/rc0810/database_profiles.json deploy/verify_rc0810_f03_images.py
+    & git -C $Root archive --format=zip "--output=$referenceArchive" $Commit @PackageSourcePaths
     if ($LASTEXITCODE -ne 0) {
       throw "Unable to regenerate the recorded Git source archive."
     }
@@ -147,6 +156,9 @@ try {
     "shared/constants/api.ts",
     "shared/types/api.ts",
     "config/rc0810/database_profiles.json",
+    "config/rc0810/operations_reliability_policy.json",
+    "config/rc0810/research_execution_manifest_policy.json",
+    "config/rc0810/database_recovery_policy.json",
     "deploy/verify_rc0810_f03_images.py",
     $ManifestFile
   )
@@ -219,7 +231,8 @@ try {
   if ($manifestText -notmatch [regex]::Escape($PackageLabel)) {
     throw "Manifest does not identify the expected CloudBase package."
   }
-  if ($manifestText -notmatch "Included=Dockerfile,.dockerignore,backend,content,shared,config/rc0810/database_profiles.json,deploy/verify_rc0810_f03_images.py") {
+  $includedPathsPattern = "(?m)^Included=" + [regex]::Escape(($PackageSourcePaths -join ",")) + "\r?$"
+  if ($manifestText -notmatch $includedPathsPattern) {
     throw "Manifest does not list the expected included paths."
   }
   if ($manifestText -notmatch "SourceMode=git_archive_head") {

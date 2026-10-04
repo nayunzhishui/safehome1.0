@@ -245,7 +245,7 @@ class Config:
         tls_errors = tls_contract_errors(cls)
         if tls_errors:
             messages = {
-                "mysql_tls_ca_required": "生产 MySQL 必须配置有效 TLS CA 文件",
+                "mysql_tls_ca_required": "已配置的 MySQL TLS CA 文件不存在",
                 "mysql_tls_identity_verification_required": "生产 MySQL 必须启用主机身份校验",
                 "mysql_tls_minimum_version_too_low": "生产 MySQL 最低 TLS 版本必须为 TLSv1.2 或 TLSv1.3",
             }

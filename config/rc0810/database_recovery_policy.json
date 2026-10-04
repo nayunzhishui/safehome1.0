@@ -2,7 +2,8 @@
   "schema": "safehome.rc0810.database-recovery-policy.v1",
   "production_release_approved": false,
   "tls": {
-    "ca_required": true,
+    "ca_required": false,
+    "verification_when_ca_configured": true,
     "verify_identity": true,
     "minimum_version": "TLSv1.2",
     "secrets_or_paths_may_be_logged": false

@@ -1,4 +1,4 @@
-"""Fail-closed MySQL TLS and isolated synthetic backup/restore helpers."""
+"""Optional verified MySQL TLS and isolated synthetic backup/restore helpers."""
 
 from __future__ import annotations
 
@@ -46,7 +46,10 @@ def tls_contract_errors(settings: Any) -> list[str]:
         return []
     errors: list[str] = []
     ca_path = str(getattr(settings, "MYSQL_SSL_CA", "") or "").strip()
-    if not ca_path or not Path(ca_path).is_file():
+    # Without a CA, MySQLConnection uses its existing non-TLS connection path.
+    if not ca_path:
+        return []
+    if not Path(ca_path).is_file():
         errors.append("mysql_tls_ca_required")
     if not bool(getattr(settings, "MYSQL_SSL_VERIFY_IDENTITY", False)):
         errors.append("mysql_tls_identity_verification_required")

@@ -50,6 +50,19 @@ def test_production_requires_operations_health_token(monkeypatch):
         module.Config.validate()
 
 
+def test_production_mysql_accepts_no_ca_without_disabling_other_checks(monkeypatch):
+    _clear_backend_modules()
+    _configure_production_mysql(monkeypatch)
+    monkeypatch.delenv("MYSQL_SSL_CA", raising=False)
+    monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
+    monkeypatch.setenv("SECRET_KEY", "production-test-secret-key-32-chars")
+    module = importlib.import_module("config")
+    module.Config.validate()
+    monkeypatch.setattr(module.Config, "OPERATIONS_HEALTH_TOKEN", "")
+    with pytest.raises(RuntimeError, match="必须配置 OPERATIONS_HEALTH_TOKEN"):
+        module.Config.validate()
+
+
 def test_production_rejects_default_admin_export_token(tmp_path, monkeypatch):
     _clear_backend_modules()
     _configure_production_mysql(monkeypatch)

@@ -263,6 +263,17 @@ def test_cloudbase_verifier_rejects_tampered_archived_source(tmp_path):
         encoding="utf-8",
         errors="replace",
     )
+    verify_command = [
+        "pwsh", "-NoProfile", "-File",
+        str(ROOT / "scripts" / "verify_task9_cloudbase_package.ps1"),
+        "-PackagePath", str(package), "-PackageLabel", label,
+        "-ManifestFile", manifest, "-LatestFile", latest,
+    ]
+    clean_result = subprocess.run(
+        verify_command, cwd=ROOT, check=False, capture_output=True,
+        text=True, encoding="utf-8", errors="replace",
+    )
+    assert clean_result.returncode == 0, clean_result.stdout + clean_result.stderr
     with zipfile.ZipFile(package, "r") as archive:
         entries = {
             item.filename: archive.read(item.filename)

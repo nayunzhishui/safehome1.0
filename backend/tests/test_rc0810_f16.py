@@ -52,13 +52,23 @@ def _marker(directory: Path, target: Path, environment: str = "isolated_validati
     return marker
 
 
-def test_production_tls_contract_requires_ca_identity_and_tls12(tmp_path):
+def test_production_mysql_without_ca_uses_existing_non_tls_connection():
+    from services.database_recovery_service import tls_contract_errors
+
+    settings = SimpleNamespace(
+        APP_ENV="production", DB_PROVIDER="mysql", MYSQL_SSL_CA="",
+        MYSQL_SSL_VERIFY_IDENTITY=True, MYSQL_TLS_MIN_VERSION="TLSv1.2",
+    )
+    assert tls_contract_errors(settings) == []
+
+
+def test_configured_production_tls_requires_valid_ca_identity_and_tls12(tmp_path):
     from services.database_recovery_service import tls_contract_errors
 
     settings = SimpleNamespace(
         APP_ENV="production",
         DB_PROVIDER="mysql",
-        MYSQL_SSL_CA="",
+        MYSQL_SSL_CA=str(tmp_path / "missing-ca.pem"),
         MYSQL_SSL_VERIFY_IDENTITY=False,
         MYSQL_TLS_MIN_VERSION="TLSv1.1",
     )

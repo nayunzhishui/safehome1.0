@@ -6,6 +6,22 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def test_mysql_without_ca_passes_no_ssl_to_driver(monkeypatch):
+    import pymysql
+
+    database = importlib.import_module("database")
+    monkeypatch.setattr(database.Config, "MYSQL_SSL_CA", "")
+    observed = []
+
+    def connect(**kwargs):
+        observed.append(kwargs["ssl"])
+        return object()
+
+    monkeypatch.setattr(pymysql, "connect", connect)
+    database.MySQLConnection()
+    assert observed == [None]
+
+
 def test_mysql_schema_conversion_uses_indexable_columns():
     database = importlib.import_module("database")
 
