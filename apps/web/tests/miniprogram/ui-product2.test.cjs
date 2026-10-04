@@ -735,6 +735,30 @@ test('旧401不能清除新的登录，当前会话401仍清理', async () => {
   assert.equal(storage.has('auth_token'), false);
 });
 
+test('账号登录Redis保护不可用时保留明确错误、503及请求编号', async () => {
+  let pending;
+  const mod = { exports: {} };
+  const wx = { getStorageSync: () => undefined, removeStorageSync() {}, request: options => { pending = options; } };
+  vm.runInNewContext(read('services/api.js'), { module: mod, wx, console, require(name) {
+    if (name === './userIdentity') return { getAnonymousUserId: () => 'synthetic-anonymous' };
+    if (name === './cloudConfig') return { DEFAULT_CLOUD_CONFIG: {}, getCloudConfig: () => ({ useLocalHttp: true, localHttpBaseUrl: 'http://synthetic.invalid' }) };
+    throw new Error(name);
+  } });
+  const run = mod.exports.createSafeHomeApi().login({ username: 'synthetic', password: 'synthetic-not-a-secret' });
+  pending.success({
+    statusCode: 503,
+    header: { 'X-Request-ID': 'synthetic-request-id' },
+    data: { ok: false, error: { code: 'rate_limit_unavailable', message: '请求保护暂时不可用，请稍后再试。' } },
+  });
+  await assert.rejects(run, error => {
+    assert.equal(error.code, 'rate_limit_unavailable');
+    assert.equal(error.statusCode, 503);
+    assert.equal(error.requestId, 'synthetic-request-id');
+    assert.equal(error.message, '请求保护暂时不可用，请稍后再试。');
+    return true;
+  });
+});
+
 for (const transport of ['api', 'minorSafeguardsApi']) {
   test(`${transport}迟到200或401不回填或清理新会话`, async () => {
     const storage = new Map([['auth_token', 'synthetic-A'], ['auth_user', { id: 'A' }]]); let pending;

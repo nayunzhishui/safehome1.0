@@ -51,6 +51,7 @@ const ERROR_MESSAGES_BY_STATUS = {
 const ERROR_MESSAGES_BY_CODE = {
   validation_error: "提交内容还不完整，请检查后再试一次。",
   auth_required: "登录状态已过期，请重新登录后再继续。",
+  rate_limit_unavailable: "请求保护暂时不可用，请稍后再试。",
   unauthorized: "登录状态已过期，请重新登录后再继续。",
   invalid_credentials: "用户名或密码不正确，请重新输入。",
   account_locked: "该账号因多次登录失败已暂时锁定，请稍后再试。",
