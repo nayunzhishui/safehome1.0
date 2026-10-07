@@ -126,7 +126,7 @@ def test_f14a_external_processors_are_inventoried_without_approval():
     processors = {item["processor_id"]: item for item in catalog["external_processors"]}
     assert {
         "endpoint:https://api.weixin.qq.com/sns/jscode2session",
-        "endpoint:https://api.weixin.qq.com/cgi-bin/token",
+        "endpoint:https://api.weixin.qq.com/cgi-bin/stable_token",
         "endpoint:https://api.weixin.qq.com/wxa/business/getuserphonenumber",
         "endpoint:https://api.weixin.qq.com/cgi-bin/message/subscribe/send",
         "endpoint:https://api.openai.com/v1/chat/completions",

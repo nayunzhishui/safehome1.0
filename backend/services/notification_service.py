@@ -240,8 +240,10 @@ def _access_token() -> str:
     ):
         return str(_TOKEN_CACHE["value"])
     secret = str(_config("WECHAT_SECRET", "") or "")
+    # Stable tokens are shared across workers and isolated from /cgi-bin/token.
     result = _wechat_json(
-        "https://api.weixin.qq.com/cgi-bin/token?" + urlencode({"grant_type": "client_credential", "appid": appid, "secret": secret})
+        "https://api.weixin.qq.com/cgi-bin/stable_token",
+        {"grant_type": "client_credential", "appid": appid, "secret": secret, "force_refresh": False},
     )
     token = str(result.get("access_token") or "")
     if not token:
@@ -251,18 +253,23 @@ def _access_token() -> str:
 
 
 def send_wechat_subscription(candidate: dict) -> dict:
+    payload = {
+        "touser": candidate["openid"],
+        "template_id": candidate["template_id"],
+        "page": str(_config("WECHAT_TRAINING_DUE_PAGE", "pages/personalized-plan/index")),
+        "miniprogram_state": "formal" if str(_config("APP_ENV", "development")).lower() == "production" else "trial",
+        "lang": "zh_CN",
+        "data": _template_data(),
+    }
+    send_url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token="
     token = _access_token()
-    return _wechat_json(
-        "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + token,
-        {
-            "touser": candidate["openid"],
-            "template_id": candidate["template_id"],
-            "page": str(_config("WECHAT_TRAINING_DUE_PAGE", "pages/personalized-plan/index")),
-            "miniprogram_state": "formal" if str(_config("APP_ENV", "development")).lower() == "production" else "trial",
-            "lang": "zh_CN",
-            "data": _template_data(),
-        },
-    )
+    result = _wechat_json(send_url + token, payload)
+    if str(result.get("errcode") or "") in {"40001", "40014", "42001"}:
+        # A rejected token sends nothing; drop it and retry once with a fresh one.
+        if _TOKEN_CACHE["value"] == token:
+            _TOKEN_CACHE.update({"value": "", "expires_at": 0.0})
+        result = _wechat_json(send_url + _access_token(), payload)
+    return result
 
 
 def run_due_notifications(*, dry_run: bool = True, run_day: date | None = None) -> dict:

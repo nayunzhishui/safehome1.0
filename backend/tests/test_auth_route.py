@@ -636,3 +636,104 @@ def test_phone_permission_error_is_not_expired_user_code(tmp_path, monkeypatch, 
     assert response.status_code == status
     assert response.get_json()["error"]["code"] == error_code
     assert "失效" not in response.get_json()["error"]["message"]
+
+
+class _JsonResponse:
+    def __init__(self, payload):
+        self._payload = payload
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        return False
+
+    def read(self):
+        import json
+
+        return json.dumps(self._payload).encode("utf-8")
+
+
+@pytest.mark.parametrize("errcode,status,error_code", [
+    (40029, 400, "wechat_login_failed"),
+    (40163, 400, "wechat_login_failed"),
+    (45011, 503, "wechat_service_unavailable"),
+    (-1, 503, "wechat_service_unavailable"),
+    (40125, 503, "wechat_login_config_missing"),
+    (85107, 503, "wechat_login_config_missing"),
+])
+def test_wechat_code_login_separates_user_code_from_service_and_config_errors(
+    tmp_path, monkeypatch, caplog, errcode, status, error_code
+):
+    app = _fresh_app(tmp_path, monkeypatch, app_env="production")
+    app.config.update(WECHAT_APPID="wx-test-appid", WECHAT_SECRET="secret-must-not-leak")
+    monkeypatch.setattr(app.logger, "handlers", [*app.logger.handlers, caplog.handler])
+    auth = importlib.import_module("routes.auth")
+    monkeypatch.setattr(auth, "urlopen", lambda *_args, **_kwargs: _JsonResponse({"errcode": errcode, "errmsg": "x"}))
+
+    response = app.test_client().post("/api/auth/wechat-login", json={"code": "one-time-code-must-not-leak"})
+
+    assert response.status_code == status
+    body = response.get_json()
+    assert body["error"]["code"] == error_code
+    assert "token" not in body.get("data", {})
+    assert f"errcode={errcode}" in caplog.text
+    assert "secret-must-not-leak" not in caplog.text + str(body)
+    assert "one-time-code-must-not-leak" not in caplog.text + str(body)
+
+
+def test_cloudbase_openapi_mode_reports_and_blocks_code_login_without_upstream_call(tmp_path, monkeypatch):
+    monkeypatch.setenv("CLOUDBASE_OPENAPI_ENABLED", "1")
+    app = _fresh_app(tmp_path, monkeypatch, app_env="production")
+    app.config.update(WECHAT_APPID="wx-test-appid", WECHAT_SECRET="secret-must-not-leak")
+    auth = importlib.import_module("routes.auth")
+
+    def forbidden_upstream(*_args, **_kwargs):
+        raise AssertionError("code login must not reach the CloudRun open-API proxy")
+
+    monkeypatch.setattr(auth, "urlopen", forbidden_upstream)
+    client = app.test_client()
+
+    capabilities = client.get("/api/auth/capabilities").get_json()["data"]
+    assert capabilities["wechat_login"] == {"available": False, "mode": "blocked_by_cloudbase_openapi"}
+    assert capabilities["phone_login"] == {"available": True, "mode": "cloudbase_openapi"}
+
+    response = client.post("/api/auth/wechat-login", json={"code": "synthetic-code"})
+    assert response.status_code == 503
+    assert response.get_json()["error"]["code"] == "wechat_login_config_missing"
+
+
+def test_standard_phone_exchange_uses_shared_stable_token_and_retries_rejected_token(tmp_path, monkeypatch):
+    import json
+
+    app = _fresh_app(tmp_path, monkeypatch)
+    app.config.update(WECHAT_APPID="wx-test-appid", WECHAT_SECRET="synthetic-secret")
+    auth = importlib.import_module("routes.auth")
+    auth._WECHAT_ACCESS_TOKEN_CACHE.update({"appid": "", "token": "", "expires_at": 0.0})
+    tokens = iter(["stable-token-a", "stable-token-b"])
+    calls = []
+
+    def fake_urlopen(api_request, timeout):
+        calls.append(api_request)
+        if api_request.full_url == auth.WECHAT_STABLE_ACCESS_TOKEN_URL:
+            return _JsonResponse({"access_token": next(tokens), "expires_in": 7200})
+        if "access_token=stable-token-a" in api_request.full_url:
+            return _JsonResponse({"errcode": 40001, "errmsg": "invalid credential"})
+        return _JsonResponse({"errcode": 0, "phone_info": {"purePhoneNumber": "13700137000"}})
+
+    monkeypatch.setattr(auth, "urlopen", fake_urlopen)
+    with app.test_request_context():
+        result = auth._wechat_phone_from_code("synthetic-phone-code")
+
+    assert result["pure_phone_number"] == "13700137000"
+    token_calls = [call for call in calls if call.full_url == auth.WECHAT_STABLE_ACCESS_TOKEN_URL]
+    assert len(token_calls) == 2
+    assert token_calls[0].get_method() == "POST"
+    assert json.loads(token_calls[0].data) == {
+        "grant_type": "client_credential",
+        "appid": "wx-test-appid",
+        "secret": "synthetic-secret",
+        "force_refresh": False,
+    }
+    assert "access_token=stable-token-b" in calls[-1].full_url
+    assert all("/cgi-bin/token" not in call.full_url for call in calls)

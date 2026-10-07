@@ -347,7 +347,7 @@ def list_assessment_results():
             WHERE user_id = ? AND worksheet_id IN ({placeholders})
             """,
             (user_id, *worksheet_ids),
-        ).fetchone()[0]
+        ).fetchone()["count"]
         rows = conn.execute(
             f"""
             SELECT * FROM assessment_results

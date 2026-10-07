@@ -105,6 +105,18 @@ function matchesQuery(item, query) {
 }
 
 function buildAssessmentSections(items, activeAudience, query) {
+  if (!(items || []).length) {
+    // Nothing is open at all; switching tabs or keywords cannot help.
+    return [
+      {
+        key: "unavailable",
+        title: "暂时没有开放的测一测",
+        subtitle: "",
+        emptyText: "测一测内容开放后会显示在这里。",
+        items: [],
+      },
+    ];
+  }
   const filtered = (items || [])
     .map(normalizeAssessment)
     .filter((item) => activeAudience === "all" || item.audience_class === activeAudience)

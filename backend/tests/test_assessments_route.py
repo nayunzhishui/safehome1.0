@@ -1367,3 +1367,33 @@ def test_student_result_does_not_receive_stage_two_exploratory_analysis(tmp_path
     assert data["availability"] == "ineligible"
     assert data["affect"]["items"] == []
     assert data["interaction_network"]["edges"] == []
+
+
+def test_assessment_result_reads_tolerate_mysql_dict_rows(tmp_path, monkeypatch):
+    """pymysql DictCursor rows are plain dicts; positional row[0] returned 500 in production."""
+    import sqlite3
+
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "participant-mysql-dict-rows")
+    headers = {"Authorization": f"Bearer {token}"}
+    answers = [{"question_id": f"ERQ{i:02d}", "value": "4"} for i in range(1, 11)]
+    saved = client.post(
+        "/api/assessment-results",
+        headers=headers,
+        json={"worksheet_id": "emotion_regulation_erq", "answers": answers},
+    )
+    assert saved.status_code == 201
+    result_id = saved.get_json()["data"]["id"]
+    monkeypatch.setattr(
+        sqlite3,
+        "Row",
+        lambda cursor, row: {column[0]: row[index] for index, column in enumerate(cursor.description)},
+    )
+
+    listed = client.get("/api/assessment-results", headers=headers)
+    assert listed.status_code == 200
+    assert listed.get_json()["data"]["total"] == 1
+    analysis = client.get(f"/api/assessment-results/{result_id}/exploratory-analysis", headers=headers)
+    assert analysis.status_code == 200
+    assert analysis.get_json()["data"]["record_count"] == 0

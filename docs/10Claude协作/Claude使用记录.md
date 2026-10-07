@@ -1,5 +1,15 @@
 # Claude 使用记录
 
+## 2026-10-07 Claude Code：上线前收口阶段1–2
+
+- 时间：2026-10-07；
+- 工具或模型：Claude Code（VS Code扩展），Claude Opus 5.5；
+- 会话标识：`1e3bdd6c-d8b4-4905-a814-eb1faba0f151`（本机Claude Code会话，可在原工作目录用 /resume 选择）；
+- 摘要：复核本地与云端基线；以官方FAQ定位微信登录失败根因并按用户选定路线A修复；经授权用专用测试账号跑生产闭环；发现并修复生产测评历史500；两处空状态如实化；刷新过期的F14血缘目录；
+- 修改文件：backend/routes/auth.py、backend/services/notification_service.py、backend/routes/assessments.py、backend/services/participant_exploratory_analysis_service.py、对应测试、config/rc0810/privacy_lineage_catalog.json、API契约生成物与API文档、两个小程序页面、事实基准与本记录；
+- 验证：后端唯一用例134项、小程序Node 61项通过；API契约／边界／兼容、内容、设计token、小程序治理与资产审计通过；生产只读探针与授权测试账号闭环见开发日志；
+- 后续：负责人控制台发布并做真实登录；训练卡审批；阶段3–5继续。未使用子代理或其他模型。
+
 ## 2026-07-20 Codex：任务二十九离线情感与网络基准
 
 - 时间：2026-07-20；

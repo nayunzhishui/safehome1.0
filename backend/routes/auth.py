@@ -46,7 +46,16 @@ from services.security_control_service import record_security_event
 
 bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 CLOUDBASE_ACCESS_TOKEN_PATH = "/.tencentcloudbase/wx/cloudbase_access_token"
+# Stable tokens are shared by every worker/instance; /cgi-bin/token refreshes
+# would invalidate each other's cached tokens.
+WECHAT_STABLE_ACCESS_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/stable_token"
 _WECHAT_ACCESS_TOKEN_CACHE: dict[str, float | str] = {"appid": "", "token": "", "expires_at": 0.0}
+# Official errcodes: user code invalid/used/risk-blocked; transient busy/quota;
+# invalid or expired access_token. Anything else is an operator configuration
+# problem (for example 85107 when the CloudRun open-API proxy intercepts).
+_WECHAT_USER_CODE_ERRCODES = frozenset({40029, 40163, 40226})
+_WECHAT_RETRYABLE_ERRCODES = frozenset({-1, 45011})
+_WECHAT_INVALID_TOKEN_ERRCODES = frozenset({40001, 40014, 42001})
 _CLOUDBASE_OPENID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{6,128}$")
 _CLOUDBASE_MINIPROGRAM_SOURCES = {"wx_devtools", "wx_client"}
 MAX_PASSWORD_FAILURES = 5
@@ -175,6 +184,32 @@ def _read_json_response(response) -> dict:
     return json.loads(response.read().decode("utf-8"))
 
 
+def _wechat_errcode(payload) -> int:
+    """Numeric WeChat errcode, 0 on success; -2 marks a non-numeric value."""
+    try:
+        return int((payload or {}).get("errcode") or 0)
+    except (TypeError, ValueError, AttributeError):
+        return -2
+
+
+def _log_wechat_errcode(operation: str, errcode: int) -> None:
+    current_app.logger.warning("wechat_upstream_errcode operation=%s errcode=%s", operation, errcode)
+
+
+def _standard_wechat_configured() -> bool:
+    return bool(
+        str(current_app.config.get("WECHAT_APPID") or "").strip()
+        and str(current_app.config.get("WECHAT_SECRET") or "").strip()
+    )
+
+
+def _cloudbase_openapi_blocks_code_login() -> bool:
+    # WeChat CloudRun FAQ: with the open-API service enabled, jscode2session
+    # carries no access_token, so the proxy intercepts it and code2Session has
+    # no cloud-call support. Code login only works with that service off.
+    return _standard_wechat_configured() and bool(current_app.config.get("CLOUDBASE_OPENAPI_ENABLED", False))
+
+
 def _log_wechat_transport_failure(operation: str, exc: Exception) -> None:
     """Log only transport metadata; never log URLs, codes, AppSecret or response bodies."""
 
@@ -231,8 +266,18 @@ def _wechat_session_from_code(code: str) -> dict:
                 payload = _read_json_response(response)
         except (HTTPError, URLError, OSError, json.JSONDecodeError) as exc:
             raise _wechat_transport_error("jscode2session", exc) from exc
-        if payload.get("errcode"):
-            raise WechatAuthError("wechat_login_failed", "微信登录凭证已失效，请重新尝试。", 400)
+        errcode = _wechat_errcode(payload)
+        if errcode:
+            _log_wechat_errcode("jscode2session", errcode)
+            if errcode in _WECHAT_USER_CODE_ERRCODES:
+                raise WechatAuthError("wechat_login_failed", "微信登录凭证已失效，请重新尝试。", 400)
+            if errcode in _WECHAT_RETRYABLE_ERRCODES:
+                raise WechatAuthError("wechat_service_unavailable", "微信服务暂时没有响应，请稍后重试。", 503)
+            raise WechatAuthError(
+                "wechat_login_config_missing",
+                "微信登录暂不可用，请尝试手机号快捷登录或账号密码登录。",
+                503,
+            )
         if not payload.get("openid"):
             raise WechatAuthError("wechat_login_failed", "微信登录暂未完成，请重新尝试。", 400)
         return {**payload, "identity_source": "jscode2session"}
@@ -270,26 +315,49 @@ def _standard_wechat_access_token() -> str | None:
     if (
         _WECHAT_ACCESS_TOKEN_CACHE.get("appid") == appid
         and _WECHAT_ACCESS_TOKEN_CACHE.get("token")
-        and float(_WECHAT_ACCESS_TOKEN_CACHE.get("expires_at") or 0) > now + 60
+        and float(_WECHAT_ACCESS_TOKEN_CACHE.get("expires_at") or 0) > now
     ):
         return str(_WECHAT_ACCESS_TOKEN_CACHE["token"])
 
-    query = urlencode({"grant_type": "client_credential", "appid": appid, "secret": secret})
+    body = json.dumps(
+        {"grant_type": "client_credential", "appid": appid, "secret": secret, "force_refresh": False}
+    ).encode("utf-8")
     try:
         api_request = Request(
-            f"https://api.weixin.qq.com/cgi-bin/token?{query}",
-            headers={"Accept": "application/json", "User-Agent": "SafeHome-WeChat-Auth/1.0"},
+            WECHAT_STABLE_ACCESS_TOKEN_URL,
+            data=body,
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "User-Agent": "SafeHome-WeChat-Auth/1.0",
+            },
+            method="POST",
         )
         with urlopen(api_request, timeout=8) as response:
             payload = _read_json_response(response)
     except (HTTPError, URLError, OSError, json.JSONDecodeError) as exc:
         raise _wechat_transport_error("access_token", exc) from exc
+    errcode = _wechat_errcode(payload)
     token = str(payload.get("access_token") or "").strip()
-    if not token:
+    if errcode or not token:
+        _log_wechat_errcode("stable_access_token", errcode)
+        if errcode in _WECHAT_RETRYABLE_ERRCODES:
+            raise WechatAuthError("wechat_service_unavailable", "微信服务暂时没有响应，请稍后重试。", 503)
         raise WechatAuthError("wechat_phone_config_invalid", "手机号快捷登录暂不可用，请使用其他登录方式。", 503)
-    expires_in = max(int(payload.get("expires_in") or 7200), 300)
-    _WECHAT_ACCESS_TOKEN_CACHE.update({"appid": appid, "token": token, "expires_at": now + expires_in})
+    try:
+        expires_in = int(payload.get("expires_in") or 7200)
+    except (TypeError, ValueError):
+        expires_in = 7200
+    # Refresh five minutes early; WeChat rotates stable tokens near expiry.
+    _WECHAT_ACCESS_TOKEN_CACHE.update(
+        {"appid": appid, "token": token, "expires_at": now + max(expires_in - 300, 60)}
+    )
     return token
+
+
+def _invalidate_standard_wechat_access_token(token: str) -> None:
+    if token and _WECHAT_ACCESS_TOKEN_CACHE.get("token") == token:
+        _WECHAT_ACCESS_TOKEN_CACHE.update({"token": "", "expires_at": 0.0})
 
 
 def _wechat_api_credential() -> tuple[str, str]:
@@ -327,13 +395,7 @@ def _mask_phone(phone_number: str) -> str:
     return f"{phone_number[:3]}****{phone_number[-4:]}"
 
 
-def _wechat_phone_from_code(code: str) -> dict:
-    if current_app.config.get("CLOUDBASE_OPENAPI_ENABLED", False):
-        # Fixed endpoint for the official CloudRun proxy; no secret/token here.
-        endpoint = "http://api.weixin.qq.com/wxa/business/getuserphonenumber"
-    else:
-        credential_name, credential = _wechat_api_credential()
-        endpoint = "https://api.weixin.qq.com/wxa/business/getuserphonenumber?" + urlencode({credential_name: credential})
+def _post_wechat_phone_code(endpoint: str, code: str) -> dict:
     request_body = json.dumps({"code": code}, ensure_ascii=False).encode("utf-8")
     api_request = Request(
         endpoint,
@@ -343,12 +405,35 @@ def _wechat_phone_from_code(code: str) -> dict:
     )
     try:
         with urlopen(api_request, timeout=8) as response:
-            payload = _read_json_response(response)
+            return _read_json_response(response)
     except (HTTPError, URLError, OSError, json.JSONDecodeError) as exc:
         raise _wechat_transport_error("getuserphonenumber", exc) from exc
-    if payload.get("errcode") == 48001:
+
+
+def _wechat_phone_from_code(code: str) -> dict:
+    phone_endpoint = "https://api.weixin.qq.com/wxa/business/getuserphonenumber?"
+    if current_app.config.get("CLOUDBASE_OPENAPI_ENABLED", False):
+        # Fixed endpoint for the official CloudRun proxy; no secret/token here.
+        payload = _post_wechat_phone_code("http://api.weixin.qq.com/wxa/business/getuserphonenumber", code)
+    else:
+        credential_name, credential = _wechat_api_credential()
+        payload = _post_wechat_phone_code(phone_endpoint + urlencode({credential_name: credential}), code)
+        if credential_name == "access_token" and _wechat_errcode(payload) in _WECHAT_INVALID_TOKEN_ERRCODES:
+            # A token rejected before the code is read leaves the code unused; retry once.
+            _log_wechat_errcode("getuserphonenumber", _wechat_errcode(payload))
+            _invalidate_standard_wechat_access_token(credential)
+            credential_name, credential = _wechat_api_credential()
+            payload = _post_wechat_phone_code(phone_endpoint + urlencode({credential_name: credential}), code)
+    errcode = _wechat_errcode(payload)
+    if errcode:
+        _log_wechat_errcode("getuserphonenumber", errcode)
+    if errcode == 48001:
         raise WechatAuthError("wechat_phone_permission_denied", "手机号能力尚未完成平台授权，请使用其他登录方式并联系项目负责人。", 503)
-    if payload.get("errcode") not in {None, 0}:
+    if errcode in _WECHAT_INVALID_TOKEN_ERRCODES:
+        raise WechatAuthError("wechat_phone_config_invalid", "手机号快捷登录暂不可用，请使用其他登录方式。", 503)
+    if errcode in _WECHAT_RETRYABLE_ERRCODES:
+        raise WechatAuthError("wechat_service_unavailable", "微信服务暂时没有响应，请稍后重试。", 503)
+    if errcode:
         raise WechatAuthError("wechat_phone_exchange_failed", "手机号验证未完成，请稍后重新授权或使用其他登录方式。", 400)
     phone_info = payload.get("phone_info") or payload.get("phoneInfo") or {}
     phone_number = _normalize_phone_number(
@@ -379,24 +464,25 @@ def _parse_utc_timestamp(value: str) -> datetime | None:
 @bp.get("/capabilities")
 def auth_capabilities():
     """Expose login readiness without returning credentials or identity values."""
-    standard_wechat_configured = bool(
-        str(current_app.config.get("WECHAT_APPID") or "").strip()
-        and str(current_app.config.get("WECHAT_SECRET") or "").strip()
-    )
+    standard_wechat_configured = _standard_wechat_configured()
     cloudbase_identity_configured = bool(
         current_app.config.get("TRUST_CLOUDBASE_IDENTITY_HEADERS", False)
     )
     cloudbase_request_identity = _trusted_cloudbase_openid() is not None
     cloudbase_openapi = bool(current_app.config.get("CLOUDBASE_OPENAPI_ENABLED", False))
     cloudbase_phone_token_available = False if cloudbase_openapi else _cloudbase_access_token() is not None
+    cloudbase_identity = cloudbase_request_identity or cloudbase_identity_configured
+    code_login_blocked = _cloudbase_openapi_blocks_code_login()
     return ok(
         {
             "account_password": {"available": True},
             "wechat_login": {
-                "available": bool(cloudbase_request_identity or cloudbase_identity_configured or standard_wechat_configured),
+                "available": bool(cloudbase_identity or (standard_wechat_configured and not code_login_blocked)),
                 "mode": (
                     "cloudbase_identity"
-                    if cloudbase_request_identity or cloudbase_identity_configured
+                    if cloudbase_identity
+                    else "blocked_by_cloudbase_openapi"
+                    if code_login_blocked
                     else "jscode2session"
                     if standard_wechat_configured
                     else "not_configured"
@@ -571,6 +657,13 @@ def wechat_login():
     else:
         if not code:
             return fail("validation_error", "缺少微信登录凭证", status=400)
+        if _cloudbase_openapi_blocks_code_login():
+            current_app.logger.warning("wechat_auth_failed code=%s status=%s", "wechat_login_config_missing", 503)
+            return fail(
+                "wechat_login_config_missing",
+                "微信登录暂不可用，请尝试手机号快捷登录或账号密码登录。",
+                status=503,
+            )
         try:
             session = _wechat_session_from_code(code)
         except WechatAuthError as exc:

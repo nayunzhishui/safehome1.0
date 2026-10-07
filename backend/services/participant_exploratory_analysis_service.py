@@ -59,7 +59,7 @@ def build_participant_exploratory_analysis(conn, user_id: str) -> dict:
         }
 
     record_count = min(
-        int(conn.execute("SELECT COUNT(*) FROM emotion_diaries WHERE user_id = ?", (user_id,)).fetchone()[0]),
+        int(conn.execute("SELECT COUNT(*) AS count FROM emotion_diaries WHERE user_id = ?", (user_id,)).fetchone()["count"]),
         MAXIMUM_RECORDS,
     )
     high_risk = conn.execute(

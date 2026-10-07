@@ -214,3 +214,35 @@ def test_transient_provider_failure_retries_without_consuming_consent(tmp_path, 
         ).fetchone()
     assert delivery["status"] == "sent"
     assert delivery["attempt_count"] == 2
+
+
+def test_subscription_send_uses_stable_token_and_retries_rejected_token_once(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path)
+    app.config.update(WECHAT_APPID="wx-test-appid", WECHAT_SECRET="synthetic-secret")
+    service = importlib.import_module("services.notification_service")
+    service._TOKEN_CACHE.update({"appid": "", "value": "", "expires_at": 0.0})
+    tokens = iter(["stable-token-a", "stable-token-b"])
+    calls = []
+
+    def fake_wechat_json(url, payload=None):
+        calls.append((url, payload))
+        if url.endswith("/cgi-bin/stable_token"):
+            assert payload["force_refresh"] is False
+            return {"access_token": next(tokens), "expires_in": 7200}
+        if url.endswith("access_token=stable-token-a"):
+            return {"errcode": 40001, "errmsg": "invalid credential"}
+        return {"errcode": 0, "msgid": "synthetic-msg"}
+
+    monkeypatch.setattr(service, "_wechat_json", fake_wechat_json)
+    with app.app_context():
+        result = service.send_wechat_subscription(
+            {"openid": "synthetic-openid", "template_id": "tmpl_training_due"}
+        )
+
+    assert result == {"errcode": 0, "msgid": "synthetic-msg"}
+    sends = [url for url, _payload in calls if "/message/subscribe/send" in url]
+    assert sends == [
+        "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=stable-token-a",
+        "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=stable-token-b",
+    ]
+    assert all("/cgi-bin/token" not in url for url, _payload in calls)

@@ -4093,7 +4093,8 @@ export const GENERATED_API_ENDPOINTS = [
     "error_codes": [
       "http_error",
       "internal_error",
-      "validation_error"
+      "validation_error",
+      "wechat_login_config_missing"
     ],
     "enum_refs": [],
     "deprecation": {

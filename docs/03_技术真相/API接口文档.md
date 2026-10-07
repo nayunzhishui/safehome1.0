@@ -724,6 +724,8 @@ F21 补充：`/healthz` 是公开最小探针；`/healthz/deep` 和 `/readyz` �
 
 用途：查询测一测历史结果。接口只返回当前内容库仍保留的测评 ID 对应结果；旧版自建 UP 工作表或附录示例的历史残留记录不会返回给用户端。
 
+2026-10-07 修复：总数查询原按位置读取 `fetchone()[0]`，生产 MySQL 的 `DictCursor` 行是字典，导致该接口在云端始终 `500`（SQLite 本地不复现）。现改按列名读取；`GET /api/assessment-results/<result_id>/exploratory-analysis` 的记录数查询同样修正。
+
 单条详情 `GET /api/assessment-results/<result_id>` 额外返回 `content_snapshot` 和 `historical_replay`。服务端先核对快照及 worksheet/解释 payload 哈希，再按原题目和计分重放；快照不合法时明确返回 `snapshot_valid=false`，不会用当前内容静默替代。
 
 查询参数：
@@ -1464,6 +1466,8 @@ Invoke-WebRequest `
 
 2026-10-04 实现增量：`POST /api/auth/login` 请求次数改由现有数据库表共享计数，无需 Redis；默认每个客户端摘要每分钟 20 次，超限仍为 `429 rate_limited`，数据库计数不可用仍为 `503 rate_limit_unavailable`。账户原有连续失败锁定、密码验证和会话权限保留。匿名认领及 AI 请求次数保护也使用数据库；兼容保留既有 `REDIS_LOGIN_RATE_LIMIT_PER_MINUTE`／`REDIS_AI_RATE_LIMIT_PER_MINUTE` 配置名称，名称不再代表 Redis 依赖。微信、手机号接口与凭证校验契约未改。此为本地源码行为，尚未部署云端。
 
+2026-10-07 实现增量：微信云托管官方 FAQ 说明，开启「开放接口服务」时 `jscode2session` 不带 `access_token`，会被代理拦截且 code2Session 不支持云调用。因此 `CLOUDBASE_OPENAPI_ENABLED=1` 且未使用可信 CloudBase 身份时，`wechat_login` 返回 `available=false`、`mode=blocked_by_cloudbase_openapi`，与真实可用性一致。需要微信 code 登录的部署应关闭该服务并设 `CLOUDBASE_OPENAPI_ENABLED=0`；此时手机号登录走标准 `access_token`（`phone_login.mode=wechat_access_token`）。
+
 ### `POST /api/auth/wechat-login`
 
 用途：微信小程序登录或绑定用户。当前生产默认只使用 `code + WECHAT_APPID/WECHAT_SECRET` 调用 `jscode2session`。只有部署显式设置 `TRUST_CLOUDBASE_IDENTITY_HEADERS=1` 时，后端才允许读取 CloudBase 注入的 `X-WX-OPENID`，并同时要求 `X-WX-SOURCE` 为 `wx_devtools`/`wx_client`、OpenID格式合法，以及存在服务端AppID时请求AppID完全匹配。2026-07-22 公网负向探针证明默认公网域名会透传调用者自填的 `X-WX-*` 头，因此只要服务仍开放该公网入口，就必须保持可信头开关为0；AppID匹配不能证明请求来自CloudBase。只有关闭公网入口、改为仅 `callContainer`，或拆分独立的小程序私有服务并重新完成负向验收后，才可考虑开启可信头。开发环境在正式身份路径都不可用时保留稳定兜底 openid。
@@ -1480,6 +1484,10 @@ Invoke-WebRequest `
 返回：`token`、`user`、`dev_fallback`、`identity_source`。`identity_source` 可为 `cloudbase_header`、`jscode2session` 或 `development_fallback`。
 
 生产边界：接口不会把 `WECHAT_APPID`、`WECHAT_SECRET`、登录 code 或微信服务端原始响应暴露给用户或普通日志；传输故障日志只记录操作名、异常类型、上游HTTP状态和底层原因类型。停用账号不能通过微信重新登录。
+
+错误映射（2026-10-07）：微信返回 `40029/40163/40226`（code 无效、已使用、风险拦截）为 `400 wechat_login_failed`；`-1/45011`（繁忙、频率）为 `503 wechat_service_unavailable`；其他 errcode（如 `40125` AppSecret 无效、`85107` 开放接口代理拦截）为 `503 wechat_login_config_missing`。服务端日志只记录操作名和数字 errcode。开放接口模式下不发起上游调用，直接返回 `503 wechat_login_config_missing`。因此过期 code 探针只有在微信真实校验后才返回 `400 wechat_login_failed`，可作为链路打通证据。
+
+手机号与订阅消息的标准令牌改用 `POST https://api.weixin.qq.com/cgi-bin/stable_token`（`force_refresh=false`），多个 worker／实例共享同一有效令牌，不会像 `/cgi-bin/token` 那样互相作废；令牌被拒（`40001/40014/42001`）时清缓存并重试一次，仍失败返回 `503 wechat_phone_config_invalid`。
 
 ### `POST /api/auth/logout`
 

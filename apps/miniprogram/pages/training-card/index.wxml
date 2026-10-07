@@ -56,6 +56,6 @@
       />
     </view>
 
-    <page-state wx:if="{{cards.length === 0}}" kind="empty" title="暂时没有匹配到训练卡" description="可以先回到记录页，补充一件具体事件。" action-label="去记录一件事" bind:action="goDiary" />
+    <page-state wx:if="{{cards.length === 0}}" kind="empty" title="暂时没有可用的训练卡" description="训练卡开放后会显示在这里，可以先继续记录具体事件。" action-label="去记录一件事" bind:action="goDiary" />
   </view>
 </view>
