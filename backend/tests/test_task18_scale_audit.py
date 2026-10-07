@@ -49,7 +49,7 @@ def test_task18_tipi_matches_official_english_source_and_stays_governed():
     worksheet = next(item for item in worksheets if item["id"] == "big_five_tipi_10")
     catalog_item = next(item for item in catalog if item["id"] == "big_five_tipi_10")
 
-    assert worksheet["questions"][-1]["prompt"] == "传统的、缺乏创造性的。"
+    assert worksheet["questions"][-1]["prompt"] == "循规蹈矩的、缺乏创造性的。"
     assert "成对特征" in worksheet["instructions"]
     assert "最近两周" not in worksheet["instructions"]
     assert [dimension["code"] for dimension in worksheet["dimensions"]] == [

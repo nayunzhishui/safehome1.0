@@ -23,20 +23,20 @@
     {
       "artifact_type": "content",
       "path": "content/assessment_worksheets.json",
-      "sha256": "2c6c87550ac2b99dffdd15b7276b702d4d2c9713d251fc9114f8b3cefd611383",
-      "size_bytes": 698056
+      "sha256": "eb5b3f90222e74f1ab3baa5470d4800d3e87f009fbfa647a17a1f395060084f1",
+      "size_bytes": 700755
     },
     {
       "artifact_type": "content",
       "path": "content/scales_catalog.json",
-      "sha256": "c53d1b1b27417d040fffca96f7e3ca1adff4b7c7dc5167b7d05c3ac21ae8df2b",
-      "size_bytes": 76468
+      "sha256": "2cd5e768cd844aaa51b2c02d25b3b0d9c21970c12dd017e90bc1e95be8c7bc97",
+      "size_bytes": 76638
     },
     {
       "artifact_type": "content",
       "path": "content/consent.md",
-      "sha256": "184f80029f6cff602ccc847da743f3bbbeb7d699a6cc13b7eb2211e9db521994",
-      "size_bytes": 3326
+      "sha256": "8e100dcabd1f146c1ec7e32250036e7d1aa963695f8dc92434ae6af9947eacd9",
+      "size_bytes": 3666
     },
     {
       "artifact_type": "content",

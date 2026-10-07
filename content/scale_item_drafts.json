@@ -1,5 +1,5 @@
 {
-  "version": "2026.10-scale-review-corrections-v2",
+  "version": "2026.10-scale-review-corrections-v3",
   "updated_at": "2026-10-02",
   "boundary_notice": "本文件仅保存量表题项录入草稿，用于人工核对、计分复核和伦理边界审查。所有草稿默认不开放给用户填写，不输出诊断结论，不评价家长、学生或家庭人格。",
   "drafts": [
@@ -3945,7 +3945,7 @@
         {
           "item_code": "FMI11",
           "display_order": 11,
-          "text": "我的心灵平静.轻松，甚至当事情变得忙乱和充满压力时也会这样。",
+          "text": "我的心灵平静、轻松，甚至当事情变得忙乱和充满压力时也会这样。",
           "dimension": "TOTAL",
           "reverse_scored": false
         },
@@ -3972,7 +3972,7 @@
         "scope": "pilot_release"
       },
       "worksheet_instructions": "请根据最近一周内（包括今天）的实际情况，判断每个描述与你的符合程度。答案没有对错，请从1（很少）到4（总是）中选择一项。结果只用于阶段性自我观察。",
-      "source_version": "2026.06-fmi_12_mindfulness-from-scale-draft-review-20261002-v2",
+      "source_version": "2026.06-fmi_12_mindfulness-from-scale-draft-review-20261007-v3",
       "dimension_score_method": "sum",
       "total_score_method": "sum"
     },
@@ -4014,8 +4014,6 @@
           "code": "NUTRITION",
           "label": "营养",
           "item_codes": [
-            "HPLP01",
-            "HPLP06",
             "HPLP12",
             "HPLP18",
             "HPLP23",
@@ -4030,7 +4028,9 @@
           "code": "HEALTH_RESPONSIBILITY",
           "label": "健康责任",
           "item_codes": [
+            "HPLP01",
             "HPLP02",
+            "HPLP06",
             "HPLP07",
             "HPLP13",
             "HPLP19",
@@ -4104,13 +4104,13 @@
           "item_code": "HPLP01",
           "display_order": 1,
           "text": "选择低脂肪、低饱和脂肪和低胆固醇的食物",
-          "dimension": "NUTRITION",
+          "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP02",
           "display_order": 2,
-          "text": "有任何不正常的症状和体征时，向卫生专业人员咨询",
+          "text": "有任何不正常的症状和体征向卫生专业人员咨询",
           "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false
         },
@@ -4124,7 +4124,7 @@
         {
           "item_code": "HPLP04",
           "display_order": 4,
-          "text": "感觉自己在积极地成长和变化",
+          "text": "感觉自己在积极的成长和变化",
           "dimension": "SPIRITUAL_GROWTH",
           "reverse_scored": false
         },
@@ -4139,13 +4139,13 @@
           "item_code": "HPLP06",
           "display_order": 6,
           "text": "限制糖和含糖食物的使用",
-          "dimension": "NUTRITION",
+          "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP07",
           "display_order": 7,
-          "text": "阅读或观看有关健康促进的杂志或电视内容",
+          "text": "阅读或看有关健康促进杂志或电视",
           "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false
         },
@@ -4229,7 +4229,7 @@
         {
           "item_code": "HPLP19",
           "display_order": 19,
-          "text": "当不信任卫生专业人士的建议时，寻求另一位专业人士的建议",
+          "text": "当不信任卫生专业人士的建议时去寻求第二人的建议",
           "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false
         },
@@ -4278,14 +4278,14 @@
         {
           "item_code": "HPLP26",
           "display_order": 26,
-          "text": "用适合自己的方式缓解压力",
+          "text": "用特殊方式缓解压力",
           "dimension": "STRESS_MANAGEMENT",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP27",
           "display_order": 27,
-          "text": "向人生的长期目标努力",
+          "text": "向我人生的长期目标努力",
           "dimension": "SPIRITUAL_GROWTH",
           "reverse_scored": false
         },
@@ -4327,7 +4327,7 @@
         {
           "item_code": "HPLP33",
           "display_order": 33,
-          "text": "知道生命中什么对自己重要",
+          "text": "知道生命中什么对我重要",
           "dimension": "SPIRITUAL_GROWTH",
           "reverse_scored": false
         },
@@ -4341,7 +4341,7 @@
         {
           "item_code": "HPLP35",
           "display_order": 35,
-          "text": "阅读包装食品的标签",
+          "text": "阅读包装好食物的标签",
           "dimension": "NUTRITION",
           "reverse_scored": false
         },
@@ -4362,7 +4362,7 @@
         {
           "item_code": "HPLP38",
           "display_order": 38,
-          "text": "让自己安静下来，避免过度疲劳",
+          "text": "自我安静、避免疲劳",
           "dimension": "STRESS_MANAGEMENT",
           "reverse_scored": false
         },
@@ -4376,13 +4376,13 @@
         {
           "item_code": "HPLP40",
           "display_order": 40,
-          "text": "必要时寻求指导和咨询",
+          "text": "必要时寻求指导和顾问",
           "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false
         }
       ],
       "scoring_notes": [
-        "40题均按1-4分正向计分。营养8题、健康责任9题、身体活动8题、精神成长5题、人际关系5题、压力管理5题分别取均值；综合观察为六维均值的平均值。分数越高表示该类健康促进行为在本次自报中出现得越频繁，不作诊断或医学风险判断。"
+        "40题均按1-4分正向计分。维度采用HPLP-ⅡR中文修订版（曹文君等，2016，表1）六因子：营养6题、健康责任11题、身体活动8题、精神成长5题、人际关系5题、压力管理5题，分别取均值；综合观察为40题均分（原文总分=均分×40）。分数越高表示该类健康促进行为在本次自报中出现得越频繁，不作诊断或医学风险判断。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
@@ -4393,7 +4393,7 @@
         "scope": "pilot_release"
       },
       "worksheet_instructions": "以下陈述涉及日常健康促进习惯。请按最近一段时间的实际频率选择“从不、偶尔、经常或总是”。结果用于支持性自我观察和练习参考，不替代医学建议。",
-      "source_version": "2026.07-hplp-40-niu-zhixu-canonical-review-20261002-v2",
+      "source_version": "2026.07-hplp-40-niu-zhixu-canonical-review-20261007-v3",
       "total_score_method": "none",
       "dimension_score_method": "mean"
     },

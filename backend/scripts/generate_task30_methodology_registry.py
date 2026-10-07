@@ -164,7 +164,7 @@ def build_registry() -> dict:
     worksheets = json.loads((CONTENT_ROOT / "assessment_worksheets.json").read_text(encoding="utf-8"))["worksheets"]
     measures = [_measure_entry(item) for item in sorted(worksheets, key=lambda row: row["id"])]
     return {
-        "version": "2026-10-03-t30-scale-review-v2",
+        "version": "2026-10-07-t30-scale-review-v3",
         "status": "draft_before_freeze",
         "generated_from": {"assessment_worksheets_version": json.loads((CONTENT_ROOT / "assessment_worksheets.json").read_text(encoding="utf-8")).get("version"), "outcome_rows_read": 0},
         "real_outcome_data_accessed": False,

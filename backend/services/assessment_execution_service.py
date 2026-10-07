@@ -458,12 +458,16 @@ def score_answers(worksheet: dict, answers: list[dict]) -> tuple[dict, int | flo
         if value is None:
             continue
         dimension_scores[spec["code"]] = value
+        if calculation.get("type") in {"mean_terms", "mapped_mean_terms"}:
+            derived_count = sum(term.get("item") in item_scores for term in calculation.get("terms", []))
+        else:
+            derived_count = len(calculation.get("dimensions", []))
         dimensions.append(
             {
                 "key": spec["code"],
                 "label": spec.get("label", spec["code"]),
                 "score": value,
-                "item_count": len(calculation.get("dimensions", [])),
+                "item_count": derived_count,
                 "score_method": calculation.get("type", "derived"),
             }
         )

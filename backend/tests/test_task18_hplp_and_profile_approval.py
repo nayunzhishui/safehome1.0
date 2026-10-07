@@ -81,3 +81,34 @@ def test_profile_models_are_linked_and_hplp_duplicate_is_not_runtime_candidate()
     hplp = models["profile_005_e6d75f52a4.json"]
     assert len({feature["worksheet_question_id"] for feature in hplp["features"]}) == hplp["n_features"]
     assert all(feature["worksheet_question_id"].startswith("HPLP") for feature in hplp["features"])
+
+
+def test_hplp_follows_chinese_revision_factor_key_and_forty_item_composite():
+    """曹文君等(2016)表1与本地hplp.sps：营养6题、健康责任11题；综合观察为40题均分。"""
+    worksheet = next(
+        item
+        for item in load_content("assessment_worksheets.json")["worksheets"]
+        if item["id"] == "hplp_c_health_promoting_lifestyle"
+    )
+    dims = {item["code"]: item["item_ids"] for item in worksheet["dimensions"]}
+    assert dims["NUTRITION"] == ["HPLP12", "HPLP18", "HPLP23", "HPLP30", "HPLP35", "HPLP39"]
+    assert dims["HEALTH_RESPONSIBILITY"] == [
+        "HPLP01", "HPLP02", "HPLP06", "HPLP07", "HPLP13", "HPLP19",
+        "HPLP24", "HPLP28", "HPLP31", "HPLP36", "HPLP40",
+    ]
+    prompts = {item["id"]: item["prompt"] for item in worksheet["questions"]}
+    assert prompts["HPLP19"].startswith("当不信任卫生专业人士的建议时去寻求第二人的建议")
+    assert prompts["HPLP26"].startswith("用特殊方式缓解压力")
+    assert prompts["HPLP38"].startswith("自我安静、避免疲劳")
+
+    nutrition = set(dims["NUTRITION"])
+    answers = [
+        {"question_id": question["id"], "value": "4" if question["id"] in nutrition else "1"}
+        for question in worksheet["questions"]
+    ]
+    result = execute_assessment(worksheet, answers)
+    scores = {item["key"]: item for item in result.scores["dimensions"]}
+    assert scores["NUTRITION"]["score"] == 4  # the former 8-item key gave 3.25
+    assert scores["HEALTH_RESPONSIBILITY"]["score"] == 1
+    assert scores["HPLP_TOTAL"]["score"] == 1.45  # (6 * 4 + 34 * 1) / 40
+    assert scores["HPLP_TOTAL"]["item_count"] == 40

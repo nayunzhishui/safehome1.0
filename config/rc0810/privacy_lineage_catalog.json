@@ -5238,6 +5238,6 @@
     "models_sha256": "3488854091ac30072df92a84a685ab2522b1c515c478f0be048b1a35304f10d7",
     "migration_manifest_sha256": "09a7a8d1a1e7ff7fc2c78980850ae7b774696aa6a6ced9d7f6787c9b1a09aed8",
     "route_manifest_sha256": "55a77eaa5f4a05bfcd928c9e8f4a5a43cba3676905b8b2b4bfda3eb94bb80ab3",
-    "service_manifest_sha256": "caaa957880523d137ce9951f2fce075cc0ffcc573e827c27e255cbb03ee987bc"
+    "service_manifest_sha256": "56425f37223d9b483ff8977dffaf29d67967a544db635dc41bee913c7925be28"
   }
 }

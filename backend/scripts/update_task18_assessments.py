@@ -443,7 +443,7 @@ def public_worksheets() -> list[dict]:
     tipi_texts = [
         "外向的、热情的。", "挑剔的、爱争论的。", "可靠的、自律的。", "焦虑的、易心烦的。",
         "愿意接触新事物的、思维复杂的。", "内敛的、安静的。", "有同情心的、温暖的。",
-        "缺乏条理的、粗心的。", "冷静的、情绪稳定的。", "传统的、缺乏创造性的。",
+        "缺乏条理的、粗心的。", "冷静的、情绪稳定的。", "循规蹈矩的、缺乏创造性的。",
     ]
     tipi_questions = [question(f"TIPI{i:02d}", text, "ITEM", tipi_options) for i, text in enumerate(tipi_texts, 1)]
     terms = lambda *pairs: {"type": "mean_terms", "terms": [{"item": f"TIPI{item:02d}", **({"reverse_min": 1, "reverse_max": 7} if reverse else {})} for item, reverse in pairs]}

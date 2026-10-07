@@ -1,5 +1,5 @@
 {
-  "version": "2026.10-scale-review-corrections-v2",
+  "version": "2026.10-scale-review-corrections-v3",
   "boundary_notice": "当前测一测内容来自项目内容库和已抽取量表草稿。所有结果只用于自我观察、阶段性画像候选和练习参考，不构成诊断、筛查结论或人格标签。敏感语义量表必须展示边界提示并保留人工复核。",
   "worksheets": [
     {
@@ -9881,8 +9881,8 @@
     {
       "id": "fmi_12_mindfulness",
       "source_file": "弗赖堡正念调查量表FMI.pdf",
-      "source_title": "弗赖堡正念调查量表（FMI-12）",
-      "display_title": "正念自我观察（FMI，12题改编候选）",
+      "source_title": "弗赖堡正念调查量表中文版（FMI-12；周仁来、陈思佚，2011）",
+      "display_title": "正念自我观察（FMI中文版，12题）",
       "category": "成人自助",
       "audience": "adult",
       "audience_class": "adult",
@@ -10205,7 +10205,7 @@
         },
         {
           "id": "FMI11",
-          "prompt": "我的心灵平静.轻松，甚至当事情变得忙乱和充满压力时也会这样。",
+          "prompt": "我的心灵平静、轻松，甚至当事情变得忙乱和充满压力时也会这样。",
           "type": "scale",
           "required": true,
           "dimension": "TOTAL",
@@ -10294,7 +10294,7 @@
         "emotion_naming",
         "three_second_pause"
       ],
-      "source_version": "2026.06-fmi_12_mindfulness-from-scale-draft-review-20261002-v2",
+      "source_version": "2026.06-fmi_12_mindfulness-from-scale-draft-review-20261007-v3",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
@@ -10316,8 +10316,8 @@
     {
       "id": "hplp_c_health_promoting_lifestyle",
       "source_file": "5_牛至旭_中年女性自我关怀现状及其对主观幸福感的影响/数据和问卷/问卷/四个量表文字版.docx",
-      "source_title": "健康促进生活方式量表（HPLP，40题）",
-      "display_title": "健康促进生活方式自我观察（40题改编候选）",
+      "source_title": "健康促进生活方式量表中文修订版（HPLP-ⅡR，40题）",
+      "display_title": "健康促进生活方式自我观察（40题）",
       "category": "成人自助",
       "audience": "adult",
       "audience_class": "adult",
@@ -10343,7 +10343,7 @@
           "prompt": "选择低脂肪、低饱和脂肪和低胆固醇的食物",
           "type": "scale",
           "required": true,
-          "dimension": "NUTRITION",
+          "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false,
           "options": [
             {
@@ -10370,7 +10370,7 @@
         },
         {
           "id": "HPLP02",
-          "prompt": "有任何不正常的症状和体征时，向卫生专业人员咨询",
+          "prompt": "有任何不正常的症状和体征向卫生专业人员咨询",
           "type": "scale",
           "required": true,
           "dimension": "HEALTH_RESPONSIBILITY",
@@ -10430,7 +10430,7 @@
         },
         {
           "id": "HPLP04",
-          "prompt": "感觉自己在积极地成长和变化",
+          "prompt": "感觉自己在积极的成长和变化",
           "type": "scale",
           "required": true,
           "dimension": "SPIRITUAL_GROWTH",
@@ -10493,7 +10493,7 @@
           "prompt": "限制糖和含糖食物的使用",
           "type": "scale",
           "required": true,
-          "dimension": "NUTRITION",
+          "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false,
           "options": [
             {
@@ -10520,7 +10520,7 @@
         },
         {
           "id": "HPLP07",
-          "prompt": "阅读或观看有关健康促进的杂志或电视内容",
+          "prompt": "阅读或看有关健康促进杂志或电视",
           "type": "scale",
           "required": true,
           "dimension": "HEALTH_RESPONSIBILITY",
@@ -10880,7 +10880,7 @@
         },
         {
           "id": "HPLP19",
-          "prompt": "当不信任卫生专业人士的建议时，寻求另一位专业人士的建议",
+          "prompt": "当不信任卫生专业人士的建议时去寻求第二人的建议",
           "type": "scale",
           "required": true,
           "dimension": "HEALTH_RESPONSIBILITY",
@@ -11090,7 +11090,7 @@
         },
         {
           "id": "HPLP26",
-          "prompt": "用适合自己的方式缓解压力",
+          "prompt": "用特殊方式缓解压力",
           "type": "scale",
           "required": true,
           "dimension": "STRESS_MANAGEMENT",
@@ -11120,7 +11120,7 @@
         },
         {
           "id": "HPLP27",
-          "prompt": "向人生的长期目标努力",
+          "prompt": "向我人生的长期目标努力",
           "type": "scale",
           "required": true,
           "dimension": "SPIRITUAL_GROWTH",
@@ -11300,7 +11300,7 @@
         },
         {
           "id": "HPLP33",
-          "prompt": "知道生命中什么对自己重要",
+          "prompt": "知道生命中什么对我重要",
           "type": "scale",
           "required": true,
           "dimension": "SPIRITUAL_GROWTH",
@@ -11360,7 +11360,7 @@
         },
         {
           "id": "HPLP35",
-          "prompt": "阅读包装食品的标签",
+          "prompt": "阅读包装好食物的标签",
           "type": "scale",
           "required": true,
           "dimension": "NUTRITION",
@@ -11450,7 +11450,7 @@
         },
         {
           "id": "HPLP38",
-          "prompt": "让自己安静下来，避免过度疲劳",
+          "prompt": "自我安静、避免疲劳",
           "type": "scale",
           "required": true,
           "dimension": "STRESS_MANAGEMENT",
@@ -11510,7 +11510,7 @@
         },
         {
           "id": "HPLP40",
-          "prompt": "必要时寻求指导和咨询",
+          "prompt": "必要时寻求指导和顾问",
           "type": "scale",
           "required": true,
           "dimension": "HEALTH_RESPONSIBILITY",
@@ -11544,8 +11544,6 @@
           "code": "NUTRITION",
           "label": "营养",
           "item_ids": [
-            "HPLP01",
-            "HPLP06",
             "HPLP12",
             "HPLP18",
             "HPLP23",
@@ -11560,7 +11558,9 @@
           "code": "HEALTH_RESPONSIBILITY",
           "label": "健康责任",
           "item_ids": [
+            "HPLP01",
             "HPLP02",
+            "HPLP06",
             "HPLP07",
             "HPLP13",
             "HPLP19",
@@ -11634,27 +11634,141 @@
           "code": "HPLP_TOTAL",
           "label": "健康促进生活方式综合观察",
           "calculation": {
-            "type": "mean_dimensions",
-            "dimensions": [
-              "NUTRITION",
-              "HEALTH_RESPONSIBILITY",
-              "PHYSICAL_ACTIVITY",
-              "SPIRITUAL_GROWTH",
-              "INTERPERSONAL_RELATIONS",
-              "STRESS_MANAGEMENT"
+            "type": "mean_terms",
+            "terms": [
+              {
+                "item": "HPLP01"
+              },
+              {
+                "item": "HPLP02"
+              },
+              {
+                "item": "HPLP03"
+              },
+              {
+                "item": "HPLP04"
+              },
+              {
+                "item": "HPLP05"
+              },
+              {
+                "item": "HPLP06"
+              },
+              {
+                "item": "HPLP07"
+              },
+              {
+                "item": "HPLP08"
+              },
+              {
+                "item": "HPLP09"
+              },
+              {
+                "item": "HPLP10"
+              },
+              {
+                "item": "HPLP11"
+              },
+              {
+                "item": "HPLP12"
+              },
+              {
+                "item": "HPLP13"
+              },
+              {
+                "item": "HPLP14"
+              },
+              {
+                "item": "HPLP15"
+              },
+              {
+                "item": "HPLP16"
+              },
+              {
+                "item": "HPLP17"
+              },
+              {
+                "item": "HPLP18"
+              },
+              {
+                "item": "HPLP19"
+              },
+              {
+                "item": "HPLP20"
+              },
+              {
+                "item": "HPLP21"
+              },
+              {
+                "item": "HPLP22"
+              },
+              {
+                "item": "HPLP23"
+              },
+              {
+                "item": "HPLP24"
+              },
+              {
+                "item": "HPLP25"
+              },
+              {
+                "item": "HPLP26"
+              },
+              {
+                "item": "HPLP27"
+              },
+              {
+                "item": "HPLP28"
+              },
+              {
+                "item": "HPLP29"
+              },
+              {
+                "item": "HPLP30"
+              },
+              {
+                "item": "HPLP31"
+              },
+              {
+                "item": "HPLP32"
+              },
+              {
+                "item": "HPLP33"
+              },
+              {
+                "item": "HPLP34"
+              },
+              {
+                "item": "HPLP35"
+              },
+              {
+                "item": "HPLP36"
+              },
+              {
+                "item": "HPLP37"
+              },
+              {
+                "item": "HPLP38"
+              },
+              {
+                "item": "HPLP39"
+              },
+              {
+                "item": "HPLP40"
+              }
             ]
           }
         }
       ],
       "dimension_score_method": "mean",
       "total_score_method": "none",
-      "scoring": "40题均按1-4分正向计分。营养8题、健康责任9题、身体活动8题、精神成长5题、人际关系5题、压力管理5题分别取均值；综合观察为六维均值的平均值。分数越高表示该类健康促进行为在本次自报中出现得越频繁，不作诊断或医学风险判断。",
+      "scoring": "40题均按1-4分正向计分。维度采用HPLP-ⅡR中文修订版（曹文君等，2016，表1）六因子：营养6题、健康责任11题、身体活动8题、精神成长5题、人际关系5题、压力管理5题，分别取均值；综合观察为40题均分（原文总分=均分×40）。分数越高表示该类健康促进行为在本次自报中出现得越频繁，不作诊断或医学风险判断。",
       "recommended_card_ids": [
         "emotion_naming",
         "cognitive_flexibility",
         "self_support_statement"
       ],
-      "source_version": "2026.07-hplp-40-niu-zhixu-canonical-review-20261002-v2",
+      "source_version": "2026.07-hplp-40-niu-zhixu-canonical-review-20261007-v3",
       "source_type": "authorized_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
@@ -11664,7 +11778,7 @@
       "profile_model_id": "5_牛至旭_中年女性自我关怀现状及其对主观幸福感的影响__5_牛至旭_中年女性自我关怀现状及其对主观幸福感的影响_数据和问卷_数据_209份最终数据_sav__hplp_c_health_promoting_lifestyle",
       "_meta": {
         "canonical_source": "5_牛至旭资料中的40题版本",
-        "dimension_reference": "HPLP-II官方六维计分说明，按本地40题保留项映射",
+        "dimension_reference": "曹文君等(2016)《HPLP-Ⅱ健康促进生活方式量表中文版的研制及其性能测试》表1；与本地《指标值计算-hplp.sps》逐题一致",
         "official_scoring_url": "https://deepblue.lib.umich.edu/bitstream/handle/2027.42/85349/HPLP_II-Scoring_Instructions.pdf",
         "version_conflict_resolution": "按用户指定采用牛至旭40题版本；原42题草稿退出运行口径。",
         "scoring_review_note": "报告已指出版本、选项或计分依据缺口；添加对应解释限制，未自行选择版本、修改阈值或批准专业审核。依据及未结项见 outputs/问卷题目差异审查_20260929.md 的2026-10-02修正记录。顶层总分/派生维度策略同步到数据库实际保存的_meta；不改变题目、选项或既有公式。",
@@ -11685,7 +11799,9 @@
               ]
             }
           }
-        ]
+        ],
+        "previous_dimension_reference": "HPLP-II官方六维计分说明，按本地40题保留项映射",
+        "correction_20261007": "原按英文52题HPLP-Ⅱ说明把第1、6题归入营养，与所用中文修订版因子结构不一致；改为健康责任，并恢复10题经验证中文措辞，综合观察改为40题均分。旧结果保留原快照，不重算。"
       },
       "approval": {
         "reviewer": "项目负责人（用户明确批准）",
@@ -20215,7 +20331,7 @@
     },
     {
       "id": "regulatory_focus_relationship_18",
-      "source_file": "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/大学生亲密关系主动性调查问卷.docx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/原始量表.xlsx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/调节聚焦问卷计分手册.docx",
+      "source_file": "D:/codex/workspace/safehome1.0其他内容/夏老师文件/数据1/单身大学生亲密关系启动意向与主动行为调查问卷1.0(1).docx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/数据1/问卷计分算分说明书.docx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/数据1/原始量表.xlsx",
       "source_title": "关系情境中的行动关注方式",
       "display_title": "关系情境中的行动关注方式",
       "category": "学生自助",
@@ -21279,7 +21395,7 @@
         "relationship_gentle_expression",
         "relationship_bounded_micro_action"
       ],
-      "source_version": "2026.07-regulatory_focus_relationship_18-nine-point",
+      "source_version": "2026.07-regulatory_focus_relationship_18-nine-point-review-20261007-v3",
       "source_type": "authorized_local_research_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
@@ -21312,7 +21428,7 @@
     },
     {
       "id": "micro_ysq_relationship_18",
-      "source_file": "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/大学生亲密关系主动性调查问卷.docx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/原始量表.xlsx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/调节聚焦问卷计分手册.docx",
+      "source_file": "D:/codex/workspace/safehome1.0其他内容/夏老师文件/数据1/单身大学生亲密关系启动意向与主动行为调查问卷1.0(1).docx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/数据1/问卷计分算分说明书.docx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/数据1/原始量表.xlsx",
       "source_title": "关系中的常见担心与期待",
       "display_title": "关系中的常见担心与期待",
       "category": "学生自助",
@@ -22282,7 +22398,7 @@
         "relationship_second_explanation",
         "relationship_self_support"
       ],
-      "source_version": "2026.06-micro_ysq_relationship_18-from-scale-draft",
+      "source_version": "2026.06-micro_ysq_relationship_18-from-scale-draft-review-20261007-v3",
       "source_type": "authorized_local_research_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
@@ -22303,7 +22419,7 @@
     },
     {
       "id": "relationship_initiation_intention_action",
-      "source_file": "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/大学生亲密关系主动性调查问卷.docx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/原始量表.xlsx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/调节聚焦问卷计分手册.docx",
+      "source_file": "D:/codex/workspace/safehome1.0其他内容/夏老师文件/数据1/单身大学生亲密关系启动意向与主动行为调查问卷1.0(1).docx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/数据1/问卷计分算分说明书.docx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/数据1/原始量表.xlsx",
       "source_title": "关系主动性：想法、意愿与行动",
       "display_title": "关系主动性：想法、意愿与行动",
       "category": "学生自助",
@@ -23587,7 +23703,7 @@
         "relationship_gentle_expression",
         "relationship_bounded_micro_action"
       ],
-      "source_version": "2026.06-relationship_initiation_intention_action-from-scale-draft",
+      "source_version": "2026.06-relationship_initiation_intention_action-from-scale-draft-review-20261007-v3",
       "source_type": "authorized_local_research_resource",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
@@ -24267,7 +24383,7 @@
     },
     {
       "id": "big_five_tipi_10",
-      "source_file": "Gosling Lab官方TIPI英文原版；中文翻译待心理复核",
+      "source_file": "Gosling Lab官方TIPI英文原版；中文措辞采用作者网站所链译本（Lu et al., 2020, Appendix）",
       "source_title": "10项目大五人格量表（TIPI）",
       "display_title": "10项目大五人格量表（TIPI）",
       "category": "成人自助",
@@ -24695,7 +24811,7 @@
         },
         {
           "id": "TIPI10",
-          "prompt": "传统的、缺乏创造性的。",
+          "prompt": "循规蹈矩的、缺乏创造性的。",
           "type": "scale",
           "required": true,
           "dimension": "ITEM",
@@ -24873,7 +24989,7 @@
       "recommended_card_ids": [
         "self_support_statement"
       ],
-      "source_version": "2026.07-task18-reviewed-scales-v1",
+      "source_version": "2026.07-task18-reviewed-scales-v1-review-20261007-v3",
       "source_type": "author_public_use",
       "review_status": "pilot_approved",
       "enabled_for_user": true,
