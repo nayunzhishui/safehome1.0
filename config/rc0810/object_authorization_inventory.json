@@ -1834,7 +1834,7 @@
     },
     {
       "file": "backend/routes/checkins.py",
-      "line": 169,
+      "line": 175,
       "parameter": "user_id"
     },
     {
@@ -1864,7 +1864,7 @@
     },
     {
       "file": "backend/routes/diaries.py",
-      "line": 155,
+      "line": 157,
       "parameter": "user_id"
     },
     {
@@ -1944,22 +1944,22 @@
     },
     {
       "file": "backend/routes/privacy.py",
-      "line": 58,
+      "line": 60,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/privacy.py",
-      "line": 74,
+      "line": 78,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/privacy.py",
-      "line": 88,
+      "line": 92,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/privacy.py",
-      "line": 262,
+      "line": 266,
       "parameter": "user_id"
     },
     {

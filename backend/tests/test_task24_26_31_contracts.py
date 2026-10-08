@@ -90,6 +90,15 @@ def test_research_queue_is_paginated_minimal_and_assignment_scoped(tmp_path, mon
                 """,
                 (assigned_user, researcher_id, now_iso(), now_iso()),
             )
+            # Queue scope requires an active research_scope_assignments row, not just assigned_researcher_id.
+            conn.execute(
+                """
+                INSERT INTO research_scope_assignments (
+                    id, enrollment_id, actor_id, assignment_role, status, assigned_by, created_at, updated_at
+                ) VALUES ('queue-assignment', 'queue-enrollment', ?, 'researcher', 'active', 'admin-test', ?, ?)
+                """,
+                (researcher_id, now_iso(), now_iso()),
+            )
             for index, user_id in enumerate([assigned_user, assigned_user, other_user]):
                 conn.execute(
                     """

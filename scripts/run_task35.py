@@ -17,6 +17,18 @@ REGISTRY_PATH = ROOT / "config" / "task35_registry.json"
 MANIFEST_PATH = ROOT / "content" / "offline_baseline_manifest.json"
 
 
+def _canonical_bytes(path: Path) -> bytes:
+    """Text artifacts hash in canonical LF form so Windows CRLF and Linux CI checkouts agree."""
+    data = path.read_bytes()
+    if b"\0" in data:
+        return data
+    try:
+        data.decode("utf-8")
+    except UnicodeDecodeError:
+        return data
+    return data.replace(b"\r\n", b"\n")
+
+
 def _load(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -34,7 +46,7 @@ def verify() -> dict:
         if not path.is_file():
             failures.append({"task": "T35-F00", "path": artifact["path"], "reason": "missing"})
             continue
-        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+        actual = hashlib.sha256(_canonical_bytes(path)).hexdigest()
         if actual != artifact["sha256"]:
             failures.append({"task": "T35-F00", "path": artifact["path"], "reason": "sha256_mismatch"})
     return {

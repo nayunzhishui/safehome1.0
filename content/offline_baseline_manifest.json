@@ -18,11 +18,11 @@
     },
     {
       "path": "content/synthetic_affect_benchmark_240.json",
-      "sha256": "cf87c21162b260301b8332eb190e71a8c3b809c4047dbdcd019a6782f744d1cd"
+      "sha256": "32cb76cbaf0ffce81bcb3f30445d1fa88c5541a520a8c124db46c0b2aed88cf3"
     },
     {
       "path": "content/synthetic_group_network_suite.json",
-      "sha256": "fd3c1c0f0b4dfe8f6b7ce777af0be97ace1fa581807a6432f6844a68e2fc1ce3"
+      "sha256": "f1c95fa2ba706d2ca07bb18072a30f13eeba405614e2560b469a0dce75bc6f85"
     },
     {
       "path": "content/affect_model_candidate_registry.json",

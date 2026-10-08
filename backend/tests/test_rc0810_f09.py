@@ -48,6 +48,16 @@ def _fresh_app(tmp_path, monkeypatch):
     return app
 
 
+def _approve_checkin_card(monkeypatch, card_id="three_second_pause"):
+    """Production lists only approved cards; approve one so idempotency is what is tested."""
+    checkins = importlib.import_module("routes.checkins")
+    monkeypatch.setattr(
+        checkins,
+        "list_cards",
+        lambda enabled_only=True: [{"id": card_id, "enabled": True, "review_status": "pilot_approved"}],
+    )
+
+
 def _register(client, username="parent-f09"):
     response = client.post(
         "/api/auth/register",
@@ -276,7 +286,7 @@ def test_side_effect_ledger_records_each_effect_once(tmp_path, monkeypatch):
         ),
         (
             "/api/checkins",
-            {"card_id": "pause_and_breathe", "completed": True},
+            {"card_id": "three_second_pause", "completed": True},
             ("completed", False),
         ),
     ),
@@ -285,6 +295,7 @@ def test_core_write_routes_replay_same_request_and_conflict_on_changed_payload(
     tmp_path, monkeypatch, endpoint, payload, changed_field
 ):
     app = _fresh_app(tmp_path, monkeypatch)
+    _approve_checkin_card(monkeypatch)
     client = app.test_client()
     _, headers = _register(client, f"route-{endpoint.rsplit('/', 1)[-1]}-f09")
     headers = {**headers, "Idempotency-Key": "route-key-f09"}
@@ -306,10 +317,11 @@ def test_core_write_routes_replay_same_request_and_conflict_on_changed_payload(
 
 def test_checkin_replay_does_not_duplicate_audit_side_effect(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
+    _approve_checkin_card(monkeypatch)
     client = app.test_client()
     user_id, headers = _register(client, "checkin-effects-route-f09")
     headers = {**headers, "Idempotency-Key": "checkin-effects-key"}
-    payload = {"card_id": "pause_and_breathe", "completed": True}
+    payload = {"card_id": "three_second_pause", "completed": True}
 
     assert client.post("/api/checkins", headers=headers, json=payload).status_code == 201
     assert client.post("/api/checkins", headers=headers, json=payload).status_code == 200
@@ -601,10 +613,11 @@ def test_failed_checkin_transaction_rolls_back_claim_and_retries_cleanly(
     tmp_path, monkeypatch
 ):
     app = _fresh_app(tmp_path, monkeypatch)
+    _approve_checkin_card(monkeypatch)
     client = app.test_client()
     _, headers = _register(client, "checkin-rollback-f09")
     headers = {**headers, "Idempotency-Key": "checkin-rollback-key"}
-    payload = {"card_id": "pause_and_breathe", "completed": True}
+    payload = {"card_id": "three_second_pause", "completed": True}
 
     from routes import checkins as checkins_route
 

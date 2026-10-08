@@ -167,7 +167,8 @@ def test_miniprogram_researcher_dashboard_labels_temporary_full_access():
 
     assert "researcher_platform_full_access" in page_js
     assert "开发全权限模式" in page_wxml
-    assert "治疗性评估、AI、情感计算、网络分析、发布与生产门禁" in page_wxml
+    assert "测试账号临时开放研究能力；正式发布前必须关闭。" in page_wxml
+    assert "所有操作仍记录原始账号" in page_wxml
 
 
 def test_temporary_full_access_covers_current_mobile_research_workspace(tmp_path, monkeypatch):
@@ -212,7 +213,9 @@ def test_miniprogram_maps_old_account_login_failures_to_actionable_messages():
 def test_researcher_dashboard_contains_narrow_viewport_guards():
     wxss = (ROOT / "apps/miniprogram/pages/researcher-dashboard/index.wxss").read_text(encoding="utf-8")
 
-    assert ".researcher-dashboard-page > *" in wxss
+    # WXSS has no universal selector; direct view/scroll-view children carry the guard.
+    assert ".researcher-dashboard-page > view," in wxss
+    assert "max-width: 100%;" in wxss
     assert "overflow-x: hidden;" in wxss
     assert ".error-actions button" in wxss
     assert "overflow-wrap: anywhere;" in wxss

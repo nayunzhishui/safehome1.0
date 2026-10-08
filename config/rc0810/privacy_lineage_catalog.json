@@ -5235,9 +5235,9 @@
   },
   "release_gate_eligible": false,
   "source_bindings": {
-    "models_sha256": "3488854091ac30072df92a84a685ab2522b1c515c478f0be048b1a35304f10d7",
+    "models_sha256": "083cb33ad4bd2c2242b0807e283f6a55a2867aa4d02d958e7a5b988ac28671aa",
     "migration_manifest_sha256": "09a7a8d1a1e7ff7fc2c78980850ae7b774696aa6a6ced9d7f6787c9b1a09aed8",
-    "route_manifest_sha256": "55a77eaa5f4a05bfcd928c9e8f4a5a43cba3676905b8b2b4bfda3eb94bb80ab3",
-    "service_manifest_sha256": "56425f37223d9b483ff8977dffaf29d67967a544db635dc41bee913c7925be28"
+    "route_manifest_sha256": "7b137dee562bdd54cd432c19eb0c7cf8d611a92327e48c7a6dda8ea480234e64",
+    "service_manifest_sha256": "e6a24f9c0d1dbf60d2b4b66fb53e0c5f8fcf2b4935c9e2f05f5152024905cf95"
   }
 }

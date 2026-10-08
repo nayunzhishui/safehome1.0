@@ -87,7 +87,9 @@ def test_schema_and_mysql_contract_include_stop_recovery_tables():
     schema = "\n".join(SCHEMA_SQL)
     indexes = "\n".join(INDEX_SQL)
     assert CURRENT_SCHEMA_VERSION >= "2026_07_29_061"
-    assert CURRENT_SCHEMA_NAME == "therapeutic_assessment_stop_recovery"
+    # Later waves advance the current schema name; the stop-recovery step stays in the lineage.
+    assert CURRENT_SCHEMA_NAME
+    assert (BACKEND / "scripts" / "migrate_task38_f24_stop_recovery.py").is_file()
     assert "therapeutic_assessment_stop_incidents" in schema
     assert "therapeutic_assessment_recovery_evidence" in schema
     assert "idx_therapeutic_recovery_verifier_idempotency" in indexes

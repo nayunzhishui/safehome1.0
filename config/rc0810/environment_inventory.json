@@ -9,35 +9,35 @@
       "layer": "deployment",
       "classification": "development_template",
       "production_eligible": false,
-      "sha256": "7705c548d5f5edee2693ae85aeeb686bcd1161b8a6b2d926b7d721cd24882f7a"
+      "sha256": "b6aeb78a2377a0c6317ea20fe9dfaf63d5d3328d7ba1071cf5b2f4a0ff10ba27"
     },
     {
       "path": "Dockerfile",
       "layer": "deployment",
       "classification": "production_candidate_not_approved",
       "production_eligible": false,
-      "sha256": "c08f7168f658a627c63416097b640d05fa57fd2e2eca784b179e898684d6cac1"
+      "sha256": "a94c0213af58139627cf2e4e5f95f306c401e5f3475504cf996f90a8436bb618"
     },
     {
       "path": "backend/config.py",
       "layer": "backend",
       "classification": "runtime_configuration",
       "production_eligible": false,
-      "sha256": "037c7af556a9f3cd201a33347ee8d4159f941f1a73ef34efdba956f22db40f4c"
+      "sha256": "efb63593265925802e5a58af36c97ca15ed65ce27f6bf310b34ddafffec6a5e5"
     },
     {
       "path": "backend/app.py",
       "layer": "backend",
       "classification": "runtime_entrypoint",
       "production_eligible": false,
-      "sha256": "c58ee8db5c003076c24243e71f7c1966a6815062d1d8a8546df749be434cad49"
+      "sha256": "317660837b3965b505ba195cc020da9dd91d54a17aff1701bcb39a20d6bc5d4f"
     },
     {
       "path": "backend/gunicorn.conf.py",
       "layer": "deployment",
       "classification": "runtime_server",
       "production_eligible": false,
-      "sha256": "05e6b66d00fff9bcbd72c96308a458ce77c5b9f7be488b867646a77b42f021c0"
+      "sha256": "168207170f3053f4c1d951dfefa52f95d767393ce0253a7193d2e6034deaa84b"
     },
     {
       "path": "apps/miniprogram/services/cloudConfig.js",
@@ -51,7 +51,7 @@
       "layer": "miniprogram",
       "classification": "transport_contract",
       "production_eligible": false,
-      "sha256": "5d0fb9da8138d0c9c559eee20eca10c42b0e588372c384ead7f7c359a6209ce4"
+      "sha256": "5181628c44a072a3fdf920ee64dc9d30bcc520cdb37b7d656cf6b23ffab27ce9"
     },
     {
       "path": "apps/web/vite.config.ts",
@@ -65,28 +65,28 @@
       "layer": "web",
       "classification": "client_transport_contract",
       "production_eligible": false,
-      "sha256": "2005601ab5511473a0f7bb87f3699f5eb78d44f6b57f63b3703b134b12db49aa"
+      "sha256": "e5797dc83e5e9d14e77f292931e455a782239dce6dbd15ccfca6f76916b26fa2"
     },
     {
       "path": "shared/constants/api.ts",
       "layer": "shared",
       "classification": "shared_api_contract",
       "production_eligible": false,
-      "sha256": "dd0f515877559e120167490d14eb1f819b21efdbae27841f2bc79f0e95cd271f"
+      "sha256": "53ecde58ceadda3d61fe6b62bdd10fdf0e87c4d496f5baefd814cb397ad80448"
     },
     {
       "path": "docs/03_技术真相/API接口文档.md",
       "layer": "docs",
       "classification": "documented_api_contract",
       "production_eligible": false,
-      "sha256": "283708d9215d7d7cefb7b1d2c0bc29538739edc8e7caf6f148ef39da0e869d7a"
+      "sha256": "a1f584cc86d1a0e233e55aec1bb782b56a8e9fb59db8c0b7503ed1ab7365f919"
     },
     {
       "path": "scripts/build_task9_cloudbase_package.ps1",
       "layer": "deployment",
       "classification": "legacy_validation_packager",
       "production_eligible": false,
-      "sha256": "2ca3f4cdbfd8af77de9b8b17aca05c0ddb3bfb01b61a4be56eb3b79acb1cb1db"
+      "sha256": "e12eae9e9070bd721246656af675a0969c8b975ec0c561f7b812697d5d054fc2"
     }
   ],
   "environment_variable_classes": {
