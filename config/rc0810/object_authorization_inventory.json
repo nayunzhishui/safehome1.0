@@ -1864,7 +1864,7 @@
     },
     {
       "file": "backend/routes/diaries.py",
-      "line": 157,
+      "line": 159,
       "parameter": "user_id"
     },
     {

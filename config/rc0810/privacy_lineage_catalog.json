@@ -5237,7 +5237,7 @@
   "source_bindings": {
     "models_sha256": "083cb33ad4bd2c2242b0807e283f6a55a2867aa4d02d958e7a5b988ac28671aa",
     "migration_manifest_sha256": "09a7a8d1a1e7ff7fc2c78980850ae7b774696aa6a6ced9d7f6787c9b1a09aed8",
-    "route_manifest_sha256": "7b137dee562bdd54cd432c19eb0c7cf8d611a92327e48c7a6dda8ea480234e64",
-    "service_manifest_sha256": "e6a24f9c0d1dbf60d2b4b66fb53e0c5f8fcf2b4935c9e2f05f5152024905cf95"
+    "route_manifest_sha256": "bfedcbab07dad2f7fe8f8f9cc81b3a08e9a57c7c7764f867224620dfbabf8031",
+    "service_manifest_sha256": "d8cadf147160e6493279e7b6971d863d0fc761766ad2c7a478d50aae586c7905"
   }
 }

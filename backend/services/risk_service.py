@@ -2,8 +2,8 @@
 
 This module deliberately does not predict suicide/self-harm probability and it
 never produces a clinical risk score.  It detects configured safety signals,
-adds lightweight context (negated/historical/hypothetical/immediate), and
-routes records to human review.
+adds lightweight context (negated/historical/hypothetical/quoted/immediate),
+and routes records to human review.
 """
 
 from __future__ import annotations
@@ -16,29 +16,18 @@ RISK_ORDER = {"low": 0, "medium": 1, "high": 2}
 MAX_RISK_TEXT_CHARS = 20_000
 DEFAULT_LOW_RISK_RESPONSE = "当前文本未命中需要人工安全复核的配置词。该结果不代表安全评估结论。"
 DEFAULT_CONTEXT_WINDOW = 18
+CONTEXT_ENGINE_VERSION = "context-v3"
 
-# These markers only affect routing context.  They do not prove absence or
-# presence of danger.  Contextual high-risk mentions still enter human review.
+# Fallbacks for content/risk_keywords.json context_rules, which is the source of
+# truth.  These markers only affect routing context.  They do not prove absence
+# or presence of danger.  Contextual high-risk mentions still enter human review.
 NEGATION_MARKERS = ("没有", "并没有", "从未", "从没", "不是", "不会", "并不", "否认", "未曾")
 HISTORICAL_MARKERS = ("以前", "曾经", "过去", "之前", "小时候", "那时候", "曾有")
-HYPOTHETICAL_MARKERS = (
-    "如果",
-    "假如",
-    "比如",
-    "例如",
-    "举例",
-    "新闻",
-    "故事里",
-    "引用",
-    "朋友说",
-    "别人说",
-    "同学说",
-    "孩子说",
-    "家长说",
-    "他说",
-    "她说",
-    "对方说",
-)
+HYPOTHETICAL_MARKERS = ("如果", "假如", "比如", "例如", "举例", "新闻", "故事里")
+# Explicit third-party quotes only.  A parent reporting what the child or the
+# other party said ("孩子说", "他说", "她说") is the main way a child's danger
+# reaches this product, so reported speech is deliberately not a marker.
+QUOTATION_MARKERS = ("引用", "朋友说", "别人说", "同学说")
 IMMEDIACY_MARKERS = ("现在", "马上", "立刻", "今晚", "今天", "此刻", "已经准备", "已经计划", "控制不住")
 
 
@@ -75,25 +64,50 @@ def _marker_in(text: str, markers: tuple[str, ...]) -> str | None:
     return next((marker for marker in markers if marker and marker in text), None)
 
 
-def _match_context(text: str, keyword: str, start: int, end: int) -> dict:
-    before = text[max(0, start - DEFAULT_CONTEXT_WINDOW) : start]
-    after = text[end : min(len(text), end + DEFAULT_CONTEXT_WINDOW)]
+def _context_markers(payload: dict) -> dict:
+    rules = payload.get("context_rules")
+    rules = rules if isinstance(rules, dict) else {}
+
+    def markers(key: str, default: tuple[str, ...]) -> tuple[str, ...]:
+        value = rules.get(key)
+        if isinstance(value, list) and all(isinstance(item, str) for item in value):
+            return tuple(item for item in value if item)
+        return default
+
+    window = rules.get("window_chars")
+    return {
+        "negation": markers("negation_markers", NEGATION_MARKERS),
+        "historical": markers("historical_markers", HISTORICAL_MARKERS),
+        "hypothetical": markers("hypothetical_markers", HYPOTHETICAL_MARKERS),
+        "quotation": markers("quotation_markers", QUOTATION_MARKERS),
+        "immediacy": markers("immediacy_markers", IMMEDIACY_MARKERS),
+        "window": window if isinstance(window, int) and 0 < window <= 200 else DEFAULT_CONTEXT_WINDOW,
+    }
+
+
+def _match_context(text: str, keyword: str, start: int, end: int, markers: dict) -> dict:
+    window = markers["window"]
+    before = text[max(0, start - window) : start]
+    after = text[end : min(len(text), end + window)]
     surrounding = before + keyword + after
 
     # Restrict negation detection to the left side so the "不" inside phrases
     # such as "不想活" is not mistaken for a negating modifier.
-    negation = _marker_in(before[-10:], NEGATION_MARKERS)
-    historical = _marker_in(surrounding, HISTORICAL_MARKERS)
-    hypothetical = _marker_in(surrounding, HYPOTHETICAL_MARKERS)
-    immediacy = _marker_in(surrounding, IMMEDIACY_MARKERS)
+    negation = _marker_in(before[-10:], markers["negation"])
+    historical = _marker_in(surrounding, markers["historical"])
+    hypothetical = _marker_in(surrounding, markers["hypothetical"])
+    quotation = _marker_in(surrounding, markers["quotation"])
+    immediacy = _marker_in(surrounding, markers["immediacy"])
 
-    # Immediate wording only escalates when the matched safety phrase itself is
-    # not simultaneously framed as negated, historical or quoted/hypothetical.
-    # Example: "以前曾经有过自残的念头，现在在回顾" contains "现在", but
-    # "现在" describes the act of reviewing the past rather than current intent.
-    if immediacy and not (negation or historical or hypothetical):
+    # Negated, historical or hypothetical framing keeps a mention contextual even
+    # next to immediate wording: "以前曾经有过自残的念头，现在在回顾" reviews the
+    # past.  A third-party quote does not: "同学说他今晚就要自杀" still describes
+    # someone in immediate danger, so immediacy outranks quotation.
+    if negation or historical or hypothetical:
+        status = "contextual_signal"
+    elif immediacy:
         status = "immediate_signal"
-    elif negation or historical or hypothetical:
+    elif quotation:
         status = "contextual_signal"
     else:
         status = "direct_signal"
@@ -102,29 +116,43 @@ def _match_context(text: str, keyword: str, start: int, end: int) -> dict:
         "negation_marker": negation,
         "historical_marker": historical,
         "hypothetical_marker": hypothetical,
+        "quotation_marker": quotation,
         "immediacy_marker": immediacy,
     }
 
 
-def _keyword_occurrences(text: str, keyword: str) -> list[dict]:
+def _excluded(text: str, start: int, end: int, exclude_phrases: list[str]) -> bool:
+    # Exclusions only cover fixed everyday idioms such as "想死你了"; a keyword
+    # occurrence is skipped only when an excluded phrase fully contains it.
+    for phrase in exclude_phrases:
+        for match in re.finditer(re.escape(phrase), text):
+            if match.start() <= start and end <= match.end():
+                return True
+    return False
+
+
+def _keyword_occurrences(text: str, keyword: str, markers: dict, exclude_phrases: list[str]) -> list[dict]:
     if not keyword:
         return []
     occurrences: list[dict] = []
     for match in re.finditer(re.escape(keyword), text):
+        if _excluded(text, match.start(), match.end(), exclude_phrases):
+            continue
         occurrences.append(
             {
                 "keyword": keyword,
                 "start": match.start(),
-                "context": _match_context(text, keyword, match.start(), match.end()),
+                "context": _match_context(text, keyword, match.start(), match.end(), markers),
             }
         )
     return occurrences
 
 
-def _category_match(category: dict, text: str) -> dict | None:
+def _category_match(category: dict, text: str, markers: dict) -> dict | None:
+    exclude_phrases = [str(item) for item in category.get("exclude_phrases", []) if item]
     occurrences: list[dict] = []
     for keyword in category.get("keywords", []):
-        occurrences.extend(_keyword_occurrences(text, str(keyword or "")))
+        occurrences.extend(_keyword_occurrences(text, str(keyword or ""), markers, exclude_phrases))
     if not occurrences:
         return None
 
@@ -168,12 +196,13 @@ def check_text_risk(text: str | list[str] | None, source: str = "student_profile
     """
 
     payload = load_risk_keywords()
+    markers = _context_markers(payload)
     combined_text = _combine_text(text)
     matched_categories: list[dict] = []
 
     if combined_text:
         for category in payload.get("categories", []):
-            matched = _category_match(category, combined_text)
+            matched = _category_match(category, combined_text, markers)
             if matched:
                 matched_categories.append(matched)
 
@@ -210,6 +239,6 @@ def check_text_risk(text: str | list[str] | None, source: str = "student_profile
         "allow_recommended_training_cards": allow_cards,
         "export_raw_text_by_default": False,
         "safe_response": safe_response,
-        "context_engine_version": "context-v2.1",
+        "context_engine_version": CONTEXT_ENGINE_VERSION,
         "boundary_notice": "安全信号只用于人工复核分流，不构成诊断、危机评估、风险概率或处置结论。",
     }

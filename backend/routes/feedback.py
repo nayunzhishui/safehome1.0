@@ -8,7 +8,7 @@ from database import get_connection, json_dumps, load_content_json, new_id, now_
 from routes.utils import auth_error_response, fail, ok, require_admin_or_owner, require_user_id
 from services.feedback_service import generate_feedback
 from services.card_service import list_cards
-from services.risk_review_service import create_risk_review_record
+from services.risk_review_service import create_risk_review_record, ensure_risk_review_record
 from services.risk_service import check_text_risk
 from services.safety_scheduler_service import SchedulerError, assert_automation_allowed
 
@@ -132,12 +132,20 @@ def generate():
                 assert_participant_capability(user_id, "sensitive_text")
             except ParticipantSafeguardError as exc:
                 return fail(exc.code, exc.message, status=exc.status, details=exc.details)
-        try:
-            assert_automation_allowed(conn, "automatic_feedback")
-        except SchedulerError as exc:
-            return fail(exc.code, str(exc), status=exc.status)
-
         risk_result = check_text_risk(_feedback_risk_text(source_payload), source="feedback")
+        if authorized_diary_user_id is not None:
+            # Diaries are screened when saved; this only covers diaries saved
+            # before that and never queues the same diary twice.
+            ensure_risk_review_record(conn, user_id, "diary", str(diary_id), risk_result)
+        if risk_result["allow_auto_feedback"] is not False:
+            # The kill switch pauses ordinary automatic feedback only. Screening,
+            # human review and the high-risk safety response keep running.
+            try:
+                assert_automation_allowed(conn, "automatic_feedback")
+            except SchedulerError as exc:
+                conn.commit()
+                return fail(exc.code, str(exc), status=exc.status)
+
         if risk_result["allow_auto_feedback"] is False:
             result = _high_risk_feedback_result(risk_result)
         else:
@@ -174,7 +182,8 @@ def generate():
                 timestamp,
             ),
         )
-        create_risk_review_record(conn, user_id, "feedback", feedback_id, risk_result)
+        if authorized_diary_user_id is None:
+            create_risk_review_record(conn, user_id, "feedback", feedback_id, risk_result)
         conn.commit()
 
     return ok({"id": feedback_id, "diary_id": diary_id, **result}, status=201)

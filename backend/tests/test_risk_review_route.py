@@ -236,3 +236,89 @@ def test_parent_assessment_open_text_high_risk_creates_pending_review(tmp_path, 
     review = next(item for item in reviews if item["source_id"] == data["id"])
     assert review["source_type"] == "parent_assessment"
     assert review["risk_level"] == "high"
+
+
+def _diary_reviews(client, diary_id: str) -> list[dict]:
+    response = client.get("/api/risk-review?limit=200", headers=ADMIN_HEADERS)
+    assert response.status_code == 200
+    return [item for item in response.get_json()["data"]["items"] if item["source_id"] == diary_id]
+
+
+def test_diary_save_queues_review_once_even_when_feedback_page_reopens(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "parent-diary-screening")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    diary = client.post(
+        "/api/diaries",
+        headers=headers,
+        json={"scene": "睡前", "event_description": "孩子说他不想活了，今晚就要从楼上跳下去。", "parent_emotion": "害怕"},
+    )
+    assert diary.status_code == 201
+    diary_id = diary.get_json()["data"]["id"]
+    reviews = _diary_reviews(client, diary_id)
+    assert [(item["source_type"], item["safety_route"]) for item in reviews] == [("diary", "urgent_human_review")]
+
+    for _ in range(2):
+        feedback = client.post("/api/feedback/generate", headers=headers, json={"diary_id": diary_id})
+        assert feedback.status_code == 201
+        assert feedback.get_json()["data"]["recommended_card_ids"] == []
+    assert len(_diary_reviews(client, diary_id)) == 1
+
+
+def test_kill_switch_keeps_diary_screening_and_high_risk_safety_response(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    import database
+    from services.safety_scheduler_service import activate_unattended_kill_switch
+
+    with database.get_connection() as conn:
+        activate_unattended_kill_switch(conn, "synthetic_unattended")
+        conn.commit()
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "parent-kill-switch-screening")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    diary = client.post(
+        "/api/diaries",
+        headers=headers,
+        json={"scene": "晚饭", "event_description": "孩子说想死。", "parent_emotion": "害怕"},
+    )
+    assert diary.status_code == 201
+    diary_id = diary.get_json()["data"]["id"]
+    assert len(_diary_reviews(client, diary_id)) == 1
+
+    feedback = client.post("/api/feedback/generate", headers=headers, json={"diary_id": diary_id})
+    assert feedback.status_code == 201
+    assert feedback.get_json()["data"]["risk_level"] == "high"
+    assert feedback.get_json()["data"]["recommended_card_ids"] == []
+    assert len(_diary_reviews(client, diary_id)) == 1
+
+
+def test_feedback_queues_one_review_for_a_diary_saved_before_screening(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    user_id, token = _wechat_login(client, "parent-legacy-diary")
+    headers = {"Authorization": f"Bearer {token}"}
+    import database
+
+    timestamp = database.now_iso()
+    with database.get_connection() as conn:
+        conn.execute(
+            """
+            INSERT INTO emotion_diaries (
+                id, user_id, scene, event_description, parent_emotion,
+                parent_emotion_intensity, created_at, updated_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            ("diary-legacy-unscreened", user_id, "作业", "孩子割腕了。", "害怕", 8, timestamp, timestamp),
+        )
+        conn.commit()
+    assert _diary_reviews(client, "diary-legacy-unscreened") == []
+
+    for _ in range(2):
+        feedback = client.post("/api/feedback/generate", headers=headers, json={"diary_id": "diary-legacy-unscreened"})
+        assert feedback.status_code == 201
+    reviews = _diary_reviews(client, "diary-legacy-unscreened")
+    assert [(item["source_type"], item["risk_level"]) for item in reviews] == [("diary", "high")]

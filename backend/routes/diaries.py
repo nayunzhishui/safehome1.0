@@ -14,6 +14,7 @@ from routes.utils import (
 )
 from services.participant_safeguard_service import ParticipantSafeguardError, assert_participant_capability, safeguards_enforced
 from services.input_validation_service import InputValidationError, validate_diary_payload
+from services.risk_review_service import screen_diary
 from services.idempotency_service import (
     IdempotencyConflictError,
     IdempotencyValidationError,
@@ -138,6 +139,7 @@ def create_diary():
             ),
         )
         row = conn.execute("SELECT * FROM emotion_diaries WHERE id = ?", (diary_id,)).fetchone()
+        screen_diary(conn, user_id, diary_id, row_to_dict(row))
         item = public_idempotent_resource(row_to_dict(row))
         item["idempotency_replayed"] = False
         if submission_id:

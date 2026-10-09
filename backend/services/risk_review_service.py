@@ -4,9 +4,13 @@ import sqlite3
 from datetime import datetime, timedelta, timezone
 
 from database import json_dumps, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
+from services.risk_service import check_text_risk
 from services.schema_migration_service import apply_pending_schema_migrations
 
 REVIEWABLE_RISK_LEVELS = {"medium", "high"}
+ROUTE_PRIORITY = {"standard": 0, "human_review": 1, "urgent_human_review": 2}
+# The stored diary fields that POST /api/feedback/generate also screens.
+DIARY_RISK_TEXT_FIELDS = ("event_description", "automatic_thought", "behavior", "raw_text")
 REVIEW_STATUSES = {
     "pending",
     "priority_review",
@@ -115,6 +119,47 @@ def create_risk_review_record(
     )
     row = conn.execute("SELECT * FROM risk_review_records WHERE id = ?", (review_id,)).fetchone()
     return row_to_dict(row)
+
+
+def ensure_risk_review_record(
+    conn,
+    user_id: str,
+    source_type: str,
+    source_id: str,
+    risk_result: dict | None,
+) -> dict | None:
+    """Create a review unless the source already has one at the same or a more urgent route.
+
+    Reopening the same diary must not queue it again, but a later screening that
+    is more urgent than every existing review still creates a new record.
+    """
+
+    if not should_create_risk_review(risk_result):
+        return None
+    apply_pending_schema_migrations(conn)
+    route = _route(risk_result)
+    rows = conn.execute(
+        "SELECT safety_route, risk_level FROM risk_review_records WHERE source_type = ? AND source_id = ?",
+        (source_type, source_id),
+    ).fetchall()
+    for row in rows:
+        existing = _route({"safety_route": row["safety_route"], "risk_level": row["risk_level"]})
+        if ROUTE_PRIORITY[existing] >= ROUTE_PRIORITY[route]:
+            return None
+    return create_risk_review_record(conn, user_id, source_type, source_id, risk_result)
+
+
+def screen_diary(conn, user_id: str, diary_id: str, diary: dict) -> dict:
+    """Screen a saved diary and queue human review in the same transaction.
+
+    Screening is bound to the write, not to the feedback page, so a diary that
+    is saved while automatic feedback is paused, or whose feedback page is never
+    opened, still reaches the review queue.
+    """
+
+    risk_result = check_text_risk([diary.get(field) for field in DIARY_RISK_TEXT_FIELDS], source="diary")
+    ensure_risk_review_record(conn, user_id, "diary", diary_id, risk_result)
+    return risk_result
 
 
 def list_risk_review_records(conn, status: str | None = None, limit: int = 50) -> dict:

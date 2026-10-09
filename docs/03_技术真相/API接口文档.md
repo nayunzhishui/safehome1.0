@@ -358,7 +358,7 @@ F21 补充：`/healthz` 是公开最小探针；`/healthz/deep` 和 `/readyz` �
 
 边界：
 
-- `POST /api/feedback/generate`、`POST /api/profile`、画像 followup、沙盘反思、督导请求和家长测评开放文本命中 medium/high 风险时会自动创建 `pending` 复核记录。
+- `POST /api/diaries`（保存时，来源类型 `diary`）、`POST /api/feedback/generate`（未关联日记的文本，来源类型 `feedback`）、`POST /api/profile`、画像 followup、沙盘反思、督导请求和家长测评开放文本命中 medium/high 风险时会自动创建复核记录（紧急复核为 `priority_review`，其余为 `pending`）。同一条日记已有同级或更紧急的复核记录时不再重复创建。
 - 复核更新会写入 `audit_logs.action=review_risk`。
 - 该接口只做人工关注流转，不承诺实时危机干预。
 - `matched_categories_json` 仅保存命中的风险类别和关键词摘要，不保存完整自由文本原文。
@@ -439,6 +439,8 @@ F21 补充：`/healthz` 是公开最小探针；`/healthz/deep` 和 `/readyz` �
 | `behavior` | string | 否 | 当时行为或回应 |
 | `raw_text` | string | 否 | 原始记录文本 |
 
+保存时在同一事务内对 `event_description`、`automatic_thought`、`behavior`、`raw_text` 做风险预检；命中 medium/high 时创建来源类型为 `diary` 的复核记录。是否打开反馈页、自动反馈是否暂停，都不影响这一步。响应字段不变。
+
 响应：`data` 中返回完整情绪事件记录。
 
 响应字段：
@@ -508,6 +510,7 @@ F21 补充：`/healthz` 是公开最小探针；`/healthz/deep` 和 `/readyz` �
 - 如果没有匹配任何规则，会返回一条通用支持性反馈。
 - 生成普通反馈前会先检查 `event_description`、`automatic_thought`、`behavior`、`free_text`、`raw_text` 中的风险关键词。
 - 如果命中 high 风险，后端不会生成普通互动反馈，也不会推荐普通训练卡；`recommended_card_ids=[]`，`supportive_feedback` 使用风险安全提示，`alternative_response` 使用边界说明。
+- 自动反馈熔断开关只暂停普通反馈：命中 high 风险时照常返回上面的安全提示并入复核队列；未命中 high 时返回 503 `safety_scheduler_kill_switch`。
 - 如果未命中 high 风险，后端会根据 `content/diary_training_map.json` 匹配情绪日记到训练卡的今日建议；该建议只用于当日轻量练习，不生成长期 3 天计划。
 
 响应字段：

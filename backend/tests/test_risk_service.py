@@ -101,3 +101,32 @@ def test_risk_service_does_not_echo_free_text_context():
     result = risk_service.check_text_risk("我现在不想活。")
     serialized = repr(result["matched_categories"])
     assert "我现在不想活" not in serialized
+
+
+def test_risk_service_parent_reported_child_statement_is_a_direct_signal():
+    risk_service = _risk_service()
+
+    result = risk_service.check_text_risk("孩子说他不想活了，今晚就要从楼上跳下去。", source="feedback")
+
+    assert result["risk_level"] == "high"
+    assert result["safety_route"] == "urgent_human_review"
+    assert result["allow_auto_feedback"] is False
+    assert result["allow_recommended_training_cards"] is False
+
+
+def test_risk_service_immediacy_outranks_third_party_quote():
+    risk_service = _risk_service()
+
+    result = risk_service.check_text_risk("同学说他今晚就要自杀。")
+
+    assert result["risk_level"] == "high"
+    assert result["safety_route"] == "urgent_human_review"
+
+
+def test_risk_service_detects_common_expressions_but_not_everyday_idioms():
+    risk_service = _risk_service()
+
+    for text in ("孩子说想死，我很害怕。", "孩子割腕了。", "老公喝醉了打我和孩子。"):
+        assert risk_service.check_text_risk(text)["risk_level"] == "high", text
+    for text in ("奶奶说想死你了，周末来看你。", "商场在搞跳楼价促销。", "老师今天打我电话说作业没交。"):
+        assert risk_service.check_text_risk(text)["risk_level"] == "low", text

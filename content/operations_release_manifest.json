@@ -83,8 +83,8 @@
     {
       "artifact_type": "dictionary",
       "path": "content/risk_keywords.json",
-      "sha256": "2318abc24aa0c4f16abe0f54080e86bff02921d8ea4fd303e24766abeb605021",
-      "size_bytes": 5613
+      "sha256": "44708ed922ff761e64d05b901c47bde6b44f8b8f7e77c28fcf73dcaf277cbbb2",
+      "size_bytes": 6191
     },
     {
       "artifact_type": "dictionary",
@@ -172,5 +172,5 @@
   "revision_policy": "never_edit_verified_package_create_new_version",
   "atomic_runtime_switch": true,
   "production_release_approved": false,
-  "manifest_hash": "f767452f1e06de3c58a64321fc8c8453b64f08b0d6011b8db7b2bb25a052f141"
+  "manifest_hash": "04cc771ccbd11b7cd16de8a510ed4a4ec3f54a7818ddb5a98536e51cc169190d"
 }
