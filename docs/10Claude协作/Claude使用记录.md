@@ -1,5 +1,15 @@
 # Claude 使用记录
 
+## 2026-10-10 Claude Code：日记安全分流修复与证据总量规则
+
+- 时间：2026-10-08 至 2026-10-10；
+- 工具或模型：Claude Code（VS Code扩展），Claude Opus 5.5；
+- 会话标识：`de33d932-7e02-4deb-913d-16d37d9b245a`（本机Claude Code会话，可在 safehome1.0其他内容 工作目录用 /resume 选择）；
+- 摘要：全项目只读评价；按用户确认修复建议1（风险引擎context-v3、关键词补全）和建议2（日记保存即筛查、熔断不停筛查、复核去重）；AGENTS.md新增5.3并调整冲突条款；建议3、4由另一执行者负责，未改动；
+- 修改文件：risk_service.py、risk_review_service.py、diaries.py、feedback.py、risk_keywords.json、两份测试、运营发布清单与F01／F06／F14绑定、AGENTS.md、API接口文档、开发日志与本记录；
+- 验证：见开发日志同日条目；
+- 后续：临床负责人确认词库与提示语；独立审查；词库版本号。未使用子代理或其他模型。
+
 ## 2026-10-07 Claude Code：上线前收口阶段3–4
 
 - 时间：2026-10-07；
