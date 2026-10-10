@@ -110,7 +110,7 @@
         <text class="state-copy">可以稍后回来，或进入“试点项目”查看已分配内容。</text>
       </view>
       <view wx:else>
-        <view wx:for="{{pendingVisibleItems}}" wx:key="workItemId" class="queue-item">
+        <view wx:for="{{pendingVisibleItems}}" wx:key="workItemId" class="queue-item {{workItem && workItem.id === item.workItemId ? 'queue-item--active' : ''}}" data-id="{{item.workItemId}}" data-label="{{item.queueLabel}}" bindtap="openWorkItem" role="button" aria-label="处理{{item.queueLabel}}待办">
           <view class="priority-dot priority-dot--{{item.priority}}"></view>
           <view class="queue-main">
             <text class="queue-title">{{item.queueLabel}}</text>
@@ -120,7 +120,71 @@
         </view>
         <button wx:if="{{pendingHasMore}}" class="safe-outline-button list-more" bindtap="showMorePending">继续查看</button>
       </view>
-      <text class="boundary-line">此处仅显示队列类型、优先级和等待时间，不展示参与者填写原文。</text>
+      <text class="boundary-line">此处仅显示队列类型、优先级和等待时间，不展示参与者填写原文。点开一条可以领取和处理。</text>
+    </view>
+
+    <view wx:if="{{workItemLoading || workItem || workItemError}}" class="safe-card workspace-card work-item-panel">
+      <view class="section-heading">
+        <text class="section-title">{{workItem ? workItem.queueLabel : '待办详情'}}</text>
+        <button class="icon-refresh" bindtap="closeWorkItem" aria-label="收起待办详情">收起</button>
+      </view>
+      <text wx:if="{{workItemLoading}}" class="state-copy">正在读取待办…</text>
+      <text wx:if="{{workItemError}}" class="work-item-error" aria-live="polite">{{workItemError}}</text>
+      <block wx:if="{{workItem}}">
+        <text class="detail-line">状态：{{workItem.statusText}} · {{workItem.priorityText}}</text>
+        <text class="detail-line">负责人：{{workItem.assigneeText}} · 截止：{{workItem.dueText}}</text>
+        <view class="work-item-actions">
+          <button wx:if="{{workItem.canClaim}}" class="small-action primary" data-action="claim" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">领取</button>
+          <block wx:if="{{workItem.canWork}}">
+            <button class="small-action" data-action="start_processing" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">处理中</button>
+            <button class="small-action" data-action="wait" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">等待补充</button>
+            <button class="small-action" data-action="renew" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">续租</button>
+            <button class="small-action" data-action="return" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">退回队列</button>
+          </block>
+          <button wx:if="{{workItem.canClose}}" class="small-action" data-action="close" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">关闭</button>
+          <button wx:if="{{workItem.canReopen}}" class="small-action" data-action="reopen" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">重新打开</button>
+          <block wx:if="{{workItem.isNotification}}">
+            <button class="small-action" data-action="retry_notification" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">安排重试</button>
+            <button wx:if="{{workItem.canRecover}}" class="small-action" data-action="recover_notification" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">恢复死信</button>
+          </block>
+        </view>
+        <text class="feedback-label">内部处理说明</text>
+        <textarea class="note-input" value="{{workItemNote}}" data-key="workItemNote" bindinput="onWorkItemInput" maxlength="2000" placeholder="只记录必要的处理信息，不复制参与者原文。"></textarea>
+        <picker wx:if="{{workItem.canWork || workItem.canClose}}" mode="selector" range="{{resolutionLabels}}" value="{{workItemResolutionIndex}}" data-key="workItemResolutionIndex" bindchange="onWorkItemPicker">
+          <view class="assessment-filter">处理结果：{{resolutionLabels[workItemResolutionIndex]}}</view>
+        </picker>
+        <view class="work-item-actions">
+          <button class="small-action" data-action="add_note" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">保存内部说明</button>
+          <button wx:if="{{workItem.canWork}}" class="small-action primary" data-action="complete" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">标记完成</button>
+        </view>
+
+        <view wx:if="{{workItem.isRiskReview}}" class="work-item-section">
+          <text class="participant-analysis-label">风险复核结论</text>
+          <text wx:if="{{!workItem.privileged}}" class="boundary-line">风险复核仅由督导或管理员处理。</text>
+          <block wx:else>
+            <picker mode="selector" range="{{riskReviewLabels}}" value="{{riskReviewIndex}}" data-key="riskReviewIndex" bindchange="onWorkItemPicker">
+              <view class="assessment-filter">结论：{{riskReviewLabels[riskReviewIndex]}}</view>
+            </picker>
+            <input class="note-input note-input--single" value="{{riskReviewAction}}" data-key="riskReviewAction" bindinput="onWorkItemInput" maxlength="1000" placeholder="已采取的最小处置动作（可选）" />
+            <button class="small-action primary" bindtap="submitRiskReview" disabled="{{workItemBusy}}">提交复核结论</button>
+            <text class="boundary-line">复核说明使用上方的内部处理说明；提交后这条会从待办中移出。</text>
+          </block>
+        </view>
+
+        <view wx:if="{{workItem.canMessage}}" class="work-item-section">
+          <text class="participant-analysis-label">发送参与者可见消息</text>
+          <input class="note-input note-input--single" value="{{workItemMessageTitle}}" data-key="workItemMessageTitle" bindinput="onWorkItemInput" maxlength="60" placeholder="标题（60字以内）" />
+          <textarea class="note-input" value="{{workItemMessageBody}}" data-key="workItemMessageBody" bindinput="onWorkItemInput" maxlength="2000" placeholder="正文（2000字以内）"></textarea>
+          <button class="small-action" data-action="send_participant_message" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">发送到消息中心</button>
+        </view>
+
+        <view class="work-item-section">
+          <text class="participant-analysis-label">处理轨迹</text>
+          <text wx:for="{{workItem.trail}}" wx:key="*this" class="detail-line">{{item}}</text>
+          <text wx:if="{{!workItem.trail.length}}" class="detail-line">尚无处理动作。</text>
+        </view>
+        <text wx:if="{{workItem.boundaryNotice}}" class="boundary-line">{{workItem.boundaryNotice}}</text>
+      </block>
     </view>
   </view>
 

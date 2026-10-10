@@ -807,3 +807,11 @@
 .ui2-page .icon-refresh,.ui2-page .inline-retry { min-height:96rpx; min-width:96rpx; font-size:28rpx; }
 
 .ui2-page { --ui2-section-accent-display:none; }
+
+.queue-item--active { background: var(--safe-primary-soft); border-radius: 16rpx; }
+.work-item-panel .detail-line { display: block; }
+.work-item-actions { display: flex; flex-wrap: wrap; gap: 16rpx; margin: 20rpx 0; }
+.work-item-section { margin-top: 28rpx; padding-top: 24rpx; border-top: 1rpx solid var(--safe-border); }
+.work-item-section .note-input,
+.work-item-section .assessment-filter { margin: 12rpx 0; }
+.work-item-error { display: block; margin: 12rpx 0; color: var(--safe-danger); font-size: 28rpx; line-height: 1.6; }

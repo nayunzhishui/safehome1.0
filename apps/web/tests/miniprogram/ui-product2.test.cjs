@@ -215,6 +215,48 @@ test('研究者档案展示提升度、强度对比与家长孩子情绪组合',
   assert.equal(row.parentChildRows[0], '家长“生气” × 孩子“烦躁” · 2 次 · 占该家长情绪 100%');
 });
 
+test('研究者工作台可打开待办、领取并提交风险复核结论', async () => {
+  const actions = []; const reviews = [];
+  let state = 'open';
+  const detail = () => ({
+    work_item: { id: 'wi-1', queue_type: 'risk_review', status: state, priority: 'urgent', version: state === 'open' ? 0 : 1, source_id: 'rr-1', assignee_id: state === 'open' ? null : 'synthetic-supervisor', due_at: '2026-10-10T08:15:00' },
+    source: { source_type: 'risk_review_records', source_id: 'rr-1', user_id: 'p-1', read_only: true },
+    notes: [],
+    actions: state === 'open' ? [] : [{ id: 'a1', action: 'claim', to_status: 'claimed', created_at: '2026-10-10T08:01:00' }],
+    boundary_notice: '原始参与者内容保持只读。',
+  });
+  const h = pageHarness('researcher-dashboard', {
+    getResearchWorkItem: async () => detail(),
+    actOnResearchWorkItem: async (id, payload) => { actions.push({ id, payload }); state = 'claimed'; return {}; },
+    updateRiskReview: async (id, payload) => { reviews.push({ id, payload }); return {}; },
+  });
+  h.storage.set('auth_user', { id: 'synthetic-supervisor', role: 'supervisor' });
+  h.page.loadWorkbench = async () => {};
+
+  await h.page.openWorkItem({ currentTarget: { dataset: { id: 'wi-1', label: '风险信号复核' } } });
+  assert.equal(h.page.data.workItem.canClaim, true);
+  assert.equal(h.page.data.workItem.isRiskReview, true);
+  assert.equal(h.page.data.workItem.privileged, true);
+
+  await h.page.runWorkItemAction({ currentTarget: { dataset: { action: 'claim' } } });
+  assert.equal(actions[0].payload.action, 'claim');
+  assert.equal(actions[0].payload.expected_version, 0);
+  assert.match(actions[0].payload.idempotency_key, /^work-item:wi-1:claim:/);
+  assert.equal(h.page.data.workItem.statusText, '已领取');
+  assert.equal(h.page.data.workItem.trail.length, 1);
+
+  await h.page.submitRiskReview();
+  assert.equal(reviews.length, 0);
+  assert.match(h.page.data.workItemError, /复核说明/);
+  h.page.onWorkItemInput({ currentTarget: { dataset: { key: 'workItemNote' } }, detail: { value: '已电话确认家长现实支持。' } });
+  h.page.onWorkItemPicker({ currentTarget: { dataset: { key: 'riskReviewIndex' } }, detail: { value: 3 } });
+  await h.page.submitRiskReview();
+  assert.equal(reviews[0].id, 'rr-1');
+  assert.equal(reviews[0].payload.review_status, 'closed');
+  assert.equal(reviews[0].payload.closed_reason, '已电话确认家长现实支持。');
+  assert.equal(h.page.data.workItem, null);
+});
+
 test('结果页按计分方式标注均值、合计与得分', async () => {
   const h = resultHarness({ dimensions: [
     { key: 'MEAN', label: '均值维度', score: 3.5, item_count: 2, score_method: 'mean_terms' },

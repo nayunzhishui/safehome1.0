@@ -111,6 +111,86 @@ function queuePreview(results) {
   return { items, failures, total };
 }
 
+const WORK_ITEM_STATUS_LABELS = {
+  open: "待领取",
+  claimed: "已领取",
+  processing: "处理中",
+  waiting: "等待补充",
+  completed: "已完成",
+  closed: "已关闭",
+  dead_letter: "需人工恢复",
+};
+const WORK_ITEM_ACTION_LABELS = {
+  claim: "领取",
+  renew: "续租",
+  return: "退回队列",
+  transfer: "转交",
+  start_processing: "开始处理",
+  wait: "等待补充",
+  add_note: "内部说明",
+  send_participant_message: "发送参与者消息",
+  retry_notification: "安排重试",
+  recover_notification: "恢复死信",
+  complete: "标记完成",
+  close: "关闭",
+  reopen: "重新打开",
+};
+const RESOLUTION_OPTIONS = [
+  { code: "handled", label: "已完成当前处理" },
+  { code: "participant_updated", label: "已向参与者反馈进度" },
+  { code: "transferred", label: "已转交合适人员" },
+  { code: "no_response", label: "等待期内未收到补充" },
+  { code: "duplicate", label: "重复工作项已合并" },
+];
+const RISK_REVIEW_OPTIONS = [
+  { status: "reviewed", label: "已复核，暂不需跟进" },
+  { status: "follow_up_needed", label: "需要继续跟进" },
+  { status: "transferred", label: "已转介现实支持" },
+  { status: "closed", label: "处理完成并关闭" },
+];
+const MESSAGE_QUEUES = ["stage_feedback", "supervision", "feedback_review"];
+const ACTIVE_WORK_STATUSES = ["claimed", "processing", "waiting"];
+
+function shortTime(value) {
+  return String(value || "").slice(0, 16).replace("T", " ");
+}
+
+function buildWorkItemView(detail, queueLabel, privileged) {
+  const item = (detail && detail.work_item) || {};
+  const source = (detail && detail.source) || {};
+  const status = item.status || "open";
+  const active = ACTIVE_WORK_STATUSES.includes(status);
+  const actions = ((detail && detail.actions) || []).map((action) => (
+    `${shortTime(action.created_at)} · ${WORK_ITEM_ACTION_LABELS[action.action] || "其它动作"} · ${WORK_ITEM_STATUS_LABELS[action.to_status] || "待核对"}`
+  ));
+  const notes = ((detail && detail.notes) || []).map((note) => (
+    `${shortTime(note.created_at)} · ${note.note_type === "internal" ? "内部说明" : "处理说明"} · ${note.content}`
+  ));
+  return {
+    id: item.id,
+    version: Number(item.version || 0),
+    queueType: item.queue_type,
+    queueLabel: queueLabel || "待办",
+    status,
+    statusText: WORK_ITEM_STATUS_LABELS[status] || "待核对",
+    priorityText: PRIORITY_LABELS[item.priority] || PRIORITY_LABELS.routine,
+    assigneeText: item.assignee_id || "尚未领取",
+    dueText: shortTime(item.due_at) || "未设置",
+    sourceId: source.source_id || item.source_id,
+    privileged,
+    canClaim: status === "open",
+    canWork: active,
+    canClose: privileged && status === "completed",
+    canReopen: privileged && (status === "completed" || status === "closed"),
+    canMessage: active && MESSAGE_QUEUES.includes(item.queue_type),
+    isNotification: item.queue_type === "notification_failed",
+    canRecover: privileged && status === "dead_letter",
+    isRiskReview: item.queue_type === "risk_review",
+    trail: [...actions, ...notes],
+    boundaryNotice: (detail && detail.boundary_notice) || "",
+  };
+}
+
 const STATUS_LABELS = {
   active: "进行中",
   completed: "已完成",
@@ -337,6 +417,18 @@ Page({
       task_code: "workbench_draft",
       reason: "尚未确认任务授权",
     },
+    workItem: null,
+    workItemLoading: false,
+    workItemBusy: false,
+    workItemError: "",
+    workItemNote: "",
+    workItemMessageTitle: "",
+    workItemMessageBody: "",
+    workItemResolutionIndex: 0,
+    resolutionLabels: RESOLUTION_OPTIONS.map((option) => option.label),
+    riskReviewIndex: 0,
+    riskReviewLabels: RISK_REVIEW_OPTIONS.map((option) => option.label),
+    riskReviewAction: "",
   },
 
   async onLoad() {
@@ -696,6 +788,116 @@ Page({
       partialFailures,
       lastSyncText: syncTimeLabel(),
     });
+  },
+
+  canManageSensitiveWorkItems() {
+    const user = getAuthUser();
+    return Boolean(this.data.developmentFullAccess) || Boolean(user && ["supervisor", "admin"].includes(user.role));
+  },
+
+  async openWorkItem(event) {
+    const { id, label } = event.currentTarget.dataset;
+    if (!id || this.data.workItemBusy) return;
+    this.setData({
+      workItemLoading: true,
+      workItemError: "",
+      workItemNote: "",
+      workItemMessageTitle: "",
+      workItemMessageBody: "",
+      riskReviewAction: "",
+    });
+    try {
+      const detail = await api.getResearchWorkItem(id);
+      this.setData({ workItem: buildWorkItemView(detail, label, this.canManageSensitiveWorkItems()) });
+    } catch (error) {
+      this.setData({ workItem: null, workItemError: error.message || "待办详情暂时无法读取。" });
+    } finally {
+      this.setData({ workItemLoading: false });
+    }
+  },
+
+  closeWorkItem() {
+    this.setData({ workItem: null, workItemError: "", workItemNote: "" });
+  },
+
+  onWorkItemInput(event) {
+    this.setData({ [event.currentTarget.dataset.key]: event.detail.value || "", workItemError: "" });
+  },
+
+  onWorkItemPicker(event) {
+    this.setData({ [event.currentTarget.dataset.key]: Number(event.detail.value || 0) });
+  },
+
+  async runWorkItemAction(event) {
+    const workItem = this.data.workItem;
+    const action = event.currentTarget.dataset.action;
+    if (!workItem || !action || this.data.workItemBusy) return;
+    const note = String(this.data.workItemNote || "").trim();
+    const payload = {
+      action,
+      expected_version: workItem.version,
+      idempotency_key: `work-item:${workItem.id}:${action}:${Date.now()}`,
+    };
+    if (["add_note", "reopen", "recover_notification"].includes(action) && !note) {
+      this.setData({ workItemError: "请先在内部处理说明里写下原因。" });
+      return;
+    }
+    if (note && ["add_note", "complete", "close", "reopen", "recover_notification"].includes(action)) payload.note = note;
+    if (action === "complete" || action === "close") {
+      payload.resolution_code = (RESOLUTION_OPTIONS[this.data.workItemResolutionIndex] || RESOLUTION_OPTIONS[0]).code;
+    }
+    if (action === "send_participant_message") {
+      const title = String(this.data.workItemMessageTitle || "").trim();
+      const body = String(this.data.workItemMessageBody || "").trim();
+      if (!title || !body) {
+        this.setData({ workItemError: "请填写消息标题和正文。" });
+        return;
+      }
+      payload.title = title;
+      payload.body = body;
+    }
+    this.setData({ workItemBusy: true, workItemError: "" });
+    try {
+      await api.actOnResearchWorkItem(workItem.id, payload);
+      const detail = await api.getResearchWorkItem(workItem.id);
+      const patch = { workItem: buildWorkItemView(detail, workItem.queueLabel, this.canManageSensitiveWorkItems()), workItemNote: "" };
+      if (action === "send_participant_message") Object.assign(patch, { workItemMessageTitle: "", workItemMessageBody: "" });
+      this.setData(patch);
+      wx.showToast({ title: "已更新", icon: "success" });
+      this.loadWorkbench();
+    } catch (error) {
+      this.setData({ workItemError: error.message || "待办更新失败，请刷新后重试。" });
+    } finally {
+      this.setData({ workItemBusy: false });
+    }
+  },
+
+  async submitRiskReview() {
+    const workItem = this.data.workItem;
+    if (!workItem || !workItem.isRiskReview || this.data.workItemBusy) return;
+    const option = RISK_REVIEW_OPTIONS[this.data.riskReviewIndex] || RISK_REVIEW_OPTIONS[0];
+    const note = String(this.data.workItemNote || "").trim();
+    const actionTaken = String(this.data.riskReviewAction || "").trim();
+    if (!note) {
+      this.setData({ workItemError: "请先写下复核说明，不要复制参与者原文。" });
+      return;
+    }
+    this.setData({ workItemBusy: true, workItemError: "" });
+    try {
+      await api.updateRiskReview(workItem.sourceId, {
+        review_status: option.status,
+        review_note: note,
+        action_taken: actionTaken || undefined,
+        closed_reason: option.status === "closed" ? (actionTaken || note) : undefined,
+      });
+      wx.showToast({ title: "复核已保存", icon: "success" });
+      this.setData({ workItem: null, workItemNote: "", riskReviewAction: "" });
+      this.loadWorkbench();
+    } catch (error) {
+      this.setData({ workItemError: error.message || "复核结论暂时无法保存。" });
+    } finally {
+      this.setData({ workItemBusy: false });
+    }
   },
 
   showMorePending() {
