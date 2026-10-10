@@ -37,6 +37,14 @@
   text-align: center;
 }
 
+.intro-text {
+  margin-top: 18rpx;
+  color: var(--safe-muted);
+  font-size: 30rpx;
+  line-height: 1.6;
+  text-align: center;
+}
+
 .practice-list {
   border-top: 1rpx solid var(--safe-border);
 }

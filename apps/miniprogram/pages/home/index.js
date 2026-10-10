@@ -4,6 +4,10 @@ const { captureAuthSession, isCurrentAuthSession, isLoggedIn } = require("../../
 const api = createSafeHomeApi();
 const PRIVACY_NOTICE_VERSION = "2026.10-privacy-notice-v1";
 const PRIVACY_NOTICE_KEY = "safehome_privacy_notice_seen";
+// The three-step guide opens by itself once, right after a new user first
+// acknowledges the privacy reminder; afterwards it stays under “如何开始”.
+const GETTING_STARTED_VERSION = "2026.10-getting-started-v1";
+const GETTING_STARTED_KEY = "safehome_getting_started_opened";
 const PROTECTION_URL = "/pages/settings-detail/index?type=protection";
 
 function trackJourneyEvent(eventName, journey, status, extra = {}) {
@@ -223,6 +227,10 @@ Page({
     // Reading this reminder is not agreement to any data purpose.
     wx.setStorageSync(PRIVACY_NOTICE_KEY, PRIVACY_NOTICE_VERSION);
     this.setData({ privacyNoticeVisible: false });
+    if (wx.getStorageSync(GETTING_STARTED_KEY) !== GETTING_STARTED_VERSION) {
+      wx.setStorageSync(GETTING_STARTED_KEY, GETTING_STARTED_VERSION);
+      this.openGettingStarted();
+    }
   },
 
   showLoginRequired() {

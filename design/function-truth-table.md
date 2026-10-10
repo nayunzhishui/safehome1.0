@@ -168,7 +168,7 @@
 | 测一测 | `openCoreEntry(assessment)` | 跳转 `pages/assessment/index` | 进入支持性测评，了解当前状态 | 只作为入口，不在首页伪造题目、结果或评分 |
 | 情绪日记 | `openCoreEntry(diary)` | 跳转 `pages/diary-form/index`；首页同时通过 `GET /api/diaries` 读取当天次数和最近记录 | 记录一次具体情绪事件 | 只作为记录入口；不得改成普通心情随笔或聊天 |
 | 今天的一小步 | `openTodayAction`、`retryTodayJourney` | `GET /api/journey/today`，并检查本机关系任务或项目草稿 | 根据未读消息、训练状态、测评、日记、练习节奏、草稿和参与者保护门禁提供一个可继续行动 | 标题、描述、按钮、状态和边界来自真实返回；保留 Loading、Error、Ready、Paused、Completed、Not Due、登录和保护门禁；不得编写固定建议 |
-| 如何开始 | `openGettingStarted` | 跳转 `pages/getting-started/index` | 查看“记录—反馈—练习”的三步说明 | 可按用户确认收成单行入口；不能画成已经完成的进度条 |
+| 如何开始 | `openGettingStarted` | 跳转 `pages/getting-started/index`；新用户首次确认隐私提醒后由 `acknowledgePrivacyNotice` 自动打开一次（本机记 `safehome_getting_started_opened` 版本） | 查看“记录—反馈—练习”的三步说明 | 可按用户确认收成单行入口；不能画成已经完成的进度条；自动打开只发生一次，之后只从此入口进入 |
 | 支持性反馈 | `openCoreEntry(feedback)` | 先提示“请先记录一次事件”，再跳转 `pages/diary-form/index`；记录提交后由现有 `POST /api/feedback/generate` 生成反馈 | 先记录一件具体事件，再获得对应的支持性反馈 | 用户已确认保留现有接口和流程。首页入口可保留“支持性反馈”，辅助文案必须明确“记录后获得反馈”；不得暗示可直接读取历史反馈，也不得新增读取接口 |
 | 训练中心 | `openCoreEntry(training)` | `switchTab` 到 `pages/training/index` | 查看训练计划、训练卡和练习入口 | 只表现入口，不在首页复制训练列表或打卡功能 |
 | 人工支持 | `openCoreEntry(supervision)` | 跳转 `pages/supervision/index`，该页使用 `POST /api/supervision` | 提交非实时人工支持请求 | 必须保留“非实时危机服务”边界；不得画成实时聊天或紧急热线 |
@@ -2124,7 +2124,7 @@
 
 ## 2026-10-03 隐私入口增量真值
 
-- 首页首次隐私提醒：`openPrivacyNotice`进入现有设置隐私页；`acknowledgePrivacyNotice`仅写本机阅读提示版本，不发送同意事件，不能推定研究／训练／关系分析授权。
+- 首页首次隐私提醒：`openPrivacyNotice`进入现有设置隐私页；`acknowledgePrivacyNotice`仅写本机阅读提示版本，不发送同意事件，不能推定研究／训练／关系分析授权；首次确认后自动打开一次三步开始说明（同样只写本机版本标记）。
 - 设置隐私页：`loadConsentDecisions`调用已有本人`GET /api/consent`，按事件版本选每种可选用途最新决定；`withdrawOptionalConsent`经用户确认后调用已有`POST /api/consent`，带原用途／版本与`expected_latest_id`。不能同意新用途，不把撤回写成立即删除全部数据；读取失败、冲突和提交失败可见。
 - 未修改表结构、API字段、权限或线上配置；首页提醒与后台微信隐私指引同意是不同事项。运营主体、期限和渠道仍缺证据。
 

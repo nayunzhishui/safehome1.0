@@ -327,6 +327,18 @@ test('测评历史加载更多使用真实页码而不是重新读取第一页',
   assert.equal(page.data.hasMore, false);
 });
 
+test('新用户首次确认隐私提醒后自动打开三步开始说明，只打开一次', () => {
+  const h = pageHarness('home');
+  h.page.acknowledgePrivacyNotice();
+  assert.equal(h.page.data.privacyNoticeVisible, false);
+  assert.deepEqual(h.navigation.map((item) => item.url), ['/pages/getting-started/index']);
+  h.page.acknowledgePrivacyNotice();
+  assert.equal(h.navigation.length, 1);
+  const guideScript = read('pages/getting-started/index.js');
+  assert.doesNotMatch(guideScript, /Storage|createSafeHomeApi/);
+  assert.ok(read('pages/getting-started/index.wxml').includes('class="intro-text"'));
+});
+
 test('新手说明入口只做导航，暂不使用不提交同意记录', () => {
   const guide = read('pages/getting-started/index.wxml');
   for (const type of ['consent', 'privacy', 'protection']) {
@@ -515,8 +527,8 @@ test('first privacy reminder records reading only, without creating any purpose 
   page.onShow();
   assert.equal(page.data.privacyNoticeVisible, false);
   assert.equal(consentWrites, 0);
-  assert.equal(writes.length, 1);
-  assert.equal(writes[0].key, 'safehome_privacy_notice_seen');
+  // Only the reading marker and the one-time guide marker; neither is a consent.
+  assert.deepEqual(writes.map((item) => item.key), ['safehome_privacy_notice_seen', 'safehome_getting_started_opened']);
 });
 
 test('optional-purpose withdrawal uses the latest self decision and needs explicit confirmation', async () => {

@@ -1,8 +1,7 @@
 <view class="safe-page ui2-page getting-page" role="main" aria-label="三步开始">
   <view class="intro-block">
     <text class="intro-title">从一件具体小事开始</text>
-
-
+    <text class="intro-text">把一次亲子冲突写成一个小片段，看看反馈里的线索，再挑一个今天能做的小动作。</text>
   </view>
 
   <view class="before-start" aria-label="开始前的说明与保护入口">
