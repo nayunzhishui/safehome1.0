@@ -423,35 +423,51 @@ def score_answers(worksheet: dict, answers: list[dict]) -> tuple[dict, int | flo
         for item in worksheet.get("dimensions", [])
         if isinstance(item, dict) and (item.get("code") or item.get("key"))
     }
+    dimension_item_bounds: dict[str, list] = {}
+    for question in worksheet.get("questions", []):
+        if question.get("dimension"):
+            dimension_item_bounds.setdefault(question["dimension"], []).append(_option_score_bounds(question))
     dimensions = []
     dimension_scores: dict[str, int | float] = {}
+    dimension_bounds: dict[str, tuple[float, float] | None] = {}
     ordered_dimension_codes = list(dimension_specs) or list(dimension_totals)
     for dimension in ordered_dimension_codes:
         bucket = dimension_totals.get(dimension, {"score": 0, "item_count": 0})
         item_count = bucket["item_count"]
         calculation = dimension_specs.get(dimension, {}).get("calculation")
         calculated = _calculate_dimension(calculation, item_scores, dimension_scores)
+        item_bounds = dimension_item_bounds.get(dimension, [])
         if calculated is not None:
             value = calculated
             calculation_method = calculation.get("type", score_method)
             if calculation_method in {"mean_terms", "mapped_mean_terms"}:
                 item_count = sum(term.get("item") in item_scores for term in calculation.get("terms", []))
+            bounds = _calculation_bounds(calculation, question_map, dimension_bounds)
         elif score_method == "mean" and item_count:
             value = round(bucket["score"] / item_count, 2)
             calculation_method = score_method
+            bounds = _mean_bounds(item_bounds)
         else:
             value = bucket["score"]
             calculation_method = score_method
+            bounds = (
+                (sum(item[0] for item in item_bounds), sum(item[1] for item in item_bounds))
+                if item_bounds and all(item_bounds)
+                else None
+            )
         dimension_scores[dimension] = value
-        dimensions.append(
-            {
-                "key": dimension,
-                "label": dimension_labels.get(dimension, dimension),
-                "score": value,
-                "item_count": item_count,
-                "score_method": calculation_method,
-            }
-        )
+        dimension_bounds[dimension] = bounds
+        entry = {
+            "key": dimension,
+            "label": dimension_labels.get(dimension, dimension),
+            "score": value,
+            "item_count": item_count,
+            "score_method": calculation_method,
+        }
+        score_range = _score_range(bounds)
+        if score_range:
+            entry["score_range"] = score_range
+        dimensions.append(entry)
 
     derived_dimensions = worksheet.get("derived_dimensions") or (worksheet.get("_meta") or {}).get("derived_dimensions", [])
     for spec in derived_dimensions:
@@ -462,19 +478,23 @@ def score_answers(worksheet: dict, answers: list[dict]) -> tuple[dict, int | flo
         if value is None:
             continue
         dimension_scores[spec["code"]] = value
+        bounds = _calculation_bounds(calculation, question_map, dimension_bounds)
+        dimension_bounds[spec["code"]] = bounds
         if calculation.get("type") in {"mean_terms", "mapped_mean_terms"}:
             derived_count = sum(term.get("item") in item_scores for term in calculation.get("terms", []))
         else:
             derived_count = len(calculation.get("dimensions", []))
-        dimensions.append(
-            {
-                "key": spec["code"],
-                "label": spec.get("label", spec["code"]),
-                "score": value,
-                "item_count": derived_count,
-                "score_method": calculation.get("type", "derived"),
-            }
-        )
+        entry = {
+            "key": spec["code"],
+            "label": spec.get("label", spec["code"]),
+            "score": value,
+            "item_count": derived_count,
+            "score_method": calculation.get("type", "derived"),
+        }
+        score_range = _score_range(bounds)
+        if score_range:
+            entry["score_range"] = score_range
+        dimensions.append(entry)
 
     persisted_total = total if has_score and total_score_method != "none" else None
     if persisted_total is not None and total_score_method == "mean":
@@ -527,9 +547,14 @@ def build_score_provenance(worksheet: dict, answers: list[dict], scores: dict | 
                 transformed_items[str(answer.get("question_id"))] = transformed
             transformed_answers.append(copied)
         model_scores, _ = score_answers(worksheet, transformed_answers)
+        # score_range comes from the 1-9 options and does not describe the 1-5 model input.
+        model_dimensions = [
+            {key: value for key, value in item.items() if key != "score_range"}
+            for item in model_scores.get("dimensions", [])
+        ]
         transformed_scores = {
             "item_scores": transformed_items,
-            "dimensions": model_scores.get("dimensions", []),
+            "dimensions": model_dimensions,
             "total_score": model_scores.get("total_score"),
             "score_space": "model_input_1_to_5",
             "formula": "1 + (raw - 1) * 4 / 8",
@@ -615,6 +640,72 @@ def _calculate_dimension(calculation: dict | None, item_scores: dict, dimension_
         values = [value for value in values if value is not None]
         return _rounded(sum(values) / len(values)) if values else None
     return None
+
+
+def _product_bounds(bounds: list) -> tuple[float, float] | None:
+    # Only non-negative item scales keep min*min and max*max as the extremes.
+    if not bounds or any(item is None or item[0] < 0 for item in bounds):
+        return None
+    low = high = 1.0
+    for item_low, item_high in bounds:
+        low *= item_low
+        high *= item_high
+    return low, high
+
+
+def _mean_bounds(bounds: list) -> tuple[float, float] | None:
+    if not bounds or any(item is None for item in bounds):
+        return None
+    return (
+        sum(item[0] for item in bounds) / len(bounds),
+        sum(item[1] for item in bounds) / len(bounds),
+    )
+
+
+def _calculation_bounds(calculation: dict, question_map: dict, dimension_bounds: dict) -> tuple[float, float] | None:
+    """Theoretical score range for a configured dimension calculation.
+
+    Mirrors _calculate_dimension so the range always matches how the score was
+    produced (reversed, mapped, product and averaged dimensions included).
+    """
+
+    def item_bounds(item_id):
+        question = question_map.get(item_id)
+        return _option_score_bounds(question) if question else None
+
+    calculation_type = calculation.get("type")
+    if calculation_type == "product":
+        return _product_bounds([item_bounds(item) for item in calculation.get("items", [])])
+    if calculation_type == "mean_of_products":
+        pairs = [_product_bounds([item_bounds(item) for item in pair]) for pair in calculation.get("pairs", [])]
+        return _mean_bounds(pairs)
+    if calculation_type == "mean_terms":
+        terms = []
+        for term in calculation.get("terms", []):
+            bounds = item_bounds(term.get("item"))
+            if bounds and term.get("reverse_min") is not None and term.get("reverse_max") is not None:
+                pivot = term["reverse_min"] + term["reverse_max"]
+                bounds = (pivot - bounds[1], pivot - bounds[0])
+            terms.append(bounds)
+        return _mean_bounds(terms)
+    if calculation_type == "mapped_mean_terms":
+        terms = []
+        for term in calculation.get("terms", []):
+            mapped = [
+                value for value in (term.get("map") or {}).values()
+                if isinstance(value, (int, float)) and not isinstance(value, bool)
+            ]
+            terms.append((min(mapped), max(mapped)) if mapped else None)
+        return _mean_bounds(terms)
+    if calculation_type == "mean_dimensions":
+        return _mean_bounds([dimension_bounds.get(code) for code in calculation.get("dimensions", [])])
+    return None
+
+
+def _score_range(bounds: tuple[float, float] | None) -> dict | None:
+    if not bounds or bounds[1] <= bounds[0]:
+        return None
+    return {"minimum": _rounded(float(bounds[0])), "maximum": _rounded(float(bounds[1]))}
 
 
 def _dimension_labels(worksheet: dict) -> dict[str, str]:

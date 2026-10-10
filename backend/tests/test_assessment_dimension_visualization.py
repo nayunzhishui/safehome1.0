@@ -103,3 +103,58 @@ def test_result_page_keeps_text_equivalent_and_non_diagnostic_wording():
     assert "scaleVisualization.dimensions" in markup
     assert "量尺中点不是常模、目标值或好坏标准" in HELPER.read_text(encoding="utf-8")
     assert 'wx.createCanvasContext("dimensionRadarCanvas", this)' in script
+
+
+def test_mean_terms_fallback_uses_item_scale_instead_of_sum():
+    dimensions = [
+        {"key": f"D{index + 1}", "label": f"维度{index + 1}", "score": 4, "scoreMethod": "mean_terms"}
+        for index in range(3)
+    ]
+    output = _run_helper(dimensions, _worksheet())
+
+    assert [row["rangeText"] for row in output["dimensions"]] == ["本维度量尺 1–7"] * 3
+    assert [row["positionPercent"] for row in output["dimensions"]] == [50, 50, 50]
+
+
+def test_server_range_wins_and_underivable_methods_stay_unranked():
+    dimensions = [
+        {"key": "D1", "label": "乘积", "score": 13, "scoreMethod": "product", "scoreRange": {"minimum": 1, "maximum": 25}},
+        {"key": "D2", "label": "映射", "score": 1.5, "scoreMethod": "mapped_mean_terms", "scoreRange": {"minimum": 0, "maximum": 3}},
+        {"key": "D3", "label": "无范围乘积", "score": 6, "scoreMethod": "product"},
+    ]
+    output = _run_helper(dimensions, _worksheet())
+    rows = output["dimensions"]
+
+    assert (rows[0]["rangeText"], rows[0]["positionPercent"]) == ("本维度量尺 1–25", 50)
+    assert (rows[1]["rangeText"], rows[1]["positionPercent"]) == ("本维度量尺 0–3", 50)
+    assert rows[2]["hasComparableRange"] is False
+    assert rows[2]["rangeText"] == "量尺范围暂未核定"
+
+
+def test_backend_scores_carry_theoretical_range_for_each_method():
+    import sys
+
+    sys.path.insert(0, str(ROOT / "backend"))
+    from services.assessment_execution_service import score_answers
+
+    worksheets = {
+        item["id"]: item
+        for item in json.loads((ROOT / "content" / "assessment_worksheets.json").read_text(encoding="utf-8"))["worksheets"]
+    }
+
+    def first_option_scores(worksheet_id):
+        worksheet = worksheets[worksheet_id]
+        answers = [
+            {"question_id": question["id"], "value": str(question["options"][0]["value"]), "score": question["options"][0]["score"]}
+            for question in worksheet["questions"]
+            if question.get("options")
+        ]
+        scores, _ = score_answers(worksheet, answers)
+        return {item["key"]: item for item in scores["dimensions"]}
+
+    tipi = first_option_scores("big_five_tipi_10")
+    assert all(item["score_range"] == {"minimum": 1, "maximum": 7} for item in tipi.values())
+    rfq = first_option_scores("rfq8_reflective_functioning")
+    assert all(item["score_range"] == {"minimum": 0, "maximum": 3} for item in rfq.values())
+    erq = first_option_scores("emotion_regulation_erq")
+    assert [item["score_range"] for item in erq.values()] == [{"minimum": 6, "maximum": 42}, {"minimum": 4, "maximum": 28}]

@@ -28,8 +28,23 @@ function getQuestionBounds(question) {
   return { min: Math.min(...optionScores), max: Math.max(...optionScores) };
 }
 
+// Score methods whose range can be rebuilt from option scores on the client.
+// Mapped, product and averaged-dimension scores need the server-provided range.
+const CLIENT_DERIVABLE_METHODS = { sum: "sum", mean: "mean", mean_terms: "mean" };
+
+function serverRange(dimension) {
+  const range = dimension && dimension.scoreRange;
+  const min = toFiniteNumber(range && range.minimum);
+  const max = toFiniteNumber(range && range.maximum);
+  return min !== null && max !== null && max > min ? { min, max } : null;
+}
+
 function deriveDimensionRange(dimension, worksheet) {
-  if (!dimension || !worksheet) return null;
+  if (!dimension) return null;
+  const provided = serverRange(dimension);
+  if (provided) return provided;
+  const aggregation = CLIENT_DERIVABLE_METHODS[dimension.scoreMethod || "sum"];
+  if (!worksheet || !aggregation) return null;
   const definitions = Array.isArray(worksheet.dimensions) ? worksheet.dimensions : [];
   const questions = Array.isArray(worksheet.questions) ? worksheet.questions : [];
   const definition = definitions.find((item) => item && (item.code === dimension.key || item.key === dimension.key));
@@ -42,7 +57,7 @@ function deriveDimensionRange(dimension, worksheet) {
   const bounds = matchedQuestions.map(getQuestionBounds).filter(Boolean);
   if (!bounds.length || bounds.length !== matchedQuestions.length) return null;
 
-  const divisor = dimension.scoreMethod === "mean" ? bounds.length : 1;
+  const divisor = aggregation === "mean" ? bounds.length : 1;
   const min = bounds.reduce((total, item) => total + item.min, 0) / divisor;
   const max = bounds.reduce((total, item) => total + item.max, 0) / divisor;
   if (!Number.isFinite(min) || !Number.isFinite(max) || max <= min) return null;

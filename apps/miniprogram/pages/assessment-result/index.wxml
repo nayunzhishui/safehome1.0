@@ -83,8 +83,14 @@
       </view>
     </view>
 
+    <view wx:if="{{!profileSummary && !scaleDimensions.length && resultSummaryText}}" class="safe-section">
+      <section-title title="结果说明" />
+      <text class="result-summary-text">{{resultSummaryText}}</text>
+    </view>
+
     <view wx:if="{{!profileSummary && scaleDimensions.length}}" class="safe-section">
       <section-title title="维度位置" subtitle="各维度按自身量尺展示，不相加、不比高低" />
+      <text wx:if="{{resultSummaryText}}" class="result-summary-text">{{resultSummaryText}}</text>
       <view wx:if="{{scaleVisualization.showRadar}}" class="dimension-chart-card">
         <canvas canvas-id="dimensionRadarCanvas" class="dimension-radar-canvas" aria-label="本次填写与各维度量尺中点的雷达图，具体分数和范围见下方维度卡片"></canvas>
         <view class="dimension-chart-legend" aria-label="图例">

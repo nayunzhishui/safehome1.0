@@ -5246,6 +5246,6 @@
     "models_sha256": "083cb33ad4bd2c2242b0807e283f6a55a2867aa4d02d958e7a5b988ac28671aa",
     "migration_manifest_sha256": "09a7a8d1a1e7ff7fc2c78980850ae7b774696aa6a6ced9d7f6787c9b1a09aed8",
     "route_manifest_sha256": "6fba229c3a1666b59bfa3ee4bebce96b2136be3ff75364887e6a4b8c98ff6aee",
-    "service_manifest_sha256": "388f59e207ea690c65411f8c9a9607ff1eafc37066fbc87a3efa3449673737d4"
+    "service_manifest_sha256": "fae9ee01bfbe6d70d1136dffe929eec3dae22c871f495d90757c4a7f0bed3ba8"
   }
 }

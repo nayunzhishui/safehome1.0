@@ -73,6 +73,7 @@ function buildScaleDimensions(result, profileSummary) {
         score: item.score,
         itemCount: item.item_count,
         scoreMethod: item.score_method || "sum",
+        scoreRange: item.score_range || null,
         summary: `${countText}（仅本维度内观察，不与其它维度相加比较）`,
       };
     });
@@ -571,6 +572,8 @@ Page({
           profileSummary,
           scaleDimensions,
           scaleVisualization,
+          // Scale-specific reading guide saved with the result (what it observes, what it is not).
+          resultSummaryText: !profileSummary && result && result.result_summary ? String(result.result_summary) : "",
           sourceNotice,
           trainingRecommendation,
           riskSummary,

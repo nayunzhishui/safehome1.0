@@ -296,6 +296,14 @@
   line-height: 1.55;
 }
 
+.result-summary-text {
+  display: block;
+  margin: 12rpx 0 8rpx;
+  color: var(--safe-text);
+  font-size: 28rpx;
+  line-height: 1.7;
+}
+
 .dimension-row {
   display: block;
   padding: 20rpx;

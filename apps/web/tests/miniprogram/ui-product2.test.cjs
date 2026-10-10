@@ -125,7 +125,9 @@ test('登录未勾选协议时不发起任何登录请求，手机号按钮不�
   h.page.handlePhoneLogin({ detail: { code: 'synthetic-code' } });
   assert.equal(requests, 0);
   assert.match(h.page.data.message, /用户服务协议/);
-  assert.ok(read('pages/login/index.wxml').includes('phoneAvailable && agreed'));
+  const loginWxml = read('pages/login/index.wxml');
+  assert.ok(loginWxml.includes('wx:if="{{phoneAvailable}}"'));
+  assert.match(loginWxml, /wx:if="\{\{agreed\}\}"[^>]*open-type="getPhoneNumber"/);
   h.page.onAgreementChange({ detail: { value: ['agreed'] } });
   assert.equal(h.page.data.agreed, true);
   h.page.openAgreement(); h.page.openPrivacy();
@@ -255,6 +257,32 @@ test('研究者工作台可打开待办、领取并提交风险复核结论', as
   assert.equal(reviews[0].payload.review_status, 'closed');
   assert.equal(reviews[0].payload.closed_reason, '已电话确认家长现实支持。');
   assert.equal(h.page.data.workItem, null);
+});
+
+test('结果页显示量表自身的结果说明，并用后端量尺范围定位维度', async () => {
+  const h = pageHarness('assessment-result', {
+    getAssessmentResult: async () => ({
+      id: 'synthetic-result',
+      category: '量表',
+      result_summary: '本结果分别呈现两种调节方式的使用习惯，不评价哪种更好。',
+      scores_json: JSON.stringify({ dimensions: [
+        { key: 'P', label: '乘积维度', score: 13, item_count: 2, score_method: 'product', score_range: { minimum: 1, maximum: 25 } },
+      ] }),
+    }),
+    getAssessment: async () => ({ id: 'synthetic-worksheet', questions: [], dimensions: [] }),
+    listCards: async () => ({ items: [] }),
+    getAssessmentExploratoryAnalysis: async () => null,
+    getAssessmentProfilePosition: async () => null,
+  });
+  h.page.data.resultId = 'synthetic-result';
+  h.page.data.worksheetId = 'synthetic-worksheet';
+  h.page.drawProfilePositionCharts = () => {};
+  h.page.drawScaleDimensionChart = () => {};
+  await h.page.loadResult();
+  assert.equal(h.page.data.resultSummaryText, '本结果分别呈现两种调节方式的使用习惯，不评价哪种更好。');
+  const [row] = h.page.data.scaleVisualization.dimensions;
+  assert.equal(row.rangeText, '本维度量尺 1–25');
+  assert.equal(row.positionPercent, 50);
 });
 
 test('结果页按计分方式标注均值、合计与得分', async () => {
