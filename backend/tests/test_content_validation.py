@@ -44,7 +44,7 @@ def test_current_content_validation_passes():
 def test_training_cards_keep_low_load_and_safety_contract():
     payload = json.loads((CONTENT_ROOT / "training_cards.json").read_text(encoding="utf-8"))
 
-    assert len(payload["cards"]) == 42
+    assert len(payload["cards"]) == 58
     for card in payload["cards"]:
         assert 1 <= card["duration_minutes"] <= 10, card["id"]
         assert 2 <= len(card["steps"]) <= 4, card["id"]

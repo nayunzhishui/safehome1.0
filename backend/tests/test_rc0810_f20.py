@@ -60,19 +60,47 @@ def test_governed_payload_descriptors_bind_version_and_hash():
     }
 
 
-def test_production_manifest_fails_closed_without_explicit_rights_approval():
+def test_production_manifest_is_owner_approved_and_outside_reviews_stay_pending():
     service = importlib.import_module("services.psychological_content_governance_service")
     audit = service.build_content_audit(ROOT)
+    policy = json.loads((ROOT / "content" / "psychological_content_governance.json").read_text(encoding="utf-8"))
+    worksheets = json.loads((ROOT / "content" / "assessment_worksheets.json").read_text(encoding="utf-8"))["worksheets"]
+    worksheet_ids = sorted(item["id"] for item in worksheets)
 
-    assert audit["production_manifest"]["worksheet_ids"] == []
-    assert audit["production_manifest"]["status"] == "blocked_external"
+    assert audit["production_manifest"]["worksheet_ids"] == worksheet_ids
+    assert audit["production_manifest"]["status"] == "owner_approved_production"
+    record = policy["production_manifest"]["approval_record"]
+    assert record["approved_by"] == "项目负责人"
+    assert record["professional_review"] == "pending_owner_arranged"
+    assert (ROOT / record["evidence_path"]).is_file()
+    # The owner's approval does not stand in for the outside psychology and rights reviews.
     assert audit["external_gates"] == {
         "psychology_reviewer": "pending_external",
         "content_rights_owner": "pending_external",
     }
-    assert audit["scale_rights_and_use"]
-    assert all(item["production_eligible"] is False for item in audit["scale_rights_and_use"])
-    assert all("copyright_status" in item for item in audit["scale_rights_and_use"])
+    rights_by_scale = {item["scale_id"]: item for item in audit["scale_rights_and_use"]}
+    assert rights_by_scale
+    assert all("copyright_status" in item for item in rights_by_scale.values())
+    for scale_id, item in rights_by_scale.items():
+        assert item["production_eligible"] is (scale_id in worksheet_ids)
+    assert "questions_missing" in rights_by_scale["sleep_isi_psqi"]["production_blockers"]
+
+
+def test_production_manifest_fails_closed_without_explicit_rights_approval():
+    service = importlib.import_module("services.psychological_content_governance_service")
+    worksheet = json.loads((ROOT / "content" / "assessment_worksheets.json").read_text(encoding="utf-8"))["worksheets"][0]
+
+    assert service.production_eligibility(worksheet, None) == {
+        "eligible": False,
+        "blockers": ["copyright_not_approved", "production_approval_missing"],
+    }
+    assert service.production_eligibility(worksheet, {"copyright_status": "licensed"})["blockers"] == [
+        "production_approval_missing"
+    ]
+    assert service.production_eligibility(
+        worksheet, {"copyright_status": "pending_external_review", "production_approval": "approved"}
+    )["blockers"] == ["copyright_not_approved"]
+    assert service.production_worksheet_allowed("not_in_production_manifest") is False
 
 
 def test_missing_scale_or_scoring_fields_cannot_enter_production():
@@ -182,17 +210,27 @@ def test_submission_saves_exact_snapshot_and_history_replays_original_payload(tm
     assert replay_data["recommended_card_ids"] == created_data["recommended_card_ids"]
 
 
-def test_production_routes_use_empty_human_owned_allowlist(tmp_path, monkeypatch):
-    app, _content_dir = _fresh_app(tmp_path, monkeypatch)
+def test_production_routes_follow_human_owned_allowlist(tmp_path, monkeypatch):
+    app, content_dir = _fresh_app(tmp_path, monkeypatch)
     app.config.update(APP_ENV="production", CONTENT_GOVERNANCE_ENFORCED=True)
     client = app.test_client()
+    policy_path = content_dir / "psychological_content_governance.json"
+    policy = json.loads(policy_path.read_text(encoding="utf-8"))
 
     listing = client.get("/api/assessments")
+    assert listing.status_code == 200
+    listed_ids = sorted(item["id"] for item in listing.get_json()["data"]["items"])
+    assert listed_ids == sorted(policy["production_manifest"]["worksheet_ids"])
+
+    # Emptying the owner-maintained allowlist closes production again; nothing falls back to "open".
+    policy["production_manifest"]["worksheet_ids"] = []
+    policy_path.write_text(json.dumps(policy, ensure_ascii=False, indent=2), encoding="utf-8")
+    closed_listing = client.get("/api/assessments")
     legacy_profile = client.get("/api/student-assessment")
     legacy_profile_write = client.post("/api/profile", json={})
 
-    assert listing.status_code == 200
-    assert listing.get_json()["data"]["items"] == []
+    assert closed_listing.status_code == 200
+    assert closed_listing.get_json()["data"]["items"] == []
     assert legacy_profile.status_code == 409
     assert legacy_profile.get_json()["error"]["code"] == "assessment_not_in_production_manifest"
     assert legacy_profile_write.status_code == 409

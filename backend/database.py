@@ -794,6 +794,9 @@ def check_database_health() -> dict:
         "training_cards_count": 0,
         "content_training_cards_count": 0,
         "training_cards_sync_ok": False,
+        "training_cards_startup_ok": False,
+        "training_cards_pending_sync": [],
+        "training_cards_unknown_in_db": [],
         "assessment_worksheets_count": 0,
         "content_assessment_worksheets_count": 0,
         "worksheets_sync_ok": False,
@@ -808,6 +811,7 @@ def check_database_health() -> dict:
             result["explicit_migration_head"] = get_latest_explicit_migration_version(conn)
             result["schema_version_ok"] = result["current_schema_version"] == CURRENT_SCHEMA_VERSION
             result["training_cards_count"] = get_table_count(conn, "training_cards")
+            database_card_ids = list_training_card_ids(conn)
             result["assessment_worksheets_count"] = get_table_count(conn, "assessment_worksheets")
             identity_status = check_identity_uniqueness(conn)
             result["identity_uniqueness_ok"] = identity_status["ok"]
@@ -831,7 +835,16 @@ def check_database_health() -> dict:
         content_assessment_worksheets = load_content_json("assessment_worksheets.json").get("worksheets", [])
         result["content_training_cards_count"] = len(content_training_cards)
         result["content_assessment_worksheets_count"] = len(content_assessment_worksheets)
-        result["training_cards_sync_ok"] = result["training_cards_count"] == result["content_training_cards_count"]
+        content_card_ids = {card.get("id") for card in content_training_cards if isinstance(card, dict) and card.get("id")}
+        pending_card_ids = sorted(content_card_ids - set(database_card_ids))
+        unknown_card_ids = sorted(set(database_card_ids) - content_card_ids)
+        result["training_cards_pending_sync"] = pending_card_ids
+        result["training_cards_unknown_in_db"] = unknown_card_ids
+        result["training_cards_sync_ok"] = not pending_card_ids and not unknown_card_ids
+        # A new release may add cards before an admin content sync copies them into
+        # the database; those cards stay hidden until then (card_service), so only a
+        # database that holds cards the content no longer has blocks startup.
+        result["training_cards_startup_ok"] = not unknown_card_ids
         result["worksheets_sync_ok"] = result["assessment_worksheets_count"] >= result["content_assessment_worksheets_count"]
         result["missing_tables"] = missing_tables
         result["required_tables_ok"] = not missing_tables
@@ -841,7 +854,7 @@ def check_database_health() -> dict:
         result["ok"] = bool(
             not missing_tables
             and result["schema_version_ok"]
-            and result["training_cards_sync_ok"]
+            and result["training_cards_startup_ok"]
             and result["worksheets_sync_ok"]
             and result["identity_uniqueness_ok"]
             and result["identity_unique_indexes_ok"]
@@ -1070,6 +1083,14 @@ def get_latest_explicit_migration_version(conn) -> str | None:
     except Exception:
         return None
     return row["version"] if row else None
+
+
+def list_training_card_ids(conn) -> list[str]:
+    try:
+        rows = conn.execute("SELECT id FROM training_cards").fetchall()
+    except Exception:
+        return []
+    return [str(row["id"]) for row in rows if row["id"]]
 
 
 def get_table_count(conn, table: str) -> int:
@@ -1731,25 +1752,47 @@ def load_content_json(filename: str) -> dict:
     return json.loads(load_content_text(filename))
 
 
+TRAINING_CARD_COLUMNS = (
+    "id",
+    "type",
+    "title",
+    "purpose",
+    "steps_json",
+    "tags_json",
+    "example",
+    "duration_minutes",
+    "enabled",
+    "version",
+    "created_at",
+    "updated_at",
+)
+
+
+def training_card_row(card: dict, version: str, timestamp: str) -> dict:
+    """Database copy of one content training card (shared by init sync and the admin content sync)."""
+    return {
+        "id": card["id"],
+        "type": card.get("type", "general"),
+        "title": card["title"],
+        "purpose": card.get("purpose"),
+        "steps_json": json_dumps(card.get("steps", [])),
+        "tags_json": json_dumps(card.get("tags", [])),
+        "example": card.get("example"),
+        "duration_minutes": card.get("duration_minutes"),
+        "enabled": 1 if card.get("enabled", True) else 0,
+        "version": version,
+        "created_at": timestamp,
+        "updated_at": timestamp,
+    }
+
+
 def sync_training_cards(conn) -> None:
     payload = load_content_json("training_cards.json")
     version = payload.get("version", "unknown")
     timestamp = now_iso()
     for card in payload.get("cards", []):
-        params = (
-            card["id"],
-            card.get("type", "general"),
-            card["title"],
-            card.get("purpose"),
-            json_dumps(card.get("steps", [])),
-            json_dumps(card.get("tags", [])),
-            card.get("example"),
-            card.get("duration_minutes"),
-            1 if card.get("enabled", True) else 0,
-            version,
-            timestamp,
-            timestamp,
-        )
+        row = training_card_row(card, version, timestamp)
+        params = tuple(row[column] for column in TRAINING_CARD_COLUMNS)
         if _connection_provider(conn) == "mysql":
             conn.execute(
                 """
@@ -1802,87 +1845,95 @@ def _sensitive_category(value) -> str:
     return str(value or "none")
 
 
+ASSESSMENT_WORKSHEET_COLUMNS = (
+    "id",
+    "display_title",
+    "source_title",
+    "source_file",
+    "category",
+    "audience_class",
+    "reflex_node",
+    "questions_json",
+    "dimensions_json",
+    "dimension_score_method",
+    "scoring_notes_json",
+    "search_keywords_json",
+    "boundary_notice",
+    "result_disclaimer",
+    "instructions",
+    "sensitive_category",
+    "profile_model_id",
+    "enabled_for_user",
+    "review_status",
+    "review_note",
+    "source_version",
+    "source_type",
+    "audience",
+    "audience_class_detail",
+    "recommended_card_ids_json",
+    "sections_json",
+    "scoring",
+    "pages",
+    "_meta_json",
+    "created_at",
+    "updated_at",
+)
+
+
+def assessment_worksheet_row(worksheet: dict, timestamp: str, created_at: str | None = None) -> dict:
+    """Database copy of one content worksheet (shared by init sync and the admin content sync)."""
+    worksheet_meta = dict(worksheet.get("_meta") or {})
+    # These fields have no separate DB columns; persist the same policy as
+    # file-backed scoring instead of keeping stale metadata or defaults.
+    for field in ("total_score_method", "derived_dimensions"):
+        if field in worksheet:
+            worksheet_meta[field] = worksheet[field]
+    return {
+        "id": worksheet["id"],
+        "display_title": worksheet.get("display_title") or worksheet.get("source_title") or worksheet["id"],
+        "source_title": worksheet.get("source_title"),
+        "source_file": worksheet.get("source_file"),
+        "category": worksheet.get("category"),
+        "audience_class": worksheet.get("audience_class"),
+        "reflex_node": worksheet.get("reflex_node"),
+        "questions_json": json_dumps(worksheet.get("questions", [])),
+        "dimensions_json": json_dumps(worksheet.get("dimensions", [])),
+        "dimension_score_method": worksheet.get("dimension_score_method") or "sum",
+        "scoring_notes_json": json_dumps(worksheet.get("scoring_notes", {})),
+        "search_keywords_json": json_dumps(worksheet.get("search_keywords", [])),
+        "boundary_notice": worksheet.get("boundary_notice"),
+        "result_disclaimer": worksheet.get("result_disclaimer"),
+        "instructions": worksheet.get("instructions"),
+        "sensitive_category": _sensitive_category(worksheet.get("sensitive_category")),
+        "profile_model_id": worksheet.get("profile_model_id"),
+        "enabled_for_user": 1 if worksheet.get("enabled_for_user", True) else 0,
+        "review_status": worksheet.get("review_status") or "approved",
+        "review_note": worksheet.get("review_note"),
+        "source_version": worksheet.get("source_version"),
+        "source_type": worksheet.get("source_type"),
+        "audience": worksheet.get("audience"),
+        "audience_class_detail": worksheet.get("audience_class_detail"),
+        "recommended_card_ids_json": json_dumps(worksheet.get("recommended_card_ids", [])),
+        "sections_json": json_dumps(worksheet.get("sections", [])),
+        "scoring": worksheet.get("scoring"),
+        "pages": worksheet.get("pages"),
+        "_meta_json": json_dumps(worksheet_meta),
+        "created_at": created_at or timestamp,
+        "updated_at": timestamp,
+    }
+
+
 def sync_assessment_worksheets(conn) -> None:
     if not (Config.CONTENT_DIR / "assessment_worksheets.json").exists():
         return
     payload = load_content_json("assessment_worksheets.json")
     timestamp = now_iso()
-    columns = [
-        "id",
-        "display_title",
-        "source_title",
-        "source_file",
-        "category",
-        "audience_class",
-        "reflex_node",
-        "questions_json",
-        "dimensions_json",
-        "dimension_score_method",
-        "scoring_notes_json",
-        "search_keywords_json",
-        "boundary_notice",
-        "result_disclaimer",
-        "instructions",
-        "sensitive_category",
-        "profile_model_id",
-        "enabled_for_user",
-        "review_status",
-        "review_note",
-        "source_version",
-        "source_type",
-        "audience",
-        "audience_class_detail",
-        "recommended_card_ids_json",
-        "sections_json",
-        "scoring",
-        "pages",
-        "_meta_json",
-        "created_at",
-        "updated_at",
-    ]
+    columns = list(ASSESSMENT_WORKSHEET_COLUMNS)
     for worksheet in payload.get("worksheets", []):
         if not isinstance(worksheet, dict) or not worksheet.get("id"):
             continue
-        worksheet_meta = dict(worksheet.get("_meta") or {})
-        # These fields have no separate DB columns; persist the same policy as
-        # file-backed scoring instead of keeping stale metadata or defaults.
-        for field in ("total_score_method", "derived_dimensions"):
-            if field in worksheet:
-                worksheet_meta[field] = worksheet[field]
         existing = conn.execute("SELECT created_at FROM assessment_worksheets WHERE id = ?", (worksheet["id"],)).fetchone()
-        row = {
-            "id": worksheet["id"],
-            "display_title": worksheet.get("display_title") or worksheet.get("source_title") or worksheet["id"],
-            "source_title": worksheet.get("source_title"),
-            "source_file": worksheet.get("source_file"),
-            "category": worksheet.get("category"),
-            "audience_class": worksheet.get("audience_class"),
-            "reflex_node": worksheet.get("reflex_node"),
-            "questions_json": json_dumps(worksheet.get("questions", [])),
-            "dimensions_json": json_dumps(worksheet.get("dimensions", [])),
-            "dimension_score_method": worksheet.get("dimension_score_method") or "sum",
-            "scoring_notes_json": json_dumps(worksheet.get("scoring_notes", {})),
-            "search_keywords_json": json_dumps(worksheet.get("search_keywords", [])),
-            "boundary_notice": worksheet.get("boundary_notice"),
-            "result_disclaimer": worksheet.get("result_disclaimer"),
-            "instructions": worksheet.get("instructions"),
-            "sensitive_category": _sensitive_category(worksheet.get("sensitive_category")),
-            "profile_model_id": worksheet.get("profile_model_id"),
-            "enabled_for_user": 1 if worksheet.get("enabled_for_user", True) else 0,
-            "review_status": worksheet.get("review_status") or "approved",
-            "review_note": worksheet.get("review_note"),
-            "source_version": worksheet.get("source_version"),
-            "source_type": worksheet.get("source_type"),
-            "audience": worksheet.get("audience"),
-            "audience_class_detail": worksheet.get("audience_class_detail"),
-            "recommended_card_ids_json": json_dumps(worksheet.get("recommended_card_ids", [])),
-            "sections_json": json_dumps(worksheet.get("sections", [])),
-            "scoring": worksheet.get("scoring"),
-            "pages": worksheet.get("pages"),
-            "_meta_json": json_dumps(worksheet_meta),
-            "created_at": existing["created_at"] if existing else timestamp,
-            "updated_at": timestamp,
-        }
+        row = assessment_worksheet_row(worksheet, timestamp, existing["created_at"] if existing else None)
         params = [row[column] for column in columns]
         placeholders = ", ".join("?" for _ in columns)
         column_sql = ", ".join(columns)

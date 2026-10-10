@@ -1,0 +1,273 @@
+{
+  "schema": "safehome.supportive-review-guide.v1",
+  "version": "2026-10-08-l0-v1",
+  "service_level": "L0",
+  "display_name": "自助整理",
+  "approval": {
+    "status": "owner_approved_production",
+    "approved_on": "2026-10-08",
+    "basis": "负责人 2026-10-08 确认支持性评估“两者都包含”：自助整理在生产开放，真人复核待人员与响应时限安排后再开放。",
+    "professional_review": "负责人表示会安排人员审核；审核结论回填前，本文件不声明已通过心理专业复核。"
+  },
+  "boundary": {
+    "summary": "把你自己的问题、一次具体经历、问卷结果和已有资源放在一起看。回看信只来自你写下的文字和问卷的固定说明，不是诊断，也不是专业评估结论。",
+    "not_for": [
+      "正在经历紧急情况，或有伤害自己、他人的想法时，请先使用紧急求助资源。",
+      "需要诊断、治疗或用药建议时，请联系医院或专业机构。",
+      "被别人要求、并非自己想做时，可以先不开始。"
+    ],
+    "privacy": "只有你本人能在小程序里查看这些记录；它们不进入研究导出，你可以随时删除。如果写下的内容触发安全规则，系统会生成一条安全复核提示，只记录触发的安全类别和关键词，不附带你的整段原文。",
+    "followup_reminder": "回看提醒只在你打开这里时显示，不会主动推送。"
+  },
+  "evidence_basis": [
+    "Finn, S. E. (2007). In Our Clients' Shoes（中译《在人之履》）：第1、8、10、14、19章——评估问题、扩展询问、评估干预、分层反馈、书面信件、随访与不适用情形。",
+    "Finn, S. E., & Tonsager, M. E. (1997). Information-gathering and therapeutic models of assessment. Psychological Assessment, 9(4), 374–385.",
+    "Poston, J. M., & Hanson, W. E. (2010). Meta-analysis of psychological assessment as a therapeutic intervention. Psychological Assessment, 22(2), 203–212.",
+    "Durosini, I., & Aschieri, F. (2021). Therapeutic Assessment efficacy: A meta-analysis. Psychological Assessment, 33(10), 962–972.",
+    "本流程是把治疗性评估的协作理念改编为自助整理；上述研究均由专业人员实施，自助版本尚无临床验证，因此不称为治疗性评估，也不承诺效果。"
+  ],
+  "question_guide": {
+    "starters": [
+      "为什么我……",
+      "什么让我……",
+      "在……的时候，我身上发生了什么？",
+      "我怎样才能……？"
+    ],
+    "tips": [
+      "写成你真心好奇、想弄明白的问题，而不是想要一个“是不是”的判断。",
+      "问题里最好有“我”：即使和别人有关，也写下你在其中的位置。"
+    ],
+    "rewrites": [
+      {"from": "我是不是有焦虑症？", "to": "什么情况下，我的担心会变得特别强？"},
+      {"from": "孩子为什么这么不听话？", "to": "孩子不听的时候，我和孩子之间发生了什么？"},
+      {"from": "我是不是太差劲了？", "to": "为什么做得不错的时候，我也觉得不够好？"}
+    ]
+  },
+  "topics": [
+    {
+      "id": "worry_tension",
+      "title": "担心与紧张",
+      "hint": "常常担心、难以放松，或身体总是绷着",
+      "worksheet_ids": ["gad7_anxiety", "acceptance_action_aaq2", "mindful_attention_awareness_maas", "afq_y8_avoidance_fusion"],
+      "examples": ["为什么一件小事也会让我反复担心很久？", "我越想放松反而越紧张，这中间发生了什么？"]
+    },
+    {
+      "id": "low_mood_energy",
+      "title": "低落与动力",
+      "hint": "提不起劲、兴趣变少，或总觉得累",
+      "worksheet_ids": ["phq9_cesd10_depression", "who5_wellbeing", "swls_life_satisfaction", "hplp_c_health_promoting_lifestyle"],
+      "examples": ["为什么以前喜欢的事，现在也提不起劲？", "在什么情况下，我会恢复一点精力？"]
+    },
+    {
+      "id": "stress_recovery",
+      "title": "压力与恢复",
+      "hint": "压力大时怎样撑住，挫折后怎样缓过来",
+      "worksheet_ids": ["cd_risc10_brief_resilience", "ghq12_general_health", "emotional_resilience_11", "rsca_adolescent_resilience", "academic_buoyancy_4"],
+      "examples": ["压力很大的时候，是什么让我还能撑下去？", "为什么有些挫折我很快能缓过来，有些却很久都过不去？"]
+    },
+    {
+      "id": "emotion_handling",
+      "title": "情绪的处理方式",
+      "hint": "情绪上来时常压着、爆发，或不知道怎么办",
+      "worksheet_ids": ["emotion_regulation_erq", "epq_emotional_stability_24", "emotional_intelligence_eis_33", "self_compassion_scs_cn"],
+      "examples": ["我生气时为什么常常先忍着，后来又一下子爆发？", "情绪上来的时候，我怎样才能多一点选择？"]
+    },
+    {
+      "id": "self_view",
+      "title": "怎样看待自己",
+      "hint": "对自己要求很高、常常自我批评或怀疑自己",
+      "worksheet_ids": ["self_compassion_scs_cn", "attribution_style_student_36", "big_five_tipi_10"],
+      "examples": ["为什么做得不错的时候，我也觉得不够好？", "我对自己说话的方式，是从哪里学来的？"]
+    },
+    {
+      "id": "thinking_habits",
+      "title": "想法与思维习惯",
+      "hint": "反复想同一件事、被念头卡住，或很难换个角度",
+      "worksheet_ids": ["acceptance_action_aaq2", "cfi2_cognitive_flexibility", "fmi_12_mindfulness", "afq_y8_avoidance_fusion"],
+      "examples": ["为什么有些念头一出现，我就很难放下？", "事情不如预期时，我是怎样让自己卡住的？"]
+    },
+    {
+      "id": "relationships_support",
+      "title": "人际关系与支持",
+      "hint": "和别人相处的担心，想靠近还是退开，能不能求助",
+      "worksheet_ids": ["perceived_social_support_psss", "micro_ysq_relationship_18", "relationship_initiation_intention_action", "regulatory_focus_relationship_18", "rfq8_reflective_functioning"],
+      "examples": ["为什么我想靠近别人，却常常先退开？", "遇到难处时，是什么让我不愿意开口求助？"]
+    },
+    {
+      "id": "parenting_relationship",
+      "title": "亲子关系与养育",
+      "hint": "和孩子的互动，养育中的疲惫或困惑",
+      "worksheet_ids": ["parent_reflective_functioning_prfq", "parental_burnout_pba", "rfq8_reflective_functioning", "perceived_social_support_psss"],
+      "examples": ["孩子发脾气时，我为什么也很快急起来？", "我怎样才能更明白孩子在那一刻的感受？", "养育里最耗我心力的是什么？"]
+    },
+    {
+      "id": "study_engagement",
+      "title": "学习状态",
+      "hint": "学习投入、考试压力，以及遇到挫折后的状态",
+      "worksheet_ids": ["study_engagement_uwes_s_17", "academic_buoyancy_4", "student_profile_v1", "cognitive_curiosity_student", "attribution_style_student_36"],
+      "examples": ["为什么一到考试前，我就很难集中注意力？", "什么样的学习会让我更投入？"]
+    },
+    {
+      "id": "lifestyle_body",
+      "title": "作息与生活方式",
+      "hint": "睡眠、运动、饮食和日常节律",
+      "worksheet_ids": ["hplp_c_health_promoting_lifestyle", "who5_wellbeing", "ghq12_general_health"],
+      "examples": ["为什么我知道该早睡，却总是做不到？", "我的作息和心情之间有什么关系？"]
+    },
+    {
+      "id": "goals_action",
+      "title": "目标与行动方式",
+      "hint": "做决定、开始行动和坚持下去",
+      "worksheet_ids": ["regulatory_focus_general_18", "regulatory_focus_relationship_18", "swls_life_satisfaction", "cd_risc10_brief_resilience"],
+      "examples": ["为什么我常常想好了，却迟迟不开始？", "推动我行动的，更多是“想得到”还是“怕失去”？"]
+    },
+    {
+      "id": "knowing_myself",
+      "title": "了解自己的特点",
+      "hint": "想更了解自己的性格倾向和长处",
+      "worksheet_ids": ["big_five_tipi_10", "big_five_bfi_60", "cognitive_curiosity_student", "self_compassion_scs_cn"],
+      "examples": ["别人眼中的我，和我眼中的自己有什么不同？", "我的哪些特点，在什么场合是长处？"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "question",
+      "title": "我想弄清楚的问题",
+      "prompt": "这次你最想弄清楚自己的什么？",
+      "required": true,
+      "fields": [
+        {"key": "question", "label": "我的问题", "placeholder": "例如：为什么一件小事也会让我反复担心很久？", "max_length": 200, "required": true},
+        {"key": "question_history", "label": "这个问题从什么时候开始变得重要？", "placeholder": "可以只写一句", "max_length": 300}
+      ]
+    },
+    {
+      "id": "guess",
+      "title": "我现在的猜测",
+      "prompt": "做问卷之前，先写下你自己的猜测",
+      "note": "猜错也没关系，之后可以对照问卷和经历修改。",
+      "fields": [
+        {"key": "guess", "label": "我猜，原因可能是", "placeholder": "写下你现在最好的猜测", "max_length": 300},
+        {"key": "hoped_change", "label": "如果弄清楚了，我希望生活里有什么不同？", "placeholder": "例如：吵完架能更快缓过来", "max_length": 300}
+      ]
+    },
+    {
+      "id": "episode",
+      "title": "一次具体经历",
+      "prompt": "选最近一次和这个问题有关的经历",
+      "note": "只写发生了什么，先不解释原因。",
+      "fields": [
+        {"key": "situation", "label": "什么时候、在哪里、和谁", "placeholder": "例如：周日晚上，在家，和孩子一起写作业", "max_length": 200},
+        {"key": "body_feeling", "label": "当时身体和情绪的反应", "placeholder": "例如：胸口发紧，很烦躁", "max_length": 200},
+        {"key": "thought", "label": "脑子里冒出的想法", "placeholder": "例如：又要拖到很晚了", "max_length": 200},
+        {"key": "action", "label": "我做了什么", "placeholder": "例如：提高声音催他快点", "max_length": 200},
+        {"key": "after", "label": "之后发生了什么", "placeholder": "例如：他哭了，我也很后悔", "max_length": 200}
+      ],
+      "intensity": {"key": "intensity", "label": "当时有多难受", "min": 0, "max": 10, "min_label": "一点也不", "max_label": "非常难受"}
+    },
+    {
+      "id": "exceptions",
+      "title": "不一样的时候",
+      "prompt": "有没有类似的情况，结果却不太一样？",
+      "note": "例外说明问题并不是一直都在。",
+      "fields": [
+        {"key": "exception", "label": "那一次有什么不同", "placeholder": "例如：上周六我先深呼吸了一下，就没有吵起来", "max_length": 300},
+        {"key": "resources", "label": "什么人、做法或环境曾经帮到我", "placeholder": "例如：和朋友聊几句、出门走一走", "max_length": 300}
+      ]
+    },
+    {
+      "id": "scales",
+      "title": "选择问卷",
+      "prompt": "选 1–3 份和你的问题最相关的问卷",
+      "note": "按和你的问题的相关程度排列。做完回到这里，把结果加入这次整理。",
+      "max_results": 3
+    },
+    {
+      "id": "inquiry",
+      "title": "做完问卷后的回看",
+      "prompt": "回想刚才做问卷的过程",
+      "fields": [
+        {"key": "stood_out", "label": "哪一两道题让你停下来想了想？为什么？", "placeholder": "可以写题目的大意", "max_length": 300},
+        {"key": "fit", "label": "结果里哪一点像你，哪一点不像？", "placeholder": "例如：说我容易担心很像，说我很少放松不太像", "max_length": 300}
+      ]
+    },
+    {
+      "id": "letter",
+      "title": "回看信",
+      "prompt": "读一读，并标出哪些像你"
+    },
+    {
+      "id": "experiment",
+      "title": "一个小实验",
+      "prompt": "先由你提出一个想试试的做法",
+      "fields": [
+        {"key": "own_idea", "label": "我想试试", "placeholder": "根据这次整理，写一个具体、小、可以停下的做法", "max_length": 200, "required": true},
+        {"key": "obstacle", "label": "可能遇到的阻碍", "placeholder": "例如：太累了就想算了", "max_length": 200},
+        {"key": "plan_b", "label": "遇到阻碍时我打算", "placeholder": "例如：只做一分钟也算数", "max_length": 200},
+        {"key": "stop_condition", "label": "什么时候先停下来", "default": "如果明显不舒服或情况变糟，就先停下来。", "max_length": 200, "required": true}
+      ],
+      "note": "把它当成一次实验：做成做不成，都是新的观察。"
+    },
+    {
+      "id": "followup",
+      "title": "一两周后的回看",
+      "prompt": "试过之后，再回来看看",
+      "choices": {
+        "question_now": [
+          {"value": "clearer", "label": "比之前清楚一些"},
+          {"value": "same", "label": "差不多"},
+          {"value": "more_confused", "label": "更困惑了"}
+        ],
+        "next": [
+          {"value": "continue", "label": "继续这个实验"},
+          {"value": "adjust", "label": "换一个做法试试"},
+          {"value": "retake", "label": "过段时间再做一次问卷对比"},
+          {"value": "human_support", "label": "想找专业人员聊聊"},
+          {"value": "pause", "label": "先停一停"}
+        ]
+      },
+      "fields": [
+        {"key": "noticed", "label": "实验中我注意到了什么", "placeholder": "做到了、没做到，或者中途放弃，都可以写", "max_length": 300},
+        {"key": "learned", "label": "关于自己，我有了什么新的了解", "placeholder": "可以只写一句", "max_length": 300}
+      ]
+    }
+  ],
+  "letter": {
+    "title_template": "关于“{question}”的回看信",
+    "opening": "这封信由你写下的内容和问卷的固定说明整理而成。它不是诊断，也不是专业结论；哪里不像你，以你的感受为准。",
+    "check_options": [
+      {"value": "like", "label": "像我"},
+      {"value": "partly", "label": "部分像"},
+      {"value": "not_like", "label": "不像"},
+      {"value": "need_time", "label": "需要想想"}
+    ],
+    "sections": {
+      "your_words": {"title": "你已经看到的"},
+      "scale_clues": {"title": "问卷提供的线索", "intro": "下面是问卷的固定说明，只描述你这一次的作答。请对照自己的经历，看看像不像。"},
+      "connections": {"title": "可以连起来想一想"},
+      "other_angles": {
+        "title": "也许不太一样的角度",
+        "intro": "这部分可能和你现在的看法不一样。可以先不看；看了觉得不像，就标记“不像”。",
+        "prompts": [
+          {"id": "angle_protect", "text": "这个模式有没有在某些时候保护过你？比如帮你避开了更难受的感受。"},
+          {"id": "angle_friend", "text": "如果一位你在乎的朋友经历了同样的事，你会怎样理解对方？"},
+          {"id": "angle_half", "text": "如果你的猜测只说对了一半，另一半可能是什么？"},
+          {"id": "angle_context", "text": "这件事有多少和当时的处境有关，比如时间、压力和身边的人，而不全是你这个人的问题？"}
+        ]
+      },
+      "next": {"title": "接下来", "text": "选一个你愿意试试的小实验，一两周后再回来看看有什么发现。"}
+    },
+    "templates": {
+      "connection_guess": "对照你的猜测“{guess}”：问卷线索里，哪些支持它，哪些让它需要修改？",
+      "connection_thought": "那次经历里，你想到“{thought}”。问卷中“{label}”的说明，和这个念头有关系吗？",
+      "connection_exception": "你提到“{exception}”。那一次和平时相比，最大的不同是什么？",
+      "connection_inquiry": "做“{title}”时，“{stood_out}”让你停了下来。它和你的问题有什么关系？"
+    },
+    "medium_note": "你写下的内容里有一些让人担心的部分。如果难受持续或加重，请联系信任的人或专业机构；需要时可以随时查看紧急求助资源。",
+    "high_risk_note": "你写下的内容里，有一些需要先照顾好安全。现在比整理问题更重要的，是尽快联系你信任的人或专业支持。回看信和练习建议会先暂停。",
+    "closing": "整理到这里，已经是认真对待自己的一步。你可以随时回来修改任何一处。"
+  },
+  "experiment": {
+    "max_card_options": 3,
+    "followup_days": 7
+  }
+}

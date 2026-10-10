@@ -146,6 +146,7 @@ const API_ENDPOINTS = {
   adminExport: "/api/admin/export",
   relationshipPilot: "/api/relationship-pilot",
   therapeuticAssessment: "/api/therapeutic-assessment",
+  supportiveReview: "/api/supportive-review",
   researchAccess: "/api/research/access",
   researchAnalysis: "/api/research/analysis",
   productEvents: "/api/product-events",
@@ -1327,6 +1328,42 @@ function createSafeHomeApi(options = {}) {
       { method: "POST", data, idempotencyKey, requiresAuth: true },
     );
   },
+
+    getSupportiveReviewGuide() {
+      return request(`${API_ENDPOINTS.supportiveReview}/guide`, { requiresAuth: true });
+    },
+
+    listSupportiveReviews() {
+      return request(`${API_ENDPOINTS.supportiveReview}/reviews`, { requiresAuth: true });
+    },
+
+    createSupportiveReview(data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.supportiveReview}/reviews`, {
+        method: "POST",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
+    getSupportiveReview(reviewId) {
+      return request(`${API_ENDPOINTS.supportiveReview}/reviews/${encodeURIComponent(reviewId)}`, { requiresAuth: true });
+    },
+
+    updateSupportiveReview(reviewId, data) {
+      return request(`${API_ENDPOINTS.supportiveReview}/reviews/${encodeURIComponent(reviewId)}`, {
+        method: "PATCH",
+        data,
+        requiresAuth: true,
+      });
+    },
+
+    deleteSupportiveReview(reviewId) {
+      return request(`${API_ENDPOINTS.supportiveReview}/reviews/${encodeURIComponent(reviewId)}`, {
+        method: "DELETE",
+        requiresAuth: true,
+      });
+    },
 
     getTherapeuticAssessmentServiceLevels() {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/service-levels`, { requiresAuth: true });

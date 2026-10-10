@@ -10,12 +10,12 @@ assert SPEC and SPEC.loader
 SPEC.loader.exec_module(MODULE)
 
 
-def assert_pilot_approved(worksheet, catalog_item):
+def assert_owner_approved(worksheet, catalog_item):
     assert worksheet["enabled_for_user"] is True
-    assert worksheet["review_status"] == "pilot_approved"
+    assert worksheet["review_status"] == "production_approved"
     assert catalog_item["enabled"] is True
-    assert catalog_item["review_status"] == "pilot_approved"
-    assert worksheet["approval"]["scope"] == "pilot_release"
+    assert catalog_item["review_status"] == "production_approved"
+    assert worksheet["approval"]["scope"] == "production_release"
 
 
 def test_task18_scale_audit_detects_known_screenshot_content_failures():
@@ -40,7 +40,7 @@ def test_task18_ghq12_matches_local_source_and_stays_governed():
         "GHQ08",
         "GHQ12",
     ]
-    assert_pilot_approved(worksheet, catalog_item)
+    assert_owner_approved(worksheet, catalog_item)
 
 
 def test_task18_tipi_matches_official_english_source_and_stays_governed():
@@ -59,7 +59,7 @@ def test_task18_tipi_matches_official_english_source_and_stays_governed():
         "EMOTIONAL_STABILITY",
         "OPENNESS",
     ]
-    assert_pilot_approved(worksheet, catalog_item)
+    assert_owner_approved(worksheet, catalog_item)
 
 
 def test_task18_psss_uses_psss_items_instead_of_ssrs_items():
@@ -77,7 +77,7 @@ def test_task18_psss_uses_psss_items_instead_of_ssrs_items():
         ["PSSS03", "PSSS04", "PSSS08", "PSSS11"],
         ["PSSS06", "PSSS07", "PSSS09", "PSSS12"],
     ]
-    assert_pilot_approved(worksheet, catalog_item)
+    assert_owner_approved(worksheet, catalog_item)
 
 
 def test_task18_fmi12_matches_local_pdf_and_stays_governed():
@@ -90,7 +90,7 @@ def test_task18_fmi12_matches_local_pdf_and_stays_governed():
     assert worksheet["questions"][1]["prompt"] == "无论吃饭、做饭、洗衣服或者说话时，我都会感受我的身体。"
     assert "最近一周内（包括今天）" in worksheet["instructions"]
     assert worksheet["dimensions"][0]["item_ids"] == [f"FMI{i:02d}" for i in range(1, 13)]
-    assert_pilot_approved(worksheet, catalog_item)
+    assert_owner_approved(worksheet, catalog_item)
 
 
 def test_task18_self_compassion_matches_local_pdf_and_stays_governed():
@@ -103,7 +103,7 @@ def test_task18_self_compassion_matches_local_pdf_and_stays_governed():
     assert worksheet["dimension_score_method"] == "mean"
     assert worksheet["total_score_method"] == "none"
     assert worksheet["derived_dimensions"][0]["calculation"]["type"] == "mean_dimensions"
-    assert_pilot_approved(worksheet, catalog_item)
+    assert_owner_approved(worksheet, catalog_item)
 
 
 def test_task18_swls_matches_local_docx_and_stays_governed():
@@ -128,7 +128,7 @@ def test_task18_swls_matches_local_docx_and_stays_governed():
         "6 同意",
         "7 非常同意",
     ]
-    assert_pilot_approved(worksheet, catalog_item)
+    assert_owner_approved(worksheet, catalog_item)
 
 
 def test_task18_attribution_restores_cause_inputs_and_dimension_specific_options():
@@ -146,7 +146,7 @@ def test_task18_attribution_restores_cause_inputs_and_dimension_specific_options
     assert worksheet["questions"][3]["options"][-1]["label"] == "7 影响生活所有方面"
     assert worksheet["dimension_score_method"] == "mean"
     assert worksheet["total_score_method"] == "none"
-    assert_pilot_approved(worksheet, catalog_item)
+    assert_owner_approved(worksheet, catalog_item)
 
 
 def test_task18_micro_ysq_exposes_all_item_level_supportive_dimensions():
@@ -160,7 +160,7 @@ def test_task18_micro_ysq_exposes_all_item_level_supportive_dimensions():
     assert worksheet["dimensions"][0]["label"] == "被理解与关心担心"
     assert worksheet["dimensions"][-1]["label"] == "冲突回避与屈从"
     assert [question["dimension"] for question in worksheet["questions"]] == [f"YSQ_THEME{i:02d}" for i in range(1, 19)]
-    assert_pilot_approved(worksheet, catalog_item)
+    assert_owner_approved(worksheet, catalog_item)
 
 
 def test_task18_bfi60_repairs_truncated_item_and_disables_total_score():
@@ -172,7 +172,7 @@ def test_task18_bfi60_repairs_truncated_item_and_disables_total_score():
     assert worksheet["questions"][-1]["prompt"] == "我要花很多时间才能安顿下来工作。"
     assert worksheet["total_score_method"] == "none"
     assert len(worksheet["dimensions"]) == 5
-    assert_pilot_approved(worksheet, catalog_item)
+    assert_owner_approved(worksheet, catalog_item)
 
 
 def test_task18_scale_audit_keeps_unresolved_cfs_scoring_review_blocked():

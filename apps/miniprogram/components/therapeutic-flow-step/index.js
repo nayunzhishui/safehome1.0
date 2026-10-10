@@ -11,6 +11,7 @@ Component({
     title: { type: String, value: "" },
     description: { type: String, value: "" },
     prompt: { type: String, value: "" },
+    placeholder: { type: String, value: "只写你愿意记录的部分，可以稍后修改。" },
     mode: { type: String, value: "text" },
     value: { type: String, value: "" },
     selected: { type: String, value: "" },

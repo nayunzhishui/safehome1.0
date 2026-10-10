@@ -11,6 +11,7 @@
     <view wx:if="{{riskSummary}}" class="risk-strip {{riskSummary.riskLevel === 'high' ? 'high' : ''}}">
       <text class="risk-title">{{riskSummary.title}}</text>
       <text class="risk-text">{{riskSummary.text}}</text>
+      <button class="safe-outline-button risk-action" bindtap="openEmergencyResources">查看紧急求助资源</button>
     </view>
 
     <view wx:if="{{profilePosition}}" class="safe-section">

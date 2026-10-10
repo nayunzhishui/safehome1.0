@@ -2,7 +2,7 @@
 
 from flask import current_app, has_app_context
 
-from database import load_content_json
+from database import get_connection, load_content_json
 from services.showcase_access_service import showcase_training_cards_open
 
 
@@ -20,7 +20,23 @@ def list_cards(enabled_only: bool = True, include_unapproved: bool = False) -> l
         cards = [card for card in cards if card.get("enabled", True)]
     if _is_production() and not include_unapproved and not showcase_training_cards_open():
         cards = [card for card in cards if card.get("review_status") in APPROVED_REVIEW_STATUSES]
+    if _is_production():
+        synced_ids = _database_card_ids()
+        if synced_ids is not None:
+            # Cards added by a release stay hidden until the admin content sync copies
+            # them into the database that feedback and history lookups depend on.
+            cards = [card for card in cards if card.get("id") in synced_ids]
     return cards
+
+
+def _database_card_ids() -> set[str] | None:
+    try:
+        with get_connection() as conn:
+            rows = conn.execute("SELECT id FROM training_cards").fetchall()
+    except Exception:
+        current_app.logger.warning("training_card_database_ids_unavailable")
+        return None
+    return {str(row["id"]) for row in rows}
 
 
 def recommend_cards(tags: list[str] | None = None, limit: int = 3) -> list[dict]:

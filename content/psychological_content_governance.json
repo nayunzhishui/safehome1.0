@@ -25,8 +25,42 @@
     }
   ],
   "production_manifest": {
-    "worksheet_ids": [],
-    "status": "blocked_external",
+    "worksheet_ids": [
+      "academic_buoyancy_4",
+      "acceptance_action_aaq2",
+      "afq_y8_avoidance_fusion",
+      "attribution_style_student_36",
+      "big_five_bfi_60",
+      "big_five_tipi_10",
+      "cd_risc10_brief_resilience",
+      "cfi2_cognitive_flexibility",
+      "cognitive_curiosity_student",
+      "emotion_regulation_erq",
+      "emotional_intelligence_eis_33",
+      "emotional_resilience_11",
+      "epq_emotional_stability_24",
+      "fmi_12_mindfulness",
+      "gad7_anxiety",
+      "ghq12_general_health",
+      "hplp_c_health_promoting_lifestyle",
+      "micro_ysq_relationship_18",
+      "mindful_attention_awareness_maas",
+      "parent_reflective_functioning_prfq",
+      "parental_burnout_pba",
+      "perceived_social_support_psss",
+      "phq9_cesd10_depression",
+      "regulatory_focus_general_18",
+      "regulatory_focus_relationship_18",
+      "relationship_initiation_intention_action",
+      "rfq8_reflective_functioning",
+      "rsca_adolescent_resilience",
+      "self_compassion_scs_cn",
+      "student_profile_v1",
+      "study_engagement_uwes_s_17",
+      "swls_life_satisfaction",
+      "who5_wellbeing"
+    ],
+    "status": "owner_approved_production",
     "required_fields": [
       "source_file",
       "source_version",
@@ -37,9 +71,283 @@
     ],
     "required_rights_statuses": ["owned", "licensed", "public_domain", "permission_recorded"],
     "required_approval": "approved",
-    "empty_reason": "量表逐项版权与心理专业复核尚未完成，当前不得自动批准 production 清单。"
+    "approval_record": {
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "scope": "全部33份量表正式开放，不限定人群",
+      "rights_basis": "负责人确认云端题库已获授权使用",
+      "professional_review": "pending_owner_arranged",
+      "evidence_path": "docs/02_专项进度与验收/量表正式开放负责人批准记录_20261008.md",
+      "previous_status": "blocked_external",
+      "previous_empty_reason": "量表逐项版权与心理专业复核尚未完成，当前不得自动批准 production 清单。"
+    }
   },
-  "rights_overrides": {},
+  "rights_overrides": {
+    "academic_buoyancy_4": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "acceptance_action_aaq2": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "afq_y8_avoidance_fusion": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "attribution_style_student_36": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "big_five_bfi_60": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "big_five_tipi_10": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "cd_risc10_brief_resilience": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "cfi2_cognitive_flexibility": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "cognitive_curiosity_student": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "emotion_regulation_erq": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "emotional_intelligence_eis_33": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "emotional_resilience_11": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "epq_emotional_stability_24": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "fmi_12_mindfulness": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "gad7_anxiety": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "ghq12_general_health": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "hplp_c_health_promoting_lifestyle": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "micro_ysq_relationship_18": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "mindful_attention_awareness_maas": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "parent_reflective_functioning_prfq": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "parental_burnout_pba": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "perceived_social_support_psss": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "phq9_cesd10_depression": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "regulatory_focus_general_18": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "regulatory_focus_relationship_18": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "relationship_initiation_intention_action": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "rfq8_reflective_functioning": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "rsca_adolescent_resilience": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "self_compassion_scs_cn": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "student_profile_v1": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "study_engagement_uwes_s_17": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "swls_life_satisfaction": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    },
+    "who5_wellbeing": {
+      "copyright_status": "licensed",
+      "production_approval": "approved",
+      "basis": "负责人声明已获授权使用（2026-10-08）",
+      "approved_by": "项目负责人",
+      "approved_at": "2026-10-08",
+      "professional_review": "pending_owner_arranged"
+    }
+  },
   "legacy_content_tracks": [
     {
       "endpoint": "/api/profile",

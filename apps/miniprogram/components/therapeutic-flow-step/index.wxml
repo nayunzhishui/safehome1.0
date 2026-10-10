@@ -56,7 +56,7 @@
       maxlength="4000"
       value="{{value}}"
       aria-label="{{prompt || title}}"
-      placeholder="只写你愿意记录的部分，可以稍后修改。"
+      placeholder="{{placeholder}}"
       bind:input="handleInput"
     />
 

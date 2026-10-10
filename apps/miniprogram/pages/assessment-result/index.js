@@ -139,13 +139,15 @@ function buildRiskSummary(result) {
     medium: "建议人工关注",
     high: "优先现实支持",
   };
+  // Item-level triggers carry their own participant message; text-signal results keep the generic copy.
+  const genericText =
+    risk.risk_level === "high"
+      ? "本次填写中出现需要优先关注的安全线索，系统不生成普通训练建议。请优先联系现实中的可信成年人、学校老师、专业机构或当地紧急服务。"
+      : "本次填写中出现建议人工关注的线索。结果仅用于分流和复核，不构成风险评估结论。";
   return {
     riskLevel: risk.risk_level,
     title: riskTextMap[risk.risk_level] || "需要关注",
-    text:
-      risk.risk_level === "high"
-        ? "本次填写中出现需要优先关注的安全线索，系统不生成普通训练建议。请优先联系现实中的可信成年人、学校老师、专业机构或当地紧急服务。"
-        : "本次填写中出现建议人工关注的线索。结果仅用于分流和复核，不构成风险评估结论。",
+    text: risk.participant_message || genericText,
   };
 }
 
@@ -331,12 +333,22 @@ function buildProfilePositionSummary(payload) {
   };
 }
 
-function buildTrainingRecommendation(worksheet, profileSummary, cardsPayload) {
+function matchedRulesFromResult(result) {
+  if (!result) return [];
+  // The server evaluates dimension conditions against this result and freezes the matched rules in the snapshot.
+  const snapshot = result.content_snapshot || parseJsonSafe(result.content_snapshot_json, {});
+  const recommendation = (snapshot && snapshot.recommendation) || {};
+  return Array.isArray(recommendation.rules) ? recommendation.rules : [];
+}
+
+function buildTrainingRecommendation(worksheet, profileSummary, cardsPayload, result) {
   if (profileSummary && !profileSummary.allowAutoFeedback) {
     return null;
   }
 
-  const rules = worksheet && Array.isArray(worksheet.training_recommendation_rules) ? worksheet.training_recommendation_rules : [];
+  const matchedRules = matchedRulesFromResult(result);
+  const worksheetRules = worksheet && Array.isArray(worksheet.training_recommendation_rules) ? worksheet.training_recommendation_rules : [];
+  const rules = matchedRules.length ? matchedRules : worksheetRules.filter((rule) => !(rule.trigger_condition || {}).dimension);
   if (!rules.length) {
     return null;
   }
@@ -512,7 +524,7 @@ Page({
       // Apply the existing high-risk boundary before display and local recommendation caching.
       const highRisk = (riskSummary && riskSummary.riskLevel === "high")
         || (profileSummary && profileSummary.riskLevel === "high");
-      const trainingRecommendation = highRisk ? null : buildTrainingRecommendation(worksheet, profileSummary, cards);
+      const trainingRecommendation = highRisk ? null : buildTrainingRecommendation(worksheet, profileSummary, cards, result);
       if (highRisk || (profileSummary && !profileSummary.allowAutoFeedback)) {
         // These are derived suggestions, not the user's assessment or diary records.
         wx.removeStorageSync(LATEST_TRAINING_RECOMMENDATION_KEY);
@@ -771,6 +783,10 @@ Page({
       return;
     }
     wx.switchTab({ url: "/pages/training/index" });
+  },
+
+  openEmergencyResources() {
+    wx.navigateTo({ url: "/pages/emergency-resources/index" });
   },
 
   backToAssessment() {

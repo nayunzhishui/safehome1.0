@@ -181,7 +181,8 @@ def sync_operations(contract: dict, registry: dict) -> tuple[dict, list[str]]:
         # machine coverage and branch-specific evidence fields.
         new_target = {**existing_target, **new_target}
         capabilities = [new_target if item.get("id") == target_id else item for item in capabilities]
-    else:
+    elif target_operations:
+        # Only create the catch-all capability when some endpoint is uncovered.
         capabilities.append(new_target)
 
     # Remove stale operation IDs from all other capabilities when the API no

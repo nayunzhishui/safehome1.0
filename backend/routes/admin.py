@@ -12,6 +12,12 @@ from routes.auth_utils import AuthError, auth_error_response, require_capability
 from services.privacy_request_service import research_revoked_filter
 from routes.utils import fail, ok, parse_bool, parse_int
 from services.content_loader import ContentLoadError, load_parent_scales, load_student_scales
+from services.content_sync_service import (
+    ContentSyncError,
+    apply_content_sync,
+    plan_content_sync,
+    restore_content_backup,
+)
 
 bp = Blueprint("admin", __name__, url_prefix="/api/admin")
 
@@ -718,6 +724,42 @@ def disable_admin_worksheet(worksheet_id: str):
         conn.commit()
         row = conn.execute("SELECT * FROM assessment_worksheets WHERE id = ?", (worksheet_id,)).fetchone()
     return ok(_worksheet_from_row(row))
+
+
+@bp.get("/content-sync/plan")
+def content_sync_plan():
+    """Read-only diff between deployed content and its database copy, with a full backup."""
+    try:
+        require_role("admin", allow_legacy_admin=False)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    return ok(plan_content_sync())
+
+
+@bp.post("/content-sync/apply")
+def content_sync_apply():
+    try:
+        actor = require_role("admin", allow_legacy_admin=False)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    payload = request.get_json(silent=True) or {}
+    try:
+        return ok(apply_content_sync(actor, payload.get("plan_hash")))
+    except ContentSyncError as exc:
+        return fail(exc.code, exc.message, status=exc.status)
+
+
+@bp.post("/content-sync/restore")
+def content_sync_restore():
+    try:
+        actor = require_role("admin", allow_legacy_admin=False)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    payload = request.get_json(silent=True) or {}
+    try:
+        return ok(restore_content_backup(actor, payload.get("backup"), str(payload.get("confirm") or "")))
+    except ContentSyncError as exc:
+        return fail(exc.code, exc.message, status=exc.status)
 
 
 def _assessment_result_from_row(row) -> dict:

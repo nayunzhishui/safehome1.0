@@ -29,22 +29,25 @@ const CONFIG = {
   },
   issue: {
     title: "我的议题",
-    description: "从你真正想理解的问题开始，不要求先给关系或自己下结论。",
+    description: "从你真正想弄清楚的问题开始，不要求先给关系或自己下结论。写完问题，也可以加一句你现在的猜测。",
     prompt: "这次你最想共同理解什么？",
+    placeholder: "我想弄清楚：……\n我现在的猜测：……",
     mode: "text",
     nextLabel: "建立议题并继续",
   },
   recent_event: {
     title: "最近一次事件",
-    description: "只记录一次具体片段：发生了什么、当时有什么反应。先不解释深层原因。",
+    description: "只记录一次具体片段，先不解释深层原因。可以按顺序写：什么时候、和谁；身体和情绪；脑子里的想法；你做了什么；之后发生了什么。",
     prompt: "写下最近一次与议题有关的具体片段",
+    placeholder: "例如：周日晚上在家，孩子写作业时……我胸口发紧，想到……于是我……之后……",
     mode: "text",
     nextLabel: "保存这个片段",
   },
   resources: {
     title: "例外与资源",
-    description: "也看看没有那么困难的时刻，以及当时有什么人、做法或环境在帮忙。",
+    description: "也看看没有那么困难的时刻：那一次有什么不同？当时有什么人、做法或环境在帮忙？",
     prompt: "哪些时刻有所不同？什么曾经帮到你？",
+    placeholder: "例如：上周六我先深呼吸了一下，就没有吵起来；和朋友聊几句会好一些。",
     mode: "text",
     nextLabel: "保存例外与资源",
   },
@@ -113,6 +116,7 @@ function registerTherapeuticAssessmentStepPage(stepId) {
   Page({
     data: {
       ...config,
+      placeholder: config.placeholder || "只写你愿意记录的部分，可以稍后修改。",
       stepId,
       stepNumber: STEPS.indexOf(stepId) + 1,
       stepTotal: STEPS.length,
@@ -197,6 +201,9 @@ function registerTherapeuticAssessmentStepPage(stepId) {
           this.setData({ loading: false });
           return;
         }
+        if (stepId === "issue" && !this.data.caseId && !String(this.data.value || "").trim()) {
+          await this.prefillFromSelfReview();
+        }
         const result = await api.listTherapeuticAssessmentCases();
         const activeCase = (result.items || []).find((item) => item.id === this.data.caseId) || null;
         if (!activeCase && stepId !== "issue") {
@@ -264,6 +271,20 @@ function registerTherapeuticAssessmentStepPage(stepId) {
         this.applyError(error);
       } finally {
         this.setData({ loading: false });
+      }
+    },
+
+    async prefillFromSelfReview() {
+      try {
+        const result = await api.listSupportiveReviews();
+        const latest = (result.items || [])[0];
+        if (!latest || !latest.question) return;
+        this.setData({
+          value: latest.question,
+          saveStatus: "已带入你在自助整理里写的问题。提交后复核人员会看到这段文字，可以先修改或删掉。",
+        });
+      } catch (error) {
+        // 自助整理读取失败不影响真人复核流程。
       }
     },
 

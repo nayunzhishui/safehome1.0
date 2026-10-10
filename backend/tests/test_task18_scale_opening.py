@@ -49,7 +49,7 @@ def test_task18_opening_states_and_question_ids_are_consistent():
 
     for worksheet_id, worksheet in worksheets.items():
         assert worksheet["enabled_for_user"] is True
-        assert worksheet["review_status"] == "pilot_approved"
+        assert worksheet["review_status"] == "production_approved"
         if worksheet_id in catalog:
             assert catalog[worksheet_id]["enabled"] is True
 

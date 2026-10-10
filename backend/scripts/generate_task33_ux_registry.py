@@ -26,20 +26,21 @@ PAGE_LABELS = {
     "hot-topics": "支持性案例", "task-detail": "训练任务", "training-card": "训练卡",
     "checkin": "练习打卡", "weekly-report": "本周复盘", "supervision": "人工支持",
     "debug": "调试", "integration-test": "联调测试",
+    "supportive-review-step": "自助整理", "supportive-review-letter": "回看信",
 }
 
 MINI_GROUPS = {
     "记录": {"home", "thermometer", "diary-form", "goal-setting", "weekly-report"},
     "练习": {"getting-started", "training", "training-history", "personalized-plan", "task-detail", "training-card", "checkin", "course", "course-detail"},
-    "了解自己": {"assessment", "assessment-history", "assessment-detail", "assessment-result", "feedback-result", "program-list", "program-detail", "relationship-pilot", "relationship-report", "relationship-task", "relationship-growth", "growth-dashboard", "relationship-narrative", "hot-topics"},
+    "了解自己": {"assessment", "assessment-history", "assessment-detail", "assessment-result", "feedback-result", "program-list", "program-detail", "relationship-pilot", "relationship-report", "relationship-task", "relationship-growth", "growth-dashboard", "relationship-narrative", "hot-topics", "supportive-review-step", "supportive-review-letter"},
     "人工支持": {"messages", "message-detail", "supervision", "emergency-guide", "emergency-resources"},
     "账户与系统": {"login", "register", "profile", "settings-detail", "researcher-dashboard", "debug", "integration-test"},
 }
 
-WRITE_PAGES = {"login", "register", "thermometer", "goal-setting", "diary-form", "assessment-detail", "relationship-task", "relationship-growth", "checkin", "supervision", "program-detail"}
-DRAFT_PAGES = {"goal-setting", "diary-form", "assessment-detail", "relationship-task", "relationship-growth", "checkin", "supervision", "program-detail"}
+WRITE_PAGES = {"login", "register", "thermometer", "goal-setting", "diary-form", "assessment-detail", "relationship-task", "relationship-growth", "checkin", "supervision", "program-detail", "supportive-review-step", "supportive-review-letter"}
+DRAFT_PAGES = {"goal-setting", "diary-form", "assessment-detail", "relationship-task", "relationship-growth", "checkin", "supervision", "program-detail", "supportive-review-step", "supportive-review-letter"}
 WEB_DRAFT_PATHS = {"/assessment", "/student/assessment", "/relationship-assessment"}
-SENSITIVE_PAGES = {"messages", "message-detail", "thermometer", "assessment-history", "assessment-result", "feedback-result", "relationship-pilot", "relationship-report", "relationship-task", "relationship-growth", "growth-dashboard", "relationship-narrative", "weekly-report", "supervision", "researcher-dashboard"}
+SENSITIVE_PAGES = {"messages", "message-detail", "thermometer", "assessment-history", "assessment-result", "feedback-result", "relationship-pilot", "relationship-report", "relationship-task", "relationship-growth", "growth-dashboard", "relationship-narrative", "weekly-report", "supervision", "researcher-dashboard", "supportive-review-step", "supportive-review-letter"}
 RESEARCHER_PAGES = {"researcher-dashboard", "debug", "integration-test"}
 
 

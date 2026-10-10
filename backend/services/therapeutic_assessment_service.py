@@ -19,7 +19,7 @@ from database import (
 from services.risk_service import check_text_risk
 from services.risk_review_service import create_risk_review_record
 from services.safety_scheduler_service import SchedulerError, assert_automation_allowed
-from services.therapeutic_assessment_level_service import level as service_level
+from services.therapeutic_assessment_level_service import human_review_intake_open, level as service_level
 
 
 BOUNDARY_NOTICE = "本功能用于共同理解当前体验和商量下一小步，不构成诊断、治疗承诺或疗效评分。"
@@ -418,6 +418,12 @@ def create_case(actor: dict, payload: dict, idempotency_key: str) -> tuple[dict,
         ).fetchone()
         if existing:
             return _present_case(conn, row_to_dict(existing), actor), 200
+        if not human_review_intake_open():
+            raise TherapeuticAssessmentError(
+                "human_review_not_open",
+                "真人支持性复核暂未开放，可以先使用自助整理。",
+                409,
+            )
         try:
             assert_automation_allowed(conn, "therapeutic_intake")
         except SchedulerError as exc:

@@ -18,7 +18,7 @@ def test_hplp_uses_canonical_40_item_six_dimension_mean_scoring():
         for item in load_content("assessment_worksheets.json")["worksheets"]
         if item["id"] == "hplp_c_health_promoting_lifestyle"
     )
-    assert worksheet["review_status"] == "pilot_approved"
+    assert worksheet["review_status"] == "production_approved"
     assert worksheet["enabled_for_user"] is True
     assert len(worksheet["questions"]) == 40
     assert [item["code"] for item in worksheet["dimensions"]] == [
@@ -49,15 +49,18 @@ def test_hplp_uses_canonical_40_item_six_dimension_mean_scoring():
     }
 
 
-def test_all_implemented_worksheets_have_project_owner_pilot_approval():
+def test_all_implemented_worksheets_have_project_owner_production_approval():
     worksheets = load_content("assessment_worksheets.json")["worksheets"]
     catalog = {item["id"]: item for item in load_content("scales_catalog.json")["scales"]}
     for worksheet in worksheets:
-        assert worksheet["review_status"] == "pilot_approved"
+        assert worksheet["review_status"] == "production_approved"
         assert worksheet["enabled_for_user"] is True
-        assert worksheet["approval"]["evidence_path"].endswith("任务十八项目负责人量表与画像试点批准记录_20260712.md")
+        assert worksheet["approval"]["evidence_path"].endswith("量表正式开放负责人批准记录_20261008.md")
+        assert (ROOT / worksheet["approval"]["evidence_path"]).is_file()
+        # The earlier pilot approval stays on record as provenance of the formal release.
+        assert worksheet["_meta"]["release_20261008"]["previous_review_status"] == "pilot_approved"
         if worksheet["id"] in catalog:
-            assert catalog[worksheet["id"]]["review_status"] == "pilot_approved"
+            assert catalog[worksheet["id"]]["review_status"] == "production_approved"
             assert catalog[worksheet["id"]]["enabled"] is True
 
 

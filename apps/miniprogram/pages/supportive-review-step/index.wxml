@@ -1,0 +1,211 @@
+<view class="safe-page ui2-page sr-page" role="main" aria-label="{{stepTitle}}">
+  <view wx:if="{{step !== 'followup'}}" class="sr-progress" aria-label="第 {{stepNumber}} 步，共 {{stepTotal}} 步">
+    <view class="sr-progress__track" aria-hidden="true">
+      <view wx:for="{{progress}}" wx:key="id" class="sr-progress__node sr-progress__node--{{item.state}}"></view>
+    </view>
+    <text class="sr-meta">第 {{stepNumber}} 步 / 共 {{stepTotal}} 步</text>
+  </view>
+
+  <text class="sr-title">{{stepTitle}}</text>
+
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取" />
+  <page-state
+    wx:elif="{{loadError}}"
+    kind="error"
+    title="暂时没有读取成功"
+    description="{{loadError}}"
+    action-label="重新读取"
+    action-aria-label="重新读取这一步"
+    bindaction="load"
+  />
+
+  <block wx:else>
+    <view wx:if="{{risk && risk.show_emergency_resources}}" class="sr-risk sr-risk--{{risk.level}}" role="alert">
+      <text class="sr-risk__text">{{risk.message}}</text>
+      <button class="sr-risk__action" bindtap="openEmergencyResources">查看紧急求助资源</button>
+    </view>
+
+    <view class="sr-lead">
+      <text class="sr-prompt">{{prompt}}</text>
+      <text wx:if="{{note}}" class="sr-note">{{note}}</text>
+    </view>
+
+    <view wx:if="{{step === 'question'}}" class="sr-group">
+      <text class="sr-label">这个问题更接近哪一类？（可不选）</text>
+      <view class="sr-chips" role="radiogroup" aria-label="问题主题">
+        <button
+          wx:for="{{topics}}"
+          wx:key="id"
+          class="sr-chip {{topicId === item.id ? 'sr-chip--selected' : ''}}"
+          role="radio"
+          aria-checked="{{topicId === item.id}}"
+          aria-label="{{item.title}}：{{item.hint}}"
+          data-id="{{item.id}}"
+          bindtap="onTopicTap"
+        >{{item.title}}</button>
+      </view>
+      <view wx:if="{{topicExamples.length}}" class="sr-examples">
+        <text class="sr-meta">点一下，用这个问题开头</text>
+        <button wx:for="{{topicExamples}}" wx:key="*this" class="sr-example" data-text="{{item}}" bindtap="useExample">{{item}}</button>
+      </view>
+    </view>
+
+    <view wx:for="{{fields}}" wx:key="key" class="sr-field">
+      <text class="sr-label">{{item.label}}<text wx:if="{{!item.required}}" class="sr-optional">　可不填</text></text>
+      <textarea
+        class="sr-textarea"
+        auto-height
+        maxlength="{{item.maxLength}}"
+        value="{{values[item.key]}}"
+        placeholder="{{item.placeholder}}"
+        placeholder-class="sr-placeholder"
+        data-key="{{item.key}}"
+        aria-label="{{item.label}}"
+        bindinput="onFieldInput"
+      />
+    </view>
+
+    <view wx:if="{{step === 'question'}}" class="sr-disclosure">
+      <button class="sr-disclosure__toggle" aria-expanded="{{rewritesOpen}}" bindtap="toggleRewrites">
+        <text>怎样写成一个好问题</text>
+        <text class="sr-chevron {{rewritesOpen ? 'sr-chevron--open' : ''}}" aria-hidden="true">›</text>
+      </button>
+      <view wx:if="{{rewritesOpen}}" class="sr-disclosure__body">
+        <view class="sr-starters">
+          <text wx:for="{{starters}}" wx:key="*this" class="sr-starter">{{item}}</text>
+        </view>
+        <view wx:for="{{rewrites}}" wx:key="from" class="sr-rewrite">
+          <text class="sr-rewrite__from">{{item.from}}</text>
+          <text class="sr-rewrite__to">{{item.to}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{step === 'episode'}}" class="sr-field">
+      <text class="sr-label">当时有多难受<text class="sr-optional">　可不选</text></text>
+      <view class="sr-scale" role="radiogroup" aria-label="当时有多难受，0 到 10">
+        <button
+          wx:for="{{intensityItems}}"
+          wx:key="value"
+          class="sr-scale__cell {{item.selected ? 'sr-scale__cell--selected' : ''}}"
+          role="radio"
+          aria-checked="{{item.selected}}"
+          aria-label="{{item.value}} 分"
+          data-value="{{item.value}}"
+          bindtap="onIntensityTap"
+        >{{item.value}}</button>
+      </view>
+      <view class="sr-scale__ends" aria-hidden="true">
+        <text>{{intensityMinLabel}}</text>
+        <text>{{intensityMaxLabel}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{step === 'scales'}}" class="sr-group">
+      <view wx:if="{{scaleEmpty}}" class="sr-empty">
+        <text class="sr-body">暂时没有可以填写的问卷。可以先跳过这一步，回看信会根据你写下的内容整理。</text>
+      </view>
+      <view wx:else class="sr-list" role="list">
+        <view wx:for="{{scaleRows}}" wx:key="worksheetId" class="sr-scale-row" role="listitem">
+          <view class="sr-scale-row__copy">
+            <text class="sr-scale-row__title">{{item.title}}</text>
+            <text class="sr-meta">{{item.resultId ? item.resultDay + ' 完成' : item.questionCount + ' 题'}}</text>
+          </view>
+          <button
+            wx:if="{{item.resultId}}"
+            class="sr-check {{item.selected ? 'sr-check--selected' : ''}}"
+            role="checkbox"
+            aria-checked="{{item.selected}}"
+            data-index="{{index}}"
+            bindtap="onScaleTap"
+          >{{item.selected ? '已加入' : '加入'}}</button>
+          <button
+            wx:elif="{{item.available}}"
+            class="sr-link"
+            data-id="{{item.worksheetId}}"
+            bindtap="openAssessment"
+          >去填写</button>
+        </view>
+      </view>
+      <text wx:if="{{!scaleEmpty}}" class="sr-meta">已加入 {{selectedResultIds.length}} / {{maxResults}} 份。做完问卷后回到这里即可看到结果。</text>
+    </view>
+
+    <view wx:if="{{step === 'inquiry'}}" class="sr-group">
+      <view wx:for="{{inquiryRows}}" wx:key="resultId" class="sr-inquiry">
+        <view class="sr-inquiry__head">
+          <text class="sr-section-title">{{item.title}}</text>
+          <text class="sr-meta">{{item.day}}</text>
+        </view>
+        <view class="sr-field">
+          <text class="sr-label">哪一两道题让你停下来想了想？为什么？</text>
+          <textarea class="sr-textarea" auto-height maxlength="300" value="{{item.stood_out}}" placeholder="可以写题目的大意" placeholder-class="sr-placeholder" data-index="{{index}}" data-key="stood_out" aria-label="{{item.title}}：让你停下来的题目" bindinput="onInquiryInput" />
+        </view>
+        <view class="sr-field">
+          <text class="sr-label">结果里哪一点像你，哪一点不像？</text>
+          <textarea class="sr-textarea" auto-height maxlength="300" value="{{item.fit}}" placeholder="例如：说我容易担心很像，说我很少放松不太像" placeholder-class="sr-placeholder" data-index="{{index}}" data-key="fit" aria-label="{{item.title}}：像与不像" bindinput="onInquiryInput" />
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{step === 'experiment'}}" class="sr-group">
+      <view wx:if="{{cardOptions.length}}" class="sr-field">
+        <text class="sr-label">也可以配一个现成练习<text class="sr-optional">　可不选</text></text>
+        <view class="sr-options" role="radiogroup" aria-label="现成练习">
+          <button
+            wx:for="{{cardOptions}}"
+            wx:key="id"
+            class="sr-option {{cardId === item.id ? 'sr-option--selected' : ''}}"
+            role="radio"
+            aria-checked="{{cardId === item.id}}"
+            data-id="{{item.id}}"
+            bindtap="onCardTap"
+          >
+            <text class="sr-option__title">{{item.title}}</text>
+            <text wx:if="{{item.durationText}}" class="sr-meta">{{item.durationText}}</text>
+          </button>
+        </view>
+      </view>
+      <view class="sr-field">
+        <text class="sr-label">打算哪天开始<text class="sr-optional">　可不选</text></text>
+        <view class="sr-date">
+          <picker mode="date" start="{{todayDate}}" value="{{plannedDate || todayDate}}" bindchange="onDateChange">
+            <view class="sr-date__value" role="button" aria-label="选择开始日期">{{plannedDate || '选择日期'}}</view>
+          </picker>
+          <button wx:if="{{plannedDate}}" class="sr-link" bindtap="clearDate">清除</button>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{step === 'followup'}}" class="sr-group">
+      <view class="sr-field">
+        <text class="sr-label">现在再看你的问题</text>
+        <view class="sr-options" role="radiogroup" aria-label="现在再看你的问题">
+          <button wx:for="{{questionNowOptions}}" wx:key="value" class="sr-option {{questionNow === item.value ? 'sr-option--selected' : ''}}" role="radio" aria-checked="{{questionNow === item.value}}" data-group="questionNow" data-value="{{item.value}}" bindtap="onChoiceTap">
+            <text class="sr-option__title">{{item.label}}</text>
+          </button>
+        </view>
+      </view>
+      <view class="sr-field">
+        <text class="sr-label">接下来</text>
+        <view class="sr-options" role="radiogroup" aria-label="接下来的打算">
+          <button wx:for="{{nextOptions}}" wx:key="value" class="sr-option {{nextChoice === item.value ? 'sr-option--selected' : ''}}" role="radio" aria-checked="{{nextChoice === item.value}}" data-group="nextChoice" data-value="{{item.value}}" bindtap="onChoiceTap">
+            <text class="sr-option__title">{{item.label}}</text>
+          </button>
+        </view>
+        <view wx:if="{{nextChoice === 'human_support'}}" class="sr-inline-note">
+          <text class="sr-body">可以先看看线下专业资源的说明，再决定找谁聊。</text>
+          <button class="sr-link" bindtap="openEmergencyResources">查看专业资源说明</button>
+        </view>
+      </view>
+    </view>
+
+    <text wx:if="{{errorMessage}}" class="sr-error" role="alert">{{errorMessage}}</text>
+
+    <view class="sr-actions">
+      <button class="sr-primary" loading="{{saving}}" disabled="{{saving}}" bindtap="onSave">{{primaryLabel}}</button>
+      <button wx:if="{{canSkip}}" class="sr-text-button" disabled="{{saving}}" bindtap="onSkip">这一步先跳过</button>
+      <button wx:elif="{{stepDone || step === 'experiment'}}" class="sr-text-button" disabled="{{saving}}" bindtap="goHub">回到目录</button>
+      <text wx:if="{{saveStatus}}" class="sr-meta sr-save-status" role="status">{{saveStatus}}</text>
+    </view>
+  </block>
+</view>

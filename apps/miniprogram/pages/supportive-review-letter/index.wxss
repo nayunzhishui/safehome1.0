@@ -1,0 +1,295 @@
+/* 回看信：一张安静的“信纸”。衬线只用于信的标题与引用原话，界面控件仍用系统无衬线。 */
+.sl-page {
+  display: flex;
+  flex-direction: column;
+  gap: 40rpx;
+  padding: 40rpx 32rpx calc(64rpx + env(safe-area-inset-bottom));
+  background: var(--ui2-canvas);
+  color: var(--ui2-ink);
+}
+
+.sl-paper {
+  display: flex;
+  flex-direction: column;
+  gap: 48rpx;
+  padding: 56rpx 40rpx 48rpx;
+  border: 1rpx solid #e7e1d6;
+  border-radius: 28rpx;
+  background: #fffdf8;
+}
+
+.sl-title {
+  display: block;
+  color: var(--ui2-ink);
+  font-family: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", serif;
+  font-size: 42rpx;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.sl-opening {
+  display: block;
+  color: var(--ui2-muted);
+  font-size: 30rpx;
+  line-height: 1.8;
+}
+
+.sl-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.sl-joint {
+  width: 32rpx;
+  height: 4rpx;
+  border-radius: 2rpx;
+  background: var(--ui2-primary);
+}
+
+.sl-section__title {
+  display: block;
+  color: var(--ui2-ink);
+  font-size: 32rpx;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.sl-intro {
+  display: block;
+  color: var(--ui2-muted);
+  font-size: 28rpx;
+  line-height: 1.75;
+}
+
+.sl-meta {
+  display: block;
+  color: var(--ui2-muted);
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
+.sl-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid #efe9de;
+}
+
+.sl-item--first {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.sl-item__label {
+  display: block;
+  color: var(--ui2-muted);
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
+.sl-item__text {
+  display: block;
+  color: var(--ui2-ink);
+  font-size: 30rpx;
+  line-height: 1.8;
+}
+
+.sl-item__text--prompt {
+  color: #195159;
+}
+
+.sl-quote {
+  display: flex;
+  gap: 8rpx;
+}
+
+.sl-quote__mark {
+  flex: none;
+  color: var(--ui2-primary);
+  font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+  font-size: 56rpx;
+  line-height: 1;
+}
+
+.sl-quote__text {
+  flex: 1;
+  color: var(--ui2-ink);
+  font-family: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", serif;
+  font-size: 32rpx;
+  line-height: 1.8;
+}
+
+/* 像我 / 部分像 / 不像 / 需要想想：等宽分段，选中用描边与字重表达。 */
+.sl-fit {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12rpx;
+  padding-top: 8rpx;
+}
+
+.sl-fit__option {
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4rpx;
+  border: 2rpx solid #ddd6c9;
+  border-radius: 16rpx;
+  background: #ffffff;
+  color: var(--ui2-ink);
+  font-size: 28rpx;
+  line-height: 1.3;
+}
+
+.sl-fit__option--selected {
+  border-color: var(--ui2-primary);
+  background: var(--ui2-soft);
+  color: #195159;
+  font-weight: 600;
+}
+
+.sl-note-toggle {
+  align-self: flex-start;
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+  color: var(--ui2-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.sl-note {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 144rpx;
+  padding: 20rpx 24rpx;
+  border: 2rpx solid var(--ui2-control-border);
+  border-radius: 16rpx;
+  background: #ffffff;
+  color: var(--ui2-ink);
+  font-size: 30rpx;
+  line-height: 1.7;
+}
+
+.sl-placeholder {
+  color: #7f979a;
+}
+
+.sl-disclosure {
+  min-height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  text-align: left;
+}
+
+.sl-disclosure__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.sl-chevron {
+  color: var(--ui2-muted);
+  font-size: 40rpx;
+  line-height: 1;
+  transition: transform 200ms ease;
+}
+
+.sl-chevron--open {
+  transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sl-chevron {
+    transition: none;
+  }
+}
+
+.sl-section--safety .sl-item__text {
+  color: #7d2f2a;
+}
+
+.sl-closing {
+  display: block;
+  padding-top: 8rpx;
+  color: var(--ui2-muted);
+  font-family: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", serif;
+  font-size: 30rpx;
+  line-height: 1.8;
+  text-align: right;
+}
+
+.sl-risk {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  padding: 28rpx;
+  border-radius: 20rpx;
+  background: #fbf1e6;
+}
+
+.sl-risk__text {
+  display: block;
+  color: #6b3f12;
+  font-size: 30rpx;
+  line-height: 1.7;
+}
+
+.sl-risk__action {
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid #6b3f12;
+  border-radius: 20rpx;
+  color: #6b3f12;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.sl-error {
+  display: block;
+  padding: 20rpx 24rpx;
+  border-radius: 16rpx;
+  background: #fcefed;
+  color: #7d2f2a;
+  font-size: 30rpx;
+  line-height: 1.6;
+}
+
+.sl-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  padding: 0 8rpx;
+}
+
+.sl-primary {
+  min-height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24rpx;
+  background: var(--ui2-primary);
+  color: #ffffff;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.sl-text-button {
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ui2-primary);
+  font-size: 30rpx;
+}
+
+.sl-save-status {
+  text-align: center;
+}

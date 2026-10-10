@@ -25,6 +25,14 @@ def _fresh_app(tmp_path, monkeypatch):
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "rc0810-f06-admin-token")
     app = importlib.import_module("app").app
     app.config["APP_ENV"] = "production"
+    # New L1–L3 intake is closed in production until staffing is recorded
+    # (test_supportive_review.py covers that default). These production-mode
+    # checks simulate the staffed release so they still reach the case gates.
+    monkeypatch.setattr(
+        importlib.import_module("services.therapeutic_assessment_service"),
+        "human_review_intake_open",
+        lambda: True,
+    )
     return app
 
 

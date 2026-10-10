@@ -5,8 +5,8 @@ const api = createSafeHomeApi();
 
 const BASE_SUPPORT_ENTRIES = [
   {
-    title: "协作式评估",
-    subtitle: "共同理解一次具体体验，不生成诊断结论",
+    title: "支持性评估",
+    subtitle: "自助整理一个想弄清楚的问题，不生成诊断结论",
     url: "/pages/therapeutic-assessment/index",
     private: true,
   },

@@ -46,6 +46,8 @@ def test_production_checkin_rejects_closed_card_without_claim_and_replays_saved_
 
     card = {"id": "synthetic-card", "enabled": False, "review_status": "production_approved"}
     monkeypatch.setattr(cards, "load_content_json", lambda filename: {"cards": [card]})
+    # Production only shows cards the content sync has copied into the database; treat this one as synced.
+    monkeypatch.setattr(cards, "_database_card_ids", lambda: {card["id"]})
     headers = {"Authorization": "Bearer " + login["token"], "Idempotency-Key": "synthetic-card-checkin"}
     response = client.post("/api/checkins", json={"card_id": card["id"]}, headers=headers)
     assert response.status_code == 409

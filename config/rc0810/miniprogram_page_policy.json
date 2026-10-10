@@ -34,6 +34,8 @@
     {"page": "pages/therapeutic-assessment-action-review/index", "classification": "participant"},
     {"page": "pages/therapeutic-assessment-action-followup/index", "classification": "participant"},
     {"page": "pages/therapeutic-assessment-quality/index", "classification": "internal"},
+    {"page": "pages/supportive-review-step/index", "classification": "participant"},
+    {"page": "pages/supportive-review-letter/index", "classification": "participant"},
     {"page": "pages/growth-dashboard/index", "classification": "participant"},
     {"page": "pages/relationship-narrative/index", "classification": "participant"},
     {"page": "pages/researcher-dashboard/index", "classification": "internal"},

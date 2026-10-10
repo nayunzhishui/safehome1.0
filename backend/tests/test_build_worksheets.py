@@ -47,7 +47,7 @@ def test_build_worksheets_preserves_student_profile_and_is_idempotent(tmp_path):
     scs = next(item for item in second["worksheets"] if item["id"] == "self_compassion_scs_cn")
     assert len(scs["questions"]) == 26
     assert scs["enabled_for_user"] is True
-    assert scs["review_status"] == "pilot_approved"
+    assert scs["review_status"] == "production_approved"
     assert "不构成诊断" in scs["result_disclaimer"]
 
 
@@ -71,9 +71,9 @@ def test_project_owner_approval_preserves_open_worksheets_and_metadata_only_entr
     for scale_id in enabled_ids:
         assert catalog_by_id[scale_id]["enabled"] is True
         assert catalog_by_id[scale_id]["excluded_from_user_flow"] is False
-        assert catalog_by_id[scale_id]["review_status"] == "pilot_approved"
+        assert catalog_by_id[scale_id]["review_status"] == "production_approved"
         assert worksheets_by_id[scale_id]["enabled_for_user"] is True
-        assert worksheets_by_id[scale_id]["review_status"] == "pilot_approved"
+        assert worksheets_by_id[scale_id]["review_status"] == "production_approved"
 
     for scale_id in metadata_only_ids:
         assert catalog_by_id[scale_id]["enabled"] is False

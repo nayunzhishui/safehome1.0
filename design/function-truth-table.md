@@ -2127,3 +2127,53 @@
 - 首页首次隐私提醒：`openPrivacyNotice`进入现有设置隐私页；`acknowledgePrivacyNotice`仅写本机阅读提示版本，不发送同意事件，不能推定研究／训练／关系分析授权。
 - 设置隐私页：`loadConsentDecisions`调用已有本人`GET /api/consent`，按事件版本选每种可选用途最新决定；`withdrawOptionalConsent`经用户确认后调用已有`POST /api/consent`，带原用途／版本与`expected_latest_id`。不能同意新用途，不把撤回写成立即删除全部数据；读取失败、冲突和提交失败可见。
 - 未修改表结构、API字段、权限或线上配置；首页提醒与后台微信隐私指引同意是不同事项。运营主体、期限和渠道仍缺证据。
+
+## 2026-10-09 支持性评估自助整理（L0）增量真值
+
+依据当前工作区源码、`backend/routes/supportive_review.py`、`backend/services/supportive_review_service.py` 与 API 契约建立；状态为“静态源码与后端测试已核对，微信开发者工具编译、Figma 与真机待验收”。
+
+### 20 支持性评估 — `pages/therapeutic-assessment/index`（结构调整）
+
+**用户任务：** 先进入随时可用的自助整理；真人复核未开放时如实说明，已有复核记录照常查看与处理。
+- 新增区块：自助整理（唯一实心主行动）、我的整理列表、真人支持性复核说明；原“开始前了解”改为可折叠，仅在真人复核开放或已有记录时出现；“直接写下想共同理解的问题”表单仅在真人复核开放时出现（未开放时后端会拒绝）。
+- 原有事件全部保留：`continueParticipantFlow`、`startParticipantFlow`、`updateQuestionAction`（generate_candidates / none_fit / pause）、`disagree`、`openQualityRecord`、`withdraw`、`onActionInput`、`chooseAction`、`onQuestionInput`、`onScopeChange`、`createCase`、`confirmAdultLaunchScope`。
+- 新增事件：`onSelfPrimary`、`startNewReview`、`openReview`、`manageReview`（长按→删除确认）、`onHumanPrimary`、`togglePolicy`、`openEmergencyResources`。
+
+| 调用来源 | 客户端方法 | 真实接口 | 访问范围 |
+|---|---|---|---|
+| `pages/therapeutic-assessment/index.js` `loadReviews` | `listSupportiveReviews` | GET /api/supportive-review/reviews | participant_owned_self_review_records_only_no_staff_access |
+| `pages/therapeutic-assessment/index.js` `confirmDeleteReview` | `deleteSupportiveReview` | DELETE /api/supportive-review/reviews/<review_id> | participant_owned_self_review_records_only_no_staff_access |
+| `pages/therapeutic-assessment/index.js` `loadCases` | `getTherapeuticAssessmentServiceLevels` | GET /api/therapeutic-assessment/service-levels（新增字段 `human_review_open`） | module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+
+- 其余真人复核接口调用与 2026-09-08 真值一致。`human_review_open` 为 false 时，`POST /api/therapeutic-assessment/cases` 返回 409 `human_review_not_open`。
+- 下游路由：navigateTo → `/pages/supportive-review-step/index?step=:step&id=:id`、`/pages/supportive-review-letter/index?id=:id`、`/pages/emergency-resources/index`；原真人复核路由不变。
+
+### 20a 自助整理 — `pages/supportive-review-step/index`（新增）
+
+**用户任务：** 每屏只完成一个步骤：问题（含主题）→ 猜测 → 一次具体经历（含 0–10 难受程度）→ 不一样的时候 → 选择问卷 → 做完问卷后的回看 →（回看信）→ 一个小实验 → 一两周后的回看。
+- 主要事件：`onFieldInput`、`onTopicTap`、`useExample`、`toggleRewrites`、`onIntensityTap`、`onScaleTap`、`openAssessment`、`onInquiryInput`、`onCardTap`、`onDateChange`、`clearDate`、`onChoiceTap`、`onSave`、`onSkip`（仅可选步骤且尚未填写时显示）、`goHub`、`openEmergencyResources`。
+
+| 客户端方法 | 真实接口 | 说明 |
+|---|---|---|
+| `getSupportiveReviewGuide` | GET /api/supportive-review/guide | 步骤、主题与 33 份问卷的对应、提示语 |
+| `getSupportiveReview` | GET /api/supportive-review/reviews/<review_id> | 本人记录、回看信、练习候选 |
+| `createSupportiveReview` | POST /api/supportive-review/reviews（必须带 Idempotency-Key） | 第一步保存时创建 |
+| `updateSupportiveReview` | PATCH /api/supportive-review/reviews/<review_id>（section + data + expected_version） | 版本冲突返回 409 后自动重新读取 |
+| `listAssessments` / `listAssessmentResults` | GET /api/assessments、GET /api/assessment-results | “选择问卷”步骤只列出当前对用户开放的问卷，最近 30 天结果可加入（最多 3 份） |
+
+- 本地保存：`safehome:resilientDraft:supportive:<id|new>:<step>`（按账号隔离的本机草稿）。
+- 风险：保存后若整体风险为 high，直接转到回看信页的安全提示；medium 在页顶显示提醒与紧急求助入口。
+
+### 20b 回看信 — `pages/supportive-review-letter/index`（新增）
+
+**用户任务：** 读一封由本人文字与问卷固定说明整理的信，按“像我 / 部分像 / 不像 / 需要想想”核对线索，可补充一句；然后进入小实验。
+- 主要事件：`onFit`、`openNote`、`onNoteInput`、`toggleAngles`（第三层“也许不太一样的角度”默认折叠）、`onSave`、`goHub`、`openEmergencyResources`。
+- 接口：`getSupportiveReview`、`updateSupportiveReview`（section = letter_checks）。
+- 安全：high 风险时只显示安全段落，主行动改为“查看紧急求助资源”，不展示问卷线索与练习候选。
+
+### 关联改动
+
+- `components/therapeutic-flow-step`：新增 `placeholder` 属性（默认值不变）；“我的议题 / 最近一次事件 / 例外与资源”三步改用更具体的提示（含“现在的猜测”和分步片段）。
+- “我的议题”在无议题时会带入最近一次自助整理的问题，并提示“提交后复核人员会看到这段文字，可以先修改或删掉”。
+- `pages/assessment-result`：风险条新增“查看紧急求助资源”按钮。
+- `pages/profile`：入口标题由“协作式评估”改为“支持性评估”。

@@ -30,7 +30,7 @@
       "layer": "backend",
       "classification": "runtime_entrypoint",
       "production_eligible": false,
-      "sha256": "317660837b3965b505ba195cc020da9dd91d54a17aff1701bcb39a20d6bc5d4f"
+      "sha256": "d33546e76594836a4426203f7238858ae1677a05756743506a4f76ed291699e9"
     },
     {
       "path": "backend/gunicorn.conf.py",
@@ -51,7 +51,7 @@
       "layer": "miniprogram",
       "classification": "transport_contract",
       "production_eligible": false,
-      "sha256": "5181628c44a072a3fdf920ee64dc9d30bcc520cdb37b7d656cf6b23ffab27ce9"
+      "sha256": "3dd14438a1598f86acd3a70efac2532d201bdd1e836f0be9e67164d390aa59e4"
     },
     {
       "path": "apps/web/vite.config.ts",

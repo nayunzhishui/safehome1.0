@@ -7,6 +7,9 @@
 | 方法 | 路径 | 权限 | 对象范围 | 分页 | 幂等 | 状态 |
 |---|---|---|---|---|---|---|
 | GET | `/api/admin/assessment-results` | capability:researcher,supervisor,admin | active_unexpired_assignment_for_researcher_supervisor_full_for_admin | — | — | active |
+| POST | `/api/admin/content-sync/apply` | role:admin | named_admin_blank_content_definitions_only_no_participant_records | — | — | active |
+| GET | `/api/admin/content-sync/plan` | role:admin | named_admin_blank_content_definitions_only_no_participant_records | — | — | active |
+| POST | `/api/admin/content-sync/restore` | role:admin | named_admin_blank_content_definitions_only_no_participant_records | — | — | active |
 | GET | `/api/admin/export` | admin:admin | research_export_capability_admin_only | — | — | active |
 | GET | `/api/admin/worksheets` | admin:admin | role_scoped | — | — | active |
 | POST | `/api/admin/worksheets` | admin:admin | role_scoped | — | — | active |
@@ -312,6 +315,12 @@
 | POST | `/api/supervision/<request_id>/reply` | role:supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/supervision/<request_id>/resolve` | role:supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/supervision/<request_id>/reviewer` | role:supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/supportive-review/guide` | role:parent,student | participant_blank_self_review_guide_content_only | — | — | active |
+| GET | `/api/supportive-review/reviews` | role:parent,student | participant_owned_self_review_records_only_no_staff_access | — | — | active |
+| POST | `/api/supportive-review/reviews` | role:parent,student | participant_owned_self_review_records_only_no_staff_access | — | required | active |
+| DELETE | `/api/supportive-review/reviews/<review_id>` | role:parent,student | participant_owned_self_review_records_only_no_staff_access | — | — | active |
+| GET | `/api/supportive-review/reviews/<review_id>` | role:parent,student | participant_owned_self_review_records_only_no_staff_access | — | — | active |
+| PATCH | `/api/supportive-review/reviews/<review_id>` | role:parent,student | participant_owned_self_review_records_only_no_staff_access | — | — | active |
 | GET | `/api/text-analysis/summary` | role:admin,researcher | role_scoped | — | — | active |
 | PATCH | `/api/therapeutic-assessment/actions/<action_id>` | role:parent,student,researcher,supervisor,admin | participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin | — | — | active |
 | POST | `/api/therapeutic-assessment/actions/<action_id>/followups` | role:parent,student,researcher,supervisor,admin | participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin | — | — | active |

@@ -55,6 +55,7 @@ from routes.showcase_access import bp as showcase_access_bp
 from routes.relationship_pilot_routes import bp as relationship_pilot_bp
 from routes.research_workspace import bp as research_workspace_bp
 from routes.supervision import bp as supervision_bp
+from routes.supportive_review import bp as supportive_review_bp
 from routes.text_analysis import bp as text_analysis_bp
 from routes.training_plan import bp as training_plan_bp
 from routes.therapeutic_assessment import bp as therapeutic_assessment_bp
@@ -125,6 +126,7 @@ REQUIRED_CONTENT_FILES = [
     "operations_knowledge_index.json",
     "operations_release_manifest.json",
     "readfeedback/student_profile_model.json",
+    "supportive_review_guide.json",
 ]
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
 REQUEST_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]{8,64}$")
@@ -315,6 +317,7 @@ def create_app(
     app.register_blueprint(text_analysis_bp)
     app.register_blueprint(training_plan_bp)
     app.register_blueprint(therapeutic_assessment_bp)
+    app.register_blueprint(supportive_review_bp)
     app.register_blueprint(admin_bp)
 
     @app.before_request

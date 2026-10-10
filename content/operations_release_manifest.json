@@ -5,8 +5,8 @@
     {
       "artifact_type": "content",
       "path": "content/training_cards.json",
-      "sha256": "fe86cffa851732fb868d10ce1d44ec47556bab760961da1753bc72ff4445f289",
-      "size_bytes": 202374
+      "sha256": "5e9d0b9536253cc30b1a5d1999919872b49c417cc755120a464627ea3b852f71",
+      "size_bytes": 265818
     },
     {
       "artifact_type": "content",
@@ -23,14 +23,14 @@
     {
       "artifact_type": "content",
       "path": "content/assessment_worksheets.json",
-      "sha256": "eb5b3f90222e74f1ab3baa5470d4800d3e87f009fbfa647a17a1f395060084f1",
-      "size_bytes": 700755
+      "sha256": "6a62672ef85dbcda2c68d20642ae8d183bbd4562609762e4710ec078cd0064a6",
+      "size_bytes": 747056
     },
     {
       "artifact_type": "content",
       "path": "content/scales_catalog.json",
-      "sha256": "2cd5e768cd844aaa51b2c02d25b3b0d9c21970c12dd017e90bc1e95be8c7bc97",
-      "size_bytes": 76638
+      "sha256": "596b7388b70e8ce5e3e403700af642539075c0a61f173f6440b5925eb91c8fa7",
+      "size_bytes": 82312
     },
     {
       "artifact_type": "content",
@@ -53,8 +53,8 @@
     {
       "artifact_type": "rule",
       "path": "content/assessment_training_map.json",
-      "sha256": "321ab6c55959e8cfb435c11a589a4f9a23dd2a9163b0254e3ceb3a07125fde00",
-      "size_bytes": 65898
+      "sha256": "82159a0e3a6523f57506f5044e73882c5befe90817b1100132bf911ecedeb791",
+      "size_bytes": 163691
     },
     {
       "artifact_type": "rule",
@@ -155,8 +155,8 @@
     {
       "artifact_type": "capability_registry",
       "path": "content/operations_capability_registry.json",
-      "sha256": "ea5fc9b2cacac5b465b1e842fb6a9f424f92d042256998e44db5e6408e6cd4f3",
-      "size_bytes": 83041
+      "sha256": "cb3b25f8285b84041ca6a0305e1d03aeb3c84465227c4d1ffbbafb2c4bfac299",
+      "size_bytes": 86444
     }
   ],
   "fixed_replay_suites": [
@@ -172,5 +172,5 @@
   "revision_policy": "never_edit_verified_package_create_new_version",
   "atomic_runtime_switch": true,
   "production_release_approved": false,
-  "manifest_hash": "143dece95136325638dc859618860385cbbbd7735a8883a1b478f9513527b058"
+  "manifest_hash": "d64fa2d22f2b7fa04d3ed6fedaac22d43c216cfd2c9d80acb9cd9cf7170f6d78"
 }

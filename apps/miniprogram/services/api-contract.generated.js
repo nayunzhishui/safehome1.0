@@ -65,6 +65,176 @@ const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "admin.content_sync_apply.post",
+    "method": "POST",
+    "path": "/api/admin/content-sync/apply",
+    "handler": "admin.content_sync_apply",
+    "module": "routes.admin",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "named_admin_blank_content_definitions_only_no_participant_records",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [
+        "plan_hash"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.admin.content_sync_apply.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "admin.content_sync_plan.get",
+    "method": "GET",
+    "path": "/api/admin/content-sync/plan",
+    "handler": "admin.content_sync_plan",
+    "module": "routes.admin",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "named_admin_blank_content_definitions_only_no_participant_records",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.admin.content_sync_plan.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "admin.content_sync_restore.post",
+    "method": "POST",
+    "path": "/api/admin/content-sync/restore",
+    "handler": "admin.content_sync_restore",
+    "module": "routes.admin",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "named_admin_blank_content_definitions_only_no_participant_records",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [
+        "backup",
+        "confirm"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.admin.content_sync_restore.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "admin.export_csv.get",
     "method": "GET",
     "path": "/api/admin/export",
@@ -19267,6 +19437,374 @@ const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "supportive_review.get_guide_route.get",
+    "method": "GET",
+    "path": "/api/supportive-review/guide",
+    "handler": "supportive_review.get_guide_route",
+    "module": "routes.supportive_review",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "participant_blank_self_review_guide_content_only",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.supportive_review.get_guide_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "supportive_review.get_reviews_route.get",
+    "method": "GET",
+    "path": "/api/supportive-review/reviews",
+    "handler": "supportive_review.get_reviews_route",
+    "module": "routes.supportive_review",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "participant_owned_self_review_records_only_no_staff_access",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.supportive_review.get_reviews_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "not_found",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "supportive_review.post_review_route.post",
+    "method": "POST",
+    "path": "/api/supportive-review/reviews",
+    "handler": "supportive_review.post_review_route",
+    "module": "routes.supportive_review",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "participant_owned_self_review_records_only_no_staff_access",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [
+        "question",
+        "question_history",
+        "topic_id"
+      ],
+      "headers": [
+        "Idempotency-Key"
+      ],
+      "pagination": null,
+      "idempotency": {
+        "supported": true,
+        "required": true,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.supportive_review.post_review_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "idempotency_conflict",
+      "internal_error",
+      "invalid_idempotency_key",
+      "missing_idempotency_key",
+      "not_found",
+      "review_limit_reached",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "supportive_review.delete_review_route.delete",
+    "method": "DELETE",
+    "path": "/api/supportive-review/reviews/<review_id>",
+    "handler": "supportive_review.delete_review_route",
+    "module": "routes.supportive_review",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "participant_owned_self_review_records_only_no_staff_access",
+    "request": {
+      "content_type": null,
+      "path_parameters": [
+        "review_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.supportive_review.delete_review_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "not_found",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "supportive_review.get_review_route.get",
+    "method": "GET",
+    "path": "/api/supportive-review/reviews/<review_id>",
+    "handler": "supportive_review.get_review_route",
+    "module": "routes.supportive_review",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "participant_owned_self_review_records_only_no_staff_access",
+    "request": {
+      "content_type": null,
+      "path_parameters": [
+        "review_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.supportive_review.get_review_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "not_found",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "supportive_review.patch_review_route.patch",
+    "method": "PATCH",
+    "path": "/api/supportive-review/reviews/<review_id>",
+    "handler": "supportive_review.patch_review_route",
+    "module": "routes.supportive_review",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "participant_owned_self_review_records_only_no_staff_access",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "review_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [
+        "data",
+        "expected_version",
+        "section"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.supportive_review.patch_review_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "experiment_required",
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "not_found",
+      "unauthorized",
+      "validation_error",
+      "version_conflict"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "text_analysis.text_analysis_summary.get",
     "method": "GET",
     "path": "/api/text-analysis/summary",
@@ -19678,6 +20216,7 @@ const GENERATED_API_ENDPOINTS = [
     "error_codes": [
       "forbidden",
       "http_error",
+      "human_review_not_open",
       "internal_error",
       "unauthorized"
     ],

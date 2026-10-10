@@ -805,6 +805,54 @@
     },
     {
       "platform": "miniprogram",
+      "path": "pages/supportive-review-step/index",
+      "title": "自助整理",
+      "workspace": "了解自己",
+      "goal": "完成自助整理的单一主要任务",
+      "primary_action": "保存并继续",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": true
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/supportive-review-letter/index",
+      "title": "回看信",
+      "workspace": "了解自己",
+      "goal": "完成回看信的单一主要任务",
+      "primary_action": "保存并继续",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": true
+    },
+    {
+      "platform": "miniprogram",
       "path": "pages/growth-dashboard/index",
       "title": "成长仪表盘",
       "workspace": "了解自己",

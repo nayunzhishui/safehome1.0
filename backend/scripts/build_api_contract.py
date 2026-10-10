@@ -133,6 +133,12 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
         return {"mode": "role", "roles": ["researcher", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
     if path == "/api/admin/assessment-results":
         return {"mode": "capability", "roles": ["researcher", "supervisor", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
+    if path.startswith("/api/admin/content-sync"):
+        # Named admin accounts only; the routes pass allow_legacy_admin=False.
+        return {"mode": "role", "roles": ["admin"], "legacy_admin_token": False, "showcase_read_bypass": False}
+    if path.startswith("/api/supportive-review"):
+        # Participant-owned self-help records; staff roles and the legacy admin token have no access.
+        return {"mode": "role", "roles": ["parent", "student"], "legacy_admin_token": False, "showcase_read_bypass": False}
     if path.startswith("/api/consent"):
         if path.endswith("/annotations"):
             return {"mode": "capability", "roles": ["admin"], "legacy_admin_token": False, "showcase_read_bypass": False}
@@ -211,6 +217,12 @@ def _object_scope(path: str, method: str, access: dict[str, Any], source: str) -
         return "module_resource_role_or_owner_scope_without_therapeutic_case_claim"
     if path == "/api/admin/export":
         return "research_export_capability_admin_only"
+    if path.startswith("/api/admin/content-sync"):
+        return "named_admin_blank_content_definitions_only_no_participant_records"
+    if path == "/api/supportive-review/guide":
+        return "participant_blank_self_review_guide_content_only"
+    if path.startswith("/api/supportive-review/reviews"):
+        return "participant_owned_self_review_records_only_no_staff_access"
     if path == "/api/admin/assessment-results":
         return "active_unexpired_assignment_for_researcher_supervisor_full_for_admin"
     if path == "/api/feedback/generate":
@@ -294,6 +306,7 @@ def _idempotency(path: str, method: str, source: str) -> dict[str, Any]:
     required_overrides = {
         ("/api/therapeutic-assessment/cases", "POST"),
         ("/api/auth/data-claim", "POST"),
+        ("/api/supportive-review/reviews", "POST"),
     }
     if (path, method) in required_overrides:
         supported = True
@@ -382,6 +395,11 @@ def _request_contract(path: str, method: str, source: str) -> dict[str, Any]:
         ],
     }
     body_fields.update(therapeutic_body_fields.get((path, method), []))
+    supportive_review_body_fields = {
+        ("/api/supportive-review/reviews", "POST"): ["question", "question_history", "topic_id"],
+        ("/api/supportive-review/reviews/<review_id>", "PATCH"): ["section", "data", "expected_version"],
+    }
+    body_fields.update(supportive_review_body_fields.get((path, method), []))
     return {
         "content_type": "application/json" if method in {"POST", "PUT", "PATCH"} else None,
         "path_parameters": sorted(re.findall(r"<(?:(?:int|string|path|uuid):)?([^>]+)>", path)),
@@ -436,6 +454,14 @@ def _error_codes(path: str, method: str, source: str, access: dict[str, Any]) ->
         codes.update(["security_scan_disabled", "state_conflict", "self_disable_forbidden", "not_found", "validation_error"])
     if path.startswith("/api/reliability"):
         codes.update(["reliability_workbench_disabled", "reliability_job_execution_disabled", "job_state_conflict", "job_lease_conflict", "job_not_due", "not_found", "validation_error"])
+    if path.startswith("/api/supportive-review/reviews"):
+        codes.update(["validation_error", "not_found"])
+        if method == "POST":
+            codes.update(["missing_idempotency_key", "invalid_idempotency_key", "idempotency_conflict", "review_limit_reached"])
+        if method == "PATCH":
+            codes.update(["version_conflict", "experiment_required"])
+    if (path, method) == ("/api/therapeutic-assessment/cases", "POST"):
+        codes.add("human_review_not_open")
     codes.update(["internal_error", "http_error"])
     return sorted(codes)
 

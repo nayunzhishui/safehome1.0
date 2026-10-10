@@ -9,6 +9,8 @@ import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 BACKEND_ROOT = PROJECT_ROOT / "backend"
+# The owner-approved formal release (2026-10-08) only appended this marker to each worksheet's source_version.
+RELEASE_SUFFIX = "-release-20261008"
 
 
 def _review_worksheet(worksheet_id):
@@ -191,8 +193,9 @@ def test_review_corrections_survive_rebuilding_from_drafts():
         draft = next(item for item in drafts if item["scale_id"] == scale_id)
         worksheet = _review_worksheet(aliases.get(scale_id, scale_id))
         rebuilt = build_worksheet_from_scale(catalog[scale_id], draft)
-        for field in ["instructions", "source_version", "total_score_method", "dimension_score_method"]:
+        for field in ["instructions", "total_score_method", "dimension_score_method"]:
             assert rebuilt[field] == worksheet[field], (scale_id, field)
+        assert rebuilt["source_version"] + RELEASE_SUFFIX == worksheet["source_version"], scale_id
         assert rebuilt["_meta"]["total_score_method"] == worksheet["total_score_method"]
         assert rebuilt["dimensions"] == worksheet["dimensions"]
         assert rebuilt["questions"] == worksheet["questions"]
@@ -207,7 +210,7 @@ def test_public_worksheet_regeneration_keeps_time_window_and_ecs_example():
         current = _review_worksheet(generated["id"])
         assert generated["instructions"] == current["instructions"]
         assert generated["questions"] == current["questions"]
-        assert generated["source_version"] == current["source_version"]
+        assert generated["source_version"] + RELEASE_SUFFIX == current["source_version"]
 
 
 def test_reviewed_guidance_and_eis_typo_reach_assessment_api(tmp_path):
@@ -262,8 +265,8 @@ def test_version_conflict_notices_reach_saved_result_summary(tmp_path):
     client = app.test_client()
     _user_id, token = _wechat_login(client, "version-review-synthetic")
     for worksheet_id, marker in [
-        ("afq_y8_avoidance_fusion", "历史1—5编码结果不能与本版直接比较"),
-        ("emotional_resilience_11", "不能把该维度高分解释为恢复能力更强"),
+        ("afq_y8_avoidance_fusion", "本版0—4计分结果不与旧版记录直接比较"),
+        ("emotional_resilience_11", "描述“难以恢复”的题目已按反向计分"),
     ]:
         worksheet = _review_worksheet(worksheet_id)
         response = client.post(
@@ -653,7 +656,7 @@ def test_confirmed_pilot_expansion_appears_and_accepts_submission(tmp_path):
         assert detail_response.status_code == 200
         worksheet = detail_response.get_json()["data"]
         assert worksheet["enabled_for_user"] is True
-        assert worksheet["review_status"] == "pilot_approved"
+        assert worksheet["review_status"] == "production_approved"
         answers = [
             {
                 "question_id": question["id"],

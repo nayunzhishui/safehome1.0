@@ -1,0 +1,105 @@
+<view class="safe-page ui2-page sl-page" role="main" aria-label="回看信">
+  <page-state wx:if="{{loading}}" kind="loading" title="正在整理回看信" />
+  <page-state
+    wx:elif="{{loadError}}"
+    kind="error"
+    title="暂时没有读取成功"
+    description="{{loadError}}"
+    action-label="重新读取"
+    action-aria-label="重新读取回看信"
+    bindaction="load"
+  />
+
+  <block wx:else>
+    <view wx:if="{{risk && risk.show_emergency_resources && !safetyOnly}}" class="sl-risk" role="alert">
+      <text class="sl-risk__text">{{risk.message}}</text>
+      <button class="sl-risk__action" bindtap="openEmergencyResources">查看紧急求助资源</button>
+    </view>
+
+    <view class="sl-paper">
+      <text class="sl-title">{{letter.title}}</text>
+      <text class="sl-opening">{{letter.opening}}</text>
+
+      <view
+        wx:for="{{sections}}"
+        wx:for-item="section"
+        wx:for-index="sectionIndex"
+        wx:key="id"
+        class="sl-section {{section.id === 'safety' ? 'sl-section--safety' : ''}}"
+      >
+        <button wx:if="{{section.collapsed}}" class="sl-disclosure" aria-expanded="{{anglesOpen}}" bindtap="toggleAngles">
+          <view class="sl-disclosure__copy">
+            <view class="sl-joint" aria-hidden="true"></view>
+            <text class="sl-section__title">{{section.title}}</text>
+            <text class="sl-meta">可以先不看</text>
+          </view>
+          <text class="sl-chevron {{anglesOpen ? 'sl-chevron--open' : ''}}" aria-hidden="true">›</text>
+        </button>
+        <block wx:else>
+          <view class="sl-joint" aria-hidden="true"></view>
+          <text class="sl-section__title">{{section.title}}</text>
+        </block>
+        <text wx:if="{{section.intro && (!section.collapsed || anglesOpen)}}" class="sl-intro">{{section.intro}}</text>
+
+        <block wx:if="{{!section.collapsed || anglesOpen}}">
+          <view wx:for="{{section.items}}" wx:for-item="item" wx:for-index="itemIndex" wx:key="id" class="sl-item {{itemIndex === 0 ? 'sl-item--first' : ''}}">
+            <block wx:if="{{item.kind === 'quote'}}">
+              <text class="sl-item__label">{{item.label}}</text>
+              <view class="sl-quote">
+                <text class="sl-quote__mark" aria-hidden="true">“</text>
+                <text class="sl-quote__text">{{item.text}}</text>
+              </view>
+            </block>
+            <block wx:elif="{{item.kind === 'clue' || item.kind === 'fact'}}">
+              <text class="sl-item__label">{{item.label}}</text>
+              <text class="sl-item__text">{{item.text}}</text>
+              <view wx:if="{{item.respondable}}" class="sl-fit" role="radiogroup" aria-label="这条线索像不像你">
+                <button
+                  wx:for="{{checkOptions}}"
+                  wx:for-item="option"
+                  wx:key="value"
+                  class="sl-fit__option {{item.fit === option.value ? 'sl-fit__option--selected' : ''}}"
+                  role="radio"
+                  aria-checked="{{item.fit === option.value}}"
+                  data-section="{{sectionIndex}}"
+                  data-item="{{itemIndex}}"
+                  data-value="{{option.value}}"
+                  bindtap="onFit"
+                >{{option.label}}</button>
+              </view>
+            </block>
+            <text wx:else class="sl-item__text {{item.kind === 'prompt' ? 'sl-item__text--prompt' : ''}}">{{item.text}}</text>
+
+            <block wx:if="{{item.respondable}}">
+              <textarea
+                wx:if="{{item.noteOpen}}"
+                class="sl-note"
+                auto-height
+                maxlength="300"
+                value="{{item.note}}"
+                placeholder="{{item.kind === 'prompt' ? '写下你的想法' : '举个例子，或改成更像你的说法'}}"
+                placeholder-class="sl-placeholder"
+                data-section="{{sectionIndex}}"
+                data-item="{{itemIndex}}"
+                aria-label="{{item.kind === 'prompt' ? '我的想法' : '补充说明'}}"
+                bindinput="onNoteInput"
+              />
+              <button wx:else class="sl-note-toggle" data-section="{{sectionIndex}}" data-item="{{itemIndex}}" bindtap="openNote">{{item.kind === 'prompt' ? '写下我的想法' : '补充一句'}}</button>
+            </block>
+          </view>
+        </block>
+      </view>
+
+      <text wx:if="{{letter.closing && !safetyOnly}}" class="sl-closing">{{letter.closing}}</text>
+    </view>
+
+    <text wx:if="{{errorMessage}}" class="sl-error" role="alert">{{errorMessage}}</text>
+
+    <view class="sl-actions">
+      <button wx:if="{{safetyOnly}}" class="sl-primary" bindtap="openEmergencyResources">查看紧急求助资源</button>
+      <button wx:else class="sl-primary" loading="{{saving}}" disabled="{{saving}}" bindtap="onSave">{{primaryLabel}}</button>
+      <button class="sl-text-button" disabled="{{saving}}" bindtap="goHub">回到目录</button>
+      <text wx:if="{{saveStatus}}" class="sl-meta sl-save-status" role="status">{{saveStatus}}</text>
+    </view>
+  </block>
+</view>

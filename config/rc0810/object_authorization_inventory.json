@@ -1223,6 +1223,33 @@
       ]
     },
     {
+      "route": "/api/supportive-review/reviews/<review_id>",
+      "methods": [
+        "DELETE"
+      ],
+      "parameters": [
+        "review_id"
+      ]
+    },
+    {
+      "route": "/api/supportive-review/reviews/<review_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "review_id"
+      ]
+    },
+    {
+      "route": "/api/supportive-review/reviews/<review_id>",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "review_id"
+      ]
+    },
+    {
       "route": "/api/therapeutic-assessment/actions/<action_id>",
       "methods": [
         "PATCH"
@@ -1804,7 +1831,7 @@
   "source_parameter_hits": [
     {
       "file": "backend/routes/admin.py",
-      "line": 843,
+      "line": 885,
       "parameter": "user_id"
     },
     {

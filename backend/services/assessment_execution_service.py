@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 
 from database import ensure_user, get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict
+from services.assessment_item_safety_service import evaluate_item_safety, merge_risk_results
 from services.assessment_profile_position_store import backfill_profile_position
 from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
 from services.idempotency_service import (
@@ -63,7 +64,8 @@ def submit_assessment(
     answers = execution.answers
     scores = execution.scores
     score_provenance = build_score_provenance(worksheet, answers, scores)
-    risk_result = check_text_risk(execution.text_values, source="assessment") if execution.text_values else None
+    text_risk = check_text_risk(execution.text_values, source="assessment") if execution.text_values else None
+    risk_result = merge_risk_results(text_risk, evaluate_item_safety(worksheet, answers))
     if risk_result:
         scores["risk"] = {
             "risk_level": risk_result.get("risk_level"),
@@ -71,6 +73,8 @@ def submit_assessment(
             "requires_review": risk_result.get("requires_review"),
             "allow_recommended_training_cards": risk_result.get("allow_recommended_training_cards"),
         }
+        if risk_result.get("participant_message"):
+            scores["risk"]["participant_message"] = risk_result["participant_message"]
 
     result_id = new_id("assessment")
     summary = result_summary or worksheet.get("result_disclaimer") or "本次内容已保存。结果仅用于自我观察和练习记录，不构成诊断。"

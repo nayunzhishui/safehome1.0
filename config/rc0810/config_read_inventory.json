@@ -5,30 +5,30 @@
     {
       "file": "backend/app.py",
       "profile": "application_boot_profile",
-      "source_sha256": "317660837b3965b505ba195cc020da9dd91d54a17aff1701bcb39a20d6bc5d4f",
+      "source_sha256": "d33546e76594836a4426203f7238858ae1677a05756743506a4f76ed291699e9",
       "reads": [
         {
-          "line": 77,
+          "line": 78,
           "name": "SERVICE_VERSION",
           "access": "os.environ.get"
         },
         {
-          "line": 206,
+          "line": 208,
           "name": "LOG_LEVEL",
           "access": "os.environ.get"
         },
         {
-          "line": 214,
+          "line": 216,
           "name": "LOG_FILE",
           "access": "os.environ.get"
         },
         {
-          "line": 473,
+          "line": 476,
           "name": "PORT",
           "access": "os.environ.get"
         },
         {
-          "line": 474,
+          "line": 477,
           "name": "FLASK_DEBUG",
           "access": "os.environ.get"
         }
@@ -580,20 +580,20 @@
     {
       "file": "backend/scripts/build_api_contract.py",
       "profile": "cli_profile",
-      "source_sha256": "f405b4b3323595791bd999fecf06dce418ef4b57050b2e8d4d243b8a957e371b",
+      "source_sha256": "e29d81d17b333cf43c23d23e67e790d6084a945b8862cab56d9bac83e0df9478",
       "reads": [
         {
-          "line": 560,
+          "line": 586,
           "name": "APP_ENV",
           "access": "os.environ[]"
         },
         {
-          "line": 561,
+          "line": 587,
           "name": "DATABASE_PATH",
           "access": "os.environ[]"
         },
         {
-          "line": 562,
+          "line": 588,
           "name": "CONTENT_DIR",
           "access": "os.environ[]"
         }

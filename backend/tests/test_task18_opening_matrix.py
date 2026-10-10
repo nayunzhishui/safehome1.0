@@ -13,7 +13,7 @@ def test_task18_opening_matrix_covers_all_governed_content():
     rows = payload["rows"]
 
     assert sum(1 for item in rows if item["kind"] == "量表") == 33
-    assert sum(1 for item in rows if item["kind"] == "训练卡") == 42
+    assert sum(1 for item in rows if item["kind"] == "训练卡") == 58
     assert sum(1 for item in rows if item["kind"] == "课程") == 5
     assert sum(1 for item in rows if item["kind"] == "项目") == 3
     assert sum(1 for item in rows if item["kind"] == "画像模型") == 11
@@ -37,7 +37,7 @@ def test_validation_showcase_opens_cards_and_courses_without_changing_review_sta
     app = __import__("app").app
     client = app.test_client()
 
-    assert len(client.get("/api/cards").get_json()["data"]["items"]) == 42
+    assert len(client.get("/api/cards").get_json()["data"]["items"]) == 58
     assert len(client.get("/api/cards/recommend").get_json()["data"]["items"]) > 0
     courses = client.get("/api/courses").get_json()["data"]
     assert len(courses["items"]) == 5
@@ -46,5 +46,5 @@ def test_validation_showcase_opens_cards_and_courses_without_changing_review_sta
     assert client.get("/api/courses/understand_child_emotion").status_code == 200
 
     headers = {"X-Admin-Token": "task18-opening-admin"}
-    assert len(client.get("/api/cards?include_unapproved=true", headers=headers).get_json()["data"]["items"]) == 42
+    assert len(client.get("/api/cards?include_unapproved=true", headers=headers).get_json()["data"]["items"]) == 58
     assert len(client.get("/api/courses?include_unapproved=true", headers=headers).get_json()["data"]["items"]) == 5

@@ -2055,6 +2055,60 @@ def validate_task37_38_final_acceptance_content(content_dir: Path) -> list[str]:
     return errors
 
 
+SUPPORTIVE_REVIEW_STEP_ORDER = ["question", "guess", "episode", "exceptions", "scales", "inquiry", "letter", "experiment", "followup"]
+SUPPORTIVE_REVIEW_L0_FORBIDDEN = ["正式治疗性评估", "AIS", "FIS", "疗效证明", "疗效承诺", "诊断为", "确诊"]
+
+
+def validate_supportive_review_guide(content_dir: Path) -> list[str]:
+    """L0 self-review guide: complete steps, real worksheets, no clinical claims."""
+
+    payload, errors = load_content_or_error(content_dir, "supportive_review_guide.json")
+    if payload is None:
+        return errors
+    worksheets, worksheet_errors = load_content_or_error(content_dir, "assessment_worksheets.json")
+    if worksheets is None:
+        return worksheet_errors
+    known_worksheets = {item.get("id") for item in worksheets.get("worksheets", [])}
+    if payload.get("service_level") != "L0":
+        errors.append("supportive_review_guide.json 只能用于 L0 自助整理")
+    if [step.get("id") for step in payload.get("steps", [])] != SUPPORTIVE_REVIEW_STEP_ORDER:
+        errors.append("supportive_review_guide.json 步骤必须按问题、猜测、经历、例外、问卷、回看、回看信、实验、随访排列")
+    for step in payload.get("steps", []):
+        for field in step.get("fields", []):
+            if not field.get("key") or not isinstance(field.get("max_length"), int) or field["max_length"] <= 0:
+                errors.append(f"supportive_review_guide.json 步骤 {step.get('id')} 的字段缺少 key 或字数上限")
+    topics = payload.get("topics", [])
+    topic_ids = [topic.get("id") for topic in topics]
+    if not topics or len(topic_ids) != len(set(topic_ids)):
+        errors.append("supportive_review_guide.json 主题为空或存在重复")
+    listed = set()
+    for topic in topics:
+        ids = topic.get("worksheet_ids") or []
+        if not ids or not topic.get("title") or not topic.get("examples"):
+            errors.append(f"supportive_review_guide.json 主题 {topic.get('id')} 缺少标题、示例或问卷")
+        unknown = sorted(set(ids) - known_worksheets)
+        if unknown:
+            errors.append(f"supportive_review_guide.json 主题 {topic.get('id')} 引用了不存在的问卷：{unknown}")
+        listed.update(ids)
+    missing = sorted(known_worksheets - listed)
+    if missing:
+        errors.append(f"supportive_review_guide.json 主题未覆盖这些问卷：{missing}")
+    letter = payload.get("letter", {})
+    if {item.get("value") for item in letter.get("check_options", [])} != {"like", "partly", "not_like", "need_time"}:
+        errors.append("supportive_review_guide.json 回看信核对选项必须是像我/部分像/不像/需要想想")
+    if not letter.get("high_risk_note") or not letter.get("medium_note"):
+        errors.append("supportive_review_guide.json 缺少风险提示文案")
+    boundary = payload.get("boundary", {})
+    if "不是诊断" not in str(boundary.get("summary") or "") or not boundary.get("not_for"):
+        errors.append("supportive_review_guide.json 边界说明必须声明不是诊断并列出不适用情形")
+    errors.extend(validate_forbidden_terms("supportive_review_guide.json", payload))
+    for path, value in iter_strings({key: item for key, item in payload.items() if key != "evidence_basis"}):
+        for term in SUPPORTIVE_REVIEW_L0_FORBIDDEN:
+            if term in value:
+                errors.append(f"supportive_review_guide.json.{path} 含 L0 禁用表述：{term}")
+    return errors
+
+
 def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path = DEFAULT_SCHEMA_DIR) -> list[str]:
     if not schema_dir.exists():
         return [f"schema 目录不存在：{schema_dir}"]
@@ -2086,6 +2140,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_psychological_content_governance(content_dir))
     errors.extend(validate_therapeutic_stop_recovery_content(content_dir))
     errors.extend(validate_task37_38_final_acceptance_content(content_dir))
+    errors.extend(validate_supportive_review_guide(content_dir))
     return errors
 
 

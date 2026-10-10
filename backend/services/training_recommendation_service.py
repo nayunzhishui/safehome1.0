@@ -335,6 +335,15 @@ def _evaluate_condition(
     score = dim_map.get(str(dimension))
     if score is None:
         return False
+    # Explicit cut-offs (for example a published band) take precedence over derived thresholds.
+    at_least = condition.get("score_at_least")
+    below = condition.get("score_below")
+    if at_least is not None or below is not None:
+        if at_least is not None and float(score) < float(at_least):
+            return False
+        if below is not None and float(score) >= float(below):
+            return False
+        return True
     threshold = _get_threshold(str(dimension), model, worksheet, worksheet_id)
     if not threshold:
         return False
@@ -384,18 +393,40 @@ def _threshold_from_worksheet(dimension: str, worksheet: dict | None, worksheet_
         worksheet = _find_worksheet_in_content(worksheet_id=worksheet_id)
     if not worksheet:
         return {"support_below": 3.5, "high_above": 4.5}
-    scores: list[float] = []
+    spec = next(
+        (
+            item
+            for item in worksheet.get("dimensions", [])
+            if isinstance(item, dict) and (item.get("code") or item.get("key")) == dimension
+        ),
+        {},
+    )
+    calculation = spec.get("calculation") or {}
+    item_ids = {
+        question.get("id")
+        for question in worksheet.get("questions", [])
+        if isinstance(question, dict) and question.get("dimension") == dimension
+    }
+    if not item_ids:
+        # Derived dimensions name their items through calculation terms instead of question.dimension.
+        item_ids = {term.get("item") for term in calculation.get("terms", []) if isinstance(term, dict)}
+        item_ids.update(calculation.get("items") or [])
+    midpoints: list[float] = []
     for question in worksheet.get("questions", []):
-        if not isinstance(question, dict) or question.get("dimension") != dimension:
+        if not isinstance(question, dict) or question.get("id") not in item_ids:
             continue
-        option_scores = [option.get("score") for option in question.get("options", []) if isinstance(option.get("score"), (int, float))]
+        option_scores = [
+            option.get("score")
+            for option in question.get("options", [])
+            if isinstance(option.get("score"), (int, float)) and not isinstance(option.get("score"), bool)
+        ]
         if option_scores:
-            scores.extend([min(option_scores), max(option_scores)])
-    if not scores:
+            midpoints.append((float(min(option_scores)) + float(max(option_scores))) / 2)
+    if not midpoints:
         return {"support_below": 3.5, "high_above": 4.5}
-    low = min(scores)
-    high = max(scores)
-    midpoint = (float(low) + float(high)) / 2
+    score_method = calculation.get("type") or worksheet.get("dimension_score_method") or "sum"
+    # Summed dimensions are compared on the summed scale; mean-style calculations stay on the item scale.
+    midpoint = sum(midpoints) if score_method == "sum" else sum(midpoints) / len(midpoints)
     return {"support_below": midpoint, "high_above": midpoint}
 
 

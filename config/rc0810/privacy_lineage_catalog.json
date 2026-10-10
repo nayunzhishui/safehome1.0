@@ -611,7 +611,8 @@
         "backend/services/relationship_enrollment_service.py",
         "backend/services/report_service.py",
         "backend/services/research_participant_service.py",
-        "backend/services/schema_migration_service.py"
+        "backend/services/schema_migration_service.py",
+        "backend/services/supportive_review_service.py"
       ],
       "collection_purpose": "pending_privacy_owner_confirmation",
       "retention_policy": "pending_privacy_owner_confirmation",
@@ -640,6 +641,7 @@
         "backend/routes/profile.py",
         "backend/routes/training_plan.py",
         "backend/services/content_governance_service.py",
+        "backend/services/content_sync_service.py",
         "backend/services/psychological_content_governance_service.py",
         "backend/services/relationship_pilot_common.py",
         "backend/services/research_methodology_service.py",
@@ -2611,8 +2613,11 @@
         "backend/routes/profile.py",
         "backend/routes/programs.py",
         "backend/routes/research_workspace.py",
+        "backend/routes/supportive_review.py",
         "backend/routes/training_plan.py",
         "backend/services/ai_qa_service.py",
+        "backend/services/assessment_item_safety_service.py",
+        "backend/services/content_sync_service.py",
         "backend/services/data_claim_service.py",
         "backend/services/database_profile_service.py",
         "backend/services/notification_service.py",
@@ -2627,7 +2632,9 @@
         "backend/services/risk_review_service.py",
         "backend/services/risk_service.py",
         "backend/services/schema_migration_service.py",
-        "backend/services/text_analysis_service.py"
+        "backend/services/supportive_review_service.py",
+        "backend/services/text_analysis_service.py",
+        "backend/services/therapeutic_assessment_level_service.py"
       ],
       "collection_purpose": "pending_privacy_owner_confirmation",
       "retention_policy": "pending_privacy_owner_confirmation",
@@ -4911,6 +4918,7 @@
         "backend/services/card_service.py",
         "backend/services/content_governance_service.py",
         "backend/services/content_loader.py",
+        "backend/services/content_sync_service.py",
         "backend/services/feedback_ledger_service.py",
         "backend/services/operations_governance_service.py",
         "backend/services/psychological_content_governance_service.py",
@@ -5237,7 +5245,7 @@
   "source_bindings": {
     "models_sha256": "083cb33ad4bd2c2242b0807e283f6a55a2867aa4d02d958e7a5b988ac28671aa",
     "migration_manifest_sha256": "09a7a8d1a1e7ff7fc2c78980850ae7b774696aa6a6ced9d7f6787c9b1a09aed8",
-    "route_manifest_sha256": "bfedcbab07dad2f7fe8f8f9cc81b3a08e9a57c7c7764f867224620dfbabf8031",
-    "service_manifest_sha256": "d8cadf147160e6493279e7b6971d863d0fc761766ad2c7a478d50aae586c7905"
+    "route_manifest_sha256": "6fba229c3a1666b59bfa3ee4bebce96b2136be3ff75364887e6a4b8c98ff6aee",
+    "service_manifest_sha256": "2ad4fa08d48b0fc3ba5c4d0eb78d9b37b26e5367b60061d8bf5cf020be85434c"
   }
 }

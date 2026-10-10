@@ -120,6 +120,81 @@
       }
     },
     {
+      "operation_id": "admin.content_sync_apply.post",
+      "method": "POST",
+      "path": "/api/admin/content-sync/apply",
+      "object_type": "admin",
+      "action": "create",
+      "object_scope": "named_admin_blank_content_definitions_only_no_participant_records",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "admin.content_sync_plan.get",
+      "method": "GET",
+      "path": "/api/admin/content-sync/plan",
+      "object_type": "admin",
+      "action": "read",
+      "object_scope": "named_admin_blank_content_definitions_only_no_participant_records",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "admin.content_sync_restore.post",
+      "method": "POST",
+      "path": "/api/admin/content-sync/restore",
+      "object_type": "admin",
+      "action": "create",
+      "object_scope": "named_admin_blank_content_definitions_only_no_participant_records",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "admin.export_csv.get",
       "method": "GET",
       "path": "/api/admin/export",
@@ -7480,6 +7555,156 @@
         "student"
       ],
       "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "supportive_review.get_guide_route.get",
+      "method": "GET",
+      "path": "/api/supportive-review/guide",
+      "object_type": "supportive_review",
+      "action": "read",
+      "object_scope": "participant_blank_self_review_guide_content_only",
+      "allowed_roles": [
+        "parent",
+        "student"
+      ],
+      "denied_roles": [
+        "admin",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "supportive_review.get_reviews_route.get",
+      "method": "GET",
+      "path": "/api/supportive-review/reviews",
+      "object_type": "supportive_review",
+      "action": "read",
+      "object_scope": "participant_owned_self_review_records_only_no_staff_access",
+      "allowed_roles": [
+        "parent",
+        "student"
+      ],
+      "denied_roles": [
+        "admin",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "supportive_review.post_review_route.post",
+      "method": "POST",
+      "path": "/api/supportive-review/reviews",
+      "object_type": "supportive_review",
+      "action": "create",
+      "object_scope": "participant_owned_self_review_records_only_no_staff_access",
+      "allowed_roles": [
+        "parent",
+        "student"
+      ],
+      "denied_roles": [
+        "admin",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": true,
+        "required": true,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    {
+      "operation_id": "supportive_review.delete_review_route.delete",
+      "method": "DELETE",
+      "path": "/api/supportive-review/reviews/<review_id>",
+      "object_type": "supportive_review",
+      "action": "delete",
+      "object_scope": "participant_owned_self_review_records_only_no_staff_access",
+      "allowed_roles": [
+        "parent",
+        "student"
+      ],
+      "denied_roles": [
+        "admin",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "supportive_review.get_review_route.get",
+      "method": "GET",
+      "path": "/api/supportive-review/reviews/<review_id>",
+      "object_type": "supportive_review",
+      "action": "read",
+      "object_scope": "participant_owned_self_review_records_only_no_staff_access",
+      "allowed_roles": [
+        "parent",
+        "student"
+      ],
+      "denied_roles": [
+        "admin",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "supportive_review.patch_review_route.patch",
+      "method": "PATCH",
+      "path": "/api/supportive-review/reviews/<review_id>",
+      "object_type": "supportive_review",
+      "action": "update",
+      "object_scope": "participant_owned_self_review_records_only_no_staff_access",
+      "allowed_roles": [
+        "parent",
+        "student"
+      ],
+      "denied_roles": [
+        "admin",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
         "supported": false,

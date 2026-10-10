@@ -1,6 +1,6 @@
 {
-  "version": "2026.07-task18-reviewed-scales-v1",
-  "updated_at": "2026-07-15",
+  "version": "2026.10-dimension-rules-v4",
+  "updated_at": "2026-10-08",
   "boundary_notice": "测评结果到训练卡的映射只作为支持性练习建议，不构成诊断、治疗方案、危机干预或固定评价。真实量表、草稿量表和试用内容正式开放前必须经过人工复核。",
   "rules": [
     {
@@ -12,9 +12,9 @@
         "risk_level": "low_or_medium"
       },
       "theme": [
-        "student_profile",
-        "pressure_alert",
-        "emotion_regulation"
+        "assessment_result",
+        "student_profile_v1",
+        "default"
       ],
       "recommended_card_ids": [
         "student_emotion_naming",
@@ -35,13 +35,13 @@
           "role": "长期练习"
         }
       ],
-      "reason": "当阶段性画像显示压力警觉或考试压力相关线索时，先练习情绪命名和自动想法整理，有助于把压力体验拆成更小、更可处理的步骤。",
-      "today_suggestion": "今天先完成一张情绪命名卡，只需要写出当前最明显的一个感受。",
-      "long_term_suggestion": "接下来 3 天可以按情绪命名、自动想法记录、自我支持句三个步骤轻量练习。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、明显现实安全风险或无法保持基本安全，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "训练推荐只作为支持性练习建议，不构成诊断或治疗方案。",
+      "reason": "阶段性画像提示压力警觉较明显时，先给情绪命名，再把担心写成一句话，最后用支持句接住自己。",
+      "today_suggestion": "今天先做「说出现在的感受」，只完成第一步：停一下，找到身体最有感觉的位置。",
+      "long_term_suggestion": "接下来一周，隔天练一次「说出现在的感受」；不合适时换成「把担心写成一句话」；把「把责备换成支持句」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
@@ -50,131 +50,44 @@
       "max_candidates": 3
     },
     {
-      "rule_id": "parent_reflective_functioning_supportive_pause",
+      "rule_id": "v4_erq_cr_low",
       "source_type": "assessment",
       "trigger_condition": {
-        "scale_id": "parent_reflective_functioning_prfq",
-        "dimension": "PRFQ_IC",
-        "level": "needs_support"
-      },
-      "theme": [
-        "parent_child_communication",
-        "parent_support",
-        "emotion_awareness"
-      ],
-      "recommended_card_ids": [
-        "emotion_naming",
-        "nonjudgmental_response",
-        "parent_repair_question"
-      ],
-      "card_roles": [
-        {
-          "card_id": "emotion_naming",
-          "role": "今日练习"
-        },
-        {
-          "card_id": "nonjudgmental_response",
-          "role": "备用练习"
-        },
-        {
-          "card_id": "parent_repair_question",
-          "role": "长期练习"
-        }
-      ],
-      "reason": "当家长在理解孩子行为和感受时需要更多支持，可以先从命名情绪、减少评判和提出一个修复问题开始。",
-      "today_suggestion": "今天先完成一张情绪命名卡，帮助自己在开口前看见当下感受。",
-      "long_term_suggestion": "接下来 3 天可以从命名情绪、非评判回应、一个修复问题三个步骤开始。",
-      "not_suitable_when": "如果正在发生现实安全风险、严重冲突或明显危机，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "该映射只用于草稿阶段的练习方向设计，不评价家长好坏，也不构成诊断。",
-      "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
-      "recommendation_mode": "candidate_set",
-      "selection_policy": "shared_choice",
-      "recommendation_source": "assessment_rule",
-      "approval_status": "draft_requires_psychology_review",
-      "allow_controlled_cards": false,
-      "max_candidates": 3
-    },
-    {
-      "rule_id": "erq_expressive_suppression_gentle_expression",
-      "source_type": "assessment",
-      "trigger_condition": {
-        "scale_id": "emotion_regulation_erq",
-        "dimension": "ERQ_ES",
-        "level": "high_or_needs_support"
-      },
-      "theme": [
-        "emotion_regulation",
-        "emotion_awareness",
-        "cognitive_flexibility"
-      ],
-      "recommended_card_ids": [
-        "emotion_naming",
-        "cognitive_flexibility",
-        "three_second_pause"
-      ],
-      "card_roles": [
-        {
-          "card_id": "emotion_naming",
-          "role": "今日练习"
-        },
-        {
-          "card_id": "cognitive_flexibility",
-          "role": "备用练习"
-        },
-        {
-          "card_id": "three_second_pause",
-          "role": "长期练习"
-        }
-      ],
-      "reason": "当表达抑制相关线索较强时，可以先练习识别感受，再尝试换一种解释，并在高压力时用暂停帮助自己留出选择空间。",
-      "today_suggestion": "今天先完成一张情绪命名卡，不要求表达很多，只先确认一个身体或情绪信号。",
-      "long_term_suggestion": "接下来 3 天可以从命名情绪、换一种解释、开口前暂停三个步骤开始。",
-      "not_suitable_when": "如果情绪表达涉及现实安全风险、暴力、自伤或他伤线索，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "训练推荐只提供练习方向，不说明某种情绪调节方式好坏，也不构成治疗方案。",
-      "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
-      "recommendation_mode": "candidate_set",
-      "selection_policy": "shared_choice",
-      "recommendation_source": "assessment_rule",
-      "approval_status": "draft_requires_psychology_review",
-      "allow_controlled_cards": false,
-      "max_candidates": 3
-    },
-    {
-      "rule_id": "prfq_pm_needs_awareness",
-      "source_type": "assessment",
-      "trigger_condition": {
-        "scale_id": "parent_reflective_functioning_prfq",
-        "dimension": "PRFQ_PM",
+        "worksheet_id": "emotion_regulation_erq",
+        "dimension": "ERQ_CR",
         "level": "needs_support"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "prfq_pm"
+        "emotion_regulation_erq",
+        "ERQ_CR"
       ],
       "recommended_card_ids": [
-        "prfq_pm_awareness",
-        "parent_body_grounding"
+        "auto_thought_rewrite",
+        "erq_reappraisal_parent",
+        "scs_mindful_moment"
       ],
       "card_roles": [
         {
-          "card_id": "prfq_pm_awareness",
+          "card_id": "auto_thought_rewrite",
           "role": "今日练习"
         },
         {
-          "card_id": "parent_body_grounding",
+          "card_id": "erq_reappraisal_parent",
           "role": "备用练习"
+        },
+        {
+          "card_id": "scs_mindful_moment",
+          "role": "长期练习"
         }
       ],
-      "reason": "前心智化维度偏低时，先练习识别自动反应并回到事实。",
-      "today_suggestion": "今天先完成「prfq_pm_awareness」对应的一张训练卡，只做一个最小动作。",
-      "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "认知重评分数较低，说明情绪上来时较少换个角度理解事情。这组练习帮你多找一种解释，让情绪有回旋余地。",
+      "today_suggestion": "今天先做「三栏想法记录」，只完成第一步：写下情境：何时、何地、发生了什么。",
+      "long_term_suggestion": "接下来一周，隔天练一次「三栏想法记录」；不合适时换成「换个角度看这件事」；把「一分钟情绪观察」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
@@ -183,20 +96,106 @@
       "max_candidates": 3
     },
     {
-      "rule_id": "prfq_pm_high_awareness",
+      "rule_id": "v4_erq_es_high",
       "source_type": "assessment",
       "trigger_condition": {
-        "scale_id": "parent_reflective_functioning_prfq",
+        "worksheet_id": "emotion_regulation_erq",
+        "dimension": "ERQ_ES",
+        "level": "high"
+      },
+      "theme": [
+        "assessment_result",
+        "emotion_regulation_erq",
+        "ERQ_ES"
+      ],
+      "recommended_card_ids": [
+        "erq_suppression_release",
+        "erq_expression_gentle",
+        "support_reach_out"
+      ],
+      "card_roles": [
+        {
+          "card_id": "erq_suppression_release",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "erq_expression_gentle",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "support_reach_out",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "表达抑制分数较高，说明常把情绪压在心里。长期压抑会累积压力，这组练习帮你在安全的场合说出一小句感受。",
+      "today_suggestion": "今天先做「不憋着，也不爆发」，只完成第一步：找到一个“我在憋着”的身体信号。",
+      "long_term_suggestion": "接下来一周，隔天练一次「不憋着，也不爆发」；不合适时换成「说出一句没说出口的感受」；把「联系一个支持我的人」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_erq_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "emotion_regulation_erq"
+      },
+      "theme": [
+        "assessment_result",
+        "emotion_regulation_erq",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "scs_mindful_moment",
+        "auto_thought_rewrite"
+      ],
+      "card_roles": [
+        {
+          "card_id": "scs_mindful_moment",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "auto_thought_rewrite",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "两种调节方式都在常见范围内。可以用这些练习保持对情绪的觉察，让调节更灵活。",
+      "today_suggestion": "今天先做「一分钟情绪观察」，只完成第一步：计时一分钟。",
+      "long_term_suggestion": "接下来一周，隔天练一次「一分钟情绪观察」；不合适时换成「三栏想法记录」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_prfq_pm_high",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "parent_reflective_functioning_prfq",
         "dimension": "PRFQ_PM",
         "level": "high"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "prfq_pm"
+        "parent_reflective_functioning_prfq",
+        "PRFQ_PM"
       ],
       "recommended_card_ids": [
         "prfq_pm_awareness",
+        "three_second_pause",
         "repair_after_rupture"
       ],
       "card_roles": [
@@ -205,17 +204,21 @@
           "role": "今日练习"
         },
         {
+          "card_id": "three_second_pause",
+          "role": "备用练习"
+        },
+        {
           "card_id": "repair_after_rupture",
-          "role": "备用练习"
+          "role": "长期练习"
         }
       ],
-      "reason": "前心智化维度偏高时，优先练习暂停和冲突后修复。",
-      "today_suggestion": "今天先完成「prfq_pm_awareness」对应的一张训练卡，只做一个最小动作。",
-      "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "前心智化分数较高，说明有时会很快把孩子的行为理解成针对自己。先把判断换成观察，再暂停和修复。",
+      "today_suggestion": "今天先做「把判断换成观察」，只完成第一步：察觉冒出的判断，先不说出口。",
+      "long_term_suggestion": "接下来一周，隔天练一次「把判断换成观察」；不合适时换成「开口前停三秒」；把「冲突后修复三步」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
@@ -224,144 +227,22 @@
       "max_candidates": 3
     },
     {
-      "rule_id": "prfq_cm_needs_tolerance",
+      "rule_id": "v4_prfq_ic_low",
       "source_type": "assessment",
       "trigger_condition": {
-        "scale_id": "parent_reflective_functioning_prfq",
-        "dimension": "PRFQ_CM",
-        "level": "needs_support"
-      },
-      "theme": [
-        "assessment_result",
-        "training_recommendation",
-        "prfq_cm"
-      ],
-      "recommended_card_ids": [
-        "prfq_cm_tolerance",
-        "one_open_question"
-      ],
-      "card_roles": [
-        {
-          "card_id": "prfq_cm_tolerance",
-          "role": "今日练习"
-        },
-        {
-          "card_id": "one_open_question",
-          "role": "备用练习"
-        }
-      ],
-      "reason": "确定心理状态维度偏低时，练习容忍不知道和单个开放问题。",
-      "today_suggestion": "今天先完成「prfq_cm_tolerance」对应的一张训练卡，只做一个最小动作。",
-      "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
-      "recommendation_mode": "candidate_set",
-      "selection_policy": "shared_choice",
-      "recommendation_source": "assessment_rule",
-      "approval_status": "draft_requires_psychology_review",
-      "allow_controlled_cards": false,
-      "max_candidates": 3
-    },
-    {
-      "rule_id": "prfq_cm_high_tolerance",
-      "source_type": "assessment",
-      "trigger_condition": {
-        "scale_id": "parent_reflective_functioning_prfq",
-        "dimension": "PRFQ_CM",
-        "level": "high"
-      },
-      "theme": [
-        "assessment_result",
-        "training_recommendation",
-        "prfq_cm"
-      ],
-      "recommended_card_ids": [
-        "prfq_cm_tolerance",
-        "validation_before_advice"
-      ],
-      "card_roles": [
-        {
-          "card_id": "prfq_cm_tolerance",
-          "role": "今日练习"
-        },
-        {
-          "card_id": "validation_before_advice",
-          "role": "备用练习"
-        }
-      ],
-      "reason": "确定心理状态维度偏高时，先确认感受再降低过早下结论。",
-      "today_suggestion": "今天先完成「prfq_cm_tolerance」对应的一张训练卡，只做一个最小动作。",
-      "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
-      "recommendation_mode": "candidate_set",
-      "selection_policy": "shared_choice",
-      "recommendation_source": "assessment_rule",
-      "approval_status": "draft_requires_psychology_review",
-      "allow_controlled_cards": false,
-      "max_candidates": 3
-    },
-    {
-      "rule_id": "prfq_ic_needs_curiosity",
-      "source_type": "assessment",
-      "trigger_condition": {
-        "scale_id": "parent_reflective_functioning_prfq",
+        "worksheet_id": "parent_reflective_functioning_prfq",
         "dimension": "PRFQ_IC",
         "level": "needs_support"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "prfq_ic"
+        "parent_reflective_functioning_prfq",
+        "PRFQ_IC"
       ],
       "recommended_card_ids": [
         "prfq_ic_curiosity",
+        "one_open_question",
         "validation_before_advice"
-      ],
-      "card_roles": [
-        {
-          "card_id": "prfq_ic_curiosity",
-          "role": "今日练习"
-        },
-        {
-          "card_id": "validation_before_advice",
-          "role": "备用练习"
-        }
-      ],
-      "reason": "兴趣好奇维度偏低时，用好奇提问替代解释孩子。",
-      "today_suggestion": "今天先完成「prfq_ic_curiosity」对应的一张训练卡，只做一个最小动作。",
-      "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
-      "recommendation_mode": "candidate_set",
-      "selection_policy": "shared_choice",
-      "recommendation_source": "assessment_rule",
-      "approval_status": "draft_requires_psychology_review",
-      "allow_controlled_cards": false,
-      "max_candidates": 3
-    },
-    {
-      "rule_id": "prfq_ic_high_curiosity",
-      "source_type": "assessment",
-      "trigger_condition": {
-        "scale_id": "parent_reflective_functioning_prfq",
-        "dimension": "PRFQ_IC",
-        "level": "high"
-      },
-      "theme": [
-        "assessment_result",
-        "training_recommendation",
-        "prfq_ic"
-      ],
-      "recommended_card_ids": [
-        "prfq_ic_curiosity",
-        "one_open_question"
       ],
       "card_roles": [
         {
@@ -371,56 +252,19 @@
         {
           "card_id": "one_open_question",
           "role": "备用练习"
-        }
-      ],
-      "reason": "兴趣好奇维度较高时，保留好奇但避免连续叠问。",
-      "today_suggestion": "今天先完成「prfq_ic_curiosity」对应的一张训练卡，只做一个最小动作。",
-      "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
-      "recommendation_mode": "candidate_set",
-      "selection_policy": "shared_choice",
-      "recommendation_source": "assessment_rule",
-      "approval_status": "draft_requires_psychology_review",
-      "allow_controlled_cards": false,
-      "max_candidates": 3
-    },
-    {
-      "rule_id": "erq_cr_needs_reappraisal_parent",
-      "source_type": "assessment",
-      "trigger_condition": {
-        "scale_id": "emotion_regulation_erq",
-        "dimension": "ERQ_CR",
-        "level": "needs_support"
-      },
-      "theme": [
-        "assessment_result",
-        "training_recommendation",
-        "erq_cr"
-      ],
-      "recommended_card_ids": [
-        "erq_reappraisal_parent",
-        "cognitive_flexibility"
-      ],
-      "card_roles": [
-        {
-          "card_id": "erq_reappraisal_parent",
-          "role": "今日练习"
         },
         {
-          "card_id": "cognitive_flexibility",
-          "role": "备用练习"
+          "card_id": "validation_before_advice",
+          "role": "长期练习"
         }
       ],
-      "reason": "认知重评维度偏低时，练习为同一情境寻找第二种解释。",
-      "today_suggestion": "今天先完成「erq_reappraisal_parent」对应的一张训练卡，只做一个最小动作。",
-      "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "兴趣与好奇分数较低，说明较少探索孩子行为背后的想法和感受。练习用一个开放问题去好奇。",
+      "today_suggestion": "今天先做「好奇孩子的内心」，只完成第一步：把“为什么又……”先咽回去。",
+      "long_term_suggestion": "接下来一周，隔天练一次「好奇孩子的内心」；不合适时换成「叠问变一问」；把「先确认，再建议」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
@@ -429,140 +273,138 @@
       "max_candidates": 3
     },
     {
-      "rule_id": "erq_cr_high_reappraisal_parent",
+      "rule_id": "v4_prfq_cm_high",
       "source_type": "assessment",
       "trigger_condition": {
-        "scale_id": "emotion_regulation_erq",
-        "dimension": "ERQ_CR",
+        "worksheet_id": "parent_reflective_functioning_prfq",
+        "dimension": "PRFQ_CM",
         "level": "high"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "erq_cr"
+        "parent_reflective_functioning_prfq",
+        "PRFQ_CM"
       ],
       "recommended_card_ids": [
-        "erq_reappraisal_parent",
-        "specific_request_replace_threat"
+        "prfq_cm_tolerance",
+        "mentalizing_pause"
       ],
       "card_roles": [
         {
-          "card_id": "erq_reappraisal_parent",
+          "card_id": "prfq_cm_tolerance",
           "role": "今日练习"
         },
         {
-          "card_id": "specific_request_replace_threat",
+          "card_id": "mentalizing_pause",
           "role": "备用练习"
         }
       ],
-      "reason": "认知重评维度较高时，把新解释落实到一个具体请求。",
-      "today_suggestion": "今天先完成「erq_reappraisal_parent」对应的一张训练卡，只做一个最小动作。",
-      "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "对孩子想法的确定性较高时，容易过早下结论。练习承认“不知道”，再去核对。",
+      "today_suggestion": "今天先做「给“不知道”留一点空间」，只完成第一步：说出一个“我其实还不知道”的部分。",
+      "long_term_suggestion": "接下来一周，隔天练一次「给“不知道”留一点空间」；不合适时换成「猜猜对方的心思」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
       "approval_status": "draft_requires_psychology_review",
       "allow_controlled_cards": false,
-      "max_candidates": 3
+      "max_candidates": 2
     },
     {
-      "rule_id": "erq_es_high_release_parent",
+      "rule_id": "v4_prfq_cm_low",
       "source_type": "assessment",
       "trigger_condition": {
-        "scale_id": "emotion_regulation_erq",
-        "dimension": "ERQ_ES",
-        "level": "high"
-      },
-      "theme": [
-        "assessment_result",
-        "training_recommendation",
-        "erq_es"
-      ],
-      "recommended_card_ids": [
-        "erq_suppression_release",
-        "parent_body_grounding"
-      ],
-      "card_roles": [
-        {
-          "card_id": "erq_suppression_release",
-          "role": "今日练习"
-        },
-        {
-          "card_id": "parent_body_grounding",
-          "role": "备用练习"
-        }
-      ],
-      "reason": "表达抑制维度较高时，先识别压抑信号，再做低风险表达。",
-      "today_suggestion": "今天先完成「erq_suppression_release」对应的一张训练卡，只做一个最小动作。",
-      "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
-      "recommendation_mode": "candidate_set",
-      "selection_policy": "shared_choice",
-      "recommendation_source": "assessment_rule",
-      "approval_status": "draft_requires_psychology_review",
-      "allow_controlled_cards": false,
-      "max_candidates": 3
-    },
-    {
-      "rule_id": "erq_es_needs_release_parent",
-      "source_type": "assessment",
-      "trigger_condition": {
-        "scale_id": "emotion_regulation_erq",
-        "dimension": "ERQ_ES",
+        "worksheet_id": "parent_reflective_functioning_prfq",
+        "dimension": "PRFQ_CM",
         "level": "needs_support"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "erq_es"
+        "parent_reflective_functioning_prfq",
+        "PRFQ_CM"
       ],
       "recommended_card_ids": [
-        "emotion_naming",
-        "erq_suppression_release"
+        "prfq_ic_curiosity",
+        "emotion_naming"
       ],
       "card_roles": [
+        {
+          "card_id": "prfq_ic_curiosity",
+          "role": "今日练习"
+        },
         {
           "card_id": "emotion_naming",
-          "role": "今日练习"
-        },
-        {
-          "card_id": "erq_suppression_release",
           "role": "备用练习"
         }
       ],
-      "reason": "表达相关维度需要支持时，从情绪命名和低强度表达开始。",
-      "today_suggestion": "今天先完成「emotion_naming」对应的一张训练卡，只做一个最小动作。",
-      "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "对孩子想法的确定性较低时，可能常觉得看不懂孩子。从命名情绪和一个开放问题开始，积累理解的线索。",
+      "today_suggestion": "今天先做「好奇孩子的内心」，只完成第一步：把“为什么又……”先咽回去。",
+      "long_term_suggestion": "接下来一周，隔天练一次「好奇孩子的内心」；不合适时换成「先命名情绪」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
       "approval_status": "draft_requires_psychology_review",
       "allow_controlled_cards": false,
-      "max_candidates": 3
+      "max_candidates": 2
     },
     {
-      "rule_id": "scs_sk_needs_kindness",
+      "rule_id": "v4_prfq_default",
       "source_type": "assessment",
       "trigger_condition": {
-        "scale_id": "self_compassion_scs_cn",
+        "worksheet_id": "parent_reflective_functioning_prfq"
+      },
+      "theme": [
+        "assessment_result",
+        "parent_reflective_functioning_prfq",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "prfq_ic_curiosity",
+        "validation_before_advice"
+      ],
+      "card_roles": [
+        {
+          "card_id": "prfq_ic_curiosity",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "validation_before_advice",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "三个方面都在常见范围内。可以继续用好奇和确认，加深对孩子的理解。",
+      "today_suggestion": "今天先做「好奇孩子的内心」，只完成第一步：把“为什么又……”先咽回去。",
+      "long_term_suggestion": "接下来一周，隔天练一次「好奇孩子的内心」；不合适时换成「先确认，再建议」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_scs_sk_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "self_compassion_scs_cn",
         "dimension": "SCS_SK",
         "level": "needs_support"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "scs_sk"
+        "self_compassion_scs_cn",
+        "SCS_SK"
       ],
       "recommended_card_ids": [
         "scs_self_kindness",
@@ -578,40 +420,40 @@
           "role": "备用练习"
         }
       ],
-      "reason": "自我善意偏低时，把自责句改为朋友式支持句。",
-      "today_suggestion": "今天先完成「scs_self_kindness」对应的一张训练卡，只做一个最小动作。",
-      "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "善待自己的分数较低，困难时可能对自己比较苛刻。练习像对朋友一样对自己说话。",
+      "today_suggestion": "今天先做「对自己说一句温和的话」，只完成第一步：写下此刻对自己说的那句刺耳的话。",
+      "long_term_suggestion": "接下来一周，隔天练一次「对自己说一句温和的话」；不合适时换成「把责备换成支持句」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
       "approval_status": "draft_requires_psychology_review",
       "allow_controlled_cards": false,
-      "max_candidates": 3
+      "max_candidates": 2
     },
     {
-      "rule_id": "scs_ch_needs_common_humanity",
+      "rule_id": "v4_scs_sj_low",
       "source_type": "assessment",
       "trigger_condition": {
-        "scale_id": "self_compassion_scs_cn",
-        "dimension": "SCS_CH",
+        "worksheet_id": "self_compassion_scs_cn",
+        "dimension": "SCS_SJ",
         "level": "needs_support"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "scs_ch"
+        "self_compassion_scs_cn",
+        "SCS_SJ"
       ],
       "recommended_card_ids": [
-        "scs_common_humanity",
+        "self_support_statement",
         "scs_self_kindness"
       ],
       "card_roles": [
         {
-          "card_id": "scs_common_humanity",
+          "card_id": "self_support_statement",
           "role": "今日练习"
         },
         {
@@ -619,36 +461,159 @@
           "role": "备用练习"
         }
       ],
-      "reason": "共同人性偏低时，先降低只有我的孤立感。",
-      "today_suggestion": "今天先完成「scs_common_humanity」对应的一张训练卡，只做一个最小动作。",
-      "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "“较少自我评判”分数较低，说明困难时容易批评自己。把责备改写成支持句。",
+      "today_suggestion": "今天先做「把责备换成支持句」，只完成第一步：写下一句正在责备自己的话。",
+      "long_term_suggestion": "接下来一周，隔天练一次「把责备换成支持句」；不合适时换成「对自己说一句温和的话」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
       "approval_status": "draft_requires_psychology_review",
       "allow_controlled_cards": false,
-      "max_candidates": 3
+      "max_candidates": 2
     },
     {
-      "rule_id": "scs_mind_needs_moment",
+      "rule_id": "v4_scs_iso_low",
       "source_type": "assessment",
       "trigger_condition": {
-        "scale_id": "self_compassion_scs_cn",
+        "worksheet_id": "self_compassion_scs_cn",
+        "dimension": "SCS_ISO",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "self_compassion_scs_cn",
+        "SCS_ISO"
+      ],
+      "recommended_card_ids": [
+        "scs_common_humanity",
+        "support_reach_out"
+      ],
+      "card_roles": [
+        {
+          "card_id": "scs_common_humanity",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "support_reach_out",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "“较少孤立”分数较低，困难时容易觉得只有自己这样。提醒自己这是共同的经历，并联系一个人。",
+      "today_suggestion": "今天先做「不只我会这样」，只完成第一步：写下“只有我会这样”的那句话。",
+      "long_term_suggestion": "接下来一周，隔天练一次「不只我会这样」；不合适时换成「联系一个支持我的人」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_scs_ch_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "self_compassion_scs_cn",
+        "dimension": "SCS_CH",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "self_compassion_scs_cn",
+        "SCS_CH"
+      ],
+      "recommended_card_ids": [
+        "scs_common_humanity",
+        "support_reach_out"
+      ],
+      "card_roles": [
+        {
+          "card_id": "scs_common_humanity",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "support_reach_out",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "共同人性分数较低，困难时较少想到别人也会经历类似的事。这组练习帮你减少孤立感。",
+      "today_suggestion": "今天先做「不只我会这样」，只完成第一步：写下“只有我会这样”的那句话。",
+      "long_term_suggestion": "接下来一周，隔天练一次「不只我会这样」；不合适时换成「联系一个支持我的人」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_scs_over_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "self_compassion_scs_cn",
+        "dimension": "SCS_OVER",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "self_compassion_scs_cn",
+        "SCS_OVER"
+      ],
+      "recommended_card_ids": [
+        "defusion_noticing_thought",
+        "scs_mindful_moment"
+      ],
+      "card_roles": [
+        {
+          "card_id": "defusion_noticing_thought",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "scs_mindful_moment",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "“较少过度沉浸”分数较低，难过时容易被情绪和想法卷进去。练习给想法贴标签、观察情绪。",
+      "today_suggestion": "今天先做「给想法贴个标签」，只完成第一步：写下那个反复出现、让你难受的想法。",
+      "long_term_suggestion": "接下来一周，隔天练一次「给想法贴个标签」；不合适时换成「一分钟情绪观察」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_scs_mind_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "self_compassion_scs_cn",
         "dimension": "SCS_MIND",
         "level": "needs_support"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "scs_mind"
+        "self_compassion_scs_cn",
+        "SCS_MIND"
       ],
       "recommended_card_ids": [
         "scs_mindful_moment",
-        "student_emotion_naming"
+        "breathing_space_3min"
       ],
       "card_roles": [
         {
@@ -656,40 +621,160 @@
           "role": "今日练习"
         },
         {
-          "card_id": "student_emotion_naming",
+          "card_id": "breathing_space_3min",
           "role": "备用练习"
         }
       ],
-      "reason": "正念觉察偏低时，先做一分钟情绪观察。",
-      "today_suggestion": "今天先完成「scs_mindful_moment」对应的一张训练卡，只做一个最小动作。",
-      "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "正念分数较低，难过时较难平衡地看待自己的感受。从一分钟观察和三分钟呼吸空间开始。",
+      "today_suggestion": "今天先做「一分钟情绪观察」，只完成第一步：计时一分钟。",
+      "long_term_suggestion": "接下来一周，隔天练一次「一分钟情绪观察」；不合适时换成「三分钟呼吸空间」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
       "approval_status": "draft_requires_psychology_review",
       "allow_controlled_cards": false,
-      "max_candidates": 3
+      "max_candidates": 2
     },
     {
-      "rule_id": "rsca_total_needs_regulation",
+      "rule_id": "v4_scs_default",
       "source_type": "assessment",
       "trigger_condition": {
-        "scale_id": "emotional_resilience_11",
+        "worksheet_id": "self_compassion_scs_cn"
+      },
+      "theme": [
+        "assessment_result",
+        "self_compassion_scs_cn",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "scs_self_kindness",
+        "scs_mindful_moment"
+      ],
+      "card_roles": [
+        {
+          "card_id": "scs_self_kindness",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "scs_mindful_moment",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "六个方面都在常见范围内。可以用这些练习保持对自己的善意和觉察。",
+      "today_suggestion": "今天先做「对自己说一句温和的话」，只完成第一步：写下此刻对自己说的那句刺耳的话。",
+      "long_term_suggestion": "接下来一周，隔天练一次「对自己说一句温和的话」；不合适时换成「一分钟情绪观察」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_maas_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "mindful_attention_awareness_maas",
         "dimension": "TOTAL",
         "level": "needs_support"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "total"
+        "mindful_attention_awareness_maas",
+        "TOTAL"
+      ],
+      "recommended_card_ids": [
+        "breathing_space_3min",
+        "scs_mindful_moment"
+      ],
+      "card_roles": [
+        {
+          "card_id": "breathing_space_3min",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "scs_mindful_moment",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "正念注意分数较低，说明日常中常处在“自动驾驶”状态。用短练习把注意带回当下。",
+      "today_suggestion": "今天先做「三分钟呼吸空间」，只完成第一步：第1分钟：问自己此刻有什么想法、感受和身体感觉。",
+      "long_term_suggestion": "接下来一周，隔天练一次「三分钟呼吸空间」；不合适时换成「一分钟情绪观察」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_maas_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "mindful_attention_awareness_maas"
+      },
+      "theme": [
+        "assessment_result",
+        "mindful_attention_awareness_maas",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "breathing_space_3min",
+        "scs_mindful_moment"
+      ],
+      "card_roles": [
+        {
+          "card_id": "breathing_space_3min",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "scs_mindful_moment",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "日常的注意与觉知在常见范围内。可以继续用短练习保持专注当下的习惯。",
+      "today_suggestion": "今天先做「三分钟呼吸空间」，只完成第一步：第1分钟：问自己此刻有什么想法、感受和身体感觉。",
+      "long_term_suggestion": "接下来一周，隔天练一次「三分钟呼吸空间」；不合适时换成「一分钟情绪观察」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_eres_recovery_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "emotional_resilience_11",
+        "dimension": "ERES_RECOVERY",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "emotional_resilience_11",
+        "ERES_RECOVERY"
       ],
       "recommended_card_ids": [
         "rsca_emotion_regulation",
-        "exam_micro_start"
+        "sleep_wind_down",
+        "student_emotion_naming"
       ],
       "card_roles": [
         {
@@ -697,17 +782,21 @@
           "role": "今日练习"
         },
         {
-          "card_id": "exam_micro_start",
+          "card_id": "sleep_wind_down",
           "role": "备用练习"
+        },
+        {
+          "card_id": "student_emotion_naming",
+          "role": "长期练习"
         }
       ],
-      "reason": "复原力总分偏低时，先用命名、呼吸和小动作稳定。",
-      "today_suggestion": "今天先完成「rsca_emotion_regulation」对应的一张训练卡，只做一个最小动作。",
-      "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "情绪恢复分数较低，说明不愉快的事容易让你难过很久。练习先稳定情绪，并照顾好睡前的状态。",
+      "today_suggestion": "今天先做「三步稳定情绪」，只完成第一步：说出现在最明显的情绪。",
+      "long_term_suggestion": "接下来一周，隔天练一次「三步稳定情绪」；不合适时换成「睡前十分钟缓冲」；把「说出现在的感受」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
@@ -716,21 +805,22 @@
       "max_candidates": 3
     },
     {
-      "rule_id": "rsca_total_high_positive",
+      "rule_id": "v4_eres_positive_low",
       "source_type": "assessment",
       "trigger_condition": {
-        "scale_id": "emotional_resilience_11",
-        "dimension": "TOTAL",
-        "level": "high"
+        "worksheet_id": "emotional_resilience_11",
+        "dimension": "ERES_POSITIVE",
+        "level": "needs_support"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "total"
+        "emotional_resilience_11",
+        "ERES_POSITIVE"
       ],
       "recommended_card_ids": [
         "rsca_positive_cognition",
-        "exam_micro_start"
+        "coping_memory_recall",
+        "erq_reappraisal_student"
       ],
       "card_roles": [
         {
@@ -738,17 +828,21 @@
           "role": "今日练习"
         },
         {
-          "card_id": "exam_micro_start",
+          "card_id": "coping_memory_recall",
           "role": "备用练习"
+        },
+        {
+          "card_id": "erq_reappraisal_student",
+          "role": "长期练习"
         }
       ],
-      "reason": "复原力得分较高时，提取小事实并复制到下一步。",
-      "today_suggestion": "今天先完成「rsca_positive_cognition」对应的一张训练卡，只做一个最小动作。",
-      "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "积极情绪分数较低，说明心情不好时较难调动积极的想法。从记录做到的小事和回想挺过来的经历开始。",
+      "today_suggestion": "今天先做「记下一件做到了的小事」，只完成第一步：找一件今天已经做到的小事。",
+      "long_term_suggestion": "接下来一周，隔天练一次「记下一件做到了的小事」；不合适时换成「想起一次挺过来的经历」；把「换个距离看这件事」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
@@ -757,38 +851,83 @@
       "max_candidates": 3
     },
     {
-      "rule_id": "mindful_attention_awareness_maas_supportive_default",
+      "rule_id": "v4_eres_default",
       "source_type": "assessment",
       "trigger_condition": {
-        "worksheet_id": "mindful_attention_awareness_maas",
-        "level": "supportive_default"
+        "worksheet_id": "emotional_resilience_11"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "awareness"
+        "emotional_resilience_11",
+        "default"
       ],
       "recommended_card_ids": [
-        "scs_mindful_moment",
-        "emotion_naming"
+        "rsca_positive_cognition",
+        "student_emotion_naming"
       ],
       "card_roles": [
         {
-          "card_id": "scs_mindful_moment",
+          "card_id": "rsca_positive_cognition",
           "role": "今日练习"
         },
         {
-          "card_id": "emotion_naming",
+          "card_id": "student_emotion_naming",
           "role": "备用练习"
         }
       ],
-      "reason": "当觉察线索需要更多练习时，先用一分钟观察和情绪命名帮助自己从自动反应里停一下。",
-      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
-      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "情绪弹性在常见范围内。可以用这些练习保持情绪的恢复力。",
+      "today_suggestion": "今天先做「记下一件做到了的小事」，只完成第一步：找一件今天已经做到的小事。",
+      "long_term_suggestion": "接下来一周，隔天练一次「记下一件做到了的小事」；不合适时换成「说出现在的感受」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_uwes_vigor_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "study_engagement_uwes_s_17",
+        "dimension": "UWES_VIGOR",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "study_engagement_uwes_s_17",
+        "UWES_VIGOR"
+      ],
+      "recommended_card_ids": [
+        "exam_micro_start",
+        "behavior_activation_small_step",
+        "sleep_wind_down"
+      ],
+      "card_roles": [
+        {
+          "card_id": "exam_micro_start",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "behavior_activation_small_step",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "sleep_wind_down",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "活力分数较低，说明学习时常感到没精神。从十分钟启动和一件小事开始，同时照顾好休息。",
+      "today_suggestion": "今天先做「十分钟启动」，只完成第一步：写下完整的任务。",
+      "long_term_suggestion": "接下来一周，隔天练一次「十分钟启动」；不合适时换成「先做一件小事」；把「睡前十分钟缓冲」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
@@ -797,38 +936,85 @@
       "max_candidates": 3
     },
     {
-      "rule_id": "study_engagement_uwes_s_17_supportive_default",
+      "rule_id": "v4_uwes_dedication_low",
       "source_type": "assessment",
       "trigger_condition": {
         "worksheet_id": "study_engagement_uwes_s_17",
-        "level": "supportive_default"
+        "dimension": "UWES_DEDICATION",
+        "level": "needs_support"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "behavior"
+        "study_engagement_uwes_s_17",
+        "UWES_DEDICATION"
       ],
       "recommended_card_ids": [
-        "exam_micro_start",
-        "body_scan_before_study"
+        "values_tiny_action",
+        "curiosity_question_log"
       ],
       "card_roles": [
         {
-          "card_id": "exam_micro_start",
+          "card_id": "values_tiny_action",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "curiosity_question_log",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "奉献分数较低，说明学习的意义感不太强。试着把学习和你在意的事连起来，并记下好奇的问题。",
+      "today_suggestion": "今天先做「做一件对我重要的小事」，只完成第一步：选一个重要的方向：家人、健康、学习、朋友……",
+      "long_term_suggestion": "接下来一周，隔天练一次「做一件对我重要的小事」；不合适时换成「记下一个好奇的问题」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_uwes_absorption_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "study_engagement_uwes_s_17",
+        "dimension": "UWES_ABSORPTION",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "study_engagement_uwes_s_17",
+        "UWES_ABSORPTION"
+      ],
+      "recommended_card_ids": [
+        "curiosity_question_log",
+        "body_scan_before_study",
+        "exam_micro_start"
+      ],
+      "card_roles": [
+        {
+          "card_id": "curiosity_question_log",
           "role": "今日练习"
         },
         {
           "card_id": "body_scan_before_study",
           "role": "备用练习"
+        },
+        {
+          "card_id": "exam_micro_start",
+          "role": "长期练习"
         }
       ],
-      "reason": "当学习投入需要支持时，先从十分钟启动和学习前身体扫描开始，降低开始任务的门槛。",
-      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
-      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "专注分数较低，说明学习时不容易投入。用身体扫描进入状态，用好奇的问题留住注意力。",
+      "today_suggestion": "今天先做「记下一个好奇的问题」，只完成第一步：记下今天一个想弄明白的问题。",
+      "long_term_suggestion": "接下来一周，隔天练一次「记下一个好奇的问题」；不合适时换成「学习前身体扫描」；把「十分钟启动」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
@@ -837,20 +1023,531 @@
       "max_candidates": 3
     },
     {
-      "rule_id": "cd_risc10_brief_resilience_supportive_default",
+      "rule_id": "v4_uwes_default",
       "source_type": "assessment",
       "trigger_condition": {
-        "worksheet_id": "cd_risc10_brief_resilience",
-        "level": "supportive_default"
+        "worksheet_id": "study_engagement_uwes_s_17"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "resource"
+        "study_engagement_uwes_s_17",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "curiosity_question_log",
+        "exam_micro_start"
+      ],
+      "card_roles": [
+        {
+          "card_id": "curiosity_question_log",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "exam_micro_start",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "学习投入在常见范围内。可以用这些练习保持学习的兴趣和节奏。",
+      "today_suggestion": "今天先做「记下一个好奇的问题」，只完成第一步：记下今天一个想弄明白的问题。",
+      "long_term_suggestion": "接下来一周，隔天练一次「记下一个好奇的问题」；不合适时换成「十分钟启动」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_cdrisc_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "cd_risc10_brief_resilience",
+        "dimension": "TOTAL",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "cd_risc10_brief_resilience",
+        "TOTAL"
+      ],
+      "recommended_card_ids": [
+        "coping_memory_recall",
+        "self_support_statement",
+        "support_reach_out"
+      ],
+      "card_roles": [
+        {
+          "card_id": "coping_memory_recall",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "self_support_statement",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "support_reach_out",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "心理韧性分数较低，说明面对困难时较难恢复。先回想自己挺过来的经历，再给自己一句支持，并找到可以联系的人。",
+      "today_suggestion": "今天先做「想起一次挺过来的经历」，只完成第一步：想一次你曾经挺过来的难关。",
+      "long_term_suggestion": "接下来一周，隔天练一次「想起一次挺过来的经历」；不合适时换成「把责备换成支持句」；把「联系一个支持我的人」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_cdrisc_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "cd_risc10_brief_resilience"
+      },
+      "theme": [
+        "assessment_result",
+        "cd_risc10_brief_resilience",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "strengths_in_context",
+        "coping_memory_recall"
+      ],
+      "card_roles": [
+        {
+          "card_id": "strengths_in_context",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "coping_memory_recall",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "心理韧性在常见范围内。可以把自己的优势和应对经验整理成清单，遇到困难时用得上。",
+      "today_suggestion": "今天先做「把一个特点用在今天」，只完成第一步：写下你的一个特点：细心、外向、爱新鲜……",
+      "long_term_suggestion": "接下来一周，隔天练一次「把一个特点用在今天」；不合适时换成「想起一次挺过来的经历」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_pba_exhaustion_high",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "parental_burnout_pba",
+        "dimension": "EXHAUSTION",
+        "level": "high"
+      },
+      "theme": [
+        "assessment_result",
+        "parental_burnout_pba",
+        "EXHAUSTION"
+      ],
+      "recommended_card_ids": [
+        "parent_recharge_break",
+        "sleep_wind_down",
+        "support_reach_out"
+      ],
+      "card_roles": [
+        {
+          "card_id": "parent_recharge_break",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "sleep_wind_down",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "support_reach_out",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "养育中的筋疲力尽比较明显。先给自己补能、照顾睡眠，并请身边的人分担一部分。",
+      "today_suggestion": "今天先做「家长五分钟补能」，只完成第一步：选一个每天能空出5分钟的时刻。",
+      "long_term_suggestion": "接下来一周，隔天练一次「家长五分钟补能」；不合适时换成「睡前十分钟缓冲」；把「联系一个支持我的人」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_pba_saturation_high",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "parental_burnout_pba",
+        "dimension": "SATURATION",
+        "level": "high"
+      },
+      "theme": [
+        "assessment_result",
+        "parental_burnout_pba",
+        "SATURATION"
+      ],
+      "recommended_card_ids": [
+        "parent_recharge_break",
+        "values_tiny_action",
+        "three_second_pause"
+      ],
+      "card_roles": [
+        {
+          "card_id": "parent_recharge_break",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "values_tiny_action",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "three_second_pause",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "对养育感到厌倦、受够了的感受比较明显。先给自己一点喘息，再找回你在意的那部分。",
+      "today_suggestion": "今天先做「家长五分钟补能」，只完成第一步：选一个每天能空出5分钟的时刻。",
+      "long_term_suggestion": "接下来一周，隔天练一次「家长五分钟补能」；不合适时换成「做一件对我重要的小事」；把「开口前停三秒」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_pba_contrast_high",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "parental_burnout_pba",
+        "dimension": "CONTRAST",
+        "level": "high"
+      },
+      "theme": [
+        "assessment_result",
+        "parental_burnout_pba",
+        "CONTRAST"
+      ],
+      "recommended_card_ids": [
+        "scs_self_kindness",
+        "self_support_statement"
+      ],
+      "card_roles": [
+        {
+          "card_id": "scs_self_kindness",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "self_support_statement",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "觉得自己不再是想成为的那种家长，这种落差很常见。先练习善待自己，把责备换成支持。",
+      "today_suggestion": "今天先做「对自己说一句温和的话」，只完成第一步：写下此刻对自己说的那句刺耳的话。",
+      "long_term_suggestion": "接下来一周，隔天练一次「对自己说一句温和的话」；不合适时换成「把责备换成支持句」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_pba_distancing_high",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "parental_burnout_pba",
+        "dimension": "DISTANCING",
+        "level": "high"
+      },
+      "theme": [
+        "assessment_result",
+        "parental_burnout_pba",
+        "DISTANCING"
+      ],
+      "recommended_card_ids": [
+        "parent_connection_moment",
+        "parent_repair_question"
+      ],
+      "card_roles": [
+        {
+          "card_id": "parent_connection_moment",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "parent_repair_question",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "和孩子在情感上有些疏远。用每天五分钟的陪伴，慢慢让关系回温。",
+      "today_suggestion": "今天先做「每天五分钟陪伴」，只完成第一步：约好每天固定的5分钟。",
+      "long_term_suggestion": "接下来一周，隔天练一次「每天五分钟陪伴」；不合适时换成「先听最难受的那句」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "task18_pba_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "parental_burnout_pba",
+        "risk_level": "low_or_medium"
+      },
+      "theme": [
+        "assessment_result",
+        "parental_burnout_pba",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "parent_recharge_break",
+        "three_second_pause",
+        "parent_connection_moment"
+      ],
+      "card_roles": [
+        {
+          "card_id": "parent_recharge_break",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "three_second_pause",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "parent_connection_moment",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "养育倦怠的各方面都在常见范围内。可以用这些练习保持能量，预防倦怠累积。",
+      "today_suggestion": "今天先做「家长五分钟补能」，只完成第一步：选一个每天能空出5分钟的时刻。",
+      "long_term_suggestion": "接下来一周，隔天练一次「家长五分钟补能」；不合适时换成「开口前停三秒」；把「每天五分钟陪伴」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_aaq_high",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "acceptance_action_aaq2",
+        "dimension": "TOTAL",
+        "score_at_least": 24
+      },
+      "theme": [
+        "assessment_result",
+        "acceptance_action_aaq2",
+        "TOTAL"
+      ],
+      "recommended_card_ids": [
+        "defusion_noticing_thought",
+        "values_tiny_action",
+        "breathing_space_3min"
+      ],
+      "card_roles": [
+        {
+          "card_id": "defusion_noticing_thought",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "values_tiny_action",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "breathing_space_3min",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "分数较高，说明困难的想法和感受较多地牵制了行动。练习给想法贴标签，并朝重要的方向做一件小事。",
+      "today_suggestion": "今天先做「给想法贴个标签」，只完成第一步：写下那个反复出现、让你难受的想法。",
+      "long_term_suggestion": "接下来一周，隔天练一次「给想法贴个标签」；不合适时换成「做一件对我重要的小事」；把「三分钟呼吸空间」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_aaq_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "acceptance_action_aaq2"
+      },
+      "theme": [
+        "assessment_result",
+        "acceptance_action_aaq2",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "values_tiny_action",
+        "defusion_noticing_thought"
+      ],
+      "card_roles": [
+        {
+          "card_id": "values_tiny_action",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "defusion_noticing_thought",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "心理灵活性在常见范围内。可以继续练习带着想法和感受，朝重要的方向行动。",
+      "today_suggestion": "今天先做「做一件对我重要的小事」，只完成第一步：选一个重要的方向：家人、健康、学习、朋友……",
+      "long_term_suggestion": "接下来一周，隔天练一次「做一件对我重要的小事」；不合适时换成「给想法贴个标签」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_rsca_emotion_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "rsca_adolescent_resilience",
+        "dimension": "EMOTION_CONTROL",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "rsca_adolescent_resilience",
+        "EMOTION_CONTROL"
+      ],
+      "recommended_card_ids": [
+        "rsca_emotion_regulation",
+        "student_emotion_naming"
+      ],
+      "card_roles": [
+        {
+          "card_id": "rsca_emotion_regulation",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "student_emotion_naming",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "情绪控制分数较低，说明情绪上来时较难稳住。先练习命名情绪和三步稳定。",
+      "today_suggestion": "今天先做「三步稳定情绪」，只完成第一步：说出现在最明显的情绪。",
+      "long_term_suggestion": "接下来一周，隔天练一次「三步稳定情绪」；不合适时换成「说出现在的感受」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_rsca_goal_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "rsca_adolescent_resilience",
+        "dimension": "GOAL_FOCUS",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "rsca_adolescent_resilience",
+        "GOAL_FOCUS"
+      ],
+      "recommended_card_ids": [
+        "exam_micro_start",
+        "coping_memory_recall"
+      ],
+      "card_roles": [
+        {
+          "card_id": "exam_micro_start",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "coping_memory_recall",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "目标专注分数较低，说明遇到困难时较难坚持目标。把任务拆成十分钟启动，并回想挺过来的经验。",
+      "today_suggestion": "今天先做「十分钟启动」，只完成第一步：写下完整的任务。",
+      "long_term_suggestion": "接下来一周，隔天练一次「十分钟启动」；不合适时换成「想起一次挺过来的经历」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_rsca_positive_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "rsca_adolescent_resilience",
+        "dimension": "POSITIVE_COGNITION",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "rsca_adolescent_resilience",
+        "POSITIVE_COGNITION"
       ],
       "recommended_card_ids": [
         "rsca_positive_cognition",
-        "rsca_emotion_regulation"
+        "student_two_thoughts"
       ],
       "card_roles": [
         {
@@ -858,57 +1555,144 @@
           "role": "今日练习"
         },
         {
-          "card_id": "rsca_emotion_regulation",
+          "card_id": "student_two_thoughts",
           "role": "备用练习"
         }
       ],
-      "reason": "当韧性资源需要继续稳定时，先记录一个小事实，再配合三步稳定情绪练习。",
-      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
-      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "积极认知分数较低，说明较难看到事情积极的一面。从记录做到的小事和找第二种说法开始。",
+      "today_suggestion": "今天先做「记下一件做到了的小事」，只完成第一步：找一件今天已经做到的小事。",
+      "long_term_suggestion": "接下来一周，隔天练一次「记下一件做到了的小事」；不合适时换成「给想法找第二种说法」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
       "approval_status": "draft_requires_psychology_review",
       "allow_controlled_cards": false,
-      "max_candidates": 3
+      "max_candidates": 2
     },
     {
-      "rule_id": "perceived_social_support_psss_supportive_default",
+      "rule_id": "v4_rsca_family_low",
       "source_type": "assessment",
       "trigger_condition": {
-        "worksheet_id": "perceived_social_support_psss",
-        "level": "supportive_default"
+        "worksheet_id": "rsca_adolescent_resilience",
+        "dimension": "FAMILY_SUPPORT",
+        "level": "needs_support"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "resource"
+        "rsca_adolescent_resilience",
+        "FAMILY_SUPPORT"
       ],
       "recommended_card_ids": [
-        "self_support_statement",
-        "one_open_question"
+        "erq_expression_gentle",
+        "support_reach_out"
       ],
       "card_roles": [
         {
-          "card_id": "self_support_statement",
+          "card_id": "erq_expression_gentle",
           "role": "今日练习"
         },
         {
-          "card_id": "one_open_question",
+          "card_id": "support_reach_out",
           "role": "备用练习"
         }
       ],
-      "reason": "当支持感需要被看见时，先写一句自我支持，再尝试向可信的人提出一个开放问题。",
-      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
-      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "家庭支持分数较低，说明在家里较少感受到支持。试着对一个让你感到安全的家人说一小句感受。",
+      "today_suggestion": "今天先做「说出一句没说出口的感受」，只完成第一步：写下一直没说出口的感受。",
+      "long_term_suggestion": "接下来一周，隔天练一次「说出一句没说出口的感受」；不合适时换成「联系一个支持我的人」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_rsca_interpersonal_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "rsca_adolescent_resilience",
+        "dimension": "INTERPERSONAL_ASSISTANCE",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "rsca_adolescent_resilience",
+        "INTERPERSONAL_ASSISTANCE"
+      ],
+      "recommended_card_ids": [
+        "support_reach_out",
+        "scs_common_humanity"
+      ],
+      "card_roles": [
+        {
+          "card_id": "support_reach_out",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "scs_common_humanity",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "人际协助分数较低，说明遇到困难时较少向别人求助。练习联系一个支持你的人。",
+      "today_suggestion": "今天先做「联系一个支持我的人」，只完成第一步：列出2—3个可以联系的人。",
+      "long_term_suggestion": "接下来一周，隔天练一次「联系一个支持我的人」；不合适时换成「不只我会这样」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "task18_rsca_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "rsca_adolescent_resilience",
+        "risk_level": "low_or_medium"
+      },
+      "theme": [
+        "assessment_result",
+        "rsca_adolescent_resilience",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "rsca_emotion_regulation",
+        "rsca_positive_cognition",
+        "coping_memory_recall"
+      ],
+      "card_roles": [
+        {
+          "card_id": "rsca_emotion_regulation",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "rsca_positive_cognition",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "coping_memory_recall",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "心理韧性的各方面都在常见范围内。可以用这些练习保持面对压力的能力。",
+      "today_suggestion": "今天先做「三步稳定情绪」，只完成第一步：说出现在最明显的情绪。",
+      "long_term_suggestion": "接下来一周，隔天练一次「三步稳定情绪」；不合适时换成「记下一件做到了的小事」；把「想起一次挺过来的经历」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
@@ -917,20 +1701,150 @@
       "max_candidates": 3
     },
     {
-      "rule_id": "gad7_anxiety_supportive_default",
+      "rule_id": "v4_buoyancy_low",
       "source_type": "assessment",
       "trigger_condition": {
-        "worksheet_id": "gad7_anxiety",
-        "level": "supportive_default"
+        "worksheet_id": "academic_buoyancy_4",
+        "dimension": "TOTAL",
+        "level": "needs_support"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "state_observation"
+        "academic_buoyancy_4",
+        "TOTAL"
+      ],
+      "recommended_card_ids": [
+        "attribution_three_questions",
+        "coping_memory_recall",
+        "exam_micro_start"
+      ],
+      "card_roles": [
+        {
+          "card_id": "attribution_three_questions",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "coping_memory_recall",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "exam_micro_start",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "学业复原力分数较低，说明学习上受挫后不容易重新振作。先检查挫折的原因，再回想挺过来的经验，用十分钟重新启动。",
+      "today_suggestion": "今天先做「归因三问」，只完成第一步：写下这件事，和你认为的主要原因。",
+      "long_term_suggestion": "接下来一周，隔天练一次「归因三问」；不合适时换成「想起一次挺过来的经历」；把「十分钟启动」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_buoyancy_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "academic_buoyancy_4"
+      },
+      "theme": [
+        "assessment_result",
+        "academic_buoyancy_4",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "exam_micro_start",
+        "student_two_thoughts"
+      ],
+      "card_roles": [
+        {
+          "card_id": "exam_micro_start",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "student_two_thoughts",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "学业复原力在常见范围内。可以用这些练习保持应对学业挫折的节奏。",
+      "today_suggestion": "今天先做「十分钟启动」，只完成第一步：写下完整的任务。",
+      "long_term_suggestion": "接下来一周，隔天练一次「十分钟启动」；不合适时换成「给想法找第二种说法」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_afq_high",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "afq_y8_avoidance_fusion",
+        "dimension": "TOTAL",
+        "level": "high"
+      },
+      "theme": [
+        "assessment_result",
+        "afq_y8_avoidance_fusion",
+        "TOTAL"
+      ],
+      "recommended_card_ids": [
+        "defusion_noticing_thought",
+        "student_two_thoughts",
+        "values_tiny_action"
+      ],
+      "card_roles": [
+        {
+          "card_id": "defusion_noticing_thought",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "student_two_thoughts",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "values_tiny_action",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "分数较高，说明较容易被想法“粘住”、回避困难的感受。练习给想法贴标签，并朝重要的事迈一小步。",
+      "today_suggestion": "今天先做「给想法贴个标签」，只完成第一步：写下那个反复出现、让你难受的想法。",
+      "long_term_suggestion": "接下来一周，隔天练一次「给想法贴个标签」；不合适时换成「给想法找第二种说法」；把「做一件对我重要的小事」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_afq_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "afq_y8_avoidance_fusion"
+      },
+      "theme": [
+        "assessment_result",
+        "afq_y8_avoidance_fusion",
+        "default"
       ],
       "recommended_card_ids": [
         "student_emotion_naming",
-        "parent_body_grounding"
+        "defusion_noticing_thought"
       ],
       "card_roles": [
         {
@@ -938,17 +1852,63 @@
           "role": "今日练习"
         },
         {
-          "card_id": "parent_body_grounding",
+          "card_id": "defusion_noticing_thought",
           "role": "备用练习"
         }
       ],
-      "reason": "当紧张和担心线索较明显时，先做情绪命名和身体落地，不把分数当作诊断结论。",
-      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
-      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "回避与融合在常见范围内。可以继续练习看见想法和感受，而不被它们牵着走。",
+      "today_suggestion": "今天先做「说出现在的感受」，只完成第一步：停一下，找到身体最有感觉的位置。",
+      "long_term_suggestion": "接下来一周，隔天练一次「说出现在的感受」；不合适时换成「给想法贴个标签」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_cfs_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "cfi2_cognitive_flexibility",
+        "dimension": "TOTAL",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "cfi2_cognitive_flexibility",
+        "TOTAL"
+      ],
+      "recommended_card_ids": [
+        "erq_reappraisal_student",
+        "auto_thought_rewrite",
+        "defusion_noticing_thought"
+      ],
+      "card_roles": [
+        {
+          "card_id": "erq_reappraisal_student",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "auto_thought_rewrite",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "defusion_noticing_thought",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "认知灵活性分数较低，说明遇到问题时较难换个角度。练习换个距离看事情，并找出更平衡的想法。",
+      "today_suggestion": "今天先做「换个距离看这件事」，只完成第一步：写下这件事和你最担心的解读。",
+      "long_term_suggestion": "接下来一周，隔天练一次「换个距离看这件事」；不合适时换成「三栏想法记录」；把「给想法贴个标签」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
@@ -957,38 +1917,1042 @@
       "max_candidates": 3
     },
     {
-      "rule_id": "phq9_cesd10_depression_supportive_default",
+      "rule_id": "v4_cfs_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "cfi2_cognitive_flexibility"
+      },
+      "theme": [
+        "assessment_result",
+        "cfi2_cognitive_flexibility",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "erq_reappraisal_student",
+        "curiosity_question_log"
+      ],
+      "card_roles": [
+        {
+          "card_id": "erq_reappraisal_student",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "curiosity_question_log",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "认知灵活性在常见范围内。可以继续练习从不同角度看问题。",
+      "today_suggestion": "今天先做「换个距离看这件事」，只完成第一步：写下这件事和你最担心的解读。",
+      "long_term_suggestion": "接下来一周，隔天练一次「换个距离看这件事」；不合适时换成「记下一个好奇的问题」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_rf_promotion_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "regulatory_focus_general_18",
+        "dimension": "PROMOTION",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "regulatory_focus_general_18",
+        "PROMOTION"
+      ],
+      "recommended_card_ids": [
+        "goal_framing_fit",
+        "behavior_activation_small_step"
+      ],
+      "card_roles": [
+        {
+          "card_id": "goal_framing_fit",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "behavior_activation_small_step",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "促进聚焦分数较低，说明“想得到”的目标较难推动你。把目标改写成适合你的说法，并从一件小事开始。",
+      "today_suggestion": "今天先做「用适合自己的方式写目标」，只完成第一步：写下一个最近的目标。",
+      "long_term_suggestion": "接下来一周，隔天练一次「用适合自己的方式写目标」；不合适时换成「先做一件小事」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "task18_general_regulatory_focus_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "regulatory_focus_general_18",
+        "risk_level": "low_or_medium"
+      },
+      "theme": [
+        "assessment_result",
+        "regulatory_focus_general_18",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "goal_framing_fit",
+        "values_tiny_action"
+      ],
+      "card_roles": [
+        {
+          "card_id": "goal_framing_fit",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "values_tiny_action",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "两种关注方式各有用处。了解自己更容易被哪种目标推动，用适合自己的方式定目标。",
+      "today_suggestion": "今天先做「用适合自己的方式写目标」，只完成第一步：写下一个最近的目标。",
+      "long_term_suggestion": "接下来一周，隔天练一次「用适合自己的方式写目标」；不合适时换成「做一件对我重要的小事」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_fmi_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "fmi_12_mindfulness",
+        "dimension": "TOTAL",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "fmi_12_mindfulness",
+        "TOTAL"
+      ],
+      "recommended_card_ids": [
+        "breathing_space_3min",
+        "scs_mindful_moment",
+        "scs_self_kindness"
+      ],
+      "card_roles": [
+        {
+          "card_id": "breathing_space_3min",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "scs_mindful_moment",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "scs_self_kindness",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "正念分数较低，说明较少带着接纳觉察当下的体验。从三分钟呼吸空间和对自己的一句温和话开始。",
+      "today_suggestion": "今天先做「三分钟呼吸空间」，只完成第一步：第1分钟：问自己此刻有什么想法、感受和身体感觉。",
+      "long_term_suggestion": "接下来一周，隔天练一次「三分钟呼吸空间」；不合适时换成「一分钟情绪观察」；把「对自己说一句温和的话」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_fmi_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "fmi_12_mindfulness"
+      },
+      "theme": [
+        "assessment_result",
+        "fmi_12_mindfulness",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "breathing_space_3min",
+        "scs_self_kindness"
+      ],
+      "card_roles": [
+        {
+          "card_id": "breathing_space_3min",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "scs_self_kindness",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "正念觉察在常见范围内。可以继续用短练习保持觉察和接纳。",
+      "today_suggestion": "今天先做「三分钟呼吸空间」，只完成第一步：第1分钟：问自己此刻有什么想法、感受和身体感觉。",
+      "long_term_suggestion": "接下来一周，隔天练一次「三分钟呼吸空间」；不合适时换成「对自己说一句温和的话」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_hplp_stress_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "hplp_c_health_promoting_lifestyle",
+        "dimension": "STRESS_MANAGEMENT",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "hplp_c_health_promoting_lifestyle",
+        "STRESS_MANAGEMENT"
+      ],
+      "recommended_card_ids": [
+        "breathing_space_3min",
+        "sleep_wind_down"
+      ],
+      "card_roles": [
+        {
+          "card_id": "breathing_space_3min",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "sleep_wind_down",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "压力管理方面的习惯较少。用呼吸练习和睡前缓冲，给自己留出放松的时间。",
+      "today_suggestion": "今天先做「三分钟呼吸空间」，只完成第一步：第1分钟：问自己此刻有什么想法、感受和身体感觉。",
+      "long_term_suggestion": "接下来一周，隔天练一次「三分钟呼吸空间」；不合适时换成「睡前十分钟缓冲」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_hplp_activity_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "hplp_c_health_promoting_lifestyle",
+        "dimension": "PHYSICAL_ACTIVITY",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "hplp_c_health_promoting_lifestyle",
+        "PHYSICAL_ACTIVITY"
+      ],
+      "recommended_card_ids": [
+        "healthy_habit_micro",
+        "behavior_activation_small_step"
+      ],
+      "card_roles": [
+        {
+          "card_id": "healthy_habit_micro",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "behavior_activation_small_step",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "运动方面的习惯较少。从一个五分钟的运动小习惯开始。",
+      "today_suggestion": "今天先做「一个五分钟健康习惯」，只完成第一步：从饮食、运动、作息里选一个方面。",
+      "long_term_suggestion": "接下来一周，隔天练一次「一个五分钟健康习惯」；不合适时换成「先做一件小事」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_hplp_nutrition_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "hplp_c_health_promoting_lifestyle",
+        "dimension": "NUTRITION",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "hplp_c_health_promoting_lifestyle",
+        "NUTRITION"
+      ],
+      "recommended_card_ids": [
+        "healthy_habit_micro",
+        "values_tiny_action"
+      ],
+      "card_roles": [
+        {
+          "card_id": "healthy_habit_micro",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "values_tiny_action",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "营养方面的习惯较少。选一个简单的饮食小习惯，绑在每天固定会做的事后面。",
+      "today_suggestion": "今天先做「一个五分钟健康习惯」，只完成第一步：从饮食、运动、作息里选一个方面。",
+      "long_term_suggestion": "接下来一周，隔天练一次「一个五分钟健康习惯」；不合适时换成「做一件对我重要的小事」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_hplp_responsibility_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "hplp_c_health_promoting_lifestyle",
+        "dimension": "HEALTH_RESPONSIBILITY",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "hplp_c_health_promoting_lifestyle",
+        "HEALTH_RESPONSIBILITY"
+      ],
+      "recommended_card_ids": [
+        "healthy_habit_micro",
+        "sleep_wind_down"
+      ],
+      "card_roles": [
+        {
+          "card_id": "healthy_habit_micro",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "sleep_wind_down",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "健康责任方面的习惯较少，比如关注自己的身体状况。从一个照顾身体的小习惯开始。",
+      "today_suggestion": "今天先做「一个五分钟健康习惯」，只完成第一步：从饮食、运动、作息里选一个方面。",
+      "long_term_suggestion": "接下来一周，隔天练一次「一个五分钟健康习惯」；不合适时换成「睡前十分钟缓冲」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_hplp_interpersonal_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "hplp_c_health_promoting_lifestyle",
+        "dimension": "INTERPERSONAL_RELATIONS",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "hplp_c_health_promoting_lifestyle",
+        "INTERPERSONAL_RELATIONS"
+      ],
+      "recommended_card_ids": [
+        "support_reach_out",
+        "erq_expression_gentle"
+      ],
+      "card_roles": [
+        {
+          "card_id": "support_reach_out",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "erq_expression_gentle",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "人际关系方面的习惯较少。练习联系一个人，或说出一句感受。",
+      "today_suggestion": "今天先做「联系一个支持我的人」，只完成第一步：列出2—3个可以联系的人。",
+      "long_term_suggestion": "接下来一周，隔天练一次「联系一个支持我的人」；不合适时换成「说出一句没说出口的感受」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_hplp_spiritual_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "hplp_c_health_promoting_lifestyle",
+        "dimension": "SPIRITUAL_GROWTH",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "hplp_c_health_promoting_lifestyle",
+        "SPIRITUAL_GROWTH"
+      ],
+      "recommended_card_ids": [
+        "values_tiny_action",
+        "strengths_in_context"
+      ],
+      "card_roles": [
+        {
+          "card_id": "values_tiny_action",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "strengths_in_context",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "精神成长方面的习惯较少，比如感到生活有方向。从一件对你重要的小事开始。",
+      "today_suggestion": "今天先做「做一件对我重要的小事」，只完成第一步：选一个重要的方向：家人、健康、学习、朋友……",
+      "long_term_suggestion": "接下来一周，隔天练一次「做一件对我重要的小事」；不合适时换成「把一个特点用在今天」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_hplp_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "hplp_c_health_promoting_lifestyle"
+      },
+      "theme": [
+        "assessment_result",
+        "hplp_c_health_promoting_lifestyle",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "healthy_habit_micro",
+        "sleep_wind_down"
+      ],
+      "card_roles": [
+        {
+          "card_id": "healthy_habit_micro",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "sleep_wind_down",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "健康生活方式的各方面都在常见范围内。可以用小习惯保持下去。",
+      "today_suggestion": "今天先做「一个五分钟健康习惯」，只完成第一步：从饮食、运动、作息里选一个方面。",
+      "long_term_suggestion": "接下来一周，隔天练一次「一个五分钟健康习惯」；不合适时换成「睡前十分钟缓冲」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_swls_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "swls_life_satisfaction",
+        "dimension": "TOTAL",
+        "score_below": 20
+      },
+      "theme": [
+        "assessment_result",
+        "swls_life_satisfaction",
+        "TOTAL"
+      ],
+      "recommended_card_ids": [
+        "values_tiny_action",
+        "rsca_positive_cognition",
+        "support_reach_out"
+      ],
+      "card_roles": [
+        {
+          "card_id": "values_tiny_action",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "rsca_positive_cognition",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "support_reach_out",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "生活满意度低于中间点，说明对目前的生活整体不太满意。先朝重要的方向做一件小事，并记下每天做到的小事。",
+      "today_suggestion": "今天先做「做一件对我重要的小事」，只完成第一步：选一个重要的方向：家人、健康、学习、朋友……",
+      "long_term_suggestion": "接下来一周，隔天练一次「做一件对我重要的小事」；不合适时换成「记下一件做到了的小事」；把「联系一个支持我的人」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_swls_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "swls_life_satisfaction"
+      },
+      "theme": [
+        "assessment_result",
+        "swls_life_satisfaction",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "rsca_positive_cognition",
+        "values_tiny_action"
+      ],
+      "card_roles": [
+        {
+          "card_id": "rsca_positive_cognition",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "values_tiny_action",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "生活满意度在中间点或以上。可以用这些练习保持对生活的满意感。",
+      "today_suggestion": "今天先做「记下一件做到了的小事」，只完成第一步：找一件今天已经做到的小事。",
+      "long_term_suggestion": "接下来一周，隔天练一次「记下一件做到了的小事」；不合适时换成「做一件对我重要的小事」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_rfq_u_high",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "rfq8_reflective_functioning",
+        "dimension": "RFQU",
+        "score_at_least": 1.0
+      },
+      "theme": [
+        "assessment_result",
+        "rfq8_reflective_functioning",
+        "RFQU"
+      ],
+      "recommended_card_ids": [
+        "mentalizing_pause",
+        "prfq_ic_curiosity",
+        "emotion_naming"
+      ],
+      "card_roles": [
+        {
+          "card_id": "mentalizing_pause",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "prfq_ic_curiosity",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "emotion_naming",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "“难以把握”分数较高，说明有时不太容易理解自己和他人的想法与感受。练习先猜几种可能，再去核对。",
+      "today_suggestion": "今天先做「猜猜对方的心思」，只完成第一步：描述对方做了什么，只写看到的。",
+      "long_term_suggestion": "接下来一周，隔天练一次「猜猜对方的心思」；不合适时换成「好奇孩子的内心」；把「先命名情绪」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_rfq_c_high",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "rfq8_reflective_functioning",
+        "dimension": "RFQC",
+        "score_at_least": 2.0
+      },
+      "theme": [
+        "assessment_result",
+        "rfq8_reflective_functioning",
+        "RFQC"
+      ],
+      "recommended_card_ids": [
+        "prfq_cm_tolerance",
+        "mentalizing_pause"
+      ],
+      "card_roles": [
+        {
+          "card_id": "prfq_cm_tolerance",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "mentalizing_pause",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "“过于确定”分数较高，说明有时会很快认定别人在想什么。练习给“不知道”留一点空间。",
+      "today_suggestion": "今天先做「给“不知道”留一点空间」，只完成第一步：说出一个“我其实还不知道”的部分。",
+      "long_term_suggestion": "接下来一周，隔天练一次「给“不知道”留一点空间」；不合适时换成「猜猜对方的心思」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "task18_rfq8_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "rfq8_reflective_functioning",
+        "risk_level": "low_or_medium"
+      },
+      "theme": [
+        "assessment_result",
+        "rfq8_reflective_functioning",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "mentalizing_pause",
+        "validation_before_advice"
+      ],
+      "card_roles": [
+        {
+          "card_id": "mentalizing_pause",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "validation_before_advice",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "两项分数都在常见范围内。可以继续练习好奇和核对别人的想法。",
+      "today_suggestion": "今天先做「猜猜对方的心思」，只完成第一步：描述对方做了什么，只写看到的。",
+      "long_term_suggestion": "接下来一周，隔天练一次「猜猜对方的心思」；不合适时换成「先确认，再建议」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_psss_family_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "perceived_social_support_psss",
+        "dimension": "PSSS_FAMILY",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "perceived_social_support_psss",
+        "PSSS_FAMILY"
+      ],
+      "recommended_card_ids": [
+        "support_reach_out",
+        "erq_expression_gentle"
+      ],
+      "card_roles": [
+        {
+          "card_id": "support_reach_out",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "erq_expression_gentle",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "来自家庭的支持感较低。可以试着对一个家人说一小句近况或感受。",
+      "today_suggestion": "今天先做「联系一个支持我的人」，只完成第一步：列出2—3个可以联系的人。",
+      "long_term_suggestion": "接下来一周，隔天练一次「联系一个支持我的人」；不合适时换成「说出一句没说出口的感受」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_psss_friend_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "perceived_social_support_psss",
+        "dimension": "PSSS_FRIEND",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "perceived_social_support_psss",
+        "PSSS_FRIEND"
+      ],
+      "recommended_card_ids": [
+        "support_reach_out",
+        "scs_common_humanity"
+      ],
+      "card_roles": [
+        {
+          "card_id": "support_reach_out",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "scs_common_humanity",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "来自朋友的支持感较低。练习主动联系一个朋友。",
+      "today_suggestion": "今天先做「联系一个支持我的人」，只完成第一步：列出2—3个可以联系的人。",
+      "long_term_suggestion": "接下来一周，隔天练一次「联系一个支持我的人」；不合适时换成「不只我会这样」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_psss_other_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "perceived_social_support_psss",
+        "dimension": "PSSS_OTHER",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "perceived_social_support_psss",
+        "PSSS_OTHER"
+      ],
+      "recommended_card_ids": [
+        "support_reach_out",
+        "coping_memory_recall"
+      ],
+      "card_roles": [
+        {
+          "card_id": "support_reach_out",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "coping_memory_recall",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "来自其他人的支持感较低。想一想过去谁帮过你，再联系一个可以求助的人。",
+      "today_suggestion": "今天先做「联系一个支持我的人」，只完成第一步：列出2—3个可以联系的人。",
+      "long_term_suggestion": "接下来一周，隔天练一次「联系一个支持我的人」；不合适时换成「想起一次挺过来的经历」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_psss_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "perceived_social_support_psss"
+      },
+      "theme": [
+        "assessment_result",
+        "perceived_social_support_psss",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "support_reach_out",
+        "erq_expression_gentle"
+      ],
+      "card_roles": [
+        {
+          "card_id": "support_reach_out",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "erq_expression_gentle",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "感受到的社会支持在常见范围内。可以继续维护这些支持关系。",
+      "today_suggestion": "今天先做「联系一个支持我的人」，只完成第一步：列出2—3个可以联系的人。",
+      "long_term_suggestion": "接下来一周，隔天练一次「联系一个支持我的人」；不合适时换成「说出一句没说出口的感受」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_gad7_moderate",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "gad7_anxiety",
+        "dimension": "TOTAL",
+        "score_at_least": 10
+      },
+      "theme": [
+        "assessment_result",
+        "gad7_anxiety",
+        "TOTAL"
+      ],
+      "recommended_card_ids": [
+        "worry_postponement",
+        "breathing_space_3min",
+        "support_reach_out"
+      ],
+      "card_roles": [
+        {
+          "card_id": "worry_postponement",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "breathing_space_3min",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "support_reach_out",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "最近两周焦虑相关的困扰较明显（10分及以上）。这些练习可以帮你管理担心；如果困扰持续、影响生活，建议尽快寻求专业评估和帮助。",
+      "today_suggestion": "今天先做「给担心定个时间」，只完成第一步：定一个每天固定的“担心时间”，10分钟。",
+      "long_term_suggestion": "接下来一周，隔天练一次「给担心定个时间」；不合适时换成「三分钟呼吸空间」；把「联系一个支持我的人」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_gad7_mild",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "gad7_anxiety",
+        "dimension": "TOTAL",
+        "score_at_least": 5,
+        "score_below": 10
+      },
+      "theme": [
+        "assessment_result",
+        "gad7_anxiety",
+        "TOTAL"
+      ],
+      "recommended_card_ids": [
+        "worry_postponement",
+        "breathing_space_3min",
+        "sleep_wind_down"
+      ],
+      "card_roles": [
+        {
+          "card_id": "worry_postponement",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "breathing_space_3min",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "sleep_wind_down",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "最近两周有一些焦虑相关的困扰（5—9分）。先练习给担心定个时间，再用呼吸练习帮自己稳下来。",
+      "today_suggestion": "今天先做「给担心定个时间」，只完成第一步：定一个每天固定的“担心时间”，10分钟。",
+      "long_term_suggestion": "接下来一周，隔天练一次「给担心定个时间」；不合适时换成「三分钟呼吸空间」；把「睡前十分钟缓冲」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_gad7_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "gad7_anxiety",
+        "dimension": "TOTAL",
+        "score_below": 5
+      },
+      "theme": [
+        "assessment_result",
+        "gad7_anxiety",
+        "TOTAL"
+      ],
+      "recommended_card_ids": [
+        "breathing_space_3min",
+        "healthy_habit_micro"
+      ],
+      "card_roles": [
+        {
+          "card_id": "breathing_space_3min",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "healthy_habit_micro",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "最近两周焦虑相关的困扰较少（4分及以下）。可以用呼吸练习和健康小习惯保持状态。",
+      "today_suggestion": "今天先做「三分钟呼吸空间」，只完成第一步：第1分钟：问自己此刻有什么想法、感受和身体感觉。",
+      "long_term_suggestion": "接下来一周，隔天练一次「三分钟呼吸空间」；不合适时换成「一个五分钟健康习惯」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_phq9_moderate",
       "source_type": "assessment",
       "trigger_condition": {
         "worksheet_id": "phq9_cesd10_depression",
-        "level": "supportive_default"
+        "dimension": "TOTAL",
+        "score_at_least": 10
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "state_observation"
+        "phq9_cesd10_depression",
+        "TOTAL"
       ],
       "recommended_card_ids": [
-        "self_support_statement",
-        "student_emotion_naming"
+        "behavior_activation_small_step",
+        "support_reach_out",
+        "sleep_wind_down"
       ],
       "card_roles": [
         {
-          "card_id": "self_support_statement",
+          "card_id": "behavior_activation_small_step",
           "role": "今日练习"
         },
         {
-          "card_id": "student_emotion_naming",
+          "card_id": "support_reach_out",
           "role": "备用练习"
+        },
+        {
+          "card_id": "sleep_wind_down",
+          "role": "长期练习"
         }
       ],
-      "reason": "当情绪低落和精力变化线索较明显时，先做一句自我支持和一个情绪命名，不把分数当作诊断结论。",
-      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
-      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "最近两周情绪低落相关的困扰较明显（10分及以上）。这些练习可以帮你一点点动起来；建议尽快联系专业人员做进一步评估。",
+      "today_suggestion": "今天先做「先做一件小事」，只完成第一步：列三件过去会让你感觉好一点的小事。",
+      "long_term_suggestion": "接下来一周，隔天练一次「先做一件小事」；不合适时换成「联系一个支持我的人」；把「睡前十分钟缓冲」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
@@ -997,38 +2961,132 @@
       "max_candidates": 3
     },
     {
-      "rule_id": "big_five_bfi_60_supportive_default",
+      "rule_id": "v4_phq9_mild",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "phq9_cesd10_depression",
+        "dimension": "TOTAL",
+        "score_at_least": 5,
+        "score_below": 10
+      },
+      "theme": [
+        "assessment_result",
+        "phq9_cesd10_depression",
+        "TOTAL"
+      ],
+      "recommended_card_ids": [
+        "behavior_activation_small_step",
+        "rsca_positive_cognition",
+        "sleep_wind_down"
+      ],
+      "card_roles": [
+        {
+          "card_id": "behavior_activation_small_step",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "rsca_positive_cognition",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "sleep_wind_down",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "最近两周有一些情绪低落相关的困扰（5—9分）。从每天一件小事和规律的睡前缓冲开始。",
+      "today_suggestion": "今天先做「先做一件小事」，只完成第一步：列三件过去会让你感觉好一点的小事。",
+      "long_term_suggestion": "接下来一周，隔天练一次「先做一件小事」；不合适时换成「记下一件做到了的小事」；把「睡前十分钟缓冲」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_phq9_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "phq9_cesd10_depression",
+        "dimension": "TOTAL",
+        "score_below": 5
+      },
+      "theme": [
+        "assessment_result",
+        "phq9_cesd10_depression",
+        "TOTAL"
+      ],
+      "recommended_card_ids": [
+        "values_tiny_action",
+        "healthy_habit_micro"
+      ],
+      "card_roles": [
+        {
+          "card_id": "values_tiny_action",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "healthy_habit_micro",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "最近两周情绪低落相关的困扰较少（4分及以下）。可以用有意义的小事和健康习惯保持状态。",
+      "today_suggestion": "今天先做「做一件对我重要的小事」，只完成第一步：选一个重要的方向：家人、健康、学习、朋友……",
+      "long_term_suggestion": "接下来一周，隔天练一次「做一件对我重要的小事」；不合适时换成「一个五分钟健康习惯」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_bfi_neuroticism_high",
       "source_type": "assessment",
       "trigger_condition": {
         "worksheet_id": "big_five_bfi_60",
-        "level": "supportive_default"
+        "dimension": "BFI_NEUROTICISM",
+        "level": "high"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "trait_observation"
+        "big_five_bfi_60",
+        "BFI_NEUROTICISM"
       ],
       "recommended_card_ids": [
-        "nonjudgmental_response",
-        "cognitive_flexibility"
+        "rsca_emotion_regulation",
+        "worry_postponement",
+        "strengths_in_context"
       ],
       "card_roles": [
         {
-          "card_id": "nonjudgmental_response",
+          "card_id": "rsca_emotion_regulation",
           "role": "今日练习"
         },
         {
-          "card_id": "cognitive_flexibility",
+          "card_id": "worry_postponement",
           "role": "备用练习"
+        },
+        {
+          "card_id": "strengths_in_context",
+          "role": "长期练习"
         }
       ],
-      "reason": "人格倾向类结果只用于自我理解，推荐从非评判回应和换一种解释开始练习，不做人格定性。",
-      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
-      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "情绪敏感这一项较高，说明对压力和情绪的反应比较强烈。这不是缺点，练习可以帮你更快稳定下来。",
+      "today_suggestion": "今天先做「三步稳定情绪」，只完成第一步：说出现在最明显的情绪。",
+      "long_term_suggestion": "接下来一周，隔天练一次「三步稳定情绪」；不合适时换成「给担心定个时间」；把「把一个特点用在今天」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
@@ -1037,24 +3095,360 @@
       "max_candidates": 3
     },
     {
-      "rule_id": "attribution_style_student_36_supportive_default",
+      "rule_id": "v4_bfi_default",
       "source_type": "assessment",
       "trigger_condition": {
-        "worksheet_id": "attribution_style_student_36",
-        "level": "supportive_default"
+        "worksheet_id": "big_five_bfi_60"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "appraisal"
+        "big_five_bfi_60",
+        "default"
       ],
       "recommended_card_ids": [
-        "student_two_thoughts",
+        "strengths_in_context",
+        "values_tiny_action"
+      ],
+      "card_roles": [
+        {
+          "card_id": "strengths_in_context",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "values_tiny_action",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "五种特征没有好坏之分。了解自己的特点，把它用在适合的场景。",
+      "today_suggestion": "今天先做「把一个特点用在今天」，只完成第一步：写下你的一个特点：细心、外向、爱新鲜……",
+      "long_term_suggestion": "接下来一周，隔天练一次「把一个特点用在今天」；不合适时换成「做一件对我重要的小事」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_asq_global_high",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "attribution_style_student_36",
+        "dimension": "ASQ_GLOBAL",
+        "level": "high"
+      },
+      "theme": [
+        "assessment_result",
+        "attribution_style_student_36",
+        "ASQ_GLOBAL"
+      ],
+      "recommended_card_ids": [
+        "attribution_three_questions",
+        "cbt_auto_thought_student",
+        "student_two_thoughts"
+      ],
+      "card_roles": [
+        {
+          "card_id": "attribution_three_questions",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "cbt_auto_thought_student",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "student_two_thoughts",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "遇到坏事时，较容易认为它会影响很多方面。用归因三问找出没有受影响的部分。",
+      "today_suggestion": "今天先做「归因三问」，只完成第一步：写下这件事，和你认为的主要原因。",
+      "long_term_suggestion": "接下来一周，隔天练一次「归因三问」；不合适时换成「把担心写成一句话」；把「给想法找第二种说法」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_asq_stable_high",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "attribution_style_student_36",
+        "dimension": "ASQ_STABLE",
+        "level": "high"
+      },
+      "theme": [
+        "assessment_result",
+        "attribution_style_student_36",
+        "ASQ_STABLE"
+      ],
+      "recommended_card_ids": [
+        "attribution_three_questions",
+        "student_two_thoughts"
+      ],
+      "card_roles": [
+        {
+          "card_id": "attribution_three_questions",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "student_two_thoughts",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "遇到坏事时，较容易认为它会一直这样。用归因三问想想下次可能有什么不同。",
+      "today_suggestion": "今天先做「归因三问」，只完成第一步：写下这件事，和你认为的主要原因。",
+      "long_term_suggestion": "接下来一周，隔天练一次「归因三问」；不合适时换成「给想法找第二种说法」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_asq_internal_high",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "attribution_style_student_36",
+        "dimension": "ASQ_INTERNAL",
+        "level": "high"
+      },
+      "theme": [
+        "assessment_result",
+        "attribution_style_student_36",
+        "ASQ_INTERNAL"
+      ],
+      "recommended_card_ids": [
+        "attribution_three_questions",
+        "self_support_statement"
+      ],
+      "card_roles": [
+        {
+          "card_id": "attribution_three_questions",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "self_support_statement",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "遇到坏事时，较容易把原因都归到自己身上。用归因三问看看还有哪些情境因素。",
+      "today_suggestion": "今天先做「归因三问」，只完成第一步：写下这件事，和你认为的主要原因。",
+      "long_term_suggestion": "接下来一周，隔天练一次「归因三问」；不合适时换成「把责备换成支持句」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_asq_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "attribution_style_student_36"
+      },
+      "theme": [
+        "assessment_result",
+        "attribution_style_student_36",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "attribution_three_questions",
+        "coping_memory_recall"
+      ],
+      "card_roles": [
+        {
+          "card_id": "attribution_three_questions",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "coping_memory_recall",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "归因方式在常见范围内。遇到挫折时，可以继续用归因三问找到能改变的部分。",
+      "today_suggestion": "今天先做「归因三问」，只完成第一步：写下这件事，和你认为的主要原因。",
+      "long_term_suggestion": "接下来一周，隔天练一次「归因三问」；不合适时换成「想起一次挺过来的经历」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_ghq_high",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "ghq12_general_health",
+        "dimension": "TOTAL",
+        "level": "high"
+      },
+      "theme": [
+        "assessment_result",
+        "ghq12_general_health",
+        "TOTAL"
+      ],
+      "recommended_card_ids": [
+        "behavior_activation_small_step",
+        "support_reach_out",
+        "breathing_space_3min"
+      ],
+      "card_roles": [
+        {
+          "card_id": "behavior_activation_small_step",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "support_reach_out",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "breathing_space_3min",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "最近的困扰感较明显。先做一件小事、联系一个人，帮自己稳下来；如果持续，建议寻求专业帮助。",
+      "today_suggestion": "今天先做「先做一件小事」，只完成第一步：列三件过去会让你感觉好一点的小事。",
+      "long_term_suggestion": "接下来一周，隔天练一次「先做一件小事」；不合适时换成「联系一个支持我的人」；把「三分钟呼吸空间」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_ghq_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "ghq12_general_health"
+      },
+      "theme": [
+        "assessment_result",
+        "ghq12_general_health",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "healthy_habit_micro",
+        "breathing_space_3min"
+      ],
+      "card_roles": [
+        {
+          "card_id": "healthy_habit_micro",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "breathing_space_3min",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "最近的整体状态在常见范围内。可以用健康小习惯和呼吸练习保持下去。",
+      "today_suggestion": "今天先做「一个五分钟健康习惯」，只完成第一步：从饮食、运动、作息里选一个方面。",
+      "long_term_suggestion": "接下来一周，隔天练一次「一个五分钟健康习惯」；不合适时换成「三分钟呼吸空间」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_epq_high",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "epq_emotional_stability_24",
+        "dimension": "TOTAL",
+        "level": "high"
+      },
+      "theme": [
+        "assessment_result",
+        "epq_emotional_stability_24",
+        "TOTAL"
+      ],
+      "recommended_card_ids": [
+        "rsca_emotion_regulation",
+        "breathing_space_3min",
+        "worry_postponement"
+      ],
+      "card_roles": [
+        {
+          "card_id": "rsca_emotion_regulation",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "breathing_space_3min",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "worry_postponement",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "情绪反应分数较高，说明对压力较敏感、情绪波动较明显。练习先稳定情绪，再处理担心。",
+      "today_suggestion": "今天先做「三步稳定情绪」，只完成第一步：说出现在最明显的情绪。",
+      "long_term_suggestion": "接下来一周，隔天练一次「三步稳定情绪」；不合适时换成「三分钟呼吸空间」；把「给担心定个时间」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_epq_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "epq_emotional_stability_24"
+      },
+      "theme": [
+        "assessment_result",
+        "epq_emotional_stability_24",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "breathing_space_3min",
         "auto_thought_rewrite"
       ],
       "card_roles": [
         {
-          "card_id": "student_two_thoughts",
+          "card_id": "breathing_space_3min",
           "role": "今日练习"
         },
         {
@@ -1062,114 +3456,36 @@
           "role": "备用练习"
         }
       ],
-      "reason": "当归因习惯需要更多弹性时，先给同一件事找第二种说法，再改写一个自动想法。",
-      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
-      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "情绪反应在常见范围内。可以用这些练习保持情绪稳定。",
+      "today_suggestion": "今天先做「三分钟呼吸空间」，只完成第一步：第1分钟：问自己此刻有什么想法、感受和身体感觉。",
+      "long_term_suggestion": "接下来一周，隔天练一次「三分钟呼吸空间」；不合适时换成「三栏想法记录」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
       "approval_status": "draft_requires_psychology_review",
       "allow_controlled_cards": false,
-      "max_candidates": 3
+      "max_candidates": 2
     },
     {
-      "rule_id": "ghq12_general_health_supportive_default",
-      "source_type": "assessment",
-      "trigger_condition": {
-        "worksheet_id": "ghq12_general_health",
-        "level": "supportive_default"
-      },
-      "theme": [
-        "assessment_result",
-        "training_recommendation",
-        "state_observation"
-      ],
-      "recommended_card_ids": [
-        "parent_body_grounding",
-        "scs_mindful_moment"
-      ],
-      "card_roles": [
-        {
-          "card_id": "parent_body_grounding",
-          "role": "今日练习"
-        },
-        {
-          "card_id": "scs_mindful_moment",
-          "role": "备用练习"
-        }
-      ],
-      "reason": "当一般压力和日常功能线索需要关注时，先做身体落地和一分钟观察，不把分数当作诊断结论。",
-      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
-      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
-      "recommendation_mode": "candidate_set",
-      "selection_policy": "shared_choice",
-      "recommendation_source": "assessment_rule",
-      "approval_status": "draft_requires_psychology_review",
-      "allow_controlled_cards": false,
-      "max_candidates": 3
-    },
-    {
-      "rule_id": "epq_emotional_stability_24_supportive_default",
-      "source_type": "assessment",
-      "trigger_condition": {
-        "worksheet_id": "epq_emotional_stability_24",
-        "level": "supportive_default"
-      },
-      "theme": [
-        "assessment_result",
-        "training_recommendation",
-        "trait_observation"
-      ],
-      "recommended_card_ids": [
-        "emotion_naming",
-        "three_second_pause"
-      ],
-      "card_roles": [
-        {
-          "card_id": "emotion_naming",
-          "role": "今日练习"
-        },
-        {
-          "card_id": "three_second_pause",
-          "role": "备用练习"
-        }
-      ],
-      "reason": "情绪稳定性结果只作为阶段性观察，推荐先命名情绪并在开口前暂停三秒，不做人格定性。",
-      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
-      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
-      "recommendation_mode": "candidate_set",
-      "selection_policy": "shared_choice",
-      "recommendation_source": "assessment_rule",
-      "approval_status": "draft_requires_psychology_review",
-      "allow_controlled_cards": false,
-      "max_candidates": 3
-    },
-    {
-      "rule_id": "emotional_intelligence_eis_33_supportive_default",
+      "rule_id": "v4_eis_low",
       "source_type": "assessment",
       "trigger_condition": {
         "worksheet_id": "emotional_intelligence_eis_33",
-        "level": "supportive_default"
+        "dimension": "TOTAL",
+        "level": "needs_support"
       },
       "theme": [
         "assessment_result",
-        "training_recommendation",
-        "emotion_skill"
+        "emotional_intelligence_eis_33",
+        "TOTAL"
       ],
       "recommended_card_ids": [
         "student_emotion_naming",
+        "mentalizing_pause",
         "erq_expression_gentle"
       ],
       "card_roles": [
@@ -1178,23 +3494,233 @@
           "role": "今日练习"
         },
         {
-          "card_id": "erq_expression_gentle",
+          "card_id": "mentalizing_pause",
           "role": "备用练习"
+        },
+        {
+          "card_id": "erq_expression_gentle",
+          "role": "长期练习"
         }
       ],
-      "reason": "当情绪技能线索需要练习时，先识别情绪，再尝试低风险、温和表达。",
-      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
-      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
-      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
-      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "reason": "情绪体验分数较低，说明识别和运用情绪还有练习空间。从说出自己的感受、猜猜别人的心思开始。",
+      "today_suggestion": "今天先做「说出现在的感受」，只完成第一步：停一下，找到身体最有感觉的位置。",
+      "long_term_suggestion": "接下来一周，隔天练一次「说出现在的感受」；不合适时换成「猜猜对方的心思」；把「说出一句没说出口的感受」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.10-v4",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",
       "approval_status": "draft_requires_psychology_review",
       "allow_controlled_cards": false,
       "max_candidates": 3
+    },
+    {
+      "rule_id": "v4_eis_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "emotional_intelligence_eis_33"
+      },
+      "theme": [
+        "assessment_result",
+        "emotional_intelligence_eis_33",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "erq_expression_gentle",
+        "mentalizing_pause"
+      ],
+      "card_roles": [
+        {
+          "card_id": "erq_expression_gentle",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "mentalizing_pause",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "识别和运用情绪的能力在常见范围内。可以继续练习表达感受和理解别人。",
+      "today_suggestion": "今天先做「说出一句没说出口的感受」，只完成第一步：写下一直没说出口的感受。",
+      "long_term_suggestion": "接下来一周，隔天练一次「说出一句没说出口的感受」；不合适时换成「猜猜对方的心思」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_who5_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "who5_wellbeing",
+        "dimension": "WELLBEING",
+        "score_below": 13
+      },
+      "theme": [
+        "assessment_result",
+        "who5_wellbeing",
+        "WELLBEING"
+      ],
+      "recommended_card_ids": [
+        "behavior_activation_small_step",
+        "values_tiny_action",
+        "sleep_wind_down"
+      ],
+      "card_roles": [
+        {
+          "card_id": "behavior_activation_small_step",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "values_tiny_action",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "sleep_wind_down",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "最近两周的身心状态偏低（原始分12分及以下）。先从一件小事和规律的睡前缓冲开始；如果持续低落，建议寻求专业评估。",
+      "today_suggestion": "今天先做「先做一件小事」，只完成第一步：列三件过去会让你感觉好一点的小事。",
+      "long_term_suggestion": "接下来一周，隔天练一次「先做一件小事」；不合适时换成「做一件对我重要的小事」；把「睡前十分钟缓冲」慢慢变成习惯。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "task18_who5_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "who5_wellbeing",
+        "risk_level": "low_or_medium"
+      },
+      "theme": [
+        "assessment_result",
+        "who5_wellbeing",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "rsca_positive_cognition",
+        "healthy_habit_micro"
+      ],
+      "card_roles": [
+        {
+          "card_id": "rsca_positive_cognition",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "healthy_habit_micro",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "最近两周的身心状态在常见范围内。可以记录每天做到的小事，保持健康习惯。",
+      "today_suggestion": "今天先做「记下一件做到了的小事」，只完成第一步：找一件今天已经做到的小事。",
+      "long_term_suggestion": "接下来一周，隔天练一次「记下一件做到了的小事」；不合适时换成「一个五分钟健康习惯」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "v4_ecs_interest_low",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "cognitive_curiosity_student",
+        "dimension": "INTEREST",
+        "level": "needs_support"
+      },
+      "theme": [
+        "assessment_result",
+        "cognitive_curiosity_student",
+        "INTEREST"
+      ],
+      "recommended_card_ids": [
+        "curiosity_question_log",
+        "exam_micro_start"
+      ],
+      "card_roles": [
+        {
+          "card_id": "curiosity_question_log",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "exam_micro_start",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "兴趣型好奇分数较低，说明较少主动探索新东西。每天记下一个好奇的问题。",
+      "today_suggestion": "今天先做「记下一个好奇的问题」，只完成第一步：记下今天一个想弄明白的问题。",
+      "long_term_suggestion": "接下来一周，隔天练一次「记下一个好奇的问题」；不合适时换成「十分钟启动」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
+    },
+    {
+      "rule_id": "task18_ecs_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "cognitive_curiosity_student",
+        "risk_level": "low_or_medium"
+      },
+      "theme": [
+        "assessment_result",
+        "cognitive_curiosity_student",
+        "default"
+      ],
+      "recommended_card_ids": [
+        "curiosity_question_log",
+        "student_two_thoughts"
+      ],
+      "card_roles": [
+        {
+          "card_id": "curiosity_question_log",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "student_two_thoughts",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "好奇心在常见范围内。可以继续记录好奇的问题，让学习更有趣。",
+      "today_suggestion": "今天先做「记下一个好奇的问题」，只完成第一步：记下今天一个想弄明白的问题。",
+      "long_term_suggestion": "接下来一周，隔天练一次「记下一个好奇的问题」；不合适时换成「给想法找第二种说法」。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力或其他现实安全风险，请先联系身边可信的人或专业支持，暂停普通练习。",
+      "boundary_notice": "练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft",
+      "rule_version": "2026.10-v4",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 2
     },
     {
       "rule_id": "task12_regulatory_focus_relationship_18_support",
@@ -1321,270 +3847,6 @@
       "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
       "review_status": "draft",
       "rule_version": "2026.07-task17-v1",
-      "recommendation_mode": "candidate_set",
-      "selection_policy": "shared_choice",
-      "recommendation_source": "assessment_rule",
-      "approval_status": "draft_requires_psychology_review",
-      "allow_controlled_cards": false,
-      "max_candidates": 3
-    },
-    {
-      "rule_id": "task18_pba_support",
-      "source_type": "assessment",
-      "trigger_condition": {
-        "worksheet_id": "parental_burnout_pba",
-        "risk_level": "low_or_medium"
-      },
-      "theme": [
-        "supportive_assessment",
-        "parental_burnout_pba"
-      ],
-      "recommended_card_ids": [
-        "three_second_pause",
-        "parent_body_grounding",
-        "parent_repair_question"
-      ],
-      "card_roles": [
-        {
-          "card_id": "three_second_pause",
-          "role": "今日练习"
-        },
-        {
-          "card_id": "parent_body_grounding",
-          "role": "备用练习"
-        },
-        {
-          "card_id": "parent_repair_question",
-          "role": "长期练习"
-        }
-      ],
-      "reason": "从暂停、身体落地和修复问题中提供家长可选择的轻量支持。",
-      "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
-      "long_term_suggestion": "后续结合记录与复测趋势观察变化，不追求一次完成或固定标签。",
-      "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
-      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
-      "review_status": "draft",
-      "rule_version": "2026.07-task18-reviewed-scales-v1",
-      "recommendation_mode": "candidate_set",
-      "selection_policy": "shared_choice",
-      "recommendation_source": "assessment_rule",
-      "approval_status": "draft_requires_psychology_review",
-      "allow_controlled_cards": false,
-      "max_candidates": 3
-    },
-    {
-      "rule_id": "task18_rsca_support",
-      "source_type": "assessment",
-      "trigger_condition": {
-        "worksheet_id": "rsca_adolescent_resilience",
-        "risk_level": "low_or_medium"
-      },
-      "theme": [
-        "supportive_assessment",
-        "rsca_adolescent_resilience"
-      ],
-      "recommended_card_ids": [
-        "rsca_emotion_regulation",
-        "rsca_positive_cognition",
-        "self_support_statement"
-      ],
-      "card_roles": [
-        {
-          "card_id": "rsca_emotion_regulation",
-          "role": "今日练习"
-        },
-        {
-          "card_id": "rsca_positive_cognition",
-          "role": "备用练习"
-        },
-        {
-          "card_id": "self_support_statement",
-          "role": "长期练习"
-        }
-      ],
-      "reason": "围绕情绪调节、积极认知与自我支持提供候选练习。",
-      "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
-      "long_term_suggestion": "后续结合记录与复测趋势观察变化，不追求一次完成或固定标签。",
-      "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
-      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
-      "review_status": "draft",
-      "rule_version": "2026.07-task18-reviewed-scales-v1",
-      "recommendation_mode": "candidate_set",
-      "selection_policy": "shared_choice",
-      "recommendation_source": "assessment_rule",
-      "approval_status": "draft_requires_psychology_review",
-      "allow_controlled_cards": false,
-      "max_candidates": 3
-    },
-    {
-      "rule_id": "task18_general_regulatory_focus_support",
-      "source_type": "assessment",
-      "trigger_condition": {
-        "worksheet_id": "regulatory_focus_general_18",
-        "risk_level": "low_or_medium"
-      },
-      "theme": [
-        "supportive_assessment",
-        "regulatory_focus_general_18"
-      ],
-      "recommended_card_ids": [
-        "exam_micro_start",
-        "cognitive_flexibility",
-        "self_support_statement"
-      ],
-      "card_roles": [
-        {
-          "card_id": "exam_micro_start",
-          "role": "今日练习"
-        },
-        {
-          "card_id": "cognitive_flexibility",
-          "role": "备用练习"
-        },
-        {
-          "card_id": "self_support_statement",
-          "role": "长期练习"
-        }
-      ],
-      "reason": "不按促进/预防高低贴标签，只提供目标拆分和灵活行动练习。",
-      "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
-      "long_term_suggestion": "后续结合记录与复测趋势观察变化，不追求一次完成或固定标签。",
-      "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
-      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
-      "review_status": "draft",
-      "rule_version": "2026.07-task18-reviewed-scales-v1",
-      "recommendation_mode": "candidate_set",
-      "selection_policy": "shared_choice",
-      "recommendation_source": "assessment_rule",
-      "approval_status": "draft_requires_psychology_review",
-      "allow_controlled_cards": false,
-      "max_candidates": 3
-    },
-    {
-      "rule_id": "task18_rfq8_support",
-      "source_type": "assessment",
-      "trigger_condition": {
-        "worksheet_id": "rfq8_reflective_functioning",
-        "risk_level": "low_or_medium"
-      },
-      "theme": [
-        "supportive_assessment",
-        "rfq8_reflective_functioning"
-      ],
-      "recommended_card_ids": [
-        "emotion_naming",
-        "nonjudgmental_response",
-        "one_open_question"
-      ],
-      "card_roles": [
-        {
-          "card_id": "emotion_naming",
-          "role": "今日练习"
-        },
-        {
-          "card_id": "nonjudgmental_response",
-          "role": "备用练习"
-        },
-        {
-          "card_id": "one_open_question",
-          "role": "长期练习"
-        }
-      ],
-      "reason": "用情绪命名、减少判断和开放式提问支持反思，不推断他人内心。",
-      "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
-      "long_term_suggestion": "后续结合记录与复测趋势观察变化，不追求一次完成或固定标签。",
-      "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
-      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
-      "review_status": "draft",
-      "rule_version": "2026.07-task18-reviewed-scales-v1",
-      "recommendation_mode": "candidate_set",
-      "selection_policy": "shared_choice",
-      "recommendation_source": "assessment_rule",
-      "approval_status": "draft_requires_psychology_review",
-      "allow_controlled_cards": false,
-      "max_candidates": 3
-    },
-    {
-      "rule_id": "task18_who5_support",
-      "source_type": "assessment",
-      "trigger_condition": {
-        "worksheet_id": "who5_wellbeing",
-        "risk_level": "low_or_medium"
-      },
-      "theme": [
-        "supportive_assessment",
-        "who5_wellbeing"
-      ],
-      "recommended_card_ids": [
-        "emotion_naming",
-        "self_support_statement",
-        "cognitive_flexibility"
-      ],
-      "card_roles": [
-        {
-          "card_id": "emotion_naming",
-          "role": "今日练习"
-        },
-        {
-          "card_id": "self_support_statement",
-          "role": "备用练习"
-        },
-        {
-          "card_id": "cognitive_flexibility",
-          "role": "长期练习"
-        }
-      ],
-      "reason": "根据近期身心感受提供低负担练习，不用分数替代专业评估。",
-      "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
-      "long_term_suggestion": "后续结合记录与复测趋势观察变化，不追求一次完成或固定标签。",
-      "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
-      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
-      "review_status": "draft",
-      "rule_version": "2026.07-task18-reviewed-scales-v1",
-      "recommendation_mode": "candidate_set",
-      "selection_policy": "shared_choice",
-      "recommendation_source": "assessment_rule",
-      "approval_status": "draft_requires_psychology_review",
-      "allow_controlled_cards": false,
-      "max_candidates": 3
-    },
-    {
-      "rule_id": "task18_ecs_support",
-      "source_type": "assessment",
-      "trigger_condition": {
-        "worksheet_id": "cognitive_curiosity_student",
-        "risk_level": "low_or_medium"
-      },
-      "theme": [
-        "supportive_assessment",
-        "cognitive_curiosity_student"
-      ],
-      "recommended_card_ids": [
-        "exam_micro_start",
-        "student_two_thoughts",
-        "self_support_statement"
-      ],
-      "card_roles": [
-        {
-          "card_id": "exam_micro_start",
-          "role": "今日练习"
-        },
-        {
-          "card_id": "student_two_thoughts",
-          "role": "备用练习"
-        },
-        {
-          "card_id": "self_support_statement",
-          "role": "长期练习"
-        }
-      ],
-      "reason": "把好奇和问题投入转化为可停下、可拆分的小任务。",
-      "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
-      "long_term_suggestion": "后续结合记录与复测趋势观察变化，不追求一次完成或固定标签。",
-      "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
-      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
-      "review_status": "draft",
-      "rule_version": "2026.07-task18-reviewed-scales-v1",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",

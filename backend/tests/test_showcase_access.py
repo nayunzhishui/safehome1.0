@@ -35,7 +35,8 @@ def test_showcase_opens_programs_and_training_cards_in_validation(tmp_path, monk
     assert status.get_json()["data"]["enabled"] is True
     assert len(programs.get_json()["data"]["items"]) == 3
     assert programs.get_json()["data"]["availability"]["status"] == "showcase_open"
-    assert len(cards.get_json()["data"]["items"]) == 42
+    content_cards = json.loads((ROOT / "content" / "training_cards.json").read_text(encoding="utf-8"))["cards"]
+    assert len(cards.get_json()["data"]["items"]) == len(content_cards)
 
 
 def test_close_script_restores_all_showcase_gates(tmp_path, monkeypatch):

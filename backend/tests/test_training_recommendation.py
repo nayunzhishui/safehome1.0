@@ -45,12 +45,27 @@ def test_rule_without_dimension_matches_directly(tmp_path):
 
 def test_unmodeled_scale_uses_midpoint_threshold(tmp_path):
     service, database = _fresh_modules(tmp_path)
-    scores = {"dimensions": [{"key": "ERQ_ES", "score": 6.5}]}
+    # ERQ suppression is the sum of 4 items scored 1-7, so the scale midpoint is 16.
+    high = {"dimensions": [{"key": "ERQ_ES", "score": 22}]}
+    low = {"dimensions": [{"key": "ERQ_ES", "score": 8}]}
 
-    rules = service.evaluate_training_rules("emotion_regulation_erq", database.json_dumps(scores))
-    card_ids = service.flatten_card_ids(rules)
+    high_ids = service.flatten_card_ids(service.evaluate_training_rules("emotion_regulation_erq", database.json_dumps(high)))
+    low_ids = service.flatten_card_ids(service.evaluate_training_rules("emotion_regulation_erq", database.json_dumps(low)))
 
-    assert "erq_suppression_release" in card_ids
+    assert "erq_suppression_release" in high_ids
+    assert "erq_suppression_release" not in low_ids
+
+
+def test_published_cut_offs_select_one_band(tmp_path):
+    service, database = _fresh_modules(tmp_path)
+
+    def rule_ids(total):
+        scores = {"dimensions": [{"key": "TOTAL", "score": total}]}
+        return [rule["rule_id"] for rule in service.evaluate_training_rules("gad7_anxiety", database.json_dumps(scores))]
+
+    assert rule_ids(12) == ["v4_gad7_moderate"]
+    assert rule_ids(7) == ["v4_gad7_mild"]
+    assert rule_ids(2) == ["v4_gad7_low"]
 
 
 def test_high_risk_returns_no_training_rules(tmp_path):

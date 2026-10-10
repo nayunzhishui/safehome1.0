@@ -56,6 +56,11 @@
   line-height: 1.65;
 }
 
+.risk-action {
+  margin-top: 16rpx;
+  width: 100%;
+}
+
 .profile-card {
   padding: 26rpx;
   border: 1rpx solid var(--safe-border);
@@ -534,3 +539,10 @@
 
 .ui2-page .dimension-list { padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; }
 .ui2-page .dimension-chart-card { border:0; box-shadow:none; background:transparent; }
+
+/* 风险提示：用同一色相的底色、文字与描边按钮，求助入口清楚但不惊吓。 */
+.ui2-page .risk-strip { margin-top: 24rpx; padding: 28rpx; border: 0; border-radius: 20rpx; background: #fbf1e6; color: #6b3f12; }
+.ui2-page .risk-strip.high { background: #fcefed; color: #7d2f2a; }
+.ui2-page .risk-strip .risk-title,
+.ui2-page .risk-strip .risk-text { color: inherit; }
+.ui2-page .risk-strip .risk-action { margin-top: 20rpx; border: 2rpx solid currentColor; border-radius: 20rpx; background: transparent; color: inherit; font-weight: 600; }

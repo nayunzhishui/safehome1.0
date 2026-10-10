@@ -1,4 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { entryUrl, formatDay, statusText, stepUrl } = require("../../utils/supportiveReview");
 
 const api = createSafeHomeApi();
 
@@ -27,6 +28,12 @@ Page({
   data: {
     loading: true,
     saving: false,
+    reviews: [],
+    reviewsLoading: true,
+    activeReview: null,
+    selfPrimaryLabel: "开始自助整理",
+    humanReviewOpen: false,
+    policyOpen: false,
     cases: [],
     activeCase: null,
     question: "",
@@ -52,7 +59,88 @@ Page({
   },
 
   onShow() {
+    this.loadReviews();
     this.loadCases();
+  },
+
+  async loadReviews() {
+    this.setData({ reviewsLoading: true });
+    try {
+      const result = await api.listSupportiveReviews();
+      const reviews = (result.items || []).map((item) => ({
+        ...item,
+        statusText: statusText(item),
+        dayText: formatDay(item.updated_on),
+      }));
+      const due = reviews.find((item) => item.status === "followup_due");
+      const active = due || reviews.find((item) => item.status === "in_progress" && item.next_step !== "followup");
+      this.setData({
+        reviews,
+        activeReview: active || null,
+        selfPrimaryLabel: due ? "回看我的小实验" : active ? "继续整理" : "开始自助整理",
+      });
+    } catch (error) {
+      this.setData({ reviews: [], activeReview: null, selfPrimaryLabel: "开始自助整理" });
+    } finally {
+      this.setData({ reviewsLoading: false });
+    }
+  },
+
+  onSelfPrimary() {
+    const target = this.data.activeReview;
+    wx.navigateTo({ url: target ? entryUrl(target) : stepUrl("", "question") });
+  },
+
+  startNewReview() {
+    wx.navigateTo({ url: stepUrl("", "question") });
+  },
+
+  openReview(event) {
+    const item = this.data.reviews[Number(event.currentTarget.dataset.index)];
+    if (item) wx.navigateTo({ url: entryUrl(item) });
+  },
+
+  manageReview(event) {
+    const item = this.data.reviews[Number(event.currentTarget.dataset.index)];
+    if (!item) return;
+    wx.showActionSheet({
+      itemList: ["删除这次整理"],
+      success: (result) => {
+        if (result.tapIndex === 0) this.confirmDeleteReview(item);
+      },
+    });
+  },
+
+  confirmDeleteReview(item) {
+    wx.showModal({
+      title: "删除这次整理？",
+      content: "删除后无法恢复，回看信和小实验记录会一起删除。",
+      confirmText: "删除",
+      confirmColor: "#a5453f",
+      success: async (result) => {
+        if (!result.confirm) return;
+        try {
+          await api.deleteSupportiveReview(item.id);
+          this.setData({ notice: "这次整理已删除。", errorMessage: "" });
+          await this.loadReviews();
+        } catch (error) {
+          this.setData({ errorMessage: error.message || "暂时没有删除成功，请稍后再试。" });
+        }
+      },
+    });
+  },
+
+  onHumanPrimary() {
+    if (this.data.activeCase) this.continueParticipantFlow();
+    else this.startParticipantFlow();
+  },
+
+  togglePolicy() {
+    this.setData({ policyOpen: !this.data.policyOpen });
+  },
+
+  openEmergencyResources() {
+    wx.navigateTo({ url: "/pages/emergency-resources/index" });
   },
 
   startParticipantFlow() {
@@ -99,6 +187,7 @@ Page({
         cases,
         activeCase: cases[0] || null,
         defaultServiceLevel: levelStatus.current_default || this.data.defaultServiceLevel,
+        humanReviewOpen: Boolean(levelStatus.human_review_open),
         productionContract,
         adultLaunchScope,
         childPolicy,
@@ -120,7 +209,7 @@ Page({
         this.setData({ evidenceItems: [], evidenceSummary: null, launchScreening: null });
       }
     } catch (error) {
-      this.setData({ errorMessage: error.message || "协作记录暂时无法读取。" });
+      this.setData({ errorMessage: error.message || "真人复核记录暂时无法读取；自助整理不受影响。" });
     } finally {
       this.setData({ loading: false });
     }

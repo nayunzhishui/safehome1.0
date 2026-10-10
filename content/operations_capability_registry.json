@@ -2173,6 +2173,79 @@
         "ux_governance.public_status.get",
         "ux_governance.registry.get"
       ]
+    },
+    {
+      "id": "content_definition_sync_20261008",
+      "name": "已发布内容到数据库副本的同步（训练卡与量表空白题本）",
+      "intended_use": "发布新内容后，由具名管理员先读取差异计划与备份，再按计划哈希写入；可用备份整表恢复。只处理空白内容定义，不读取答卷或用户记录。",
+      "owner": "SafeHome project owner (named admin account)",
+      "dependencies": [
+        "content/training_cards.json",
+        "content/assessment_worksheets.json",
+        "named Bearer admin authentication",
+        "audit_logs"
+      ],
+      "data": [
+        "training_cards rows (content definitions)",
+        "assessment_worksheets rows (blank definitions)",
+        "audit metadata: plan/backup hashes and row counts"
+      ],
+      "open_roles": [
+        "admin"
+      ],
+      "feature_flags": [],
+      "version": "2026-10-08-content-sync-v1",
+      "tests": [
+        "backend/tests/test_content_sync_and_item_safety.py"
+      ],
+      "rollback": "POST /api/admin/content-sync/restore with the backup saved by the plan step; it restores both tables exactly, removing rows added after the backup so the previous package can start.",
+      "governance_status": "engineering_ready_owner_operated",
+      "contract_version": "2026-08-26.f24",
+      "operation_ids": [
+        "admin.content_sync_apply.post",
+        "admin.content_sync_plan.get",
+        "admin.content_sync_restore.post"
+      ]
+    },
+    {
+      "id": "supportive_review_l0_20261008",
+      "name": "支持性评估自助整理（L0）",
+      "intended_use": "参与者本人整理自己的问题、猜测、一次具体经历、例外与资源，关联本人问卷结果，生成只引用本人文字与问卷固定说明的回看信，并记录一个小实验和回看。没有工作人员读取通道。",
+      "owner": "SafeHome project owner",
+      "dependencies": [
+        "content/supportive_review_guide.json",
+        "records table (module_type=supportive_review, export_allowed=0; no schema change)",
+        "assessment_results (owner-scoped read)",
+        "risk_keywords.json",
+        "named Bearer participant authentication",
+        "audit_logs"
+      ],
+      "data": [
+        "participant free text in records.data_json, readable only through the owner's API",
+        "linked assessment result IDs",
+        "audit metadata without free text",
+        "risk review records with safety category and matched keyword only"
+      ],
+      "open_roles": [
+        "parent",
+        "student"
+      ],
+      "feature_flags": [],
+      "version": "2026-10-08-supportive-review-l0-v1",
+      "tests": [
+        "backend/tests/test_supportive_review.py"
+      ],
+      "rollback": "Ship the previous package (no blueprint and no mini-program entry); stored records stay in place without schema change and remain deletable through privacy deletion.",
+      "governance_status": "owner_approved_production_l0_professional_review_pending",
+      "contract_version": "2026-08-26.f24",
+      "operation_ids": [
+        "supportive_review.delete_review_route.delete",
+        "supportive_review.get_guide_route.get",
+        "supportive_review.get_review_route.get",
+        "supportive_review.get_reviews_route.get",
+        "supportive_review.patch_review_route.patch",
+        "supportive_review.post_review_route.post"
+      ]
     }
   ],
   "temporary_showcase_exception": {
