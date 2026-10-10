@@ -1,7 +1,14 @@
 {
-  "version": "2026.08-safety-signals-v2-engineering",
+  "version": "2026.10-safety-signals-v3-engineering",
   "module": "safety_signal_routing",
   "review_status": "engineering_enhanced_pending_clinical_review",
+  "pending_clinical_review": [
+    "v3 起家长转述孩子或对方的话（孩子说、他说、她说、家长说、对方说）按直接信号处理，不再降级。",
+    "v3 起即时性表达优先于第三方引用；否定、历史和假设语境仍不升级为紧急复核。",
+    "v3 新增关键词：想死、跳楼、割腕、轻生、寻死、打我和、动手打我、揍我、对我动手、被揍；排除短语：想死你、想死我了、跳楼价、跳楼大甩卖。",
+    "v3 将自伤类用户提示改为同时适用于本人和身边的人。",
+    "已知误报：口语夸张（如“累得想死”）会进入人工复核，同句带“今天”等即时词时进入紧急复核。未覆盖：家长自述打孩子（如“我打了孩子”）、不含“跳楼”的“从楼上跳下去”等说法。以上待专业人员决定。"
+  ],
   "terminology": {
     "preferred": "safety_route",
     "legacy_field": "risk_level",
