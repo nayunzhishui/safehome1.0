@@ -41,8 +41,8 @@
     {
       "artifact_type": "content",
       "path": "content/privacy.md",
-      "sha256": "08e8d06829a26f3b92923f24338eab200e582efb8c093e8fbc0fe5cf201efb43",
-      "size_bytes": 7837
+      "sha256": "38f90911d23885744763b649c41b6246534845293d87a51820b478dc641d9db9",
+      "size_bytes": 6448
     },
     {
       "artifact_type": "rule",
@@ -172,5 +172,5 @@
   "revision_policy": "never_edit_verified_package_create_new_version",
   "atomic_runtime_switch": true,
   "production_release_approved": false,
-  "manifest_hash": "04cc771ccbd11b7cd16de8a510ed4a4ec3f54a7818ddb5a98536e51cc169190d"
+  "manifest_hash": "143dece95136325638dc859618860385cbbbd7735a8883a1b478f9513527b058"
 }

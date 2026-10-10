@@ -46,6 +46,15 @@ function buildProfileSummary(result) {
   };
 }
 
+// 后端计分方式有 sum、mean、mean_terms、mapped_mean_terms、mean_dimensions、
+// mean_of_products 和 product；只有 sum 是题目分直接相加。
+function scoreMethodText(method) {
+  const value = String(method || "sum");
+  if (value === "sum") return "合计";
+  if (value.indexOf("mean") !== -1) return "均值";
+  return "得分";
+}
+
 function buildScaleDimensions(result, profileSummary) {
   // 学生画像走 profileSummary，不在这里处理；其它多维量表（如 ERQ）从 scores_json.dimensions 读取。
   if (profileSummary || !result) return [];
@@ -54,10 +63,10 @@ function buildScaleDimensions(result, profileSummary) {
   return dimensions
     .filter((item) => item && (item.label || item.key))
     .map((item) => {
-      const isMean = item.score_method === "mean";
+      const methodText = scoreMethodText(item.score_method);
       const hasCount = item.item_count !== undefined && item.item_count !== null;
-      const valueText = isMean ? `平均 ${item.score} 分` : `合计 ${item.score} 分`;
-      const countText = hasCount ? `${item.item_count} 题${isMean ? "均值" : "合计"} ${item.score} 分` : valueText;
+      const valueText = methodText === "均值" ? `平均 ${item.score} 分` : `${methodText} ${item.score} 分`;
+      const countText = hasCount ? `${item.item_count} 题${methodText} ${item.score} 分` : valueText;
       return {
         key: item.key || item.label,
         label: item.label || item.key,

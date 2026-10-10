@@ -41,6 +41,18 @@
         <input value="{{nickname}}" aria-label="昵称，可选" placeholder-class="field-placeholder" placeholder="选填" bindinput="onNicknameInput" />
       </view>
 
+      <view class="auth-agreement" aria-label="协议确认">
+        <checkbox-group bindchange="onAgreementChange">
+          <label class="auth-agreement-label">
+            <checkbox value="agreed" checked="{{agreed}}" aria-label="我已阅读并同意用户服务协议和隐私政策" />
+            <text class="auth-agreement-text">我已阅读并同意</text>
+          </label>
+        </checkbox-group>
+        <text class="auth-agreement-link" bindtap="openAgreement">《用户服务协议》</text>
+        <text class="auth-agreement-text">和</text>
+        <text class="auth-agreement-link" bindtap="openPrivacy">《隐私政策》</text>
+      </view>
+
       <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>
       <button class="primary-action" loading="{{loading}}" disabled="{{loading}}" bindtap="submitRegister">注册</button>
       <button class="ghost-action" bindtap="goLogin">已有账号，去登录</button>

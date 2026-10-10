@@ -4,6 +4,7 @@ const { getCloudConfig } = require("../../services/cloudConfig");
 
 const api = createSafeHomeApi();
 const PROTECTION_URL = "/pages/settings-detail/index?type=protection";
+const AGREEMENT_REQUIRED = "请先阅读并勾选同意《用户服务协议》和《隐私政策》。";
 
 function normalizeRedirect(rawRedirect) {
   if (!rawRedirect) return "";
@@ -56,6 +57,7 @@ Page({
     username: "",
     password: "",
     redirectUrl: "",
+    agreed: false,
     loading: false,
     wechatLoading: false,
     phoneLoading: false,
@@ -96,6 +98,25 @@ Page({
       });
   },
 
+  onAgreementChange(event) {
+    const values = (event.detail && event.detail.value) || [];
+    this.setData({ agreed: values.indexOf("agreed") !== -1 });
+  },
+
+  openAgreement() {
+    wx.navigateTo({ url: "/pages/settings-detail/index?type=agreement" });
+  },
+
+  openPrivacy() {
+    wx.navigateTo({ url: "/pages/settings-detail/index?type=privacy" });
+  },
+
+  ensureAgreed() {
+    if (this.data.agreed) return true;
+    this.setData({ status: "error", message: AGREEMENT_REQUIRED });
+    return false;
+  },
+
   onUsernameInput(event) {
     this.setData({ username: event.detail.value });
   },
@@ -106,6 +127,7 @@ Page({
 
   submitLogin() {
     if (this.data.loading || this.data.wechatLoading || this.data.phoneLoading) return;
+    if (!this.ensureAgreed()) return;
     const username = this.data.username.trim();
     const password = this.data.password;
     if (!username || !password) {
@@ -184,6 +206,7 @@ Page({
 
   submitWechatLogin() {
     if (this.data.loading || this.data.wechatLoading || this.data.phoneLoading) return;
+    if (!this.ensureAgreed()) return;
     let cloudIdentity = false;
     if (this.data.wechatMode === "cloudbase_identity") {
       try {
@@ -252,6 +275,7 @@ Page({
 
   handlePhoneLogin(event) {
     if (this.data.loading || this.data.wechatLoading || this.data.phoneLoading) return;
+    if (!this.ensureAgreed()) return;
     const detail = event.detail || {};
     const code = detail.code || "";
     if (!code) {

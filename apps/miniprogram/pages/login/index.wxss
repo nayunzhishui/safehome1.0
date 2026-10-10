@@ -255,3 +255,28 @@
 }
 
 .field-placeholder { color: var(--safe-muted); opacity: 1; }
+
+.auth-agreement {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 8rpx 0 24rpx;
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.auth-agreement-label {
+  display: flex;
+  align-items: center;
+  min-height: 88rpx;
+}
+
+.auth-agreement-text {
+  color: var(--safe-muted);
+}
+
+.auth-agreement-link {
+  color: var(--safe-primary-deep);
+  min-height: 88rpx;
+  line-height: 88rpx;
+}

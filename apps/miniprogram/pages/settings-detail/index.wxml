@@ -85,7 +85,7 @@
         </view>
 
         <view wx:if="{{protectionStatus.status === 'age_verified'}}">
-          <text class="notice-text">年龄范围已确认，本账号不需要未满14周岁的监护人数据处理门禁。</text>
+          <text class="notice-text">年龄范围已确认，本账号不需要监护人同意流程。</text>
         </view>
       </view>
 
@@ -135,7 +135,7 @@
       </view>
 
       <view wx:if="{{protectionRole && protectionRole !== 'student' && protectionRole !== 'parent'}}" class="notice-card">
-        <text class="notice-text">后台研究/督导/管理员账号不在普通参与者年龄门禁中。</text>
+        <text class="notice-text">研究、督导和管理账号不需要进行参与者年龄确认。</text>
       </view>
     </view>
   </view>

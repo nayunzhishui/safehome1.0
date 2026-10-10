@@ -83,6 +83,7 @@ test('登录按后端CloudBase身份模式请求，不额外依赖wx.login', asy
   });
   h.page.completeLogin = () => { completed += 1; };
   h.page.loadAuthCapabilities(); await Promise.resolve();
+  h.page.data.agreed = true;
   h.page.submitWechatLogin(); await new Promise(setImmediate);
   assert.equal(sent.length, 1); assert.deepEqual(JSON.parse(JSON.stringify(sent[0])), {});
   assert.equal(completed, 1); assert.equal(h.page.data.wechatLoading, false);
@@ -95,6 +96,7 @@ test('登录在本地HTTP仍使用微信code兑换', async () => {
   h.page.data.wechatMode = 'cloudbase_identity';
   h.context.wx.login = options => options.success({ code: 'synthetic-code' });
   h.page.completeLogin = () => {};
+  h.page.data.agreed = true;
   h.page.submitWechatLogin(); await new Promise(setImmediate);
   assert.equal(received.code, 'synthetic-code');
 });
@@ -107,9 +109,44 @@ test('登录请求进行中忽略重复及其他方式的登录事件', () => {
   });
   h.context.wx.login = () => { wechatRequests += 1; };
   h.page.data.username = 'synthetic'; h.page.data.password = 'synthetic-not-a-secret';
+  h.page.data.agreed = true;
   h.page.submitLogin(); h.page.submitLogin(); h.page.submitWechatLogin();
   h.page.handlePhoneLogin({ detail: { code: 'synthetic-code' } });
   assert.equal(accountRequests, 1); assert.equal(wechatRequests, 0); assert.equal(phoneRequests, 0);
+});
+
+test('登录未勾选协议时不发起任何登录请求，手机号按钮不触发授权', () => {
+  let requests = 0;
+  const pending = () => { requests += 1; return new Promise(() => {}); };
+  const h = pageHarness('login', { login: pending, wechatLogin: pending, phoneLogin: pending });
+  h.context.wx.login = () => { requests += 1; };
+  h.page.data.username = 'synthetic'; h.page.data.password = 'synthetic-not-a-secret';
+  h.page.submitLogin(); h.page.submitWechatLogin();
+  h.page.handlePhoneLogin({ detail: { code: 'synthetic-code' } });
+  assert.equal(requests, 0);
+  assert.match(h.page.data.message, /用户服务协议/);
+  assert.ok(read('pages/login/index.wxml').includes('phoneAvailable && agreed'));
+  h.page.onAgreementChange({ detail: { value: ['agreed'] } });
+  assert.equal(h.page.data.agreed, true);
+  h.page.openAgreement(); h.page.openPrivacy();
+  assert.deepEqual(h.navigation.map((item) => item.url), [
+    '/pages/settings-detail/index?type=agreement',
+    '/pages/settings-detail/index?type=privacy',
+  ]);
+});
+
+test('注册未勾选协议时不提交，勾选后家长账号进入首页', async () => {
+  const sent = [];
+  const h = pageHarness('register', { register: async (data) => { sent.push(data); return { token: 'synthetic', user: { role: 'parent' } }; } });
+  h.context.getApp = () => ({ setAuthSession() {} });
+  h.page.data.username = 'synthetic-parent'; h.page.data.password = 'synthetic-not-a-secret';
+  h.page.submitRegister();
+  assert.equal(sent.length, 0);
+  assert.match(h.page.data.message, /用户服务协议/);
+  h.page.onAgreementChange({ detail: { value: ['agreed'] } });
+  h.page.submitRegister(); await new Promise(setImmediate);
+  assert.equal(sent.length, 1);
+  assert.equal(h.navigation.at(-1).url, '/pages/home/index');
 });
 
 test('登录手机号说明区分登录摘要与人工支持联系方式', () => {
@@ -139,6 +176,19 @@ for (const [name, scores, category] of [
     assert.equal(h.navigation.length, 0);
   });
 }
+
+test('结果页按计分方式标注均值、合计与得分', async () => {
+  const h = resultHarness({ dimensions: [
+    { key: 'MEAN', label: '均值维度', score: 3.5, item_count: 2, score_method: 'mean_terms' },
+    { key: 'SUM', label: '合计维度', score: 10, item_count: 4, score_method: 'sum' },
+    { key: 'PRODUCT', label: '乘积维度', score: 6, item_count: 2, score_method: 'product' },
+  ] });
+  await h.page.loadResult();
+  const summaries = h.page.data.scaleDimensions.map((item) => item.summary);
+  assert.ok(summaries[0].startsWith('2 题均值 3.5 分'), summaries[0]);
+  assert.ok(summaries[1].startsWith('4 题合计 10 分'), summaries[1]);
+  assert.ok(summaries[2].startsWith('2 题得分 6 分'), summaries[2]);
+});
 
 test('普通低风险结果保留已有推荐缓存与训练跳转', async () => {
   const h = resultHarness({ risk: { risk_level: 'low' } });
@@ -482,8 +532,10 @@ test('小程序可阅读的隐私正文与本地正文一致，保留未确认�
   const policy = vm.runInNewContext('NOTICE_MAP.privacy', context);
   const local = fs.readFileSync(path.join(ROOT, 'content/privacy.md'), 'utf8');
   for (const section of policy.sections) for (const item of section.items) assert.ok(local.includes(item), section.title);
-  assert.equal(policy.status, 'draft');
-  assert.ok(local.includes('[待填写：'));
+  assert.equal(policy.status, 'operator_details_required');
+  assert.ok(local.includes('【上线前请填写：'));
+  const agreement = vm.runInNewContext('NOTICE_MAP.agreement', context);
+  assert.ok(agreement.sections[0].items[0].includes('《隐私政策》'));
   assert.doesNotMatch(read('pages/settings-detail/index.js'), /正式文本以 content\/privacy\.md/);
 });
 

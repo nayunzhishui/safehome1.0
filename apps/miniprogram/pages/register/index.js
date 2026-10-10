@@ -1,6 +1,10 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { getMinorSafeguardStatus } = require("../../services/minorSafeguardsApi");
 
 const api = createSafeHomeApi();
+const PROTECTION_URL = "/pages/settings-detail/index?type=protection";
+const TAB_PAGES = ["/pages/home/index", "/pages/training/index", "/pages/course/index", "/pages/profile/index"];
+const AGREEMENT_REQUIRED = "请先阅读并勾选同意《用户服务协议》和《隐私政策》。";
 
 function normalizeRedirect(rawRedirect) {
   if (!rawRedirect) return "";
@@ -10,10 +14,35 @@ function normalizeRedirect(rawRedirect) {
 
 function navigateAfterAuth(redirectUrl) {
   if (redirectUrl) {
-    wx.redirectTo({ url: redirectUrl });
+    if (TAB_PAGES.includes(redirectUrl)) {
+      wx.switchTab({ url: redirectUrl });
+    } else {
+      wx.redirectTo({ url: redirectUrl });
+    }
     return;
   }
   wx.switchTab({ url: "/pages/home/index" });
+}
+
+// Same gate as the login page: a new student account goes through the
+// participant-protection flow before reaching protected functions.
+function navigateAfterParticipantGate(user, redirectUrl) {
+  if (!user || user.role !== "student") {
+    navigateAfterAuth(redirectUrl);
+    return;
+  }
+  getMinorSafeguardStatus()
+    .then((status) => {
+      const needsFlow = !status
+        || status.age_verification_required
+        || (status.minor_safeguards_required && status.status !== "active");
+      if (needsFlow) {
+        wx.redirectTo({ url: PROTECTION_URL });
+        return;
+      }
+      navigateAfterAuth(redirectUrl);
+    })
+    .catch(() => wx.redirectTo({ url: PROTECTION_URL }));
 }
 
 Page({
@@ -27,6 +56,7 @@ Page({
       { value: "parent", label: "家长" },
       { value: "student", label: "学生" },
     ],
+    agreed: false,
     loading: false,
     status: "idle",
     message: "",
@@ -34,6 +64,19 @@ Page({
 
   onLoad(options = {}) {
     this.setData({ redirectUrl: normalizeRedirect(options.redirect) });
+  },
+
+  onAgreementChange(event) {
+    const values = (event.detail && event.detail.value) || [];
+    this.setData({ agreed: values.indexOf("agreed") !== -1 });
+  },
+
+  openAgreement() {
+    wx.navigateTo({ url: "/pages/settings-detail/index?type=agreement" });
+  },
+
+  openPrivacy() {
+    wx.navigateTo({ url: "/pages/settings-detail/index?type=privacy" });
   },
 
   onUsernameInput(event) {
@@ -53,9 +96,14 @@ Page({
   },
 
   submitRegister() {
+    if (this.data.loading) return;
     const username = this.data.username.trim();
     const password = this.data.password;
     const role = this.data.roleOptions[this.data.roleIndex].value;
+    if (!this.data.agreed) {
+      this.setData({ status: "error", message: AGREEMENT_REQUIRED });
+      return;
+    }
     if (username.length < 3) {
       this.setData({ status: "error", message: "用户名至少需要 3 个字符" });
       return;
@@ -72,7 +120,7 @@ Page({
           app.setAuthSession(result.token, result.user);
         }
         wx.showToast({ title: "已注册", icon: "success" });
-        navigateAfterAuth(this.data.redirectUrl);
+        navigateAfterParticipantGate(result.user, this.data.redirectUrl);
       })
       .catch((error) => {
         this.setData({ status: "error", message: error.message || "注册失败，请稍后重试。" });

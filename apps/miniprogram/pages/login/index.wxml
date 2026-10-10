@@ -28,11 +28,24 @@
     </block>
 
     <block wx:else>
+      <view class="auth-agreement" aria-label="协议确认">
+        <checkbox-group bindchange="onAgreementChange">
+          <label class="auth-agreement-label">
+            <checkbox value="agreed" checked="{{agreed}}" aria-label="我已阅读并同意用户服务协议和隐私政策" />
+            <text class="auth-agreement-text">我已阅读并同意</text>
+          </label>
+        </checkbox-group>
+        <text class="auth-agreement-link" bindtap="openAgreement">《用户服务协议》</text>
+        <text class="auth-agreement-text">和</text>
+        <text class="auth-agreement-link" bindtap="openPrivacy">《隐私政策》</text>
+      </view>
+
       <view class="auth-methods" aria-label="快捷登录方式">
         <view class="auth-section-title">快捷登录</view>
         <button wx:if="{{wechatAvailable}}" class="wechat-action" loading="{{wechatLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="submitWechatLogin">微信一键登录</button>
         <view wx:else class="auth-unavailable" aria-label="微信一键登录暂不可用">微信一键登录（暂不可用）</view>
-        <button wx:if="{{phoneAvailable}}" class="phone-action" open-type="getPhoneNumber" loading="{{phoneLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindgetphonenumber="handlePhoneLogin">手机号快捷登录</button>
+        <button wx:if="{{phoneAvailable && agreed}}" class="phone-action" open-type="getPhoneNumber" loading="{{phoneLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindgetphonenumber="handlePhoneLogin">手机号快捷登录</button>
+        <button wx:elif="{{phoneAvailable}}" class="phone-action" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="ensureAgreed">手机号快捷登录</button>
         <view wx:else class="auth-unavailable auth-unavailable-secondary" aria-label="手机号快捷登录暂不可用">手机号快捷登录（暂不可用）</view>
 
         <view class="auth-privacy-note">

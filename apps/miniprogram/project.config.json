@@ -41,7 +41,12 @@
   },
   "simulatorPluginLibVersion": {},
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "file",
+        "value": "services/api-contract.generated.js"
+      }
+    ],
     "include": []
   },
   "editorSetting": {}

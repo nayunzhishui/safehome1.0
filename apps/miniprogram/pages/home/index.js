@@ -369,7 +369,7 @@ Page({
               source_type: "minor_safeguards",
               estimated_minutes: 2,
             },
-            boundary_notice: "年龄信息只用于保护门禁，不用于诊断或能力判断。",
+            boundary_notice: "年龄信息只用于未成年人保护，不用于诊断或能力判断。",
           }),
           todayJourneyLoading: false,
           todayJourneyError: "",

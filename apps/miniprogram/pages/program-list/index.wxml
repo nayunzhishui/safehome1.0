@@ -12,7 +12,7 @@
 
   <button wx:for="{{programs}}" wx:key="id" class="program-card {{item.preview_only ? 'program-card--preview' : ''}}" data-id="{{item.id}}" data-preview="{{item.preview_only}}" role="button" aria-label="打开项目：{{item.title}}" bindtap="openProgram" hover-class="program-card--pressed" hover-stay-time="90">
     <view class="program-head">
-      <text class="program-status">{{item.showcase_open ? '展示开放' : item.preview_only ? '待三方审核' : '已批准试点'}}</text>
+      <text class="program-status">{{item.showcase_open ? '体验开放' : item.preview_only ? '待三方审核' : '已批准试点'}}</text>
       <text class="program-count">{{item.session_count}} 小节</text>
     </view>
     <view class="program-body">
