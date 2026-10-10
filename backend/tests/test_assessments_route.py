@@ -1400,3 +1400,115 @@ def test_assessment_result_reads_tolerate_mysql_dict_rows(tmp_path, monkeypatch)
     analysis = client.get(f"/api/assessment-results/{result_id}/exploratory-analysis", headers=headers)
     assert analysis.status_code == 200
     assert analysis.get_json()["data"]["record_count"] == 0
+
+
+def _exploratory(client, token, result_id):
+    response = client.get(
+        f"/api/assessment-results/{result_id}/exploratory-analysis",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    return response.get_json()["data"]
+
+
+def _erq_result(client, token):
+    saved = client.post(
+        "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "worksheet_id": "emotion_regulation_erq",
+            "answers": [{"question_id": f"ERQ{i:02d}", "value": "4"} for i in range(1, 11)],
+        },
+    )
+    assert saved.status_code == 201
+    return saved.get_json()["data"]["id"]
+
+
+def test_participant_analysis_withheld_until_high_risk_diary_review_closes(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "participant-analysis-diary-risk")
+    headers = {"Authorization": f"Bearer {token}"}
+    admin = {"X-Admin-Token": "safehome-local-admin-token"}
+    result_id = _erq_result(client, token)
+    for index in range(5):
+        response = client.post(
+            "/api/diaries",
+            headers=headers,
+            json={"scene": "亲子沟通", "event_description": f"记录{index}", "parent_emotion": "担心"},
+        )
+        assert response.status_code == 201
+    risky = client.post(
+        "/api/diaries",
+        headers=headers,
+        json={"scene": "睡前冲突", "event_description": "孩子说他不想活了。", "parent_emotion": "担心"},
+    )
+    assert risky.status_code == 201
+    diary_id = risky.get_json()["data"]["id"]
+    assert client.post("/api/feedback/generate", headers=headers, json={"diary_id": diary_id}).status_code == 201
+
+    assert _exploratory(client, token, result_id)["availability"] == "withheld"
+
+    reviews = client.get("/api/risk-review", headers=admin).get_json()["data"]["items"]
+    review = next(item for item in reviews if item["source_type"] == "diary" and item["source_id"] == diary_id)
+    closed = client.post(
+        f"/api/risk-review/{review['id']}/review",
+        headers=admin,
+        json={
+            "review_status": "closed",
+            "review_note": "已由人工完成复核。",
+            "action_taken": "已完成现实支持确认。",
+            "closed_reason": "本次人工关注已处理完成。",
+        },
+    )
+    assert closed.status_code == 200
+
+    assert _exploratory(client, token, result_id)["availability"] == "available"
+
+
+def test_participant_analysis_reports_scene_share_parent_child_pairs_and_trend(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "participant-analysis-pairs")
+    headers = {"Authorization": f"Bearer {token}"}
+    result_id = _erq_result(client, token)
+    records = [
+        ("作业拖延", "生气", 8, "烦躁"),
+        ("作业拖延", "生气", 6, "烦躁"),
+        ("作业拖延", "着急", 5, "委屈"),
+        ("睡前冲突", "着急", 4, "不确定"),
+        ("睡前冲突", "着急", 3, "委屈"),
+        ("手机使用", "担心", 4, "烦躁"),
+    ]
+    for scene, emotion, intensity, child in records:
+        response = client.post(
+            "/api/diaries",
+            headers=headers,
+            json={
+                "scene": scene,
+                "event_description": "一次普通的冲突记录",
+                "parent_emotion": emotion,
+                "parent_emotion_intensity": intensity,
+                "child_emotion": child,
+                "child_emotion_intensity": 5,
+            },
+        )
+        assert response.status_code == 201
+
+    data = _exploratory(client, token, result_id)
+
+    assert data["availability"] == "available"
+    edge = next(
+        item for item in data["interaction_network"]["edges"]
+        if item["scene"] == "作业拖延" and item["emotion"] == "生气"
+    )
+    assert (edge["support"], edge["share_in_scene"], edge["share_overall"]) == (2, 0.67, 0.33)
+    assert (edge["lift"], edge["average_intensity"]) == (2.0, 7.0)
+    parent_child = data["parent_child"]
+    assert parent_child["paired_record_count"] == 5
+    assert parent_child["causal_interpretation_allowed"] is False
+    first = parent_child["pairs"][0]
+    assert (first["parent_emotion"], first["child_emotion"], first["support"]) == ("生气", "烦躁", 2)
+    assert first["average_parent_intensity"] == 7.0
+    trend = data["affect"]["trend"]
+    assert (trend["available"], trend["recent_count"], trend["earlier_count"]) == (True, 3, 3)

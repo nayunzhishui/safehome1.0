@@ -191,6 +191,7 @@
                 <text class="participant-analysis-label">情感计算</text>
                 <text wx:if="{{record.affectSummary}}" class="detail-line">{{record.affectSummary}}</text>
                 <text wx:for="{{record.affectRows}}" wx:key="*this" class="detail-line">{{item}}</text>
+                <text wx:if="{{record.trendSummary}}" class="detail-line">{{record.trendSummary}}</text>
                 <text wx:if="{{record.affectNextCheck}}" class="boundary-line">{{record.affectNextCheck}}</text>
               </view>
               <view>
@@ -199,6 +200,12 @@
                 <text wx:for="{{record.networkRows}}" wx:key="*this" class="detail-line">{{item}}</text>
                 <text wx:if="{{!record.networkRows.length}}" class="detail-line">暂无支持度达到 2 的共现边。</text>
                 <text wx:if="{{record.networkNextCheck}}" class="boundary-line">{{record.networkNextCheck}}</text>
+              </view>
+              <view wx:if="{{record.parentChildSummary}}">
+                <text class="participant-analysis-label">家长—孩子情绪组合</text>
+                <text class="detail-line">{{record.parentChildSummary}}</text>
+                <text wx:for="{{record.parentChildRows}}" wx:key="*this" class="detail-line">{{item}}</text>
+                <text wx:if="{{record.parentChildNextCheck}}" class="boundary-line">{{record.parentChildNextCheck}}</text>
               </view>
             </view>
             <text class="boundary-line">{{record.boundary_notice}}</text>

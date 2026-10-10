@@ -172,13 +172,35 @@ export interface ParticipantExploratoryAnalysis {
     intensity_range: { minimum: number; maximum: number } | null;
     most_frequent_labels: string[];
     items: Array<{ label: string; count: number; average_intensity: number }>;
+    trend?: {
+      method: "recent_vs_earlier_halves";
+      minimum_required: number;
+      available: boolean;
+      recent_count?: number;
+      earlier_count?: number;
+      recent_average_intensity?: number;
+      earlier_average_intensity?: number;
+      difference?: number;
+      summary_text: string;
+      next_check_text?: string;
+    };
     summary_text: string;
     next_check_text: string;
   };
   interaction_network: {
     method: "scene_emotion_cooccurrence";
     nodes: Array<{ id: string; type: "scene" | "emotion"; label: string; support: number }>;
-    edges: Array<{ source: string; target: string; scene: string; emotion: string; support: number }>;
+    edges: Array<{
+      source: string;
+      target: string;
+      scene: string;
+      emotion: string;
+      support: number;
+      share_in_scene?: number;
+      share_overall?: number;
+      lift?: number;
+      average_intensity?: number | null;
+    }>;
     summary: {
       record_count: number;
       usable_record_count?: number;
@@ -197,6 +219,23 @@ export interface ParticipantExploratoryAnalysis {
     minimum_edge_support: 2;
     individual_metrics: false;
     relationship_quality_judgement: false;
+  };
+  parent_child?: {
+    method: "parent_child_emotion_cooccurrence";
+    paired_record_count: number;
+    minimum_pair_support: number;
+    pairs: Array<{
+      parent_emotion: string;
+      child_emotion: string;
+      support: number;
+      share_of_parent_emotion: number;
+      average_parent_intensity: number | null;
+      average_child_intensity: number | null;
+    }>;
+    suppressed_pair_count: number;
+    summary_text: string;
+    next_check_text: string;
+    causal_interpretation_allowed: false;
   };
   raw_text_included: false;
   other_participant_data_included: false;

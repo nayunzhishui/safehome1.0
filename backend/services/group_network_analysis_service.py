@@ -287,6 +287,57 @@ def _edges_within(node_ids: set[str], edges: list[dict]) -> list[dict]:
     ]
 
 
+def _adjacency(node_ids: set[str], edges: list[dict]) -> dict[str, set[str]]:
+    graph = {node_id: set() for node_id in node_ids}
+    for edge in edges:
+        graph[edge["source"]].add(edge["target"])
+        graph[edge["target"]].add(edge["source"])
+    return graph
+
+
+def _average_clustering(graph: dict[str, set[str]]) -> float:
+    """Mean local clustering (unweighted) over nodes with at least two neighbours."""
+
+    values = []
+    for neighbours in graph.values():
+        degree = len(neighbours)
+        if degree < 2:
+            continue
+        ordered = sorted(neighbours)
+        links = sum(
+            1
+            for index, first in enumerate(ordered)
+            for second in ordered[index + 1:]
+            if second in graph[first]
+        )
+        values.append(2 * links / (degree * (degree - 1)))
+    return round(sum(values) / len(values), 4) if values else 0.0
+
+
+def _degree_centralization(graph: dict[str, set[str]]) -> float:
+    """Freeman degree centralization: 0 when degrees are equal, 1 for a star.
+
+    Only the group-level value is reported; no node is identified.
+    """
+
+    node_count = len(graph)
+    if node_count < 3:
+        return 0.0
+    degrees = [len(neighbours) for neighbours in graph.values()]
+    peak = max(degrees)
+    return round(
+        sum(peak - degree for degree in degrees) / ((node_count - 1) * (node_count - 2)),
+        4,
+    )
+
+
+def _edge_keys(node_ids: set[str], edges: list[dict]) -> set[tuple[str, str]]:
+    return {
+        tuple(sorted((edge["source"], edge["target"])))
+        for edge in _edges_within(node_ids, edges)
+    }
+
+
 def _aggregate(
     node_ids: set[str], edges: list[dict], policy: dict
 ) -> dict:
@@ -299,6 +350,7 @@ def _aggregate(
         weight = float(edge["weight"])
         strength[edge["source"]] += weight
         strength[edge["target"]] += weight
+    graph = _adjacency(node_ids, filtered)
     sizes = _component_sizes(
         node_ids,
         filtered,
@@ -315,6 +367,8 @@ def _aggregate(
         if possible_edges
         else 0.0,
         "weighted_strength_distribution": _distribution(list(strength.values())),
+        "average_clustering": _average_clustering(graph),
+        "degree_centralization": _degree_centralization(graph),
         "component_count": len(sizes),
         "community_size_distribution": _distribution(
             [float(size) for size in visible_sizes]
@@ -430,12 +484,31 @@ def analyze_group_network(payload: dict, policy: dict) -> dict:
         }
         for index, window in enumerate(windows)
     ]
+    # Share of connections kept between consecutive windows (Jaccard of edge sets).
+    persistence_series = []
+    for index in range(1, len(windows)):
+        previous = _edge_keys(approved_nodes, windows[index - 1]["edges"])
+        current = _edge_keys(approved_nodes, windows[index]["edges"])
+        union = previous | current
+        persistence_series.append(
+            {
+                "window_index": index + 1,
+                "edge_jaccard": round(len(previous & current) / len(union), 4) if union else 0.0,
+            }
+        )
+    mean_edge_persistence = (
+        round(sum(item["edge_jaccard"] for item in persistence_series) / len(persistence_series), 4)
+        if persistence_series
+        else None
+    )
     temporal_change = {
         "window_count": len(windows),
         "density_series": density_series,
         "density_change_first_to_last": round(
             density_series[-1]["density"] - density_series[0]["density"], 4
         ),
+        "edge_persistence_series": persistence_series,
+        "mean_edge_persistence": mean_edge_persistence,
         "causal_interpretation_allowed": False,
     }
     report = {
@@ -470,12 +543,22 @@ def analyze_group_network(payload: dict, policy: dict) -> dict:
         "minimum_window_edge_count": minimum_window_edge_count,
         "insufficient_window_count": 0,
         "density": aggregate["density"],
+        "average_clustering": aggregate["average_clustering"],
+        "degree_centralization": aggregate["degree_centralization"],
+        "mean_edge_persistence": mean_edge_persistence,
         "density_change_first_to_last": temporal_change["density_change_first_to_last"],
         "boundary_density_range": _value_range(boundary_densities),
         "missingness_density_range": _value_range(missingness_densities),
         "summary_text": (
             f"合成群体 {aggregate['node_count']} 个节点、{aggregate['edge_count']} 条边、"
-            f"{temporal_change['window_count']} 个观察窗口；仅输出群体聚合描述。"
+            f"{temporal_change['window_count']} 个观察窗口；密度 {aggregate['density']}，"
+            f"平均聚类系数 {aggregate['average_clustering']}，度中心势 {aggregate['degree_centralization']}"
+            + (
+                f"，相邻窗口连接平均重合 {mean_edge_persistence}"
+                if mean_edge_persistence is not None
+                else ""
+            )
+            + "；仅输出群体聚合描述。"
         ),
         "next_check_text": "比较群体边界与缺失敏感性范围后，再决定是否需要工程复核。",
     }

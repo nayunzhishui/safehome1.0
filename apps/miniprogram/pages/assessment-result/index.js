@@ -151,6 +151,20 @@ function buildRiskSummary(result) {
   };
 }
 
+function percentText(value) {
+  return `${Math.round(Number(value) * 100)}%`;
+}
+
+function describeSceneEmotion(item) {
+  let text = `${item.scene} × ${item.emotion} · ${item.support} 次`;
+  if (item.share_in_scene !== undefined && item.share_in_scene !== null) {
+    text += `，占该场景 ${percentText(item.share_in_scene)}`;
+    if (item.share_overall !== undefined && item.share_overall !== null) text += `（全部记录中 ${percentText(item.share_overall)}）`;
+  }
+  if (item.average_intensity !== undefined && item.average_intensity !== null) text += `，平均强度 ${item.average_intensity}`;
+  return text;
+}
+
 function buildExploratoryAnalysisView(payload) {
   if (!payload) return null;
   const statusText = {
@@ -159,6 +173,8 @@ function buildExploratoryAnalysisView(payload) {
     withheld: "已转人工关注",
     ineligible: "当前阶段未开放",
   }[payload.availability] || "暂不可用";
+  const parentChild = payload.parent_child || {};
+  const trend = (payload.affect && payload.affect.trend) || {};
   return {
     ...payload,
     statusText,
@@ -170,8 +186,17 @@ function buildExploratoryAnalysisView(payload) {
     interactionEdges: ((payload.interaction_network && payload.interaction_network.edges) || []).map((item) => ({
       ...item,
       key: `${item.source}:${item.target}`,
-      summary: `${item.scene} × ${item.emotion} · ${item.support} 次`,
+      summary: describeSceneEmotion(item),
     })),
+    trendText: trend.available ? trend.summary_text : "",
+    trendNote: trend.available ? trend.next_check_text : "",
+    parentChildPairs: (parentChild.pairs || []).map((item) => ({
+      ...item,
+      key: `${item.parent_emotion}:${item.child_emotion}`,
+      summary: `你“${item.parent_emotion}”时孩子“${item.child_emotion}” · ${item.support} 次`,
+    })),
+    parentChildSummary: parentChild.paired_record_count ? parentChild.summary_text : "",
+    parentChildNote: parentChild.next_check_text || "",
   };
 }
 

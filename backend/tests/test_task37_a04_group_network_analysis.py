@@ -315,3 +315,31 @@ def test_saved_network_run_contains_only_aggregate_report(tmp_path, monkeypatch)
     assert run["metrics"]["individual_metrics_included"] is False
     assert run["metrics"]["node_identifiers_included"] is False
     assert "nodes" not in run["metrics"] and "edges" not in run["metrics"]
+
+
+def test_group_metrics_cover_clustering_centralization_and_persistence(tmp_path, monkeypatch):
+    app = _app(tmp_path, monkeypatch)
+    service = importlib.import_module("services.group_network_analysis_service")
+    triangle = service._adjacency(
+        {"a", "b", "c"},
+        [{"source": s, "target": t, "weight": 1} for s, t in (("a", "b"), ("b", "c"), ("a", "c"))],
+    )
+    star = service._adjacency(
+        {"hub", "x", "y", "z"},
+        [{"source": "hub", "target": leaf, "weight": 1} for leaf in ("x", "y", "z")],
+    )
+    assert (service._average_clustering(triangle), service._degree_centralization(triangle)) == (1.0, 0.0)
+    assert (service._average_clustering(star), service._degree_centralization(star)) == (0.0, 1.0)
+
+    headers = _headers(app)
+    report = app.test_client().post(
+        "/api/research/benchmarks/network/analyze",
+        json=_synthetic_payload(),
+        headers=headers["researcher-a"],
+    ).get_json()["data"]
+    metrics = report["aggregate_metrics"]
+    assert 0 <= metrics["average_clustering"] <= 1
+    assert 0 <= metrics["degree_centralization"] <= 1
+    persistence = report["temporal_change"]["edge_persistence_series"]
+    assert len(persistence) == 1 and 0 <= persistence[0]["edge_jaccard"] <= 1
+    assert report["analysis_summary"]["mean_edge_persistence"] == persistence[0]["edge_jaccard"]

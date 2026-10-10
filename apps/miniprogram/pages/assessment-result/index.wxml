@@ -143,6 +143,17 @@
             </view>
             <text wx:else class="exploratory-empty">暂时没有重复至少 2 次的稳定线索。</text>
           </view>
+          <view wx:if="{{exploratoryAnalysis.trendText}}" class="exploratory-group">
+            <text class="exploratory-label">强度前后对比</text>
+            <text class="exploratory-link">{{exploratoryAnalysis.trendText}}</text>
+            <text class="exploratory-empty">{{exploratoryAnalysis.trendNote}}</text>
+          </view>
+          <view wx:if="{{exploratoryAnalysis.parentChildSummary}}" class="exploratory-group">
+            <text class="exploratory-label">你的情绪与孩子的情绪</text>
+            <text class="exploratory-link">{{exploratoryAnalysis.parentChildSummary}}</text>
+            <text wx:for="{{exploratoryAnalysis.parentChildPairs}}" wx:key="key" class="exploratory-link">{{item.summary}}</text>
+            <text class="exploratory-empty">{{exploratoryAnalysis.parentChildNote}}</text>
+          </view>
         </view>
         <text class="exploratory-boundary">{{exploratoryAnalysis.boundary_notice}}</text>
       </view>

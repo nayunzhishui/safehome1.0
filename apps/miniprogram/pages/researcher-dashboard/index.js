@@ -46,7 +46,18 @@ function moduleRows(items) {
         affectRows: ((item.affect && item.affect.items) || []).map((row) => `${row.label} · ${row.count} 次 · 平均强度 ${row.average_intensity}`),
         networkSummary: item.interaction_network && item.interaction_network.summary ? item.interaction_network.summary.summary_text : "",
         networkNextCheck: item.interaction_network && item.interaction_network.summary ? item.interaction_network.summary.next_check_text : "",
-        networkRows: ((item.interaction_network && item.interaction_network.edges) || []).map((row) => `${row.scene} × ${row.emotion} · ${row.support} 次`),
+        networkRows: ((item.interaction_network && item.interaction_network.edges) || []).map((row) => {
+          let text = `${row.scene} × ${row.emotion} · ${row.support} 次`;
+          if (row.share_in_scene !== undefined && row.share_in_scene !== null) {
+            text += ` · 场景内 ${Math.round(row.share_in_scene * 100)}% · 整体 ${Math.round(row.share_overall * 100)}% · 提升度 ${row.lift}`;
+          }
+          if (row.average_intensity !== undefined && row.average_intensity !== null) text += ` · 平均强度 ${row.average_intensity}`;
+          return text;
+        }),
+        trendSummary: item.affect && item.affect.trend && item.affect.trend.available ? item.affect.trend.summary_text : "",
+        parentChildSummary: item.parent_child && item.parent_child.paired_record_count ? item.parent_child.summary_text : "",
+        parentChildRows: ((item.parent_child && item.parent_child.pairs) || []).map((row) => `家长“${row.parent_emotion}” × 孩子“${row.child_emotion}” · ${row.support} 次 · 占该家长情绪 ${Math.round(row.share_of_parent_emotion * 100)}%`),
+        parentChildNextCheck: item.parent_child ? item.parent_child.next_check_text || "" : "",
       };
     }
     return {

@@ -177,6 +177,44 @@ for (const [name, scores, category] of [
   });
 }
 
+const SYNTHETIC_EXPLORATORY = {
+  schema: 'safehome.participant-exploratory-analysis.v1',
+  availability: 'available',
+  record_count: 6,
+  affect: { items: [], trend: { available: true, summary_text: '最近 3 条记录的平均强度为 7.0，高于之前 3 条的 4.0。', next_check_text: '只作自我回看。' } },
+  interaction_network: { edges: [{ source: 'scene:0', target: 'emotion:0', scene: '作业拖延', emotion: '生气', support: 2, share_in_scene: 0.67, share_overall: 0.33, lift: 2, average_intensity: 7 }] },
+  parent_child: { paired_record_count: 5, summary_text: '5 条记录同时填写了孩子的情绪。', next_check_text: '不代表谁引起了谁。', pairs: [{ parent_emotion: '生气', child_emotion: '烦躁', support: 2, share_of_parent_emotion: 1 }] },
+  boundary_notice: '只作描述。',
+};
+
+test('结果页展示场景占比、强度前后对比与家长孩子情绪组合', async () => {
+  const h = pageHarness('assessment-result', {
+    getAssessmentResult: async () => ({ id: 'synthetic-result', category: '量表', scores_json: '{}' }),
+    getAssessment: async () => ({ id: 'synthetic-worksheet' }),
+    listCards: async () => ({ items: [] }),
+    getAssessmentExploratoryAnalysis: async () => SYNTHETIC_EXPLORATORY,
+    getAssessmentProfilePosition: async () => null,
+  });
+  h.page.data.resultId = 'synthetic-result';
+  h.page.data.worksheetId = 'synthetic-worksheet';
+  h.page.drawProfilePositionCharts = () => {};
+  h.page.drawScaleDimensionChart = () => {};
+  await h.page.loadResult();
+  const view = h.page.data.exploratoryAnalysis;
+  assert.equal(view.interactionEdges[0].summary, '作业拖延 × 生气 · 2 次，占该场景 67%（全部记录中 33%），平均强度 7');
+  assert.equal(view.trendText, SYNTHETIC_EXPLORATORY.affect.trend.summary_text);
+  assert.equal(view.parentChildPairs[0].summary, '你“生气”时孩子“烦躁” · 2 次');
+  assert.equal(view.parentChildNote, '不代表谁引起了谁。');
+});
+
+test('研究者档案展示提升度、强度对比与家长孩子情绪组合', () => {
+  const { context } = pageHarness('researcher-dashboard');
+  const [row] = vm.runInNewContext('moduleRows', context)([SYNTHETIC_EXPLORATORY]);
+  assert.equal(row.networkRows[0], '作业拖延 × 生气 · 2 次 · 场景内 67% · 整体 33% · 提升度 2 · 平均强度 7');
+  assert.equal(row.trendSummary, SYNTHETIC_EXPLORATORY.affect.trend.summary_text);
+  assert.equal(row.parentChildRows[0], '家长“生气” × 孩子“烦躁” · 2 次 · 占该家长情绪 100%');
+});
+
 test('结果页按计分方式标注均值、合计与得分', async () => {
   const h = resultHarness({ dimensions: [
     { key: 'MEAN', label: '均值维度', score: 3.5, item_count: 2, score_method: 'mean_terms' },
