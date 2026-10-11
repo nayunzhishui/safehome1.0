@@ -250,7 +250,7 @@ F21 补充：`/healthz` 是公开最小探针；`/healthz/deep` 和 `/readyz` �
 
 ### `GET /api/programs/<id>`
 
-用途：返回单个项目测试练习包详情，包括 sessions、书写提示、反思问题、非诊断边界和结构化 `measurement_plan`。生产环境草案详情仅允许研究者、督导或管理员携带身份并传 `include_drafts=true` 预览。测量计划包含前测/后测 worksheet 引用、时间点、主要观察维度和人工审核项；`draft_requires_research_review` 不代表方案已批准。小程序端书写草稿只本地缓存，不上传后端。
+用途：返回单个项目测试练习包详情，包括 sessions、书写提示、反思问题、非诊断边界和结构化 `measurement_plan`。自 `2026.10-text-v2` 起三个项目均为纯文字书写练习：项目含 `summary`（一句话简介）、`safety_note`（面向用户的安全提示）和 `evidence_basis`（每项练习参考的依据，含 `practice/finding/citation/url`）；每节含 `intro`（导语）、`example`（示例）、`writing_prompt`（书写提示）和 `closing`（结束语），内容校验要求每节必须有 `intro` 与 `writing_prompt`。列表接口每项同时返回 `summary`。生产环境草案详情仅允许研究者、督导或管理员携带身份并传 `include_drafts=true` 预览。测量计划包含前测/后测 worksheet 引用、时间点、主要观察维度和人工审核项；`draft_requires_research_review` 不代表方案已批准。小程序端书写草稿只本地缓存，不上传后端。
 
 ### 共享错误码
 
@@ -1715,7 +1715,7 @@ Invoke-WebRequest `
 
 保存位置：`records`，其中 `module_type=program_entry`，`source_id=<program_id>`；`data_json`绑定当前 `protocol_version`，不随之后内容升级漂移。
 
-`answers.reflection_answers`可保存当前节每个反思问题的独立回答，结构为`[{question, answer}]`；旧版`reflection`摘要继续保留兼容。
+`answers.reflection_answers`可保存当前节每个反思问题的独立回答，结构为`[{question, answer}]`；旧版`reflection`摘要继续保留兼容。小程序在用户选择“这一节先跳过”或“先暂停这个项目”时提交 `participation_status=skipped/paused`，不要求书写内容，可选原因写入 `answers.participation_note`；只有 `completed` 记录计入已完成小节。
 
 ### `GET /api/programs/<program_id>/entries`
 

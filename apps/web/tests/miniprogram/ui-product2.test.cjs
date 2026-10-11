@@ -1180,3 +1180,57 @@ test('画像结果按模型类型给出匹配清晰度，反向题按题目原�
   const noPoint = build({ ...base, position: { cluster_id: 0, pc1: null, pc2: null, posterior: 0.5, assignment_version: 'euclidean_center_v1' } });
   assert.equal(noPoint.userPoint, null);
 });
+
+test('项目练习：写完明显更难受时提示停一停，跳过不要求书写，提交后显示安全提示并标出已完成小节', async () => {
+  const calls = [];
+  const h = pageHarness('program-detail', {
+    createProgramEntry: async (_id, payload) => { calls.push(payload); return { requires_review: true, risk_safe_response: '合成安全提示' }; },
+    listProgramEntries: async () => ({ items: [
+      { id: 'synthetic-1', session_no: 1, participation_status: 'completed' },
+      { id: 'synthetic-2', session_no: 2, participation_status: 'skipped' },
+    ] }),
+  });
+  switchAccount(h, 'A');
+  h.page._draftOwner = 'A';
+  h.page._readSession = { userId: 'A', token: 'synthetic-A' };
+  const sessions = [1, 2, 3].map((no) => ({ session_no: no, writing_prompt: `合成提示${no}`, reflection_questions: ['合成问题'] }));
+  Object.assign(h.page.data, { programId: 'synthetic-program', sessions, selectedSession: sessions[1] });
+
+  h.page.onDistressBeforeChange({ detail: { value: 3 } });
+  h.page.onDistressAfterChange({ detail: { value: 7 } });
+  assert.match(h.page.data.distressNotice, /比开始时更难受/);
+  h.page.onDistressAfterChange({ detail: { value: 9 } });
+  assert.match(h.page.data.distressNotice, /比较高/);
+  h.page.onDistressAfterChange({ detail: { value: 4 } });
+  assert.equal(h.page.data.distressNotice, '');
+
+  await h.page.submitEntry();
+  assert.equal(calls.length, 0);
+  assert.match(h.page.data.errorMessage, /先跳过/);
+
+  h.page.onParticipationChange({ detail: { value: 'skipped' } });
+  await h.page.submitEntry();
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].participation_status, 'skipped');
+  assert.equal(h.page.data.safetyMessage, '合成安全提示');
+  assert.deepEqual([...h.page.data.completedNos], [1]);
+  assert.equal(h.page.data.progressText, '已完成 1 / 3 节');
+  assert.deepEqual([...h.page.data.sessions.map((item) => item.isDone)], [true, false, false]);
+  assert.deepEqual([...h.page.data.submittedEntries.map((item) => item.statusText)], ['已完成', '已跳过']);
+  h.page.openHelpResources();
+  assert.equal(h.navigation.at(-1).url, '/pages/emergency-resources/index');
+});
+
+test('项目详情只对研究角色显示研究信息，书写框不受默认140字限制', () => {
+  for (const [role, expected] of [['researcher', true], ['parent', false]]) {
+    const h = pageHarness('program-detail', { getProgram: () => new Promise(() => {}) });
+    h.storage.set('auth_user', { id: `synthetic-${role}`, role });
+    h.storage.set('auth_token', `synthetic-${role}`);
+    h.page.loadAfterConsent({ id: 'synthetic-program' });
+    assert.equal(h.page.data.showResearchInfo, expected);
+  }
+  const wxml = read('pages/program-detail/index.wxml');
+  assert.match(wxml, /class="draft-input" maxlength="2000"/);
+  assert.match(wxml, /wx:if="\{\{showResearchInfo && program.measurementPlan\}\}"/);
+  assert.match(wxml, /练习依据/);
+});

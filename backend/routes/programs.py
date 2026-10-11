@@ -48,6 +48,7 @@ def _program_summary(program: dict) -> dict:
     return {
         "id": program.get("id"),
         "title": program.get("title"),
+        "summary": program.get("summary"),
         "target_constructs": program.get("target_constructs", []),
         "audience": program.get("audience"),
         "theory_source": program.get("theory_source"),

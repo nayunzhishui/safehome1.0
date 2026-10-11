@@ -79,7 +79,7 @@
       "layer": "docs",
       "classification": "documented_api_contract",
       "production_eligible": false,
-      "sha256": "12acaecaeb7b1d118934c29fda121ad2c3a0f74823304ef9acf68b3d4961c5dc"
+      "sha256": "02855cccd29e2175c70a1c3fd09c7b6b3a953f9c9264129f896f757165f8d31b"
     },
     {
       "path": "scripts/build_task9_cloudbase_package.ps1",

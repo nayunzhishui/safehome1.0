@@ -78,6 +78,7 @@ def test_production_opens_owner_released_programs_and_keeps_drafts_closed(tmp_pa
     data = listing.get_json()["data"]
     assert len(data["items"]) == 3
     assert all(item["preview_only"] is False and item["showcase_open"] is False for item in data["items"])
+    assert all(item["summary"] for item in data["items"])
     assert data["availability"]["status"] == "available"
     assert data["availability"]["approved_count"] == 0
     assert data["availability"]["released_count"] == 3

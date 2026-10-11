@@ -1,26 +1,72 @@
-const { captureAuthSession, isCurrentAuthSession } = require("../../utils/authGuard");
+const { captureAuthSession, getAuthUser, isCurrentAuthSession } = require("../../utils/authGuard");
 const { createSafeHomeApi } = require("../../services/api");
 const { beginServiceEntry, finishServiceConsent } = require("../../utils/serviceConsent");
 
 const api = createSafeHomeApi();
 
+const RESEARCH_ROLES = ["researcher", "supervisor", "admin"];
+const HELP_RESOURCES_URL = "/pages/emergency-resources/index";
+const PARTICIPATION_OPTIONS = [
+  { value: "completed", label: "完成了这一节" },
+  { value: "skipped", label: "这一节先跳过" },
+  { value: "paused", label: "先暂停这个项目" },
+];
+const PARTICIPATION_TEXT = { completed: "已完成", skipped: "已跳过", paused: "已暂停", withdrawn: "已退出" };
+const SUBMITTED_TEXT = {
+  completed: "已提交。它只用于本工具内复盘、训练建议和必要的人工补充反馈。",
+  skipped: "已记录：这一节先跳过。想回来写的时候随时可以。",
+  paused: "已记录暂停。休息好了再回来；需要时可以查看求助资源。",
+};
+const REVIEW_TEXT = {
+  pilot_approved: "研究、心理、伦理三方已批准",
+  production_approved: "项目负责人决定开放，研究、心理、伦理审核待完成",
+  pilot_draft: "草案，待研究、心理、伦理审核",
+};
+
 function draftKey(programId, sessionNo, ownerId) {
   return `safehome:programDraft:${programId}:${sessionNo}:user:${encodeURIComponent(ownerId)}`;
 }
 
-function markActiveSessions(sessions, selectedSession) {
+function markActiveSessions(sessions, selectedSession, completedNos = []) {
   const selectedNo = selectedSession ? Number(selectedSession.session_no) : null;
   return (sessions || []).map((session) => ({
     ...session,
     isActive: Number(session.session_no) === selectedNo,
+    isDone: completedNos.includes(Number(session.session_no)),
   }));
+}
+
+function completedSessionNos(entries) {
+  return [...new Set((entries || [])
+    .filter((item) => (item.participation_status || "completed") === "completed")
+    .map((item) => Number(item.session_no)))];
+}
+
+// Rough, non-clinical cue to pause: a high rating after writing, or a clear rise from the start.
+function distressNoticeText(before, after) {
+  if (after >= 8) return "现在的不适程度比较高。可以先停在这里，不用继续写；如果需要，请联系身边可信任的人，或查看求助资源。";
+  if (after - before >= 3) return "写完后比开始时更难受了。可以先停一停，做点让自己放松的事；如果需要，请联系身边可信任的人，或查看求助资源。";
+  return "";
+}
+
+function minutesText(sessions) {
+  const minutes = (sessions || []).map((session) => Number(session.duration_minutes)).filter((value) => value > 0);
+  if (!minutes.length) return "";
+  const low = Math.min(...minutes);
+  const high = Math.max(...minutes);
+  return low === high ? `${low}` : `${low}–${high}`;
 }
 
 function formatProgram(program) {
   const measurementPlan = program.measurement_plan || null;
+  const sessions = program.sessions || [];
+  const minutes = minutesText(sessions);
   return {
     ...program,
     previewLabel: program.showcase_open ? "临时展示开放" : program.review_status === "pilot_approved" ? "已批准试点" : program.review_status === "production_approved" ? "已开放" : "开发预览，尚未正式开放",
+    sessionCountText: sessions.length ? `共 ${sessions.length} 节${minutes ? `，每节约 ${minutes} 分钟` : ""}` : "",
+    reviewText: REVIEW_TEXT[program.review_status] || program.review_status || "",
+    evidence: (program.evidence_basis || []).filter((item) => item && item.finding),
     doseText: program.minimum_dose
       ? `计划 ${program.minimum_dose.planned_sessions} 节，至少完成 ${program.minimum_dose.minimum_completed_sessions} 节；建议间隔 ${program.minimum_dose.session_interval_days}`
       : "",
@@ -49,12 +95,20 @@ Page({
     draftText: "",
     reflectionAnswers: {},
     submittedEntries: [],
+    completedNos: [],
+    progressText: "",
+    showResearchInfo: false,
+    participationOptions: PARTICIPATION_OPTIONS,
+    participationStatus: "completed",
+    statusNote: "",
     analysisConsent: false,
     distressBefore: 5,
     distressAfter: 5,
+    distressNotice: "",
     adverseResponse: false,
     submitting: false,
     successMessage: "",
+    safetyMessage: "",
     loading: true,
     errorMessage: "",
   },
@@ -67,7 +121,7 @@ Page({
   onShow() {
     this._hidden = false;
     if (this._readSession && !isCurrentAuthSession(this._readSession)) {
-      this.setData({ submittedEntries: [], draftText: "", reflectionAnswers: {}, analysisConsent: false, distressBefore: 5, distressAfter: 5, adverseResponse: false, successMessage: "", serviceReady: false, submitting: false });
+      this.setData({ submittedEntries: [], completedNos: [], progressText: "", draftText: "", reflectionAnswers: {}, participationStatus: "completed", statusNote: "", analysisConsent: false, distressBefore: 5, distressAfter: 5, distressNotice: "", adverseResponse: false, successMessage: "", safetyMessage: "", serviceReady: false, submitting: false });
       return this.onLoad(this._entryOptions || {});
     }
     if (this.data.loading && this.data.programId) this.loadProgram(this.data.programId);
@@ -79,7 +133,8 @@ Page({
     const programId = decodeURIComponent(query.id || "");
     const previewMode = query.preview === "1";
     const requestedSessionNo = query.session ? Number(query.session) : null;
-    this.setData({ programId, previewMode, requestedSessionNo });
+    const showResearchInfo = previewMode || RESEARCH_ROLES.includes(String((getAuthUser() || {}).role || ""));
+    this.setData({ programId, previewMode, requestedSessionNo, showResearchInfo });
     this.loadProgram(programId);
   },
 
@@ -102,7 +157,7 @@ Page({
         const selectedSession = rawSessions.find(
           (item) => Number(item.session_no) === Number(this.data.requestedSessionNo),
         ) || rawSessions[0] || null;
-        const sessions = markActiveSessions(rawSessions, selectedSession);
+        const sessions = markActiveSessions(rawSessions, selectedSession, this.data.completedNos);
         this.setData(
           {
             program,
@@ -136,7 +191,21 @@ Page({
     if (!selectedSession) {
       return;
     }
-    this.setData({ selectedSession, sessions: markActiveSessions(this.data.sessions, selectedSession), draftText: "", reflectionAnswers: {} }, () => this.loadDraft());
+    this.setData({
+      selectedSession,
+      sessions: markActiveSessions(this.data.sessions, selectedSession, this.data.completedNos),
+      draftText: "",
+      reflectionAnswers: {},
+      participationStatus: "completed",
+      statusNote: "",
+      successMessage: "",
+      safetyMessage: "",
+      errorMessage: "",
+    }, () => this.loadDraft());
+  },
+
+  openHelpResources() {
+    wx.navigateTo({ url: HELP_RESOURCES_URL });
   },
 
   loadDraft() {
@@ -173,12 +242,22 @@ Page({
     this.setData({ analysisConsent: !!event.detail.value.length });
   },
 
+  onParticipationChange(event) {
+    this.setData({ participationStatus: event.detail.value || "completed", successMessage: "", errorMessage: "" });
+  },
+
+  onStatusNoteInput(event) {
+    this.setData({ statusNote: event.detail.value });
+  },
+
   onDistressBeforeChange(event) {
-    this.setData({ distressBefore: Number(event.detail.value) });
+    const distressBefore = Number(event.detail.value);
+    this.setData({ distressBefore, distressNotice: distressNoticeText(distressBefore, this.data.distressAfter) });
   },
 
   onDistressAfterChange(event) {
-    this.setData({ distressAfter: Number(event.detail.value) });
+    const distressAfter = Number(event.detail.value);
+    this.setData({ distressAfter, distressNotice: distressNoticeText(this.data.distressBefore, distressAfter) });
   },
 
   onAdverseResponseChange(event) {
@@ -206,12 +285,19 @@ Page({
     try {
       const payload = await api.listProgramEntries(this.data.programId);
       if (!isCurrent()) return;
+      const items = payload.items || [];
+      const completedNos = completedSessionNos(items);
+      const total = (this.data.sessions || []).length;
       this.setData({
-        submittedEntries: (payload.items || []).map((item) => ({
+        submittedEntries: items.map((item) => ({
           ...item,
           createdAtText: String(item.created_at || "").slice(0, 16).replace("T", " "),
           sessionText: `第 ${item.session_no} 节`,
+          statusText: PARTICIPATION_TEXT[item.participation_status] || "已提交",
         })),
+        completedNos,
+        sessions: markActiveSessions(this.data.sessions, this.data.selectedSession, completedNos),
+        progressText: completedNos.length && total ? `已完成 ${completedNos.length} / ${total} 节` : "",
       });
     } catch (error) {
       if (!isCurrent()) return;
@@ -234,22 +320,25 @@ Page({
       answer: String((this.data.reflectionAnswers || {})[index] || "").trim(),
     }));
     const answeredReflections = reflectionAnswers.filter((item) => item.answer);
-    if (!draftText && !answeredReflections.length) {
-      this.setData({ errorMessage: "请先填写书写内容或至少一个反思问题。" });
+    const participationStatus = this.data.participationStatus || "completed";
+    const statusNote = String(this.data.statusNote || "").trim();
+    if (participationStatus === "completed" && !draftText && !answeredReflections.length) {
+      this.setData({ errorMessage: "请先填写书写内容或至少一个反思问题；不想写的话，可以选择“这一节先跳过”。" });
       return;
     }
-    this.setData({ submitting: true, successMessage: "", errorMessage: "" });
+    this.setData({ submitting: true, successMessage: "", safetyMessage: "", errorMessage: "" });
     try {
-      await api.createProgramEntry(this.data.programId, {
+      const result = await api.createProgramEntry(this.data.programId, {
         session_no: session.session_no,
         answers: {
           writing_prompt: session.writing_prompt || "",
           draft_text: draftText,
           reflection_answers: reflectionAnswers,
+          participation_note: statusNote,
         },
-        reflection: draftText || answeredReflections.map((item) => `${item.question}：${item.answer}`).join("\n"),
+        reflection: draftText || answeredReflections.map((item) => `${item.question}：${item.answer}`).join("\n") || statusNote,
         analysis_consent: this.data.analysisConsent,
-        participation_status: "completed",
+        participation_status: participationStatus,
         recommendation_source: "user_choice",
         distress_before: this.data.distressBefore,
         distress_after: this.data.distressAfter,
@@ -261,7 +350,10 @@ Page({
       this.setData({
         draftText: "",
         reflectionAnswers: {},
-        successMessage: "已提交。它只用于本工具内复盘、训练建议和必要的人工补充反馈。",
+        participationStatus: "completed",
+        statusNote: "",
+        successMessage: SUBMITTED_TEXT[participationStatus] || SUBMITTED_TEXT.completed,
+        safetyMessage: result && result.requires_review ? result.risk_safe_response || "" : "",
       });
       await this.loadSubmittedEntries();
     } catch (error) {

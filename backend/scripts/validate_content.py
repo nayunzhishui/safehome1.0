@@ -428,11 +428,17 @@ def validate_programs(payload: dict, card_ids: set[str], worksheet_ids: set[str]
         for field in ["session_no", "title", "objective", "steps", "reflection_questions", "duration_minutes", "disclaimer"]:
             if is_empty(first_session.get(field)):
                 errors.append(f"programs.json.programs[{program_id}].sessions[1].{field} 缺失或为空")
+        if is_empty(program.get("summary")):
+            errors.append(f"programs.json.programs[{program_id}].summary 不能为空")
         for session in sessions:
             session_no = session.get("session_no", "unknown")
             disclaimer = str(session.get("disclaimer", ""))
             if not any(term in disclaimer for term in BOUNDARY_TERMS):
                 errors.append(f"programs.json.programs[{program_id}].sessions[{session_no}].disclaimer 需包含非诊断或不替代边界")
+            # Every session is a text-guided writing practice: it needs its own lead-in and prompt.
+            for field in ["intro", "writing_prompt"]:
+                if is_empty(session.get(field)):
+                    errors.append(f"programs.json.programs[{program_id}].sessions[{session_no}].{field} 缺失或为空")
             if not isinstance(session.get("steps"), list) or len(session.get("steps", [])) < 2:
                 errors.append(f"programs.json.programs[{program_id}].sessions[{session_no}].steps 至少需要 2 项")
             if not isinstance(session.get("reflection_questions"), list) or len(session.get("reflection_questions", [])) < 2:

@@ -260,7 +260,7 @@ def test_program_entry_creates_private_record(tmp_path, monkeypatch):
     assert created["module_type"] == "program_entry"
     assert created["source_id"] == "self_compassion_exam_anxiety"
     data = json.loads(created["data_json"])
-    assert data["protocol_version"] == "2026.07-task17-v1"
+    assert data["protocol_version"] == "2026.10-text-v2"
     assert data["distress_before"] == 7
     assert data["distress_after"] == 4
     assert data["recommendation_source"] == "user_choice"

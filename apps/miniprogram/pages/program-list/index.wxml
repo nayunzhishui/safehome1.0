@@ -18,9 +18,10 @@
     <view class="program-body">
       <view class="program-copy">
         <text class="program-title">{{item.title}}</text>
+        <text wx:if="{{item.summary}}" class="program-summary">{{item.summary}}</text>
         <text class="program-meta">受众：{{item.audience}}</text>
         <view class="construct-row">
-          <text class="construct-label">目标构念：</text>
+          <text class="construct-label">练习主题：</text>
           <text wx:for="{{item.target_constructs}}" wx:key="*this" class="construct-chip">{{item}}</text>
         </view>
         <text class="program-first">第一节：{{item.first_session_title}}</text>

@@ -136,6 +136,12 @@
   line-height: 1.55;
 }
 
+.program-summary {
+  color: var(--safe-muted);
+  font-size: 28rpx;
+  line-height: 1.65;
+}
+
 .pending-count {
   margin-top: 20rpx;
   color: var(--safe-primary-deep);

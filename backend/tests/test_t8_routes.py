@@ -83,7 +83,7 @@ def test_programs_endpoints_return_pilot_programs(tmp_path, monkeypatch):
     assert program["measurement_plan"]["baseline_worksheet_ids"]
     assert program["measurement_plan"]["post_worksheet_ids"]
     assert program["measurement_plan"]["status"] == "draft_requires_research_review"
-    assert program["protocol_version"] == "2026.07-task17-v1"
+    assert program["protocol_version"] == "2026.10-text-v2"
     assert len(program["measurement_plan"]["measurement_points"]) == 4
     assert all(item["status"] == "pending" for item in program["approval"].values())
     assert "不构成诊断" in program["boundary_notice"]

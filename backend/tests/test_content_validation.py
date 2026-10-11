@@ -153,6 +153,22 @@ def test_owner_released_program_requires_release_record(tmp_path):
     assert any("programs.json.programs[self_compassion_exam_anxiety] 缺少负责人开放记录" in error for error in errors)
 
 
+def test_program_session_requires_intro_and_writing_prompt(tmp_path):
+    validator = _validator()
+    content_dir = tmp_path / "content"
+    _copy_required_content(content_dir)
+    path = content_dir / "programs.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["programs"][0]["sessions"][1].pop("writing_prompt")
+    payload["programs"][0]["sessions"][1]["intro"] = ""
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    errors = validator.validate_content(content_dir, SCHEMA_ROOT)
+
+    assert any("programs.json.programs[self_compassion_exam_anxiety].sessions[2].writing_prompt 缺失或为空" in error for error in errors)
+    assert any("programs.json.programs[self_compassion_exam_anxiety].sessions[2].intro 缺失或为空" in error for error in errors)
+
+
 def _write_profile_model(content_dir: Path, **overrides) -> None:
     profile_dir = content_dir / "profiles"
     profile_dir.mkdir(exist_ok=True)

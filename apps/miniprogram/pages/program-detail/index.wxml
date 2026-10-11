@@ -6,13 +6,15 @@
 <view class="safe-page ui2-page program-detail-page" wx:if="{{program}}" role="main" aria-label="项目详情">
   <view class="safe-card hero-card">
     <text class="program-title">{{program.title}}</text>
+    <text wx:if="{{program.summary}}" class="program-summary">{{program.summary}}</text>
   </view>
 
   <view class="program-boundary" role="note">{{program.boundary_notice}}</view>
 
   <view class="program-meta-row">
-    <text class="protocol-status">{{program.previewLabel}} · 方案 {{program.protocol_version}}</text>
-    <view class="construct-row">
+    <text class="protocol-status">{{program.previewLabel}}<block wx:if="{{program.sessionCountText}}"> · {{program.sessionCountText}}</block></text>
+    <text wx:if="{{progressText}}" class="progress-text">{{progressText}}</text>
+    <view class="construct-row" aria-label="练习主题">
       <text wx:for="{{program.target_constructs}}" wx:key="*this" class="construct-chip">{{item}}</text>
     </view>
   </view>
@@ -24,18 +26,27 @@
   <view class="safe-card protocol-card">
     <text class="safe-h3">参与前先了解</text>
     <text class="protocol-line">{{program.doseText}}</text>
-    <text class="protocol-line">{{program.completion_definition}}</text>
+    <text class="protocol-line">每节先读一段说明和示例，再按提示写几句话，最后回答几个小问题。写多写少都可以，没有对错。</text>
     <text class="protocol-label">适合参加的基本条件</text>
     <text wx:for="{{program.inclusion_criteria}}" wx:key="*this" class="protocol-line">• {{item}}</text>
     <text class="protocol-label">这些情况先不要继续</text>
     <text wx:for="{{program.exclusion_criteria}}" wx:key="*this" class="protocol-line">• {{item}}</text>
-    <text class="protocol-warning">{{program.safety_gate}}</text>
+    <text class="protocol-warning">{{program.safety_note || program.safety_gate}}</text>
     <text wx:if="{{program.neutral_alternative}}" class="protocol-line">可选替代：{{program.neutral_alternative}}</text>
+    <button class="safe-outline-button help-button" bindtap="openHelpResources">需要帮助时，查看求助资源</button>
+  </view>
+
+  <view wx:if="{{showResearchInfo}}" class="safe-card research-card">
+    <text class="safe-h3">研究信息</text>
+    <text class="program-help">仅研究人员可见。</text>
+    <text class="protocol-line">方案 {{program.protocol_version}} · {{program.reviewText}}</text>
+    <text class="protocol-line">{{program.completion_definition}}</text>
+    <text wx:if="{{program.safety_note}}" class="protocol-line">安全门槛：{{program.safety_gate}}</text>
     <text wx:if="{{program.interpretation_boundary}}" class="protocol-line">{{program.interpretation_boundary}}</text>
     <text wx:if="{{program.clinical_boundary}}" class="protocol-line">{{program.clinical_boundary}}</text>
   </view>
 
-  <view wx:if="{{program.measurementPlan}}" class="safe-card measurement-card">
+  <view wx:if="{{showResearchInfo && program.measurementPlan}}" class="safe-card measurement-card">
     <view class="measurement-head">
       <view>
         <text class="safe-h3">项目记录节奏</text>
@@ -60,10 +71,11 @@
       wx:for="{{sessions}}"
       wx:key="session_no"
       class="session-tab {{item.isActive ? 'session-tab--active' : ''}}"
+      aria-label="第 {{item.session_no}} 节{{item.isDone ? '，已完成' : ''}}"
       data-session-no="{{item.session_no}}"
       bindtap="selectSession"
     >
-      第 {{item.session_no}} 节
+      第 {{item.session_no}} 节<text wx:if="{{item.isDone}}" class="session-done"> ✓</text>
     </button>
   </scroll-view>
 
@@ -71,6 +83,13 @@
     <text class="session-title">{{selectedSession.title}}</text>
     <text class="session-objective">{{selectedSession.objective}}</text>
     <text class="session-meta">预计 {{selectedSession.duration_minutes}} 分钟</text>
+    <text wx:if="{{selectedSession.intro}}" class="session-intro">{{selectedSession.intro}}</text>
+
+    <view wx:if="{{!previewMode}}" class="checkin-block">
+      <text class="protocol-label">开始前，现在的不适程度：{{distressBefore}} / 10</text>
+      <text class="checkin-hint">0 表示一点也不难受，10 表示非常难受。</text>
+      <slider min="0" max="10" step="1" value="{{distressBefore}}" bindchange="onDistressBeforeChange" activeColor="#23666e" aria-label="开始前的不适程度" />
+    </view>
 
     <view class="section-block">
       <text class="section-title">练习步骤</text>
@@ -80,10 +99,16 @@
       </view>
     </view>
 
+    <view wx:if="{{selectedSession.example}}" class="section-block example-block">
+      <text class="section-title">示例</text>
+      <text class="example-hint">可以参考，不必照写。</text>
+      <text class="example-text">{{selectedSession.example}}</text>
+    </view>
+
     <view wx:if="{{selectedSession.writing_prompt}}" class="section-block">
       <text class="section-title">书写提示</text>
       <text class="prompt-box">{{selectedSession.writing_prompt}}</text>
-      <textarea wx:if="{{!previewMode}}" class="draft-input" aria-label="本节书写内容，草稿只保存在本机" placeholder-class="field-placeholder" value="{{draftText}}" placeholder="可以先写在这里。保存草稿只留在本机；点击正式提交后才会上传。" bindinput="onDraftInput" />
+      <textarea wx:if="{{!previewMode}}" class="draft-input" maxlength="2000" aria-label="本节书写内容，草稿只保存在本机" placeholder-class="field-placeholder" value="{{draftText}}" placeholder="可以先写在这里。保存草稿只留在本机；点击提交后才会上传。" bindinput="onDraftInput" />
       <button wx:if="{{!previewMode}}" class="safe-outline-button" bindtap="saveDraft">保存本机草稿</button>
     </view>
 
@@ -93,7 +118,7 @@
         <text class="question-row">{{index + 1}}. {{item}}</text>
         <textarea
           wx:if="{{!previewMode}}"
-          class="reflection-input" aria-label="反思问题：{{item}}" placeholder-class="field-placeholder"
+          class="reflection-input" maxlength="500" aria-label="反思问题：{{item}}" placeholder-class="field-placeholder"
           value="{{reflectionAnswers[index]}}"
           data-index="{{index}}"
           placeholder="可以写一句真实感受，也可以先留空，稍后再补。"
@@ -102,15 +127,29 @@
       </view>
     </view>
 
+    <view wx:if="{{selectedSession.closing}}" class="closing-block">
+      <text class="closing-text">{{selectedSession.closing}}</text>
+    </view>
+
     <view class="session-disclaimer">{{selectedSession.disclaimer}}</view>
     <view class="session-disclaimer">完成标准：{{selectedSession.completion_criteria}}</view>
     <view class="session-disclaimer">停止提示：{{selectedSession.stop_rule}}</view>
 
     <view wx:if="{{!previewMode}}" class="submit-block">
-      <text class="protocol-label">练习前不适程度：{{distressBefore}} / 10</text>
-      <slider min="0" max="10" step="1" value="{{distressBefore}}" bindchange="onDistressBeforeChange" activeColor="#23666e" />
-      <text class="protocol-label">练习后不适程度：{{distressAfter}} / 10</text>
-      <slider min="0" max="10" step="1" value="{{distressAfter}}" bindchange="onDistressAfterChange" activeColor="#23666e" />
+      <text class="protocol-label">这一次的状态</text>
+      <radio-group class="status-options" bindchange="onParticipationChange">
+        <label wx:for="{{participationOptions}}" wx:key="value" class="consent-row">
+          <radio value="{{item.value}}" checked="{{participationStatus === item.value}}" color="#23666e" />
+          <text>{{item.label}}</text>
+        </label>
+      </radio-group>
+      <textarea wx:if="{{participationStatus !== 'completed'}}" class="reflection-input" maxlength="300" aria-label="跳过或暂停的原因，可不填" placeholder-class="field-placeholder" value="{{statusNote}}" placeholder="想说明一下原因吗？可以不填。" bindinput="onStatusNoteInput" />
+      <text class="protocol-label">写完后，现在的不适程度：{{distressAfter}} / 10</text>
+      <slider min="0" max="10" step="1" value="{{distressAfter}}" bindchange="onDistressAfterChange" activeColor="#23666e" aria-label="写完后的不适程度" />
+      <view wx:if="{{distressNotice}}" class="care-notice" role="alert">
+        <text class="care-notice-text">{{distressNotice}}</text>
+        <button class="safe-outline-button" bindtap="openHelpResources">查看求助资源</button>
+      </view>
       <checkbox-group bindchange="onAdverseResponseChange">
         <label class="consent-row">
           <checkbox value="yes" checked="{{adverseResponse}}" color="#23666e" />
@@ -123,6 +162,10 @@
           <text>允许将本次内容用于脱敏聚合分析，不默认展示原文。</text>
         </label>
       </checkbox-group>
+      <view wx:if="{{safetyMessage}}" class="care-notice" role="alert">
+        <text class="care-notice-text">{{safetyMessage}}</text>
+        <button class="safe-outline-button" bindtap="openHelpResources">查看求助资源</button>
+      </view>
       <view wx:if="{{successMessage}}" class="status success">{{successMessage}}</view>
       <view wx:if="{{errorMessage}}" class="status error">{{errorMessage}}</view>
       <button class="safe-primary-button" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submitEntry">登录后正式提交</button>
@@ -137,7 +180,17 @@
         <text class="history-title">{{item.sessionText}} · {{item.createdAtText}}</text>
         <text class="history-text">{{item.reflection || '已完成本节填写'}}</text>
       </view>
-      <text class="history-status">已提交</text>
+      <text class="history-status">{{item.statusText}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{program.evidence.length}}" class="safe-card evidence-card">
+    <text class="safe-h3">练习依据</text>
+    <text class="program-help">这些练习参考了下面的研究和文件。它们说明这种练习方式有依据，不代表对每个人都有效，也不能代替专业帮助。</text>
+    <view wx:for="{{program.evidence}}" wx:key="citation" class="evidence-row">
+      <text class="evidence-practice">{{item.practice}}</text>
+      <text class="evidence-finding">{{item.finding}}</text>
+      <text class="evidence-citation" user-select="true">{{item.citation}}</text>
     </view>
   </view>
 </view>
