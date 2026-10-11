@@ -12,11 +12,11 @@
         <text class="entry-desc">浏览当前可用训练卡</text>
       </view>
       <button class="entry-item" bindtap="openPersonalizedPlan">
-        <text class="entry-title">练习建议</text>
+        <text class="entry-title">个性化方案</text>
         <text class="entry-desc">根据测评推荐练习</text>
       </button>
       <button class="entry-item" bindtap="openProgramList">
-        <text class="entry-title">陪伴项目</text>
+        <text class="entry-title">项目测试</text>
         <text class="entry-desc">试点练习包</text>
       </button>
     </view>

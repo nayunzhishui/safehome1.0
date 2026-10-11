@@ -5265,7 +5265,7 @@
   "source_bindings": {
     "models_sha256": "083cb33ad4bd2c2242b0807e283f6a55a2867aa4d02d958e7a5b988ac28671aa",
     "migration_manifest_sha256": "08eedec062d01f6e535c65ac153b97050eb291592da79f832ec80f296dabed72",
-    "route_manifest_sha256": "72c6835d01587f1f718b05e3c88133e9d1fbccdd8e3bb9cff93960440c36012c",
+    "route_manifest_sha256": "8a60e970e9f057db8653751453b51278d6b98925e2a17e36c8f2c3d10e1d7986",
     "service_manifest_sha256": "9901fca5bca05a684daa3f7f9f5ce3550bac9bc292b1b04e894079bec85489c3"
   }
 }

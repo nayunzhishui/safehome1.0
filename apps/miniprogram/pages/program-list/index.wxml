@@ -1,6 +1,6 @@
-<view class="safe-page ui2-page program-list-page" role="main" aria-label="陪伴项目列表">
+<view class="safe-page ui2-page program-list-page" role="main" aria-label="项目测试列表">
   <view class="page-head">
-    <text class="safe-h1">陪伴项目</text>
+    <text class="safe-h1">项目测试</text>
   </view>
 
   <view wx:if="{{previewMode}}" class="preview-notice">
@@ -30,7 +30,7 @@
     </view>
   </button>
 
-  <page-state wx:if="{{loading}}" kind="loading" title="正在读取陪伴项目内容" />
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取项目测试内容" />
 
   <page-state wx:if="{{!loading && errorMessage}}" kind="error" title="项目内容暂时没能读取" description="{{errorMessage}}" action-label="重新读取" bind:action="loadPrograms" />
 
