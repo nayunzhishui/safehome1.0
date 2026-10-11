@@ -7,7 +7,7 @@ from copy import deepcopy
 from typing import Any
 
 
-INPUT_SECURITY_VERSION = "safehome-ai-qa-input-security-v1"
+INPUT_SECURITY_VERSION = "safehome-ai-qa-input-security-v2"
 MAX_QUESTION_LENGTH = 2000
 MAX_SOURCE_EXCERPT_LENGTH = 500
 MESSAGE_FIELD_ALLOWLIST = {
@@ -132,11 +132,12 @@ def get_input_security_policy() -> dict[str, Any]:
         "source_field_allowlist": sorted(SOURCE_FIELD_ALLOWLIST),
         "max_question_length": MAX_QUESTION_LENGTH,
         "max_source_excerpt_length": MAX_SOURCE_EXCERPT_LENGTH,
-        "deidentification_categories": [
-            item[0] for item in _PII_PATTERNS
-        ],
+        "deidentification_categories": [item[0] for item in _PII_PATTERNS],
         "cross_session_memory": False,
         "raw_input_persisted": False,
+        "participant_data_allowed": False,
+        "synthetic_data_required_every_message": True,
+        "client_provider_override_allowed": False,
         "default_mode": "deny",
         "allowlist": sorted(READ_ONLY_TOOL_ALLOWLIST),
         "write_tools_allowed": False,
@@ -164,6 +165,16 @@ def validate_message_payload(
             "input_fields_not_allowed",
             "消息包含服务端未允许的字段",
             details={"fields": unexpected},
+        )
+    if payload.get("synthetic_data") is not True:
+        raise InputSecurityError(
+            "synthetic_data_required",
+            "AI研究沙盒每条消息都必须明确标记为合成数据；不得输入真实参与者材料。",
+            status=409,
+            details={
+                "participant_data_allowed": False,
+                "required_value": {"synthetic_data": True},
+            },
         )
     return {key: deepcopy(payload[key]) for key in allowed if key in payload}
 
@@ -228,9 +239,7 @@ def prepare_provider_input(
     rejected = 0
     source_deidentified = 0
     for source in sources or []:
-        if not isinstance(source, dict) or not _source_is_authorized(
-            source, audience
-        ):
+        if not isinstance(source, dict) or not _source_is_authorized(source, audience):
             rejected += 1
             continue
         sanitized = {
@@ -253,6 +262,7 @@ def prepare_provider_input(
             **privacy,
             "source_deidentified_count": source_deidentified,
             "raw_input_persisted": False,
+            "participant_data_allowed": False,
         },
         "authorization": {
             "only_authorized_sources": True,
@@ -282,9 +292,7 @@ def validate_tool_request(
             "tool_arguments_invalid",
             "工具参数必须是JSON对象",
         )
-    forbidden = sorted(
-        str(key) for key in arguments if str(key) in FORBIDDEN_TOOL_ARGUMENTS
-    )
+    forbidden = sorted(str(key) for key in arguments if str(key) in FORBIDDEN_TOOL_ARGUMENTS)
     if forbidden:
         raise InputSecurityError(
             "tool_boundary_violation",

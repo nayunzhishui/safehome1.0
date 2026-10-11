@@ -1,0 +1,125 @@
+name: SafeHome Targeted Hardening
+
+on:
+  push:
+    branches:
+      - "agent/safehome-targeted-hardening-*"
+  pull_request:
+
+jobs:
+  safety-auth-architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install backend dependencies
+        run: python -m pip install -r backend/requirements.txt
+
+      - name: Run targeted safety, minor, architecture and AI regression tests
+        run: |
+          python -m pytest \
+            backend/tests/test_risk_review_route.py \
+            backend/tests/test_participant_safeguards.py \
+            backend/tests/test_architecture_integrity_hardening.py \
+            backend/tests/test_ai_sandbox_hardening.py \
+            backend/tests/test_task37_c05_input_security.py \
+            -q
+
+      - name: Audit runtime architecture boundaries
+        run: python backend/scripts/audit_runtime_architecture.py
+
+      - name: Audit SQLite referential integrity
+        env:
+          APP_ENV: testing
+          DB_PROVIDER: sqlite
+          DATABASE_PATH: ${{ runner.temp }}/safehome-hardening.sqlite3
+        run: python backend/scripts/audit_referential_integrity.py
+
+  mysql-schema-integrity:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: safehome
+          MYSQL_DATABASE: safehome_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -psafehome"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install backend dependencies
+        run: python -m pip install -r backend/requirements.txt
+
+      - name: Initialize MySQL schema and audit high-value relationships
+        env:
+          APP_ENV: testing
+          DB_PROVIDER: mysql
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_PORT: "3306"
+          MYSQL_USER: root
+          MYSQL_PASSWORD: safehome
+          MYSQL_DATABASE: safehome_test
+          SECRET_KEY: hardening-mysql-test-secret-key
+        run: python backend/scripts/audit_referential_integrity.py
+
+  web-domain-accessibility:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install backend dependencies for Playwright server
+        run: python -m pip install -r backend/requirements.txt
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install Web dependencies
+        working-directory: apps/web
+        run: npm ci
+
+      - name: Audit Web domain boundaries
+        run: node scripts/audit_web_domain_boundaries.mjs
+
+      - name: Typecheck Web
+        working-directory: apps/web
+        run: npm run typecheck
+
+      - name: Build Web
+        working-directory: apps/web
+        run: npm run build
+
+      - name: Run WCAG 2.2 public-flow checks
+        working-directory: apps/web
+        run: npx playwright test tests/e2e/wcag22-baseline.spec.ts --project=desktop-chrome

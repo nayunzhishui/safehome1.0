@@ -1,0 +1,56 @@
+{
+  "schema_version": "safehome.computation-contract-registry.v2",
+  "contract_version": "safehome.computation.v1",
+  "status": "engineering_complete_writes_disabled",
+  "entities": {
+    "Observation": "带来源和时间窗的非诊断观察",
+    "DerivedFeature": "从观察派生的版本化特征",
+    "ModelRun": "规则或模型的一次受控运行",
+    "AnalysisArtifact": "可撤回的分析产物",
+    "Citation": "产物引用的来源定位",
+    "HumanReview": "真人复核状态和结论"
+  },
+  "required_input_fields": [
+    "contract_version",
+    "entity_type",
+    "id",
+    "purpose",
+    "consent_version",
+    "source_version",
+    "subject_scope",
+    "time_window",
+    "de_identification",
+    "payload"
+  ],
+  "governed_output_fields": {
+    "engine_version": null,
+    "rule_version": null,
+    "prompt_version": null,
+    "knowledge_version": null,
+    "thresholds": {},
+    "coverage": null,
+    "unknown_rate": null,
+    "review_status": "pending",
+    "withdrawal_status": "active"
+  },
+  "allowed_purposes": [
+    "service_delivery",
+    "quality_evaluation",
+    "model_training",
+    "secondary_research"
+  ],
+  "allowed_subject_scopes": ["individual", "group", "system"],
+  "allowed_de_identification": ["not_applicable", "deidentified", "identifiable"],
+  "legacy_policy": {
+    "readable": true,
+    "read_only": true,
+    "new_write_without_contract_version": false
+  },
+  "writes_enabled": false,
+  "migration": {
+    "previous_registry": "content/task37_computation_contract.json",
+    "compatibility_route": "backend/routes/task37_contracts.py",
+    "task_number_is_runtime_domain": false
+  },
+  "boundary_notice": "当前仅开放契约读取与校验；不构成模型、分析或生产写入批准。"
+}
