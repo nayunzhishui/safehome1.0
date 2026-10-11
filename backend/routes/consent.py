@@ -5,6 +5,7 @@ from flask import Blueprint, request
 from database import get_connection, row_to_dict, rows_to_dicts
 from routes.auth_utils import AuthError, auth_error_response, require_capability, require_login
 from routes.utils import fail, ok, parse_bool
+from services.participant_safeguard_service import ParticipantSafeguardError, public_status, safeguards_enforced
 from services.consent_service import (
     ConsentError,
     append_consent_event,
@@ -59,6 +60,25 @@ def create_consent_record():
     consent_version = str(payload.get("consent_version") or DEFAULT_CONSENT_VERSION).strip()
     if not consent_version or len(consent_version) > 120:
         return fail("validation_error", "consent_version 无效")
+
+    # From security/p0-p1-boundary-fixes-20260822: AI consent alone is not enough
+    # for an under-14 participant; guardian consent and child assent must already
+    # be active in enforced environments.
+    if consent_type == "ai_assistance" and agreed and safeguards_enforced():
+        try:
+            with get_connection() as conn:
+                safeguard_status = public_status(conn, str(actor["id"]))
+        except ParticipantSafeguardError as exc:
+            return fail(exc.code, exc.message, status=exc.status, details=exc.details or None)
+        if safeguard_status.get("age_verification_required"):
+            return fail("age_verification_required", "同意 AI 辅助处理前需要先完成年龄确认。", status=403, details=safeguard_status)
+        if safeguard_status.get("minor_safeguards_required") and safeguard_status.get("status") != "active":
+            return fail(
+                "minor_safeguards_required",
+                "未满14周岁参与者需要先完成监护人授权和儿童确认，才能同意 AI 辅助处理。",
+                status=403,
+                details=safeguard_status,
+            )
 
     try:
         with get_connection() as conn:
