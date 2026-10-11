@@ -8,6 +8,7 @@ from typing import Any
 
 from config import Config
 from database import get_connection, json_dumps, json_loads, load_content_json, new_id, now_iso, row_to_dict, write_audit_log
+from services.assessment_dimension_guide_service import dimension_thresholds
 
 
 EVALUATIONS_FOR_RECOMMENDATION = {"matches", "partly_matches", "does_not_match", "uncomfortable"}
@@ -393,41 +394,11 @@ def _threshold_from_worksheet(dimension: str, worksheet: dict | None, worksheet_
         worksheet = _find_worksheet_in_content(worksheet_id=worksheet_id)
     if not worksheet:
         return {"support_below": 3.5, "high_above": 4.5}
-    spec = next(
-        (
-            item
-            for item in worksheet.get("dimensions", [])
-            if isinstance(item, dict) and (item.get("code") or item.get("key")) == dimension
-        ),
-        {},
-    )
-    calculation = spec.get("calculation") or {}
-    item_ids = {
-        question.get("id")
-        for question in worksheet.get("questions", [])
-        if isinstance(question, dict) and question.get("dimension") == dimension
-    }
-    if not item_ids:
-        # Derived dimensions name their items through calculation terms instead of question.dimension.
-        item_ids = {term.get("item") for term in calculation.get("terms", []) if isinstance(term, dict)}
-        item_ids.update(calculation.get("items") or [])
-    midpoints: list[float] = []
-    for question in worksheet.get("questions", []):
-        if not isinstance(question, dict) or question.get("id") not in item_ids:
-            continue
-        option_scores = [
-            option.get("score")
-            for option in question.get("options", [])
-            if isinstance(option.get("score"), (int, float)) and not isinstance(option.get("score"), bool)
-        ]
-        if option_scores:
-            midpoints.append((float(min(option_scores)) + float(max(option_scores))) / 2)
-    if not midpoints:
+    # Same bands as the result page: dimension norms first, else the scale midpoint ± 10% of the range.
+    shared = dimension_thresholds(worksheet, dimension, worksheet_id=worksheet_id)
+    if not shared:
         return {"support_below": 3.5, "high_above": 4.5}
-    score_method = calculation.get("type") or worksheet.get("dimension_score_method") or "sum"
-    # Summed dimensions are compared on the summed scale; mean-style calculations stay on the item scale.
-    midpoint = sum(midpoints) if score_method == "sum" else sum(midpoints) / len(midpoints)
-    return {"support_below": midpoint, "high_above": midpoint}
+    return {"support_below": shared["support_below"], "high_above": shared["high_above"]}
 
 
 def _find_worksheet_in_content(worksheet_id: str) -> dict | None:

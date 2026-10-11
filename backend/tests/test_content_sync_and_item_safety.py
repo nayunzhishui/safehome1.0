@@ -161,9 +161,10 @@ def test_summed_dimension_thresholds_scale_with_item_count(tmp_path, monkeypatch
         "dimensions": [{"code": "SUMMED"}],
         "questions": [{"id": f"Q{index}", "dimension": "SUMMED", "options": options} for index in range(5)],
     }
-    assert service._threshold_from_worksheet("SUMMED", worksheet, "synthetic") == {"support_below": 15.0, "high_above": 15.0}
+    # Middle zone: scale midpoint ± 10% of the range, on the summed or the item scale.
+    assert service._threshold_from_worksheet("SUMMED", worksheet, "synthetic") == {"support_below": 13.0, "high_above": 17.0}
     worksheet["dimension_score_method"] = "mean"
-    assert service._threshold_from_worksheet("SUMMED", worksheet, "synthetic") == {"support_below": 3.0, "high_above": 3.0}
+    assert service._threshold_from_worksheet("SUMMED", worksheet, "synthetic") == {"support_below": 2.6, "high_above": 3.4}
 
     condition = {"dimension": "TOTAL", "score_at_least": 10}
     assert service._evaluate_condition(condition, {"TOTAL": 10}, None, worksheet, "synthetic") is True

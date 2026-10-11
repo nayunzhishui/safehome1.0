@@ -505,6 +505,41 @@ def score_answers(worksheet: dict, answers: list[dict]) -> tuple[dict, int | flo
     return scores, persisted_total
 
 
+def dimension_score_bounds(worksheet: dict) -> dict[str, tuple[float, float] | None]:
+    """Theoretical range of every scored and derived dimension, without answers.
+
+    Takes the same branches as score_answers, so band thresholds and the stored
+    score_range always describe the same scale.
+    """
+
+    question_map = {question.get("id"): question for question in worksheet.get("questions", [])}
+    score_method = worksheet.get("dimension_score_method", "sum")
+    item_bounds: dict[str, list] = {}
+    for question in worksheet.get("questions", []):
+        if question.get("dimension"):
+            item_bounds.setdefault(question["dimension"], []).append(_option_score_bounds(question))
+    specs = {
+        item.get("code") or item.get("key"): item
+        for item in worksheet.get("dimensions", [])
+        if isinstance(item, dict) and (item.get("code") or item.get("key"))
+    }
+    bounds: dict[str, tuple[float, float] | None] = {}
+    for code in list(specs) or list(item_bounds):
+        calculation = specs.get(code, {}).get("calculation")
+        own = item_bounds.get(code, [])
+        if calculation and calculation.get("type") in CALCULATED_TYPES:
+            bounds[code] = _calculation_bounds(calculation, question_map, bounds)
+        elif score_method == "mean":
+            bounds[code] = _mean_bounds(own)
+        else:
+            bounds[code] = (sum(item[0] for item in own), sum(item[1] for item in own)) if own and all(own) else None
+    derived = worksheet.get("derived_dimensions") or (worksheet.get("_meta") or {}).get("derived_dimensions", [])
+    for spec in derived:
+        if isinstance(spec, dict) and spec.get("code"):
+            bounds[spec["code"]] = _calculation_bounds(spec.get("calculation") or {}, question_map, bounds)
+    return bounds
+
+
 def build_score_provenance(worksheet: dict, answers: list[dict], scores: dict | None = None) -> dict:
     """Keep worksheet-scale scores distinct from model-compatibility transforms."""
 
@@ -593,6 +628,10 @@ def _effective_score(question: dict | None, score: int | float) -> int | float:
 def _rounded(value: float) -> int | float:
     rounded = round(value, 2)
     return int(rounded) if rounded.is_integer() else rounded
+
+
+# Calculation types _calculate_dimension understands; any other type falls back to the worksheet's score method.
+CALCULATED_TYPES = {"product", "mean_of_products", "mean_terms", "mapped_mean_terms", "mean_dimensions"}
 
 
 def _calculate_dimension(calculation: dict | None, item_scores: dict, dimension_scores: dict) -> int | float | None:

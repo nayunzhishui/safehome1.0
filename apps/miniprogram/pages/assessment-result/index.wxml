@@ -93,6 +93,17 @@
     <view wx:if="{{!profileSummary && scaleDimensions.length}}" class="safe-section">
       <section-title title="维度位置" subtitle="各维度按自身量尺展示，不相加、不比高低" />
       <text wx:if="{{resultSummaryText}}" class="result-summary-text">{{resultSummaryText}}</text>
+      <view wx:for="{{scaleVisualization.composites}}" wx:key="key" class="dimension-row dimension-row--composite">
+        <view class="dimension-row-head">
+          <text class="dimension-label">{{item.label}}</text>
+          <text class="dimension-score">{{item.score}} 分</text>
+        </view>
+        <text wx:if="{{item.definition}}" class="dimension-definition">看的是：{{item.definition}}</text>
+        <view wx:if="{{item.hint}}" class="dimension-hint">
+          <text wx:if="{{item.bandLabel}}" class="dimension-hint-label">{{item.bandLabel}}</text>
+          <text class="dimension-hint-text">{{item.hint}}</text>
+        </view>
+      </view>
       <view wx:if="{{scaleVisualization.showRadar}}" class="dimension-chart-card">
         <canvas canvas-id="dimensionRadarCanvas" class="dimension-radar-canvas" aria-label="本次填写与各维度量尺中点的雷达图，具体分数和范围见下方维度卡片"></canvas>
         <view class="dimension-chart-legend" aria-label="图例">
@@ -115,6 +126,7 @@
             <text class="dimension-label">{{item.label}}</text>
             <text class="dimension-score">{{item.score}} 分</text>
           </view>
+          <text wx:if="{{item.definition}}" class="dimension-definition">看的是：{{item.definition}}</text>
           <view wx:if="{{item.hasComparableRange}}" class="dimension-progress" aria-label="{{item.label}} {{item.positionText}}">
             <view class="dimension-progress-midpoint"></view>
             <view class="dimension-progress-value" style="{{item.progressStyle}}"></view>
@@ -124,8 +136,13 @@
             <text>{{item.positionText}}</text>
           </view>
           <text class="dimension-summary">{{item.summary}}</text>
+          <view wx:if="{{item.hint}}" class="dimension-hint">
+            <text wx:if="{{item.bandLabel}}" class="dimension-hint-label">{{item.bandLabel}}</text>
+            <text class="dimension-hint-text">{{item.hint}}</text>
+          </view>
         </view>
       </view>
+      <text wx:if="{{dimensionGuideBoundary}}" class="dimension-guide-boundary">{{dimensionGuideBoundary}}</text>
     </view>
 
     <view wx:if="{{exploratoryAnalysis}}" class="safe-section">
