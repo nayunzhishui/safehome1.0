@@ -68,3 +68,47 @@
 - 研究者直接编辑参与者原始回答。
 - 只保存练习频率，却不让频率参与到期计算和推荐排序。
 - 用横向超宽流程图表达手机端步骤，造成裁切和认知疲劳。
+
+---
+
+# 2026-08-31 安心陪伴首页 UI 参考研究
+
+## 本轮查阅的产品 UI / UX 参考库
+
+1. Figma Mobile UI Kit：重点参考组件、变体和可维护图层组织，不复制其通用视觉。https://www.figma.com/templates/mobile-ui-kit/
+2. Mobbin：参考真实移动产品的首页、入口和完整流程，避免只看脱离交互的效果图。https://docs.mobbin.com/overview
+3. Refero：按 Style、Screen、Flow 三层检索，先确定视觉语言，再核对具体屏幕和任务路径。https://refero.design/
+4. Page Flows：用于核对完整用户流程，避免首页入口与下游页面行为不一致。https://pageflows.com/
+5. ScreensDesign（原 UI Sources）：参考真实应用截图及情绪追踪、冥想等相邻品类，但不照搬诊断化或商业化模式。https://screensdesign.com/
+6. Pttrns：参考量产移动界面的常见模式，并用其校验触控、导航和信息层级是否违背用户习惯。https://www.pttrns.com/
+
+## 本轮查阅的 Vibe Coding 前端设计提示词网站
+
+1. Lovable 官方 Prompting Best Practices：采用原子化组件语言、明确改什么和保留什么，并在设计时提前定义真实 Loading、Empty、Error 和登录状态。https://docs.lovable.dev/prompting/prompting-one
+2. Web UI Prompt：提示词同时锁定视觉气质、页面层级和区块节奏，避免只给“高级、温暖”等空泛形容词。https://www.webuiprompt.com/
+3. Uwarp Design Prompts：提示词显式包含 tokens、组件复用、可访问性和反模板化禁令。https://www.uwarp.design/design-prompts
+4. Refero Styles：参考可供 Codex、v0、Lovable 等读取的 DESIGN.md 结构，把颜色、字体、间距、组件和禁用模式写成同一份系统。https://styles.refero.design/
+5. VibeUI：只把布局目录当作结构检索工具；本项目明确排除常见 Bento、渐变网格、漂浮卡片和营销统计条。https://vibeui.online/
+6. Frontend Design Architect Prompt：采用“一个主要视觉时刻”和 anti-slop 审查思路，不机械套用其预设风格。https://github.com/herzigma/frontend-design-prompt
+7. Vibe Code Source：采用“描述意图—生成—检查—迭代”的闭环，不把能运行等同于设计合格。https://www.vibecodesource.com/
+
+## 研究结论
+
+### 采用的模式
+
+- 首页先显示最常用且真实的入口，再按需进入二级页面；次要能力使用渐进披露。
+- 一个视图只设置一个强主行动；其他入口使用较弱但清晰的触控样式。
+- Figma 复现必须使用 Variables、Components、Variants 和实例，不把 HTML 截图当成最终设计稿。
+- 设计提示词必须先给功能真值、真实数据来源、状态矩阵和禁止新增的能力，再描述视觉风格。
+
+### 本项目的差异化机会
+
+- 以“家庭情绪观察手帐”为视觉母题，用纸面层次、真实记录结构、情绪涟漪和短竹节建立品牌识别。
+- 竹子只作为“记录—反馈—练习”的节制结构符号，不做竹林插画，不伪造进度。
+- 丰富度来自构图和材质，不来自小字、胶囊、卡片数量、虚构指标或库存人物插画。
+
+### 明确避免
+
+- 通用心理健康产品的紫蓝渐变、玻璃拟态、笑脸天气和治愈人物图。
+- Vibe Coding 常见的 Bento 卡片墙、浮动截图、发光网格、营销数据条和多主按钮。
+- 为了填满背景增加无意义文案、英文眉题、编号、成长百分比或不存在的功能。

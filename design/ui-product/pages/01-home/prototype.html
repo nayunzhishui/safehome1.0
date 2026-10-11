@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:," />
+  <title>安心陪伴：首页 HTML 原型</title>
+  <style>
+    :root {
+      --canvas: #f7f8f5;
+      --surface: #ffffff;
+      --ink: #202622;
+      --muted: #68736d;
+      --primary: #4f7c6b;
+      --primary-deep: #2f5b4d;
+      --action-deep: #174b38;
+      --orange: #d98243;
+      --line: #dfe5dc;
+      --danger: #a5453f;
+      --soft-green: #e8f0ea;
+      --soft-orange: #fff0e4;
+      --sage-wash: #eef3ea;
+      --peach-wash: #fff1e7;
+      --blue-wash: #edf3f4;
+      --paper: #fbfcf9;
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 20px;
+      font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      color: var(--ink);
+      background: #e8ebe6;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; background: #e8ebe6; }
+    button { font: inherit; }
+
+    .phone {
+      position: relative;
+      isolation: isolate;
+      width: min(390px, 100vw);
+      min-height: 100vh;
+      margin: 0 auto;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 18% 8%, rgb(79 124 107 / 4.5%) 0 1px, transparent 1.5px) 0 0 / 18px 18px,
+        radial-gradient(circle at 94% 28%, rgb(217 130 67 / 9%), transparent 21%),
+        radial-gradient(circle at 2% 68%, rgb(79 124 107 / 8%), transparent 19%),
+        linear-gradient(180deg, var(--paper), var(--canvas) 72%);
+      box-shadow: 0 20px 70px rgb(32 38 34 / 12%);
+    }
+
+    .ambient-canvas {
+      position: absolute;
+      z-index: 0;
+      inset: 92px 0 72px;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .ambient-ripple {
+      position: absolute;
+      border: 1px solid rgb(79 124 107 / 10%);
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 24px rgb(79 124 107 / 3%),
+        0 0 0 48px rgb(79 124 107 / 2%);
+    }
+    .ambient-ripple--top { top: 72px; right: -92px; width: 190px; height: 190px; }
+    .ambient-ripple--middle { top: 690px; left: -116px; width: 220px; height: 220px; border-color: rgb(217 130 67 / 9%); box-shadow: 0 0 0 28px rgb(217 130 67 / 2.5%), 0 0 0 56px rgb(217 130 67 / 1.5%); }
+    .ambient-paper {
+      position: absolute;
+      top: 440px;
+      right: -20px;
+      width: 116px;
+      height: 92px;
+      transform: rotate(-4deg);
+      border: 1px solid rgb(79 124 107 / 7%);
+      border-radius: 16px 0 0 16px;
+      background: repeating-linear-gradient(180deg, transparent 0 17px, rgb(79 124 107 / 6%) 18px, transparent 19px);
+      opacity: .8;
+    }
+    .ambient-swatch {
+      position: absolute;
+      top: 286px;
+      left: -38px;
+      width: 150px;
+      height: 76px;
+      transform: rotate(-7deg);
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgb(217 130 67 / 10%), rgb(255 241 231 / 20%));
+      box-shadow: inset 0 0 0 1px rgb(217 130 67 / 6%);
+    }
+    .ambient-bamboo {
+      position: absolute;
+      top: 582px;
+      right: 24px;
+      width: 58px;
+      height: 32px;
+      opacity: .34;
+    }
+    .ambient-bamboo::before,
+    .ambient-bamboo::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      width: 24px;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--primary);
+      box-shadow: 31px 0 0 rgb(79 124 107 / 60%);
+    }
+    .ambient-bamboo::before { top: 7px; }
+    .ambient-bamboo::after { top: 21px; transform: translateX(12px); }
+    .ambient-orbit {
+      position: absolute;
+      top: 318px;
+      left: -104px;
+      width: 202px;
+      height: 202px;
+      border: 1px solid rgb(79 124 107 / 7%);
+      border-radius: 50%;
+      box-shadow: 0 0 0 18px rgb(79 124 107 / 2%), 0 0 0 37px rgb(217 130 67 / 1.8%);
+    }
+    .ambient-thread {
+      position: absolute;
+      top: 884px;
+      right: -36px;
+      width: 148px;
+      height: 78px;
+      transform: rotate(-8deg);
+      border-top: 2px dashed rgb(79 124 107 / 16%);
+      border-radius: 50%;
+    }
+    .ambient-thread::after {
+      content: "";
+      position: absolute;
+      top: -5px;
+      left: 46px;
+      width: 8px;
+      height: 8px;
+      border: 2px solid rgb(79 124 107 / 24%);
+      border-radius: 50%;
+      background: var(--paper);
+    }
+    .ambient-patch {
+      position: absolute;
+      top: 1090px;
+      left: -24px;
+      width: 112px;
+      height: 78px;
+      transform: rotate(6deg);
+      border-radius: 10px 24px 10px 24px;
+      background:
+        repeating-linear-gradient(135deg, rgb(79 124 107 / 4%) 0 6px, transparent 6px 13px),
+        rgb(232 240 234 / 32%);
+    }
+    .ambient-fold {
+      position: absolute;
+      top: 1286px;
+      right: -28px;
+      width: 118px;
+      height: 86px;
+      transform: rotate(-5deg);
+      border: 1px solid rgb(217 130 67 / 8%);
+      border-radius: 24px 8px 24px 8px;
+      background:
+        linear-gradient(155deg, rgb(255 240 227 / 48%), transparent 66%),
+        repeating-linear-gradient(180deg, transparent 0 15px, rgb(217 130 67 / 4%) 16px, transparent 17px);
+    }
+
+    .status-bar {
+      height: 38px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 20px 7px;
+      background: #fff8f1;
+      color: #161a17;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: .02em;
+    }
+
+    .system-icons { display: flex; align-items: center; gap: 5px; font-size: 11px; }
+    .signal { letter-spacing: -2px; transform: translateY(-1px); }
+    .battery { width: 23px; height: 11px; border: 1.5px solid currentColor; border-radius: 3px; padding: 1.5px; }
+    .battery::after { content: ""; display: block; width: 72%; height: 100%; border-radius: 1px; background: currentColor; }
+
+    .native-nav {
+      position: relative;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid #f0ede7;
+      background: #fff8f1;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .wechat-capsule {
+      position: absolute;
+      right: 10px;
+      width: 84px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      border: 1px solid #ebe9e3;
+      border-radius: 18px;
+      background: rgb(255 255 255 / 78%);
+    }
+
+    .wechat-capsule::before { content: "•••"; font-size: 14px; letter-spacing: 2px; transform: translateY(-2px); }
+    .wechat-capsule::after { content: ""; width: 15px; height: 15px; border: 3px solid #161a17; border-radius: 50%; box-shadow: inset 0 0 0 3px #fff; background: #161a17; }
+    .capsule-line { position: absolute; left: 44px; width: 1px; height: 20px; background: #ece9e3; }
+
+    main { position: relative; z-index: 1; padding: 18px 22px 98px; }
+
+    .page-head {
+      position: relative;
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .page-head::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -1px;
+      width: 46px;
+      height: 2px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: var(--primary);
+    }
+
+    h1 { position: relative; z-index: 1; margin: 0; font-size: 27px; line-height: 1.25; letter-spacing: .02em; }
+    h1::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      left: 50%;
+      top: 50%;
+      width: 128px;
+      height: 44px;
+      transform: translate(-50%, -50%) rotate(-2deg);
+      border-radius: 50%;
+      background: linear-gradient(90deg, rgb(232 240 234 / 20%), rgb(232 240 234 / 80%), rgb(255 241 231 / 42%));
+    }
+    .icon-button {
+      position: absolute;
+      right: 0;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: 0 7px 18px rgb(47 91 77 / 10%), inset 0 0 0 5px rgb(247 248 245 / 70%);
+    }
+    .icon-button svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .unread-dot { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; border: 2px solid white; border-radius: 50%; background: var(--danger); }
+
+    .entry-row {
+      width: 100%;
+      min-height: 72px;
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      padding: 0;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      background: transparent;
+      color: inherit;
+      text-align: left;
+    }
+    .entry-row:active, .entry-row:focus-visible { background: #f0f3ef; outline: none; }
+    .thermometer-row {
+      min-height: 66px;
+      margin: 12px 0 8px;
+      padding: 0 12px;
+      border: 1px solid rgb(79 124 107 / 10%);
+      border-radius: 14px;
+      background: linear-gradient(100deg, rgb(237 243 244 / 88%), rgb(255 255 255 / 58%) 72%);
+      box-shadow: 0 7px 18px rgb(47 91 77 / 5%);
+    }
+    .entry-icon { width: 24px; height: 24px; color: var(--ink); }
+    .entry-icon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.55; stroke-linecap: round; stroke-linejoin: round; }
+    .entry-copy { min-width: 0; }
+    .entry-title { display: block; font-size: 16px; font-weight: 650; line-height: 1.45; }
+    .entry-subtitle { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .entry-end { display: flex; align-items: center; gap: 8px; color: var(--primary-deep); font-size: 13px; font-weight: 650; }
+    .chevron { color: var(--ink); font-size: 24px; font-weight: 300; transform: translateY(-1px); }
+
+    .primary-entries {
+      min-height: 84px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 4px 0 12px;
+      border-bottom: 0;
+    }
+    .primary-divider { display: none; }
+    .primary-entry {
+      min-height: 72px;
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      align-items: center;
+      gap: 10px;
+      padding: 0 10px;
+      border: 1px solid rgb(79 124 107 / 9%);
+      border-radius: 16px 8px 16px 16px;
+      background: linear-gradient(145deg, rgb(238 243 234 / 95%), rgb(255 255 255 / 72%));
+      text-align: left;
+      box-shadow: 0 8px 20px rgb(47 91 77 / 5%);
+    }
+    .primary-entry:first-child { padding-left: 10px; }
+    .primary-entry:last-child { padding-right: 10px; padding-left: 10px; border-color: rgb(217 130 67 / 11%); border-radius: 8px 16px 16px 16px; background: linear-gradient(145deg, rgb(255 241 231 / 98%), rgb(255 255 255 / 72%)); }
+    .primary-entry:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; border-radius: var(--radius-sm); }
+    .primary-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--soft-green); color: var(--primary-deep); }
+    .primary-entry:last-child .primary-mark { background: var(--soft-orange); color: #a9541e; }
+    .primary-mark svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .primary-label { display: block; font-size: 16px; font-weight: 700; }
+    .primary-note { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+
+    .journey-card {
+      position: relative;
+      margin: 16px 0 5px;
+      padding: 20px 18px 18px;
+      overflow: hidden;
+      border-radius: 20px 20px 20px 8px;
+      background: var(--action-deep);
+      color: white;
+      border: 1px solid rgb(255 255 255 / 7%);
+      box-shadow: 0 13px 30px rgb(23 75 56 / 22%);
+    }
+    .journey-card::before {
+      content: "";
+      position: absolute;
+      right: -48px;
+      bottom: -66px;
+      width: 156px;
+      height: 156px;
+      border: 1px solid rgb(255 255 255 / 12%);
+      border-radius: 50%;
+      box-shadow: 0 0 0 24px rgb(255 255 255 / 3.5%), 0 0 0 48px rgb(255 255 255 / 2%);
+      pointer-events: none;
+    }
+    .journey-card.is-error::before { border-color: rgb(165 69 63 / 10%); box-shadow: 0 0 0 24px rgb(165 69 63 / 2.5%), 0 0 0 48px rgb(165 69 63 / 1.5%); }
+    .journey-card.is-error { background: #fff8f5; color: var(--ink); border: 1px solid #e6c4bd; box-shadow: none; }
+    .journey-card.is-error .journey-copy { color: var(--muted); }
+    .journey-card.is-error .journey-meta { display: none; }
+    .journey-card.is-error .bamboo-joint span { background: #fff8f5; }
+    .journey-card.is-error .journey-kicker { color: var(--danger); }
+    .journey-card.is-error .state-pill { background: #f5e1dc; color: var(--danger); }
+    .journey-card.is-error .primary-button { background: var(--surface); color: var(--primary-deep); border: 1px solid var(--primary); }
+    .journey-head { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; }
+    .bamboo-joint { width: 27px; height: 10px; display: grid; grid-template-columns: 10px 7px 10px; align-items: center; }
+    .bamboo-joint::before, .bamboo-joint::after { content: ""; height: 3px; border-radius: 999px; background: #a9c5b8; }
+    .bamboo-joint span { width: 7px; height: 7px; border: 2px solid #d2e2da; border-radius: 50%; background: var(--action-deep); }
+    .journey-kicker { flex: 1; font-size: 13px; font-weight: 700; }
+    .state-pill { padding: 6px 9px; border-radius: 999px; background: #edf4ee; color: var(--primary-deep); font-size: 12px; font-weight: 700; }
+    .journey-title { position: relative; z-index: 1; margin: 17px 0 0; font-size: 21px; line-height: 1.35; }
+    .journey-copy { position: relative; z-index: 1; margin: 7px 0 0; max-width: 292px; color: rgb(255 255 255 / 86%); font-size: 14px; line-height: 1.6; }
+    .journey-meta { position: relative; z-index: 1; margin-top: 7px; color: rgb(255 255 255 / 68%); font-size: 12px; }
+    .primary-button {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      min-height: 48px;
+      margin-top: 15px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--orange);
+      color: #22261f;
+      font-size: 15px;
+      font-weight: 750;
+      box-shadow: inset 0 -1px 0 rgb(79 40 11 / 15%);
+    }
+    .primary-button:active { transform: translateY(1px); background: #cf7738; }
+    .primary-button:focus-visible { outline: 3px solid #f6c59e; outline-offset: 3px; }
+
+    .pathway {
+      width: 100%;
+      min-height: 94px;
+      display: grid;
+      grid-template-columns: 84px minmax(0, 1fr) 18px;
+      gap: 12px;
+      align-items: center;
+      margin-top: 10px;
+      padding: 0 14px;
+      border: 1px solid rgb(79 124 107 / 11%);
+      border-radius: 8px 18px 8px 18px;
+      background: linear-gradient(90deg, rgb(238 243 234 / 88%), rgb(255 255 255 / 62%));
+      color: var(--ink);
+      text-align: left;
+      box-shadow: 0 8px 20px rgb(47 91 77 / 5%);
+    }
+    .pathway:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; border-radius: var(--radius-sm); }
+    .pathway-label { font-size: 16px; font-weight: 700; line-height: 1.35; }
+    .pathway-track { display: grid; grid-template-columns: auto 1fr auto 1fr auto; align-items: center; min-width: 0; }
+    .pathway-step { color: var(--primary-deep); font-size: 13px; font-weight: 700; white-space: nowrap; }
+    .pathway-joint { position: relative; height: 9px; margin: 0 7px; }
+    .pathway-joint::before,
+    .pathway-joint::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      width: calc(50% - 4px);
+      height: 2px;
+      border-radius: 999px;
+      background: #a9c5b8;
+    }
+    .pathway-joint::before { left: 0; }
+    .pathway-joint::after { right: 0; }
+    .pathway-joint span {
+      position: absolute;
+      top: 1px;
+      left: 50%;
+      width: 7px;
+      height: 7px;
+      transform: translateX(-50%);
+      border: 2px solid var(--primary);
+      border-radius: 50%;
+      background: var(--paper);
+    }
+    .pathway-arrow { color: var(--ink); font-size: 24px; font-weight: 300; text-align: right; }
+
+    .section { margin-top: 18px; }
+    .section--more {
+      margin-inline: -8px;
+      padding: 0 14px 6px;
+      border: 1px solid rgb(79 124 107 / 9%);
+      border-radius: 22px 8px 22px 8px;
+      background: linear-gradient(150deg, rgb(255 255 255 / 82%), rgb(238 243 234 / 58%));
+      box-shadow: 0 12px 28px rgb(47 91 77 / 6%);
+    }
+    .section--more .entry-icon {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      padding: 8px;
+      border-radius: 12px 5px 12px 12px;
+      background: var(--sage-wash);
+      color: var(--primary-deep);
+    }
+    .section--more .entry-row:nth-of-type(2) .entry-icon { background: var(--peach-wash); color: #a9541e; }
+    .section--more .entry-row:nth-of-type(3) .entry-icon { background: var(--blue-wash); color: #3f676d; }
+    .inline-error {
+      display: none;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      margin: 12px 0 2px;
+      padding: 13px 14px;
+      border: 1px solid #e6c4bd;
+      border-radius: 12px;
+      background: #fff8f5;
+    }
+    .inline-error.is-visible { display: grid; }
+    .inline-error strong { display: block; color: var(--danger); font-size: 14px; line-height: 1.4; }
+    .inline-error span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .inline-error button { min-height: 44px; padding: 0 13px; border: 1px solid var(--primary); border-radius: 10px; background: var(--surface); color: var(--primary-deep); font-size: 13px; font-weight: 700; }
+    .section-title {
+      min-height: 55px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      font-size: 20px;
+      font-weight: 750;
+      letter-spacing: .01em;
+    }
+    .section-title::after { content: ""; height: 1px; flex: 1; margin-left: 16px; background: linear-gradient(90deg, var(--line), transparent); }
+    .summary-row { min-height: 88px; }
+    .summary-row .entry-title { white-space: normal; }
+    .summary-row .entry-subtitle { max-width: 235px; }
+
+    .tabbar {
+      position: fixed;
+      z-index: 5;
+      left: 50%;
+      bottom: 0;
+      width: min(390px, 100vw);
+      height: 72px;
+      transform: translateX(-50%);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      padding: 8px 10px max(8px, env(safe-area-inset-bottom));
+      border-top: 1px solid #edf0ea;
+      background: rgb(255 253 248 / 96%);
+      backdrop-filter: blur(12px);
+    }
+    .tab-item { display: grid; justify-items: center; align-content: center; gap: 3px; border: 0; background: transparent; color: #8a8d89; font-size: 12px; }
+    .tab-item svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .tab-item[aria-current="page"] { color: var(--primary); font-weight: 700; }
+
+    .prototype-toast {
+      position: fixed;
+      z-index: 10;
+      left: 50%;
+      bottom: 88px;
+      max-width: 320px;
+      padding: 10px 14px;
+      transform: translate(-50%, 12px);
+      border-radius: 10px;
+      background: rgb(32 38 34 / 92%);
+      color: white;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: .18s ease;
+    }
+    .prototype-toast.is-visible { transform: translate(-50%, 0); opacity: 1; }
+
+    /* 2026-08-31 redesign: 情绪观察手帐。丰富构图，不增加业务内容。 */
+    main { padding: 14px 20px 98px; }
+
+    .page-head {
+      min-height: 82px;
+      margin-bottom: 8px;
+      border-bottom: 0;
+    }
+    .page-head::after {
+      bottom: 8px;
+      width: 42px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary) 0 42%, transparent 42% 53%, var(--orange) 53% 100%);
+    }
+    h1 { font-size: 28px; font-weight: 760; letter-spacing: .035em; text-align: center; }
+    h1::before {
+      width: 142px;
+      height: 52px;
+      transform: translate(-50%, -50%) rotate(-1.4deg);
+      background:
+        radial-gradient(circle at 74% 54%, rgb(217 130 67 / 13%), transparent 28%),
+        linear-gradient(90deg, rgb(232 240 234 / 12%), rgb(232 240 234 / 86%), rgb(255 241 231 / 36%));
+    }
+
+    .observation-board {
+      position: relative;
+      isolation: isolate;
+      margin: 0 0 18px;
+      padding: 9px 12px 12px;
+      border: 1px solid rgb(79 124 107 / 14%);
+      border-radius: 24px 10px 22px 10px;
+      background:
+        linear-gradient(115deg, rgb(255 255 255 / 92%), rgb(244 248 242 / 86%) 62%, rgb(255 244 235 / 72%));
+      box-shadow: 0 14px 32px rgb(47 91 77 / 8%);
+    }
+    .observation-board::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: 9px -5px -7px 8px;
+      transform: rotate(.7deg);
+      border: 1px solid rgb(217 130 67 / 9%);
+      border-radius: 20px 7px 24px 12px;
+      background: rgb(255 249 242 / 50%);
+    }
+    .observation-board > :not(.observation-contour, .observation-tab) { position: relative; z-index: 1; }
+    .observation-tab {
+      position: absolute;
+      z-index: 2;
+      top: -4px;
+      right: 24px;
+      width: 42px;
+      height: 10px;
+      transform: rotate(1deg);
+      border-radius: 3px 3px 8px 8px;
+      background: rgb(217 130 67 / 72%);
+      box-shadow: 0 3px 8px rgb(120 68 30 / 12%);
+    }
+    .observation-contour {
+      position: absolute;
+      z-index: 0;
+      top: -30px;
+      right: -46px;
+      width: 144px;
+      height: 144px;
+      border: 1px solid rgb(79 124 107 / 8%);
+      border-radius: 50%;
+      box-shadow: 0 0 0 18px rgb(79 124 107 / 2.8%), 0 0 0 38px rgb(79 124 107 / 1.8%);
+    }
+    .thermometer-row {
+      min-height: 64px;
+      margin: 0;
+      padding: 0 5px;
+      border: 0;
+      border-bottom: 1px solid rgb(79 124 107 / 13%);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .thermometer-row .entry-icon {
+      width: 35px;
+      height: 35px;
+      display: grid;
+      place-items: center;
+      padding: 8px;
+      border-radius: 50% 50% 50% 9px;
+      background: rgb(237 243 244 / 86%);
+      color: #365f62;
+    }
+    .primary-entries {
+      min-height: 86px;
+      gap: 9px;
+      padding: 11px 0 0;
+    }
+    .primary-entry {
+      min-height: 70px;
+      padding: 0 9px;
+      border: 0;
+      border-radius: 16px 6px 16px 8px;
+      background: rgb(232 240 234 / 72%);
+      box-shadow: inset 0 0 0 1px rgb(79 124 107 / 6%);
+    }
+    .primary-entry:last-child {
+      padding: 0 9px;
+      border: 0;
+      border-radius: 6px 16px 8px 16px;
+      background: rgb(255 238 225 / 78%);
+      box-shadow: inset 0 0 0 1px rgb(217 130 67 / 7%);
+    }
+    .primary-mark { background: rgb(255 255 255 / 62%); box-shadow: 0 5px 12px rgb(47 91 77 / 6%); }
+    .primary-entry:last-child .primary-mark { background: rgb(255 255 255 / 58%); }
+
+    .journey-card {
+      margin: 0 0 7px;
+      padding: 21px 18px 18px;
+      border-radius: 10px 26px 10px 26px;
+      box-shadow: 0 16px 34px rgb(23 75 56 / 23%);
+    }
+    .journey-card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 52px;
+      width: 54px;
+      height: 5px;
+      border-radius: 0 0 6px 6px;
+      background: rgb(255 255 255 / 24%);
+    }
+    .journey-title { font-size: 22px; letter-spacing: .01em; }
+    .primary-button { border-radius: 8px 14px 8px 14px; }
+
+    .pathway {
+      position: relative;
+      min-height: 82px;
+      margin-top: 9px;
+      padding: 0 7px;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .pathway::before {
+      content: "";
+      width: 26px;
+      height: 4px;
+      position: absolute;
+      left: 7px;
+      bottom: -2px;
+      border-radius: 999px;
+      background: var(--primary);
+    }
+    .pathway-label { font-size: 17px; }
+
+    .section--more {
+      position: relative;
+      margin: 18px -2px 0;
+      padding: 0 14px 6px;
+      overflow: hidden;
+      border: 1px solid rgb(79 124 107 / 12%);
+      border-radius: 22px 7px 22px 7px;
+      background:
+        linear-gradient(145deg, rgb(255 255 255 / 92%), rgb(239 244 237 / 78%));
+      box-shadow: 0 14px 30px rgb(47 91 77 / 7%);
+    }
+    .section--more::after {
+      content: "";
+      position: absolute;
+      right: -24px;
+      bottom: -42px;
+      width: 112px;
+      height: 112px;
+      transform: rotate(18deg);
+      border: 1px solid rgb(79 124 107 / 6%);
+      border-radius: 24px;
+      pointer-events: none;
+    }
+    .section--more .entry-row { position: relative; z-index: 1; }
+    .section--more .entry-icon { border-radius: 50% 50% 50% 8px; }
+
+    .section--records,
+    .section--feedback {
+      position: relative;
+      margin-top: 20px;
+      padding: 0 13px 5px;
+      border: 1px solid rgb(79 124 107 / 9%);
+      border-radius: 8px 20px 8px 20px;
+      background: rgb(255 255 255 / 66%);
+      box-shadow: 0 10px 24px rgb(47 91 77 / 4.5%);
+    }
+    .section--feedback {
+      border-color: rgb(217 130 67 / 10%);
+      border-radius: 20px 8px 20px 8px;
+      background: rgb(255 248 241 / 64%);
+    }
+    .section--records::before,
+    .section--feedback::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: 22px;
+      width: 28px;
+      height: 4px;
+      border-radius: 0 0 999px 999px;
+      background: var(--primary);
+    }
+    .section--feedback::before { left: auto; right: 22px; background: var(--orange); }
+
+    @media (max-width: 350px) {
+      main { padding-inline: 16px; }
+      h1 { font-size: 25px; }
+      .entry-title, .primary-label { font-size: 15px; }
+      .journey-card { padding-inline: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+
+    @media print {
+      body, :root { background: white; }
+      .phone { box-shadow: none; }
+      .prototype-toast { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone" id="home-prototype">
+    <header aria-label="微信小程序系统栏">
+      <div class="status-bar">
+        <span>19:07</span>
+        <span class="system-icons"><span>⌁</span><span>4G</span><span class="signal">▂▄▆█</span><span class="battery" aria-hidden="true"></span></span>
+      </div>
+      <div class="native-nav">
+        <span>安心陪伴</span>
+        <span class="wechat-capsule" aria-hidden="true"><i class="capsule-line"></i></span>
+      </div>
+    </header>
+
+    <div class="ambient-canvas" aria-hidden="true">
+      <span class="ambient-ripple ambient-ripple--top"></span>
+      <span class="ambient-ripple ambient-ripple--middle"></span>
+      <span class="ambient-paper"></span>
+      <span class="ambient-swatch"></span>
+      <span class="ambient-bamboo"></span>
+      <span class="ambient-orbit"></span>
+      <span class="ambient-thread"></span>
+      <span class="ambient-patch"></span>
+      <span class="ambient-fold"></span>
+    </div>
+
+    <main>
+      <div class="page-head">
+        <h1>安心陪伴</h1>
+        <button class="icon-button" type="button" data-action="消息中心" aria-label="打开消息中心，有未读消息">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0v5l2 2H4l2-2V9Z"/><path d="M10 19h4"/></svg>
+          <span class="unread-dot" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <section class="observation-board" aria-label="今天的观察入口">
+        <span class="observation-tab" aria-hidden="true"></span>
+        <span class="observation-contour" aria-hidden="true"></span>
+
+        <button class="entry-row thermometer-row" type="button" data-action="情绪温度计">
+          <span class="entry-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5a3 3 0 0 1 6 0v8.2a5 5 0 1 1-6 0V5Z"/><path d="M12 7v8"/></svg></span>
+          <span class="entry-copy"><span class="entry-title">情绪温度计</span><span class="entry-subtitle">今天已记录 0 次</span></span>
+          <span class="entry-end"><span class="chevron">›</span></span>
+        </button>
+
+        <div class="inline-error" id="overview-error" role="status" aria-live="polite">
+          <div><strong>首页摘要暂时不可用</strong><span>检查网络后可以重新加载。</span></div>
+          <button type="button" data-action="重新加载首页摘要">重新加载</button>
+        </div>
+
+        <div class="primary-entries" role="group" aria-label="主要记录入口">
+          <button class="primary-entry" type="button" data-action="测一测">
+            <span class="primary-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4 10-10"/><circle cx="12" cy="12" r="9"/></svg></span>
+            <span><span class="primary-label">测一测</span><span class="primary-note">了解此刻状态</span></span>
+          </button>
+          <span class="primary-divider" aria-hidden="true"></span>
+          <button class="primary-entry" type="button" data-action="情绪日记">
+            <span class="primary-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span>
+            <span><span class="primary-label">情绪日记</span><span class="primary-note">记录具体小事</span></span>
+          </button>
+        </div>
+      </section>
+
+      <section class="journey-card" id="journey-card" aria-labelledby="journey-title">
+        <div class="journey-head">
+          <span class="bamboo-joint" aria-hidden="true"><span></span></span>
+          <span class="journey-kicker" id="journey-kicker">今天的一小步</span>
+          <span class="state-pill" id="journey-state">可以继续</span>
+        </div>
+        <h2 class="journey-title" id="journey-title">先完成一次支持性测评</h2>
+        <p class="journey-copy" id="journey-copy">用几分钟了解当前状态，再决定今天最适合从哪里开始。</p>
+        <div class="journey-meta">约 5 分钟</div>
+        <button class="primary-button" id="journey-button" type="button" data-action="去测一测">去测一测</button>
+      </section>
+
+      <button class="pathway" type="button" data-action="如何开始" aria-label="如何开始：记录、反馈、练习">
+        <span class="pathway-label">如何开始</span>
+        <span class="pathway-track" aria-hidden="true">
+          <span class="pathway-step">记录</span>
+          <span class="pathway-joint"><span></span></span>
+          <span class="pathway-step">反馈</span>
+          <span class="pathway-joint"><span></span></span>
+          <span class="pathway-step">练习</span>
+        </span>
+        <span class="pathway-arrow" aria-hidden="true">›</span>
+      </button>
+
+      <section class="section section--more" aria-labelledby="more-title">
+        <h2 class="section-title" id="more-title">更多</h2>
+        <button class="entry-row" type="button" data-action="支持性反馈">
+          <span class="entry-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-4 3v-6a7 7 0 1 1 16-4Z"/></svg></span>
+          <span class="entry-copy"><span class="entry-title">支持性反馈</span><span class="entry-subtitle">记录后获得对应反馈</span></span>
+          <span class="entry-end"><span class="chevron">›</span></span>
+        </button>
+        <button class="entry-row" type="button" data-action="训练中心">
+          <span class="entry-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M9 15h6"/></svg></span>
+          <span class="entry-copy"><span class="entry-title">训练中心</span><span class="entry-subtitle">查看训练计划与练习</span></span>
+          <span class="entry-end"><span class="chevron">›</span></span>
+        </button>
+        <button class="entry-row" type="button" data-action="人工支持">
+          <span class="entry-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="3"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg></span>
+          <span class="entry-copy"><span class="entry-title">人工支持</span><span class="entry-subtitle">提交非实时支持请求</span></span>
+          <span class="entry-end"><span class="chevron">›</span></span>
+        </button>
+      </section>
+
+      <section class="section section--records" aria-labelledby="recent-title">
+        <h2 class="section-title" id="recent-title">最近记录</h2>
+        <button class="entry-row summary-row" type="button" data-action="去记录">
+          <span class="entry-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span>
+          <span class="entry-copy"><span class="entry-title">还没有保存的记录</span><span class="entry-subtitle">写下一件刚发生的小事</span></span>
+          <span class="entry-end">去记录 <span class="chevron">›</span></span>
+        </button>
+      </section>
+
+      <section class="section section--feedback" aria-labelledby="progress-title">
+        <h2 class="section-title" id="progress-title">阶段性反馈</h2>
+        <button class="entry-row summary-row" type="button" data-action="阶段性反馈">
+          <span class="entry-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-4 3v-6a7 7 0 1 1 16-4Z"/></svg></span>
+          <span class="entry-copy"><span class="entry-title">记录还不够，继续观察</span><span class="entry-subtitle">完成一次测评或练习后再来看</span></span>
+          <span class="entry-end"><span class="chevron">›</span></span>
+        </button>
+      </section>
+    </main>
+
+    <nav class="tabbar" aria-label="主导航">
+      <button class="tab-item" type="button" aria-current="page" data-action="首页"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/></svg><span>首页</span></button>
+      <button class="tab-item" type="button" data-action="训练"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5h4"/></svg><span>训练</span></button>
+      <button class="tab-item" type="button" data-action="课程"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span>课程</span></button>
+      <button class="tab-item" type="button" data-action="我的"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M5 21a7 7 0 0 1 14 0"/></svg><span>我的</span></button>
+    </nav>
+  </div>
+  <div class="prototype-toast" role="status" aria-live="polite"></div>
+
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+  <script>
+    const state = new URLSearchParams(location.search).get('state') || 'default';
+    if (state === 'error') {
+      document.querySelector('#overview-error').classList.add('is-visible');
+      document.querySelector('#journey-card').classList.add('is-error');
+      document.querySelector('#journey-kicker').textContent = '今天的一小步';
+      document.querySelector('#journey-state').textContent = '需要重试';
+      document.querySelector('#journey-title').textContent = '暂时没有读取到下一步';
+      document.querySelector('#journey-copy').textContent = '网络连接不稳定，请稍后重新读取。';
+      document.querySelector('#journey-button').textContent = '重新读取';
+      document.querySelector('#journey-button').dataset.action = '重新读取今天的一小步';
+    }
+
+    const toast = document.querySelector('.prototype-toast');
+    let toastTimer = null;
+    document.querySelectorAll('[data-action]').forEach((control) => {
+      control.addEventListener('click', () => {
+        clearTimeout(toastTimer);
+        toast.textContent = `原型交互：${control.dataset.action}`;
+        toast.classList.add('is-visible');
+        toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 1200);
+      });
+    });
+  </script>
+</body>
+</html>

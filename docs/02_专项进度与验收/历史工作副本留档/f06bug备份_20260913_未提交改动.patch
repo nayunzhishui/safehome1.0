@@ -1,0 +1,172 @@
+diff --git a/backend/routes/auth_utils.py b/backend/routes/auth_utils.py
+index 7d8f5376..447c7a1b 100644
+--- a/backend/routes/auth_utils.py
++++ b/backend/routes/auth_utils.py
+@@ -222,6 +222,7 @@ def resolve_actor_user_id(
+     payload: dict | None = None,
+     allow_legacy_admin: bool = False,
+     allow_dev_fallback: bool = False,
++    cross_user_capability: str | None = None,
+ ) -> str:
+     """Resolve private-data ownership from the authenticated actor first.
+ 
+@@ -238,6 +239,29 @@ def resolve_actor_user_id(
+         role = actor.get("role")
+         if role in {"admin", "supervisor", "researcher"}:
+             if explicit_user_id:
++                from services.research_access_service import (
++                    ResearchAccessError,
++                    authorize_participant_target,
++                )
++
++                capability_id = cross_user_capability
++                if capability_id is None and request.method in {"GET", "HEAD", "OPTIONS"}:
++                    capability_id = "research.participant.read"
++                if capability_id is None:
++                    raise AuthError(
++                        "参与者自助写接口只允许本人操作。",
++                        status=403,
++                        code="forbidden",
++                    )
++                try:
++                    authorize_participant_target(actor, str(explicit_user_id), capability_id)
++                except ResearchAccessError as exc:
++                    raise AuthError(
++                        exc.message,
++                        status=exc.status,
++                        code=exc.code,
++                        details=exc.details,
++                    ) from exc
+                 return str(explicit_user_id)
+             if actor.get("source") == "legacy_admin_token":
+                 raise AuthError("后台查询需要指定 user_id", status=400)
+diff --git a/backend/routes/feedback.py b/backend/routes/feedback.py
+index ff4cf532..7f16b832 100644
+--- a/backend/routes/feedback.py
++++ b/backend/routes/feedback.py
+@@ -110,7 +110,10 @@ def generate():
+             if diary is None:
+                 return fail("not_found", "未找到对应的情绪事件记录", status=404)
+             try:
+-                require_admin_or_owner(diary["user_id"])
++                require_admin_or_owner(
++                    diary["user_id"],
++                    cross_user_capability="research.feedback.write",
++                )
+             except ValueError as exc:
+                 return auth_error_response(exc)
+             source_payload.update(row_to_dict(diary))
+@@ -130,7 +133,10 @@ def generate():
+ 
+         feedback_id = new_id("feedback")
+         try:
+-            user_id = require_user_id(source_payload)
++            if diary_id:
++                user_id = str(source_payload["user_id"])
++            else:
++                user_id = require_user_id(source_payload)
+         except ValueError as exc:
+             return fail("validation_error", str(exc), status=400)
+         timestamp = now_iso()
+diff --git a/backend/routes/utils.py b/backend/routes/utils.py
+index e84ef435..4af7f03b 100644
+--- a/backend/routes/utils.py
++++ b/backend/routes/utils.py
+@@ -50,7 +50,10 @@ def get_request_user_id() -> str | None:
+     return str(user_id) if user_id else None
+ 
+ 
+-def require_admin_or_owner(record_user_id: str | None) -> str:
++def require_admin_or_owner(
++    record_user_id: str | None,
++    cross_user_capability: str | None = None,
++) -> str:
+     from routes.auth_utils import AuthError, get_current_actor
+ 
+     try:
+@@ -58,10 +61,21 @@ def require_admin_or_owner(record_user_id: str | None) -> str:
+     except AuthError as exc:
+         raise ValueError(str(exc)) from exc
+     if actor is not None:
+-        if actor.get("role") in {"admin", "supervisor", "researcher"}:
+-            return str(actor["id"])
+         if record_user_id and str(actor.get("id")) == str(record_user_id):
+             return str(actor["id"])
++        if actor.get("role") in {"admin", "supervisor", "researcher"}:
++            from services.research_access_service import ResearchAccessError, authorize_participant_target
++
++            capability_id = cross_user_capability
++            if capability_id is None and request.method in {"GET", "HEAD", "OPTIONS"}:
++                capability_id = "research.participant.read"
++            if capability_id is None:
++                raise ValueError("参与者自助写接口只允许本人操作")
++            try:
++                authorize_participant_target(actor, str(record_user_id or ""), capability_id)
++            except ResearchAccessError as exc:
++                raise ValueError(exc.message) from exc
++            return str(actor["id"])
+         raise ValueError("只能访问自己的数据")
+ 
+     if str(current_app.config.get("APP_ENV", "development")).lower() != "development":
+diff --git a/backend/services/research_access_service.py b/backend/services/research_access_service.py
+index 991e11e0..d661748f 100644
+--- a/backend/services/research_access_service.py
++++ b/backend/services/research_access_service.py
+@@ -135,6 +135,57 @@ def require_object_scope(conn, actor: dict, enrollment: dict, capability_id: str
+     )
+ 
+ 
++def authorize_participant_target(
++    actor: dict,
++    participant_user_id: str,
++    capability_id: str = "research.participant.read",
++) -> None:
++    """Authorize a backend actor against an assigned participant.
++
++    Participant-facing routes often identify the resource by ``user_id``
++    rather than by an enrollment id.  Resolve that user to the existing
++    enrollment/assignment model instead of treating a backend role as global
++    object scope.
++    """
++
++    assert_capability(actor, capability_id)
++    actor_id = str(actor.get("id") or "")
++    role = str(actor.get("role") or "")
++    target_id = str(participant_user_id or "")
++    if role == "admin":
++        allowed = True
++    else:
++        with get_connection() as conn:
++            enrollments = rows_to_dicts(
++                conn.execute(
++                    """
++                    SELECT * FROM relationship_pilot_enrollments
++                    WHERE user_id = ? AND status IN ('enrolled', 'active')
++                    ORDER BY updated_at DESC
++                    """,
++                    (target_id,),
++                ).fetchall()
++            )
++            allowed = any(has_object_scope(conn, actor, enrollment) for enrollment in enrollments)
++    with get_connection() as audit_conn:
++        write_audit_log(
++            audit_conn,
++            "participant_object_scope_allowed" if allowed else "participant_object_scope_denied",
++            actor_id,
++            "participant_user",
++            target_id or "unknown",
++            {"role": role, "capability_id": capability_id},
++        )
++        audit_conn.commit()
++    if not allowed:
++        raise ResearchAccessError(
++            "forbidden",
++            "当前账号没有访问该参与者资料的范围权限。",
++            403,
++            {"required_capability": capability_id},
++        )
++
++
+ def _enrollment(conn, enrollment_id: str) -> dict:
+     row = conn.execute(
+         "SELECT * FROM relationship_pilot_enrollments WHERE id = ?", (enrollment_id,)

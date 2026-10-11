@@ -1,12 +1,13 @@
 # 首页 Figma 组件化复现规格
 
-状态：`figma_ready_code_blocked_by_recent_record_dependency`
+状态：`html_prototype_ready_figma_reproduction_pending`
 页面：`pages/home/index`
-视觉基准：方案 A“编辑手帐”
+视觉基准：2026-08-31“情绪观察手帐”HTML 高保真原型
 功能基准：`design/function-truth-table.md`
-ImageGen：`C:/Users/32257/.codex/generated_images/019fe695-ee6b-7143-9310-0612b3afeb40/exec-1185a562-53e9-40b1-b894-c39c414dbadd.png`
+HTML：`design/ui-product/pages/01-home/prototype.html`
+预览：`design/ui-product/pages/01-home/prototype-preview.png`
 
-本规格已在 Figma 中完成组件化复现与视觉审查；它仍不授权跳过“最近记录”真实页面依赖直接修改首页前端。
+本轮按用户最新要求停止使用 ImageGen，以当前代码、功能真值、真机截图和 HTML 原型为视觉事实源。旧 Figma 节点只作为历史证据，不作为本轮新首页的验收基准。
 
 Figma 结果：
 
