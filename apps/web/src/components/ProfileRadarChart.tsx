@@ -45,10 +45,10 @@ export function ProfileRadarChart({ profile }: ProfileRadarChartProps) {
       radar: {
         radius: "64%",
         indicator: features.map((feature) => ({ name: feature.label, max: 100 })),
-        axisName: { color: "#5f4d3f", fontSize: 11 },
-        splitLine: { lineStyle: { color: "#eadfce" } },
-        splitArea: { areaStyle: { color: ["#fffdf8", "#f7efe1"] } },
-        axisLine: { lineStyle: { color: "#d6c8b6" } },
+        axisName: { color: "#4b6052", fontSize: 14 },
+        splitLine: { lineStyle: { color: "#dfe5dc" } },
+        splitArea: { areaStyle: { color: ["#ffffff", "#f0f5ed"] } },
+        axisLine: { lineStyle: { color: "#b9c8b8" } },
       },
       series: [
         {

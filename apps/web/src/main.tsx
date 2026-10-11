@@ -12,6 +12,8 @@ import {
 } from "./services/authState";
 import { safeHomeApi, SafeHomeApiError } from "./services/safehomeApi";
 import { ErrorBoundary, lazyWithRetry as lazy } from "./components/ErrorBoundary";
+import { SiteBrand, SiteHeader, SiteFooter, UiIcon, navigationIcon } from "./components/WebUi";
+import { displayActorRole } from "./utils/displayLabels";
 import "./styles.css";
 
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard").then((module) => ({ default: module.AdminDashboard })));
@@ -129,31 +131,31 @@ function canAccessPath(link: AdminLink | undefined, user: AuthUser | null, showc
   return Boolean(user?.role && link.roles.includes(user.role));
 }
 
-function AccessDeniedPage({ path, allowedRoles }: { path: string; allowedRoles: string[] }) {
+function AccessDeniedPage({ path, allowedRoles, user }: { path: string; allowedRoles: string[]; user: AuthUser | null }) {
   return (
     <section className="dashboardShell" aria-label="权限不足">
       <div className="dashboardHeader">
         <div>
           <p className="eyebrow">访问权限</p>
-          <h1>当前账号不能访问此页面</h1>
-          <p className="summary">内容审核后台只向对应后台角色开放。家长和学生账号不可访问内容审核、规则审核或量表审核页面。</p>
+          <h1>{user ? "当前账号不能访问此页面" : "请先登录工作台"}</h1>
+          <p className="summary">{user ? `你正在访问“${findAdminLink(path)?.label || "后台页面"}”。当前账号没有此页面的访问权限。` : "请使用项目负责人开通的研究者、督导或管理员账号登录。家长和学生可返回网站首页使用自己的入口。"}</p>
         </div>
         <div className="dashboardActions">
-          <a className="secondaryButton" href="/dashboard">
-            返回总览
+          <a className="secondaryButton" href="/">
+            返回网站首页
           </a>
           <a className="primaryButton" href="/login">
-            切换账号
+            {user ? "切换账号" : "登录工作台"}
           </a>
         </div>
       </div>
 
-      <div className="status error" role="alert">此页面未向当前账号开放。</div>
+      <div className="status error" role="alert">{user ? "此页面未向当前账号开放。" : "当前未登录，尚未加载后台数据。"}</div>
 
       <section className="guidanceBox" aria-label="权限说明">
         <h2>权限说明</h2>
-        <p>允许角色：{allowedRoles.join("、")}</p>
-        <p>researcher 只能只读查看审核状态；admin 可进行本地受控修改，开启用户端开放状态仍需人工单独确认。</p>
+        <p>允许角色：{allowedRoles.map(displayActorRole).join("、")}</p>
+        <p>后台账号由项目负责人单独开通，不能通过普通注册获得。可执行的操作还取决于账号授权、数据归属及页面当前状态。</p>
       </section>
     </section>
   );
@@ -283,7 +285,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
   }
 
   const pageContent = shouldBlockAdminPath ? (
-    <AccessDeniedPage path={path} allowedRoles={matchedAdminLink.roles || []} />
+    <AccessDeniedPage path={path} allowedRoles={matchedAdminLink.roles || []} user={authUser} />
   ) : (
     <>
       {isLandingPath ? <LandingPage /> : null}
@@ -334,7 +336,8 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     return (
       <>
         <a className="skipLink" href="#main-content">跳到主要内容</a>
-        <main className="page landingMode" id="main-content">
+        <main className={`page landingMode${isLandingPath ? " homeMode" : ""}`} id="main-content" data-web-ui>
+          {!isLandingPath && !isStudentEntryPath && !isAboutStudyPath ? <SiteHeader /> : null}
           {authUser && path !== "/login" && path !== "/register" ? (
             <div className="publicSessionBar">
               <span>当前已登录</span>
@@ -348,7 +351,8 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
               </button>
             </div>
           ) : null}
-          {suspendedPageContent}
+          <div className="webPageContent" data-route={path}>{suspendedPageContent}</div>
+          {!isLandingPath ? <SiteFooter /> : null}
         </main>
       </>
     );
@@ -357,15 +361,15 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
   return (
     <>
       <a className="skipLink" href="#main-content">跳到主要内容</a>
-      <main className="adminWorkspace" id="main-content">
-      <aside className="adminSidebar" aria-label="后台导航">
-        <a className="adminBrand" href="/dashboard" aria-label="安心陪伴管理后台">
-          <span className="adminBrandMark" aria-hidden="true" />
-          <span>
-            <strong>安心陪伴</strong>
-            <small>ReadFeedback Admin</small>
-          </span>
-        </a>
+      <main className="adminWorkspace" id="main-content" data-web-ui>
+      <aside className="adminSidebar" aria-label="后台导航" onKeyDown={(event) => {
+        if (event.key === "Escape" && mobileNavOpen) {
+          event.preventDefault();
+          setMobileNavOpen(false);
+          event.currentTarget.querySelector<HTMLButtonElement>(".adminNavToggle")?.focus();
+        }
+      }}>
+        <SiteBrand href="/dashboard" />
         <button
           className="adminNavToggle"
           type="button"
@@ -381,15 +385,15 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
             <section className="adminNavGroup" aria-label={workspace.label} key={workspace.label}>
               <strong className="adminNavGroupLabel">{workspace.label}</strong>
               {workspace.links.map((link) => (
-                <a className={link.match(path) ? "active" : ""} href={link.href} key={link.href}>
-                  <span className="navDot" aria-hidden="true" />
+                <a className={link.match(path) ? "active" : ""} aria-current={link.match(path) ? "page" : undefined} href={link.href} key={link.href}>
+                  <UiIcon name={navigationIcon(link.href)} size={18} />
                   {link.label}
                 </a>
               ))}
             </section>
           ))}
           <a href="/">
-            <span className="navDot" aria-hidden="true" />
+            <UiIcon name="home" size={18} />
             网站首页
           </a>
         </nav>
@@ -400,13 +404,9 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
       </aside>
       <section className="adminMain">
         <header className="adminTopbar">
-          <div className="adminChromeDots" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </div>
-          <span className="adminPath">safehome1.0 {path}</span>
-          <strong>管理员后台</strong>
+<div className="workspaceBreadcrumb"><span>工作台</span><span aria-hidden="true">/</span><strong>{matchedAdminLink?.label || "工作台"}</strong></div>
+          <div className="workspaceAccount"><span className="workspaceRole">{authUser ? displayActorRole(authUser.role) : "未登录"}</span>
+
           {authUser ? (
             <button
               className="secondaryButton"
@@ -417,8 +417,9 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
               {logoutBusy ? "正在退出…" : "退出登录"}
             </button>
           ) : null}
+          </div>
         </header>
-        {suspendedPageContent}
+        <div className="webPageContent" data-route={path}>{suspendedPageContent}</div>
       </section>
       </main>
     </>

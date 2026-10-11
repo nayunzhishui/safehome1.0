@@ -1,3 +1,4 @@
+import { PageHeader, DetailSection } from "../components/WebUi";
 import { useMemo, useState } from "react";
 
 import { SafeHomeApiClient } from "../services/safehomeApi";
@@ -153,8 +154,8 @@ export function SupervisionManagement() {
   }
 
   return (
-    <section className="dashboardShell" aria-label="人工督导后台">
-      <div className="dashboardHeader">
+    <section className="dashboardShell recordWorkspacePage" aria-label="人工督导后台">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">SafeHome Admin</p>
           <h1>督导请求</h1>
@@ -168,7 +169,7 @@ export function SupervisionManagement() {
             {state.status === "loading" ? "读取中..." : "读取督导请求"}
           </button>
         </div>
-      </div>
+      </PageHeader>
 
       <label className="tokenField">
         后台导出令牌
@@ -227,16 +228,24 @@ export function SupervisionManagement() {
 
           {selectedRequest ? (
             <div className="detailContent">
-              <DetailRow label="家长用户" value={selectedRequest.user_id} />
-              <DetailRow label="关联记录" value={selectedRequest.diary_id} />
-              <DetailRow label="提交内容" value={selectedRequest.message} />
-              <DetailRow label="联系方式" value={selectedRequest.contact} />
-              <DetailRow label="风险提示" value={selectedRequest.risk_hint} />
-              <DetailRow label="风险等级" value={displayRisk(selectedRequest.risk_level)} />
-              <DetailRow label="当前状态" value={displayStatus(selectedRequest.status)} />
-              <DetailRow label="人工回复" value={selectedRequest.supervisor_reply} />
-              <DetailRow label="提交时间" value={formatDateTime(selectedRequest.created_at)} />
-              <DetailRow label="回复时间" value={formatDateTime(selectedRequest.replied_at)} />
+              <DetailSection title="主要内容">
+<DetailRow label="提交内容" value={selectedRequest.message} />
+<DetailRow label="联系方式" value={selectedRequest.contact} />
+<DetailRow label="人工回复" value={selectedRequest.supervisor_reply} />
+</DetailSection>
+<DetailSection title="适用边界与安全">
+<DetailRow label="风险提示" value={selectedRequest.risk_hint} />
+<DetailRow label="风险等级" value={displayRisk(selectedRequest.risk_level)} />
+</DetailSection>
+<DetailSection title="状态与跟进">
+<DetailRow label="当前状态" value={displayStatus(selectedRequest.status)} />
+<DetailRow label="提交时间" value={formatDateTime(selectedRequest.created_at)} />
+<DetailRow label="回复时间" value={formatDateTime(selectedRequest.replied_at)} />
+</DetailSection>
+<DetailSection title="审核、来源与记录信息">
+<DetailRow label="家长用户" value={selectedRequest.user_id} />
+<DetailRow label="关联记录" value={selectedRequest.diary_id} />
+</DetailSection>
 
               <section className="guidanceBox" aria-label="督导边界提示">
                 <h3>边界提示</h3>

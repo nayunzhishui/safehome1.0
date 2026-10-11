@@ -1,3 +1,4 @@
+import { PageHeader, DetailSection } from "../components/WebUi";
 import { useEffect, useMemo, useState } from "react";
 
 import { formatSafeHomeError, SafeHomeApiClient } from "../services/safehomeApi";
@@ -165,8 +166,8 @@ export function WorksheetsManagement() {
   }
 
   return (
-    <section className="dashboardShell" aria-label="测评题库管理">
-      <div className="dashboardHeader">
+    <section className="dashboardShell recordWorkspacePage" aria-label="测评题库管理">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">Assessment Worksheets</p>
           <h1>测评题库管理</h1>
@@ -182,7 +183,7 @@ export function WorksheetsManagement() {
             {status === "loading" ? "刷新中..." : "刷新题库"}
           </button>
         </div>
-      </div>
+      </PageHeader>
 
       <div className={`status ${status}`}>{message}</div>
 
@@ -240,8 +241,9 @@ export function WorksheetsManagement() {
             <span className="countBadge">{selected ? selected.id : "new"}</span>
           </div>
 
-          <div className="detailContent">
-            <label className="tokenField">
+          <div className="detailContent contentEditorFields">
+            <DetailSection title="入口与来源">
+<label className="tokenField">
               量表 ID
               <input value={form.id || ""} onChange={(event) => updateField("id", event.target.value)} disabled={Boolean(selected)} />
             </label>
@@ -265,7 +267,9 @@ export function WorksheetsManagement() {
               用户分组
               <input value={form.audience_class || ""} onChange={(event) => updateField("audience_class", event.target.value)} />
             </label>
-            <label className="tokenField">
+</DetailSection>
+            <DetailSection title="模型与审核">
+<label className="tokenField">
               反射节点
               <input value={form.reflex_node || ""} onChange={(event) => updateField("reflex_node", event.target.value)} />
             </label>
@@ -277,10 +281,12 @@ export function WorksheetsManagement() {
               审核状态
               <input value={form.review_status || ""} onChange={(event) => updateField("review_status", event.target.value)} />
             </label>
+</DetailSection>
             <div className="status idle">
               当前开放状态：{form.enabled_for_user ? "用户端可见" : "用户端隐藏"}。本页不能直接开放测评，开放必须走内容审核流程；如需下线可点击“隐藏入口”。
             </div>
-            <label className="tokenField">
+            <DetailSection title="显示边界与推荐">
+<label className="tokenField">
               边界说明
               <textarea value={form.boundary_notice || ""} onChange={(event) => updateField("boundary_notice", event.target.value)} />
             </label>
@@ -295,6 +301,7 @@ export function WorksheetsManagement() {
                 onChange={(event) => updateField("recommended_card_ids", normalizeList(event.target.value))}
               />
             </label>
+</DetailSection>
 
             <div className="dashboardActions">
               <button className="primaryButton" type="button" onClick={saveWorksheet} disabled={status === "loading"}>

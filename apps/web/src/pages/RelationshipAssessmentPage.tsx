@@ -1,3 +1,4 @@
+import { PageHeader } from "../components/WebUi";
 import { useEffect, useState } from "react";
 
 import type { AssessmentProfilePosition, AssessmentResult, AssessmentWorksheet } from "../../../../shared/types/api";
@@ -89,17 +90,17 @@ export function RelationshipAssessmentPage() {
   if (!user || user.role !== "student") {
     return (
       <section className="dashboardShell">
-        <div className="dashboardHeader"><div><p className="eyebrow">Relationship Pilot</p><h1>大学生关系探索测评</h1><p className="summary">当前只向已授权的学生试点账号开放。</p></div></div>
+        <PageHeader className="dashboardHeader"><div><p className="eyebrow">Relationship Pilot</p><h1>大学生关系探索测评</h1><p className="summary">当前只向已授权的学生试点账号开放。</p></div></PageHeader>
         <a className="primaryButton" href="/login">使用学生账号登录</a>
       </section>
     );
   }
 
   return (
-    <section className="dashboardShell" aria-label="大学生关系探索测评">
-      <div className="dashboardHeader">
+    <section className="dashboardShell assessmentPage" aria-label="大学生关系探索测评">
+      <PageHeader className="dashboardHeader">
         <div><p className="eyebrow">Relationship Pilot</p><h1>大学生关系探索测评</h1><p className="summary">三份量表分别计分和建模，不生成诊断、人格标签或关系能力排名。</p></div>
-      </div>
+      </PageHeader>
       <div className="status">{message}</div>
       <label className="tokenField">选择量表
         <select value={selectedId} onChange={(event) => selectWorksheet(event.target.value)}>

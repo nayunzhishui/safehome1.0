@@ -75,6 +75,7 @@ test("server identity overrides a forged researcher role", async ({ page }) => {
   await page.goto("/content/scales");
   await expect(page.getByRole("heading", { name: "当前账号不能访问此页面" })).toBeVisible();
   const storedRole = await page.evaluate(() => JSON.parse(sessionStorage.getItem("safehome_auth_user") || "{}").role);
+  expect(await page.evaluate(() => localStorage.getItem("safehome_auth_token"))).toBeNull();
   expect(storedRole).toBe("parent");
 });
 
@@ -96,4 +97,5 @@ test("invalid token is cleared before protected content renders", async ({ page 
   await expect(page.getByRole("heading", { name: "当前账号不能访问此页面" })).toBeVisible();
   expect(await page.evaluate(() => sessionStorage.getItem("safehome_auth_token"))).toBeNull();
   expect(await page.evaluate(() => localStorage.getItem("safehome_auth_token"))).toBeNull();
+  expect(await page.evaluate(() => sessionStorage.getItem("safehome_auth_token"))).toBeNull();
 });

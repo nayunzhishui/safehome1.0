@@ -1,3 +1,4 @@
+import { PageHeader, DetailSection } from "../components/WebUi";
 import { useEffect, useMemo, useState } from "react";
 
 import { SafeHomeApiClient } from "../services/safehomeApi";
@@ -203,8 +204,8 @@ export function AdminDashboard() {
   }
 
   return (
-    <section className="dashboardShell" aria-label="网页端最小管理后台">
-      <div className="dashboardHeader">
+    <section className="dashboardShell recordWorkspacePage" aria-label="网页端最小管理后台">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">SafeHome Admin</p>
           <h1>记录查看后台</h1>
@@ -227,7 +228,7 @@ export function AdminDashboard() {
             {state.status === "loading" ? "刷新中..." : "刷新记录"}
           </button>
         </div>
-      </div>
+      </PageHeader>
 
       <div className={`status ${state.status}`}>{state.message}</div>
 
@@ -275,23 +276,27 @@ export function AdminDashboard() {
 
           {selectedDiary ? (
             <div className="detailContent">
-              <DetailRow label="关联目标" value={selectedDiary.goal_id ? selectedDiary.goal_id : "未关联"} />
-              <DetailRow label="发生场景" value={selectedDiary.scene} />
-              <DetailRow label="事件时间" value={formatTime(selectedDiary.event_time)} />
-              <DetailRow label="发生了什么" value={selectedDiary.event_description} />
-              <DetailRow label="家长情绪" value={`${selectedDiary.parent_emotion} / 强度 ${selectedDiary.parent_emotion_intensity}`} />
-              <DetailRow
+              <DetailSection title="主要内容">
+<DetailRow label="发生场景" value={selectedDiary.scene} />
+<DetailRow label="事件时间" value={formatTime(selectedDiary.event_time)} />
+<DetailRow label="发生了什么" value={selectedDiary.event_description} />
+<DetailRow label="家长情绪" value={`${selectedDiary.parent_emotion} / 强度 ${selectedDiary.parent_emotion_intensity}`} />
+<DetailRow
                 label="孩子情绪"
                 value={`${displayText(selectedDiary.child_emotion)} / 强度 ${displayText(selectedDiary.child_emotion_intensity)}`}
               />
-              <DetailRow label="当时的想法" value={selectedDiary.automatic_thought} />
-              <DetailRow label="说了什么/做了什么" value={selectedDiary.behavior} />
-              <DetailRow label="身体感觉" value={selectedDiary.body_sensation} />
-              <DetailRow label="孩子反应" value={selectedRawText.childReaction} />
-              <DetailRow label="短期结果" value={selectedRawText.shortTermResult} />
-              <DetailRow label="长期影响" value={selectedRawText.longTermImpact} />
-              <DetailRow label="补充原文" value={selectedRawText.extra} />
-              <DetailRow label="创建时间" value={formatTime(selectedDiary.created_at)} />
+<DetailRow label="当时的想法" value={selectedDiary.automatic_thought} />
+<DetailRow label="说了什么/做了什么" value={selectedDiary.behavior} />
+<DetailRow label="身体感觉" value={selectedDiary.body_sensation} />
+<DetailRow label="孩子反应" value={selectedRawText.childReaction} />
+<DetailRow label="短期结果" value={selectedRawText.shortTermResult} />
+<DetailRow label="长期影响" value={selectedRawText.longTermImpact} />
+<DetailRow label="补充原文" value={selectedRawText.extra} />
+</DetailSection>
+<DetailSection title="审核、来源与记录信息">
+<DetailRow label="关联目标" value={selectedDiary.goal_id ? selectedDiary.goal_id : "未关联"} />
+<DetailRow label="创建时间" value={formatTime(selectedDiary.created_at)} />
+</DetailSection>
 
               <section className="guidanceBox" aria-label="记录详情用途提示">
                 <h3>查看边界</h3>

@@ -1,3 +1,4 @@
+import { PageHeader } from "../components/WebUi";
 import { useEffect, useMemo, useState } from "react";
 
 import { getStoredAdminToken } from "../services/adminToken";
@@ -203,8 +204,8 @@ export function PrivacyRequestsManagement() {
   }, [statusFilter]);
 
   return (
-    <section className="dashboardShell privacyReviewShell" aria-label="隐私申请处理工作台">
-      <div className="dashboardHeader privacyReviewHeader">
+    <section className="dashboardShell privacyReviewShell recordWorkspacePage" aria-label="隐私申请处理工作台">
+      <PageHeader className="dashboardHeader privacyReviewHeader">
         <div>
           <p className="eyebrow">Privacy request desk</p>
           <h1>隐私申请处理</h1>
@@ -214,7 +215,7 @@ export function PrivacyRequestsManagement() {
           <strong>受控处理</strong>
           <span>仅管理员与督导可操作</span>
         </div>
-      </div>
+      </PageHeader>
 
       <div className={`status ${message.includes("无法") || message.includes("没有更新") ? "error" : ""}`} role="status" aria-live="polite">
         {message}

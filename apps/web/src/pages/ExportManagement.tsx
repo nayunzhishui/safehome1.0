@@ -1,3 +1,4 @@
+import { PageHeader } from "../components/WebUi";
 import { useMemo, useState } from "react";
 
 import { ADMIN_EXPORT_TYPES } from "../../../../shared/constants/api";
@@ -237,8 +238,8 @@ export function ExportManagement() {
   }
 
   return (
-    <section className="dashboardShell" aria-label="数据导出后台">
-      <div className="dashboardHeader">
+    <section className="dashboardShell exportPage" aria-label="数据导出后台">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">Data Export</p>
           <h1>数据导出</h1>
@@ -252,7 +253,7 @@ export function ExportManagement() {
             {state.status === "loading" ? "读取中..." : "预览 CSV"}
           </button>
         </div>
-      </div>
+      </PageHeader>
 
       <div className={`status ${state.status}`}>{state.message}</div>
 

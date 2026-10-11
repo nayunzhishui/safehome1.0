@@ -1,3 +1,4 @@
+import { PageHeader, SectionNavigation } from "../components/WebUi";
 import { useEffect, useMemo, useState } from "react";
 
 import type {
@@ -148,8 +149,8 @@ export function ContentReviewOverview() {
   const release = selected?.releases?.find((item) => item.status === "active" || item.status === "paused") as { id?: string; status?: string } | undefined;
 
   return (
-    <section className="dashboardShell contentWorkbench" aria-label="内容治理工作台">
-      <div className="dashboardHeader">
+    <section className="dashboardShell contentWorkbench recordWorkspacePage" aria-label="内容治理工作台">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">Content Governance</p>
           <h1>内容治理工作台</h1>
@@ -159,7 +160,8 @@ export function ContentReviewOverview() {
           {currentUser?.role === "admin" ? <button className="secondaryButton" disabled={busy} onClick={() => runAction("旧内容登记", () => safeHomeApi.registerContentGovernanceInventory())}>登记旧内容</button> : null}
           <button className="primaryButton" disabled={busy} onClick={() => setDraftOpen((value) => !value)}>新建草稿</button>
         </div>
-      </div>
+      </PageHeader>
+      <SectionNavigation items={[{"id":"web-contentreviewoverview-1","label":"内容版本"},{"id":"web-contentreviewoverview-2","label":"合成回放"}]} />
 
       <div className="status" role="status">{status}</div>
       <div className="metricGrid" aria-label="内容治理概况">
@@ -188,7 +190,7 @@ export function ContentReviewOverview() {
         </section>
       ) : null}
 
-      <div className="dashboardGrid governanceGrid">
+      <div className="dashboardGrid governanceGrid" id="web-contentreviewoverview-1" tabIndex={-1}>
         <section className="listPanel" aria-label="内容版本列表">
           <div className="sectionTitleRow"><h2>版本与运行内容</h2><span className="countBadge">{versions.length} 个版本</span></div>
           <div className="recordList governanceList">
@@ -220,7 +222,7 @@ export function ContentReviewOverview() {
         </section>
       </div>
 
-      <section className="detailPanel" aria-label="合成案例回放"><div className="sectionTitleRow"><h2>合成案例批量回放</h2><span className="countBadge">不含真实参与者数据</span></div><p className="summary">固定案例同时检查普通支持性反馈、高风险阻断、推荐开关和边界文案。回放结果只构成工程证据。</p><button className="secondaryButton" disabled={busy} onClick={() => runAction("合成案例回放", async () => { const result = await safeHomeApi.replayContentGovernance(SYNTHETIC_CASES); setStatus(`回放完成：${result.summary.passed}/${result.summary.total} 通过，证据哈希 ${result.replay_hash.slice(0, 16)}。`); })}>运行固定回放</button></section>
+      <section className="detailPanel" aria-label="合成案例回放" id="web-contentreviewoverview-2" tabIndex={-1}><div className="sectionTitleRow"><h2>合成案例批量回放</h2><span className="countBadge">不含真实参与者数据</span></div><p className="summary">固定案例同时检查普通支持性反馈、高风险阻断、推荐开关和边界文案。回放结果只构成工程证据。</p><button className="secondaryButton" disabled={busy} onClick={() => runAction("合成案例回放", async () => { const result = await safeHomeApi.replayContentGovernance(SYNTHETIC_CASES); setStatus(`回放完成：${result.summary.passed}/${result.summary.total} 通过，证据哈希 ${result.replay_hash.slice(0, 16)}。`); })}>运行固定回放</button></section>
     </section>
   );
 }

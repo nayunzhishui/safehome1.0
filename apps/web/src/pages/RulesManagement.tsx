@@ -1,3 +1,4 @@
+import { PageHeader, DetailSection } from "../components/WebUi";
 import { useMemo, useState } from "react";
 
 import assessmentTrainingMap from "../../../../content/assessment_training_map.json";
@@ -150,8 +151,8 @@ export function RulesManagement() {
   const profileRecommendedCardIds = new Set(profileRulesContent.rules.flatMap((rule) => rule.recommended_card_ids));
 
   return (
-    <section className="dashboardShell" aria-label="反馈规则管理后台">
-      <div className="dashboardHeader">
+    <section className="dashboardShell recordWorkspacePage" aria-label="反馈规则管理后台">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">Content Management</p>
           <h1>规则查看</h1>
@@ -165,7 +166,7 @@ export function RulesManagement() {
             查看训练卡
           </a>
         </div>
-      </div>
+      </PageHeader>
 
       <div className="buttonRow">
         <button className={activeTab === "feedback" ? "primaryButton" : "secondaryButton"} type="button" onClick={() => setActiveTab("feedback")}>
@@ -294,16 +295,24 @@ function FeedbackRulesView({
 
           {selectedRule ? (
             <div className="detailContent">
-              <DetailRow label="规则标签" value={selectedRule.label} />
-              <DetailRow label="风险提示" value={riskLabel(selectedRule.risk_level)} />
-              <DetailRow label="内容版本" value={selectedRule.version} />
-              <DetailRow label="理论来源" value={selectedRule.theory_source} />
-              <DetailRow label="审核状态" value={displayStatus(selectedRule.review_status)} />
-              <DetailRow label="启用状态" value={selectedRule.enabled === false ? "停用" : "启用"} />
-              <DetailRow label="规则解释" value={selectedRule.explanation} />
-              <DetailRow label="支持性反馈" value={selectedRule.supportive_feedback} />
-              <DetailRow label="边界说明" value={selectedRule.boundary_notice} />
-              <DetailRow label="推荐训练卡" value={trainingCardNames(selectedRule.recommended_card_ids)} />
+              <DetailSection title="主要内容">
+<DetailRow label="规则标签" value={selectedRule.label} />
+<DetailRow label="内容版本" value={selectedRule.version} />
+<DetailRow label="规则解释" value={selectedRule.explanation} />
+<DetailRow label="支持性反馈" value={selectedRule.supportive_feedback} />
+<DetailRow label="推荐训练卡" value={trainingCardNames(selectedRule.recommended_card_ids)} />
+</DetailSection>
+<DetailSection title="适用边界与安全">
+<DetailRow label="风险提示" value={riskLabel(selectedRule.risk_level)} />
+<DetailRow label="边界说明" value={selectedRule.boundary_notice} />
+</DetailSection>
+<DetailSection title="状态与跟进">
+<DetailRow label="启用状态" value={selectedRule.enabled === false ? "停用" : "启用"} />
+</DetailSection>
+<DetailSection title="审核、来源与记录信息">
+<DetailRow label="理论来源" value={selectedRule.theory_source} />
+<DetailRow label="审核状态" value={displayStatus(selectedRule.review_status)} />
+</DetailSection>
 
               <section className="guidanceBox" aria-label="展示边界提示">
                 <h3>展示边界</h3>
@@ -378,16 +387,22 @@ function TrainingMapRulesView({
 
         {selectedRule ? (
           <div className="detailContent">
-            <DetailRow label="规则来源" value={displaySourceType(selectedRule.source_type)} />
-            <DetailRow label="审核状态" value={displayStatus(selectedRule.review_status)} />
-            <DetailRow label="触发条件" value={JSON.stringify(selectedRule.trigger_condition)} />
-            <DetailRow label="主题" value={selectedRule.theme.join("、")} />
-            <DetailRow label="推荐训练卡" value={trainingCardNames(selectedRule.recommended_card_ids)} />
-            <DetailRow label="推荐理由" value={selectedRule.reason} />
-            <DetailRow label="今日建议" value={selectedRule.today_suggestion} />
-            <DetailRow label="长期建议" value={selectedRule.long_term_suggestion || "情绪日记规则不生成长期建议"} />
-            <DetailRow label="不适合场景" value={selectedRule.not_suitable_when} />
-            <DetailRow label="边界说明" value={selectedRule.boundary_notice} />
+            <DetailSection title="主要内容">
+<DetailRow label="触发条件" value={JSON.stringify(selectedRule.trigger_condition)} />
+<DetailRow label="主题" value={selectedRule.theme.join("、")} />
+<DetailRow label="推荐训练卡" value={trainingCardNames(selectedRule.recommended_card_ids)} />
+<DetailRow label="推荐理由" value={selectedRule.reason} />
+<DetailRow label="今日建议" value={selectedRule.today_suggestion} />
+<DetailRow label="长期建议" value={selectedRule.long_term_suggestion || "情绪日记规则不生成长期建议"} />
+</DetailSection>
+<DetailSection title="适用边界与安全">
+<DetailRow label="不适合场景" value={selectedRule.not_suitable_when} />
+<DetailRow label="边界说明" value={selectedRule.boundary_notice} />
+</DetailSection>
+<DetailSection title="审核、来源与记录信息">
+<DetailRow label="规则来源" value={displaySourceType(selectedRule.source_type)} />
+<DetailRow label="审核状态" value={displayStatus(selectedRule.review_status)} />
+</DetailSection>
 
             <section className="guidanceBox" aria-label="规则边界">
               <h3>规则边界</h3>
@@ -450,13 +465,21 @@ function ProfileRulesView({
 
         {selectedProfileRule ? (
           <div className="detailContent">
-            <DetailRow label="画像名称" value={selectedProfileRule.profile_name} />
-            <DetailRow label="技术标识（仅研究）" value={selectedProfileRule.profile_code} />
-            <DetailRow label="启用状态" value={selectedProfileRule.enabled ? "已启用" : "停用"} />
-            <DetailRow label="风险提示" value={riskLabel(selectedProfileRule.risk_level)} />
-            <DetailRow label="人工关注" value={selectedProfileRule.requires_review ? "需要" : "暂不需要"} />
-            <DetailRow label="触发摘要" value={triggerSummary(selectedProfileRule)} />
-            <DetailRow label="推荐训练卡" value={trainingCardNames(selectedProfileRule.recommended_card_ids)} />
+            <DetailSection title="主要内容">
+<DetailRow label="画像名称" value={selectedProfileRule.profile_name} />
+<DetailRow label="触发摘要" value={triggerSummary(selectedProfileRule)} />
+<DetailRow label="推荐训练卡" value={trainingCardNames(selectedProfileRule.recommended_card_ids)} />
+</DetailSection>
+<DetailSection title="适用边界与安全">
+<DetailRow label="风险提示" value={riskLabel(selectedProfileRule.risk_level)} />
+<DetailRow label="人工关注" value={selectedProfileRule.requires_review ? "需要" : "暂不需要"} />
+</DetailSection>
+<DetailSection title="状态与跟进">
+<DetailRow label="启用状态" value={selectedProfileRule.enabled ? "已启用" : "停用"} />
+</DetailSection>
+<DetailSection title="审核、来源与记录信息">
+<DetailRow label="技术标识（仅研究）" value={selectedProfileRule.profile_code} />
+</DetailSection>
 
             <section className="guidanceBox" aria-label="画像维度">
               <h3>维度摘要</h3>

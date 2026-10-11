@@ -1,3 +1,4 @@
+import { PageHeader } from "../components/WebUi";
 import { useEffect, useMemo, useState } from "react";
 
 import { formatSafeHomeError, safeHomeApi as api } from "../services/safehomeApi";
@@ -115,15 +116,15 @@ export function ReviewManagement() {
   }
 
   return (
-    <div className="adminPage">
-      <section className="dashboardHero">
+    <div className="adminPage reviewManagementPage">
+      <PageHeader className="dashboardHero">
         <div>
           <span className="eyebrow">Human Review</span>
           <h1>人工复核列表</h1>
           <p>筛选需人工关注的学生画像。人工备注单独保存，不自动覆盖学生端报告。</p>
         </div>
         <div className={`status compact ${status}`}>{message}</div>
-      </section>
+      </PageHeader>
 
       <section className="guidanceBox" aria-label="后台令牌">
         <label className="tokenField">
@@ -167,11 +168,12 @@ export function ReviewManagement() {
         {items.length === 0 ? (
           <div className="emptyState">暂无需要人工复核的画像记录。</div>
         ) : (
-          <div className="tableList">
+          <div className="tableList reviewQueue">
             {items.map((item) => {
               const draft = drafts[item.id] ?? defaultDraft();
               return (
-                <article className="tableCard" key={item.id}>
+                <article className="tableCard reviewCase" key={item.id}>
+<div className="reviewCaseSummary">
                   <div>
                     <strong>{item.profile_name || "未命名画像"}</strong>
                     <p>{item.boundary_notice || "本结果只用于支持性理解和练习推荐，不构成诊断。"}</p>
@@ -186,7 +188,8 @@ export function ReviewManagement() {
                   <div className="detailRow"><span>匿名 ID</span><strong>{item.anonymous_id}</strong></div>
                   <div className="detailRow"><span>最新复核</span><strong>{item.latest_review?.review_decision || "暂无"}</strong></div>
 
-                  <div className="reviewForm">
+                  </div>
+<div className="reviewForm">
                     <label>
                       复核状态
                       <select

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AuthIntro } from "../components/WebUi";
 
 import { saveAuthSession } from "../services/authState";
 import { formatSafeHomeError, safeHomeApi } from "../services/safehomeApi";
@@ -77,7 +78,8 @@ export function RegisterPage() {
   }
 
   return (
-    <section className="dashboardShell" aria-label="注册">
+    <section className="dashboardShell authPage" aria-label="注册">
+      <AuthIntro registering />
       <div className="dashboardHeader">
         <div>
           <p className="eyebrow">SafeHome</p>

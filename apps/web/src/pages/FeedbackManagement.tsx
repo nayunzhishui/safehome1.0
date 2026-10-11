@@ -1,3 +1,4 @@
+import { PageHeader, DetailSection } from "../components/WebUi";
 import { useMemo, useState } from "react";
 
 import { SafeHomeApiClient } from "../services/safehomeApi";
@@ -192,8 +193,8 @@ export function FeedbackManagement() {
   }
 
   return (
-    <section className="dashboardShell" aria-label="反馈结果后台">
-      <div className="dashboardHeader">
+    <section className="dashboardShell recordWorkspacePage" aria-label="反馈结果后台">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">Research Platform</p>
           <h1>反馈结果</h1>
@@ -207,7 +208,7 @@ export function FeedbackManagement() {
             {state.status === "loading" ? "读取中..." : "读取反馈结果"}
           </button>
         </div>
-      </div>
+      </PageHeader>
 
       <label className="tokenField">
         后台导出令牌
@@ -225,7 +226,7 @@ export function FeedbackManagement() {
       <div className="metricGrid" aria-label="反馈结果概况">
         <MetricCard label="反馈结果" value={state.feedback.length} />
         <MetricCard label="关联记录" value={linkedDiaries.size} />
-        <MetricCard label="中高提示" value={mediumOrHighFeedback} />
+        <MetricCard label="中高风险反馈" value={mediumOrHighFeedback} />
         <MetricCard label="推荐卡片" value={recommendedCards.size} />
       </div>
 
@@ -266,16 +267,22 @@ export function FeedbackManagement() {
 
           {selectedFeedback ? (
             <div className="detailContent">
-              <DetailRow label="家长用户" value={selectedFeedback.user_id} />
-              <DetailRow label="关联记录" value={selectedFeedback.diary_id} />
-              <DetailRow label="标签" value={summarizeJsonList(selectedFeedback.tags_json)} />
-              <DetailRow label="触发点摘要" value={selectedFeedback.trigger_summary} />
-              <DetailRow label="互动模式" value={selectedFeedback.pattern_summary} />
-              <DetailRow label="支持性反馈" value={selectedFeedback.supportive_feedback} />
-              <DetailRow label="替代回应" value={selectedFeedback.alternative_response} />
-              <DetailRow label="推荐训练卡" value={feedbackRecommendedCardsText(selectedFeedback)} />
-              <DetailRow label="风险提示" value={displayRisk(selectedFeedback.risk_level)} />
-              <DetailRow label="创建时间" value={formatDateTime(selectedFeedback.created_at)} />
+              <DetailSection title="主要内容">
+<DetailRow label="标签" value={summarizeJsonList(selectedFeedback.tags_json)} />
+<DetailRow label="触发点摘要" value={selectedFeedback.trigger_summary} />
+<DetailRow label="互动模式" value={selectedFeedback.pattern_summary} />
+<DetailRow label="支持性反馈" value={selectedFeedback.supportive_feedback} />
+<DetailRow label="替代回应" value={selectedFeedback.alternative_response} />
+<DetailRow label="推荐训练卡" value={feedbackRecommendedCardsText(selectedFeedback)} />
+</DetailSection>
+<DetailSection title="适用边界与安全">
+<DetailRow label="风险提示" value={displayRisk(selectedFeedback.risk_level)} />
+</DetailSection>
+<DetailSection title="审核、来源与记录信息">
+<DetailRow label="家长用户" value={selectedFeedback.user_id} />
+<DetailRow label="关联记录" value={selectedFeedback.diary_id} />
+<DetailRow label="创建时间" value={formatDateTime(selectedFeedback.created_at)} />
+</DetailSection>
 
               <section className="guidanceBox" aria-label="下一步行动">
                 <h3>下一步行动</h3>
@@ -290,12 +297,12 @@ export function FeedbackManagement() {
                 <h3>边界提示</h3>
                 <p>
                   反馈结果用于检查规则输出和推荐卡片是否稳定，不用于诊断家长、孩子或家庭关系。需要进一步理解时，应回到具体记录和支持性练习建议。
-                  如果风险提示为 high，后台不应把它作为普通训练卡推荐处理。
+                  高风险记录应优先进入人工支持流程，不作为普通训练卡推荐处理。
                 </p>
               </section>
             </div>
           ) : (
-            <div className="emptyState">选择左侧反馈结果后，这里会显示详情。</div>
+            <div className="emptyState">从反馈列表选择一条记录，查看触发点、支持性反馈与下一步建议。</div>
           )}
         </section>
       </div>

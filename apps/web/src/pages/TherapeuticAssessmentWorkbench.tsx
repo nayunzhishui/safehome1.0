@@ -1,3 +1,4 @@
+import { PageHeader } from "../components/WebUi";
 import { useEffect, useMemo, useState } from "react";
 
 import type {
@@ -440,15 +441,15 @@ export function TherapeuticAssessmentWorkbench() {
   };
 
   return (
-    <section className="dashboardShell therapeuticAssessmentWorkbench" aria-labelledby="ta-title">
-      <header className="dashboardHeader taWorkbenchHeader">
+    <section className="dashboardShell therapeuticAssessmentWorkbench researchNotebook" aria-labelledby="ta-title">
+      <PageHeader className="dashboardHeader taWorkbenchHeader">
         <div>
           <p className="eyebrow">人工主导 · 证据可追溯</p>
           <h1 id="ta-title">协作式评估工作台 · 证据时间线</h1>
           <p className="summary">从参与者的问题出发，按时间查看资料、反证和未知项，再分别保存内部记录与参与者可见草稿。</p>
         </div>
         <button className="secondaryButton" type="button" onClick={() => void loadCases()} disabled={loading}>重新同步</button>
-      </header>
+      </PageHeader>
 
       {error ? <div className="status error" role="alert">{error}</div> : null}
       {notice ? <div className="status success" role="status">{notice}</div> : null}

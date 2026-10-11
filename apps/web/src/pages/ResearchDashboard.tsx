@@ -71,14 +71,14 @@ const COMPLETED_ADMIN_PAGES = [
   { path: "/dashboard", label: "总览", note: "研究者平台运行概况" },
   { path: "/goals", label: "目标管理", note: "查看小程序端目标设定" },
   { path: "/diaries", label: "情绪记录", note: "查看记录列表、详情、反馈和训练卡推荐" },
-  { path: "/feedback", label: "反馈结果", note: "通过导出接口查看已生成反馈" },
+  { path: "/feedback", label: "反馈结果", note: "查看已生成的支持性反馈与关联记录" },
   { path: "/checkins", label: "练习记录", note: "查看训练卡练习尝试" },
-  { path: "/reports", label: "周报记录", note: "通过导出接口查看已生成周报" },
-  { path: "/supervision", label: "督导请求", note: "通过导出接口查看人工督导请求" },
+  { path: "/reports", label: "周报记录", note: "回看已保存的周报和下一步建议" },
+  { path: "/supervision", label: "督导请求", note: "查看人工支持请求及处理状态" },
   { path: "/content/worksheets", label: "测评题库", note: "管理小程序实际读取的测评入口和画像绑定" },
   { path: "/content/cards", label: "训练卡", note: "只读查看训练卡内容" },
   { path: "/content/rules", label: "反馈规则", note: "只读查看反馈规则边界和支持性反馈" },
-  { path: "/export", label: "数据导出", note: "复用后台 CSV 导出接口" },
+  { path: "/export", label: "数据导出", note: "按授权导出数据，留意脱敏与风险确认" },
 ];
 
 const DEFERRED_ADMIN_PAGES: Array<{ path: string; label: string; note: string }> = [];
@@ -556,7 +556,7 @@ export function ResearchDashboard() {
     <section className="dashboardShell" aria-label="研究者平台总览">
       <div className="dashboardHeader">
         <div>
-          <p className="eyebrow">Research Platform</p>
+          <p className="eyebrow">试点工作台</p>
           <h1>研究者平台总览</h1>
           <p className="summary">用于快速查看试点运行状态。这里不展示诊断性标签，也不替代正式研究数据审查。</p>
         </div>
@@ -569,6 +569,14 @@ export function ResearchDashboard() {
           </button>
         </div>
       </div>
+
+      <nav className="webSectionNav" aria-label="总览页内导航">
+        <a href="#overview-today">今日待处理</a>
+        <a href="#overview-analysis">研究分析</a>
+        <a href="#overview-participants">参与者档案</a>
+        <a href="#overview-relationship">关系试点</a>
+        <a href="#overview-profile">测评画像</a>
+      </nav>
 
       <div className={`status ${state.status}`}>{state.message}</div>
       {state.status === "error" && lastError ? (
@@ -600,45 +608,51 @@ export function ResearchDashboard() {
         </label>
       </section>
 
-      <section className="guidanceBox" aria-label="今日待处理">
+      <section className="guidanceBox" id="overview-today" aria-label="今日待处理">
         <div className="sectionTitleRow">
           <h2>今日待处理</h2>
-          <span className="countBadge">P2-06</span>
+
         </div>
         <div className="recordList">
           {todoItems.map((item) =>
             item.href ? (
               <a className="recordItem textLink" href={item.href} key={item.title}>
                 <span className="recordScene">{item.title}</span>
-                <span className="recordDescription">{item.note}</span>
-                <span className="recordMeta">{item.value}</span>
+                <span className="recordDescription">{typeof item.value === "number" && state.status !== "success" ? "等待总览成功读取后查看。" : item.note}</span>
+                <span className="recordMeta">{typeof item.value === "number" && state.status !== "success" ? "—" : item.value}</span>
               </a>
             ) : (
               <div className="recordItem" key={item.title}>
                 <span className="recordScene">{item.title}</span>
-                <span className="recordDescription">{item.note}</span>
-                <span className="recordMeta">{item.value}</span>
+                <span className="recordDescription">{typeof item.value === "number" && state.status !== "success" ? "等待总览成功读取后查看。" : item.note}</span>
+                <span className="recordMeta">{typeof item.value === "number" && state.status !== "success" ? "—" : item.value}</span>
               </div>
             ),
           )}
         </div>
       </section>
 
+      <details className="contentReadingNote">
+        <summary>这些数字如何理解？</summary>
+        <p>目标、记录、练习和测评按本次成功读取的数据统计，不代表全部参与者人数。记录、练习、风险复核、画像与测评结果各最多读取 50 条；今日和本周数量也只在这些记录内计算。</p>
+        <p>“待人工复核”合并风险复核与画像复核条数，同一人可能有多条，不能当作去重人数或风险发生率。操作队列的统计范围请以各区块说明为准。</p>
+      </details>
+      {state.status !== "success" ? <p className="contentReadingNote" role="status">{state.status === "loading" ? "正在更新总览，以下数字暂不展示。" : "总览尚未成功读取，不能将未加载的数据理解为零。请刷新总览；若仍失败，请核对账号权限或联系项目负责人。"}</p> : null}
       <div className="metricGrid" aria-label="总览指标">
-        <MetricCard label="目标总数" value={state.goals.length} />
-        <MetricCard label="进行中目标" value={activeGoals.length} />
-        <MetricCard label="情绪记录" value={state.diaries.length} />
-        <MetricCard label="已记录尝试" value={completedCheckins.length} />
+        <MetricCard ready={state.status === "success"} label="已读取目标" value={state.goals.length} />
+        <MetricCard ready={state.status === "success"} label="进行中目标" value={activeGoals.length} />
+        <MetricCard ready={state.status === "success"} label="情绪记录" value={state.diaries.length} />
+        <MetricCard ready={state.status === "success"} label="已记录尝试" value={completedCheckins.length} />
       </div>
 
       <div className="metricGrid" aria-label="内容与练习指标">
-        <MetricCard label="训练卡" value={state.cards.length} />
-        <MetricCard label="尝试记录" value={state.checkins.length} />
-        <MetricCard label="已关联目标记录" value={state.diaries.filter((diary) => diary.goal_id).length} />
-        <MetricCard label="测评结果" value={state.assessmentResults.length} />
+        <MetricCard ready={state.status === "success"} label="训练卡" value={state.cards.length} />
+        <MetricCard ready={state.status === "success"} label="尝试记录" value={state.checkins.length} />
+        <MetricCard ready={state.status === "success"} label="已关联目标记录" value={state.diaries.filter((diary) => diary.goal_id).length} />
+        <MetricCard ready={state.status === "success"} label="测评结果" value={state.assessmentResults.length} />
       </div>
 
-      <section className="researchAnalysisDeck" aria-label="离线研究分析">
+      <section className="researchAnalysisDeck" id="overview-analysis" aria-label="离线研究分析">
         <div className="analysisDeckHeader">
           <div>
             <p className="eyebrow">Offline Research Lens</p>
@@ -659,7 +673,7 @@ export function ResearchDashboard() {
           <div className="operationsHeader">
             <div>
               <p className="eyebrow">Operations pulse</p>
-              <h2>提醒与人工工作水位</h2>
+              <h2>提醒与人工处理进度</h2>
               <p>先看需要处理的数量，再进入对应页面；这里不展示参与者原文或微信身份信息。</p>
             </div>
             <span className="countBadge">{state.operations.scope === "assigned_participants" ? "我的参与者" : "全部参与者"}</span>
@@ -815,7 +829,7 @@ export function ResearchDashboard() {
         </section>
       ) : null}
 
-      <section className="participantWorkspace" aria-label="参与者矩阵与单人档案">
+      <section className="participantWorkspace" id="overview-participants" aria-label="参与者矩阵与单人档案">
         <div className="participantWorkspaceHeader">
           <div>
             <p className="eyebrow">Participant Matrix</p>
@@ -896,7 +910,7 @@ export function ResearchDashboard() {
         </div>
       </section>
 
-      <section className="guidanceBox" aria-label="亲密关系项目试点档案">
+      <section className="guidanceBox" id="overview-relationship" aria-label="亲密关系项目试点档案">
         <div className="sectionTitleRow">
           <h2>亲密关系项目试点</h2>
           <span className="countBadge">{state.relationshipEnrollments.length} 份报名</span>
@@ -1013,7 +1027,7 @@ export function ResearchDashboard() {
         ) : <div className="emptyState">当前还没有第二阶段报名记录。</div>}
       </section>
 
-      <section className="guidanceBox" aria-label="测评画像落点">
+      <section className="guidanceBox" id="overview-profile" aria-label="测评画像落点">
         <div className="sectionTitleRow">
           <h2>测评画像落点</h2>
           <span className="countBadge">T4-03</span>
@@ -1080,7 +1094,7 @@ export function ResearchDashboard() {
             </p>
           </>
         ) : (
-          <div className="emptyState">当前匿名用户下还没有可查看的测评结果。</div>
+          <div className="emptyState">当前账号可访问的范围内，尚未读取到测评结果。</div>
         )}
       </section>
 
@@ -1124,6 +1138,8 @@ export function ResearchDashboard() {
         </section>
       </div>
 
+      <details className="webPageDirectory">
+        <summary>查看后台页面目录</summary>
       <div className="dashboardGrid overviewGrid">
         <section className="listPanel" aria-label="已完成后台页面">
           <div className="sectionTitleRow">
@@ -1161,6 +1177,8 @@ export function ResearchDashboard() {
           )}
         </section>
       </div>
+
+      </details>
 
       <section className="guidanceBox" aria-label="研究者平台边界">
         <h2>平台边界</h2>
@@ -1287,11 +1305,11 @@ function DossierModuleSection({
   );
 }
 
-function MetricCard({ label, value }: { label: string; value: number }) {
+function MetricCard({ label, value, ready }: { label: string; value: number; ready: boolean }) {
   return (
     <article className="metricCard">
       <span>{label}</span>
-      <strong>{value}</strong>
+      <strong>{ready ? value : "—"}</strong>
     </article>
   );
 }

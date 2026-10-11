@@ -1,3 +1,4 @@
+import { PageHeader, SectionNavigation } from "../components/WebUi";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { OfflineAdjudicationQueueItem, OfflineAgreementSummary, OfflineAnnotationGovernance, OfflineBenchmarkConfig, OfflineBenchmarkRun, OfflineBlindCase, OfflineDatasetCard, OfflineEmotionLabel, OfflineModelMonitoringStatus, OfflineModelReleaseGateStatus, OfflineModelReviewQueueItem, OfflineModelShadowRun, OfflineModelVersion, OfflineSplitReport } from "../../../../shared/types/api";
@@ -88,11 +89,12 @@ export function OfflineBenchmarkWorkbench() {
   }
 
   return (
-    <section className="dashboardShell benchmarkWorkbench" aria-label="公开数据与离线算法基准">
-      <div className="dashboardHeader">
+    <section className="dashboardShell benchmarkWorkbench researchNotebook" aria-label="公开数据与离线算法基准">
+      <PageHeader className="dashboardHeader">
         <div><p className="eyebrow">T29 · 仅限离线研究</p><h1>公开数据与算法基准</h1><p className="summary">先核对许可和内容权利，再比较规则与网络算法。公开不等于可下载，也不等于可训练。</p></div>
         <span className="gateBadge gateBlocked">生产替换关闭</span>
-      </div>
+      </PageHeader>
+      <SectionNavigation items={[{"id":"web-offlinebenchmarkworkbench-1","label":"情感模型影子运行"},{"id":"web-offlinebenchmarkworkbench-2","label":"数据集卡"},{"id":"web-offlinebenchmarkworkbench-3","label":"合成中文双人盲标"},{"id":"web-offlinebenchmarkworkbench-4","label":"数据使用边界"}]} />
       <div className="status" role="status" aria-live="polite">{status}</div>
 
       <section className="benchmarkBoundary" aria-label="当前边界">
@@ -103,7 +105,7 @@ export function OfflineBenchmarkWorkbench() {
         </dl>
       </section>
 
-      <section className="panel shadowRegistryPanel" aria-label="模型注册与影子执行">
+      <section className="panel shadowRegistryPanel" aria-label="模型注册与影子执行" id="web-offlinebenchmarkworkbench-1" tabIndex={-1}>
         <div className="panelHeading">
           <div><span className="panelKicker">版本不可覆盖 · 结果可回放</span><h2>情感模型影子运行</h2></div>
           <span className="gateBadge gateBlocked">不影响参与者</span>
@@ -129,7 +131,7 @@ export function OfflineBenchmarkWorkbench() {
         </section>
       </section>
 
-      <div className="benchmarkColumns">
+      <div className="benchmarkColumns" id="web-offlinebenchmarkworkbench-2" tabIndex={-1}>
         <section className="panel" aria-label="数据集卡">
           <div className="panelHeading"><div><span className="panelKicker">许可先行</span><h2>数据集卡</h2></div>{isAdmin ? <button className="secondaryButton" disabled={busy} type="button" onClick={() => void runAction("同步登记", async () => { await safeHomeApi.syncOfflineDatasetCards(); await load(); })}>同步登记</button> : null}</div>
           {cards.length ? <div className="datasetCardList">{cards.map((card) => <article key={card.id}><div><strong>{card.name}</strong><span>{card.language} · {card.platform}</span></div><span className={`gateBadge ${card.ingest_status.includes("ready") ? "gatePassed" : "gateBlocked"}`}>{card.ingest_status}</span><p>{card.review_note}</p><small>{card.license} · {card.content_rights_status}</small></article>)}</div> : <p className="emptyState">管理员同步本地登记后显示。同步不会下载外部数据。</p>}
@@ -143,7 +145,7 @@ export function OfflineBenchmarkWorkbench() {
         </section>
       </div>
 
-      <section className="panel" aria-label="双人盲标">
+      <section className="panel" aria-label="双人盲标" id="web-offlinebenchmarkworkbench-3" tabIndex={-1}>
         <div className="panelHeading"><div><span className="panelKicker">人工工作尚未完成</span><h2>合成中文双人盲标</h2></div><span className="gateBadge gateBlocked">不是人工金标准</span></div>
         <p className="mutedText">标注者看不到生成标签或他人答案。至少200例、两名独立标注者、一致性达标和督导裁决后，才可申请人工金标准发布。</p>
         <div className="blindAnnotationGrid">
@@ -155,7 +157,7 @@ export function OfflineBenchmarkWorkbench() {
 
       {canReview ? <section className="panel" aria-label="分歧裁决"><div className="panelHeading"><div><span className="panelKicker">第三人独立裁决</span><h2>待裁决分歧</h2></div><span className="gateBadge gateBlocked">{adjudicationQueue.length} 条</span></div>{adjudicationQueue.length ? adjudicationQueue.map((item) => <article className="benchmarkResult" key={item.case_id}><h3>{item.case_id}</h3><p>{item.text}</p><div className="adjudicationCompare">{item.annotations.map((annotation) => <div key={annotation.annotation_id}><strong>标注{annotation.slot}</strong><span>{annotation.emotion_labels.join("、")} · 强度{annotation.intensity} · {annotation.polarity_status}</span><p>{annotation.rationale || "未填写理由"}</p></div>)}</div><label className="fieldLabel" htmlFor={`adjudication-${item.case_id}`}>裁决标签</label><select id={`adjudication-${item.case_id}`} value={adjudicationLabel} onChange={(event) => setAdjudicationLabel(event.target.value as OfflineEmotionLabel)}>{LABELS.map((label) => <option key={label}>{label}</option>)}</select><label className="fieldLabel" htmlFor={`adjudication-reason-${item.case_id}`}>裁决理由</label><textarea id={`adjudication-reason-${item.case_id}`} value={adjudicationRationale} onChange={(event) => setAdjudicationRationale(event.target.value)} /><button className="primaryButton" type="button" disabled={busy || adjudicationRationale.trim().length < 5} onClick={() => void runAction("保存独立裁决", async () => { await safeHomeApi.adjudicateOfflineCase(item.case_id, { emotion_labels: [adjudicationLabel], intensity: 2, polarity_status: adjudicationLabel === "unknown" ? "uncertain" : "affirmed", valence: adjudicationLabel === "positive" || adjudicationLabel === "calm" ? 0.7 : adjudicationLabel === "unknown" ? 0 : -0.7, arousal: adjudicationLabel === "calm" ? 0.2 : 0.5, context: "synthetic_daily_reflection", reflex_node: "emotion", rationale: adjudicationRationale, manual_clause: `标签边界：${adjudicationLabel}` }); setAdjudicationRationale(""); await load(); })}>保存裁决并保留原标注</button></article>) : <p className="emptyState">当前没有待裁决分歧。</p>}</section> : null}
 
-      <section className="panel" aria-label="标注数据边界"><div className="panelHeading"><div><span className="panelKicker">数据最小化</span><h2>当前只使用合成数据</h2></div><span className="gateBadge gatePassed">{governance?.active_data_class || "读取中"}</span></div><p>{governance?.purpose}</p><p className="boundaryCallout">隐藏直接身份字段；同一用户、家庭或项目组不得跨训练集和测试集。真实资料仍需独立用途同意、权利证据、伦理批准、去标识核验和删除计划。</p></section>
+      <section className="panel" aria-label="标注数据边界" id="web-offlinebenchmarkworkbench-4" tabIndex={-1}><div className="panelHeading"><div><span className="panelKicker">数据最小化</span><h2>当前只使用合成数据</h2></div><span className="gateBadge gatePassed">{governance?.active_data_class || "读取中"}</span></div><p>{governance?.purpose}</p><p className="boundaryCallout">隐藏直接身份字段；同一用户、家庭或项目组不得跨训练集和测试集。真实资料仍需独立用途同意、权利证据、伦理批准、去标识核验和删除计划。</p></section>
     </section>
   );
 }
