@@ -14,6 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "apps" / "miniprogram"
 DEFAULT_POLICY = ROOT / "config" / "rc0810" / "miniprogram_page_policy.json"
 DEFAULT_CLOUD_TARGETS = ROOT / "config" / "rc0810" / "miniprogram_cloud_targets.json"
+# Classifications shipped in the production package; role_gated pages check the signed-in role.
+PRODUCTION_CLASSIFICATIONS = {"participant", "role_gated"}
 ROUTE_RE = re.compile(r"[\"'`](/pages/[a-z0-9-]+/index)(?:\?[^\"'`]*)?[\"'`]", re.I)
 
 
@@ -55,11 +57,24 @@ def copy_source(output: Path, excluded: set[str]) -> None:
         page_stem = relative.rsplit(".", 1)[0]
         if page_stem in excluded:
             continue
-        if relative in {"project.private.config.json", "project.config.json", "app.json"}:
+        # The generated API contract is never loaded at runtime and would push the main package past 2 MB.
+        if relative in {"project.private.config.json", "project.config.json", "app.json", "services/api-contract.generated.js"}:
             continue
         target = output / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
+
+
+def write_project_config(output: Path, profile: str) -> None:
+    """Carry the AppID and upload settings so DevTools can import and upload the build as is."""
+    config = read_json(SOURCE / "project.config.json")
+    config["projectname"] = f"safehome-{profile}"
+    if profile == "production":
+        # Compile shortcuts point at debug pages that the production package leaves out.
+        config.pop("condition", None)
+    pack_options = config.setdefault("packOptions", {"ignore": [], "include": []})
+    pack_options.setdefault("ignore", []).append({"type": "prefix", "value": "rc0810-"})
+    write_json(output / "project.config.json", config)
 
 
 def strip_named_methods(path: Path, names: list[str]) -> None:
@@ -241,7 +256,7 @@ def build(profile: str, output: Path, policy_path: Path, should_copy: bool, clou
     app = read_json(SOURCE / "app.json")
     policy = read_json(policy_path)
     mapping = validate_policy(app, policy)
-    internal = {page for page, kind in mapping.items() if kind != "participant"}
+    internal = {page for page, kind in mapping.items() if kind not in PRODUCTION_CLASSIFICATIONS}
     included = list(app["pages"]) if profile == "validation" else [page for page in app["pages"] if page not in internal]
     manifest = dict(app)
     manifest["pages"] = included
@@ -271,6 +286,7 @@ def build(profile: str, output: Path, policy_path: Path, should_copy: bool, clou
     })
     if should_copy:
         copy_source(output, set() if profile == "validation" else internal)
+        write_project_config(output, profile)
         configure_cloud_target(output, profile, cloud_targets_path)
         if profile == "production":
             for relative, methods in policy.get("production_route_rewrites", {}).items():

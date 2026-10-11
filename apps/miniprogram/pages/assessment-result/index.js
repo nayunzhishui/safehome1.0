@@ -1,6 +1,7 @@
 const { captureAuthSession, isCurrentAuthSession } = require("../../utils/authGuard");
 const { createSafeHomeApi } = require("../../services/api");
 const { buildDimensionVisualization } = require("../../utils/assessment-dimension-visualization");
+const { buildEmotionInsightsView } = require("../../utils/emotion-insights-view");
 
 const api = createSafeHomeApi();
 const LATEST_TRAINING_RECOMMENDATION_KEY = "safehome:latestTrainingRecommendation";
@@ -152,55 +153,6 @@ function buildRiskSummary(result) {
   };
 }
 
-function percentText(value) {
-  return `${Math.round(Number(value) * 100)}%`;
-}
-
-function describeSceneEmotion(item) {
-  let text = `${item.scene} × ${item.emotion} · ${item.support} 次`;
-  if (item.share_in_scene !== undefined && item.share_in_scene !== null) {
-    text += `，占该场景 ${percentText(item.share_in_scene)}`;
-    if (item.share_overall !== undefined && item.share_overall !== null) text += `（全部记录中 ${percentText(item.share_overall)}）`;
-  }
-  if (item.average_intensity !== undefined && item.average_intensity !== null) text += `，平均强度 ${item.average_intensity}`;
-  return text;
-}
-
-function buildExploratoryAnalysisView(payload) {
-  if (!payload) return null;
-  const statusText = {
-    available: "已生成近期线索",
-    insufficient: "记录还不够",
-    withheld: "已转人工关注",
-    ineligible: "当前阶段未开放",
-  }[payload.availability] || "暂不可用";
-  const parentChild = payload.parent_child || {};
-  const trend = (payload.affect && payload.affect.trend) || {};
-  return {
-    ...payload,
-    statusText,
-    available: payload.availability === "available",
-    affectItems: ((payload.affect && payload.affect.items) || []).map((item) => ({
-      ...item,
-      summary: `${item.count} 次 · 平均强度 ${item.average_intensity}`,
-    })),
-    interactionEdges: ((payload.interaction_network && payload.interaction_network.edges) || []).map((item) => ({
-      ...item,
-      key: `${item.source}:${item.target}`,
-      summary: describeSceneEmotion(item),
-    })),
-    trendText: trend.available ? trend.summary_text : "",
-    trendNote: trend.available ? trend.next_check_text : "",
-    parentChildPairs: (parentChild.pairs || []).map((item) => ({
-      ...item,
-      key: `${item.parent_emotion}:${item.child_emotion}`,
-      summary: `你“${item.parent_emotion}”时孩子“${item.child_emotion}” · ${item.support} 次`,
-    })),
-    parentChildSummary: parentChild.paired_record_count ? parentChild.summary_text : "",
-    parentChildNote: parentChild.next_check_text || "",
-  };
-}
-
 function normalizePlotPosition(value, min, max, invert = false) {
   if (min === max) return 50;
   const ratio = (value - min) / (max - min);
@@ -224,8 +176,12 @@ function matchingClarityText(position, interpretation) {
   if (status === "pending_approval") return "待研究者审核";
   const posterior = Number(position.posterior ?? position.confidence);
   if (!Number.isFinite(posterior)) return "仅作参考";
-  if (posterior >= 0.8) return "较高";
-  if (posterior >= 0.6) return "中等";
+  // Distance-margin models report how much nearer the closest group is (0.15 is the usable floor);
+  // mixture models report a probability. The two need different bands.
+  const marginBased = String(position.assignment_version || "").startsWith("euclidean");
+  const [high, middle] = marginBased ? [0.4, 0.25] : [0.8, 0.6];
+  if (posterior >= high) return "较高";
+  if (posterior >= middle) return "中等";
   return "较低";
 }
 
@@ -233,18 +189,20 @@ function buildRadarFeatures(payload) {
   const features = Array.isArray(payload.feature_profile) ? payload.feature_profile : [];
   return features
     .filter((item) => item && typeof item.z_score === "number")
-    .sort((a, b) => Math.abs(b.z_score) - Math.abs(a.z_score))
+    .map((item) => ({
+      ...item,
+      // Show every item in the direction of its wording: further out means agreeing more.
+      wordingZ: item.reverse_scored ? -Number(item.z_score) : Number(item.z_score),
+    }))
+    .sort((a, b) => Math.abs(b.wordingZ) - Math.abs(a.wordingZ))
     .slice(0, 6)
-    .map((item, index) => {
-      const value = Math.max(0.08, Math.min(1, (Number(item.z_score) + 2) / 4));
-      return {
-        id: item.feature_id,
-        label: compactFeatureLabel(item.label || item.feature_id),
-        axisLabel: String(index + 1),
-        zScore: Number(item.z_score),
-        value,
-      };
-    });
+    .map((item, index) => ({
+      id: item.feature_id,
+      label: compactFeatureLabel(item.label || item.feature_id),
+      axisLabel: String(index + 1),
+      zScore: item.wordingZ,
+      value: Math.max(0.08, Math.min(1, (item.wordingZ + 2) / 4)),
+    }));
 }
 
 function buildDimensionRadarFeatures(payload, position, clusters) {
@@ -279,6 +237,9 @@ function buildProfilePositionSummary(payload) {
   const clusters = Array.isArray(payload.clusters) ? payload.clusters : [];
   const dimensionRadarFeatures = buildDimensionRadarFeatures(payload, position, clusters);
   const radarFeatures = dimensionRadarFeatures.length >= 3 ? dimensionRadarFeatures : buildRadarFeatures(payload);
+  const radarCaption = dimensionRadarFeatures.length >= 3
+    ? "轮廓显示这一画像组在各维度上的特点，与既往样本平均水平比较。"
+    : "轮廓显示你这次在差异最大的几道题上的作答，与既往样本平均水平比较；越靠外表示越认同该题的说法。";
   const coordinates = clusters
     .map((cluster) => cluster.pca_centroid || {})
     .concat([{ pc1: position.pc1, pc2: position.pc2 }])
@@ -302,6 +263,7 @@ function buildProfilePositionSummary(payload) {
       clusterPoints: [],
       userPoint: null,
       radarFeatures,
+      radarCaption,
       strengthNote: payload.strength_note || "",
       smallStep: payload.small_step || "",
       suggestedQuestions: payload.suggested_assessment_questions || [],
@@ -328,8 +290,9 @@ function buildProfilePositionSummary(payload) {
         style: `left:${left}%;top:${top}%;`,
       };
     });
-  const userLeft = normalizePlotPosition(position.pc1, minX, maxX);
-  const userTop = normalizePlotPosition(position.pc2, minY, maxY, true);
+  const hasUserPoint = typeof position.pc1 === "number" && typeof position.pc2 === "number";
+  const userLeft = hasUserPoint ? normalizePlotPosition(position.pc1, minX, maxX) : null;
+  const userTop = hasUserPoint ? normalizePlotPosition(position.pc2, minY, maxY, true) : null;
   return {
     modelId: payload.model_id || "",
     researchDir: payload.research_dir || "",
@@ -346,12 +309,15 @@ function buildProfilePositionSummary(payload) {
         ? `${payload.feature_summary.answered_features}/${payload.feature_summary.total_features} 个题项用于定位`
         : "",
     clusterPoints,
-    userPoint: {
-      xPercent: userLeft,
-      yPercent: userTop,
-      style: `left:${userLeft}%;top:${userTop}%;`,
-    },
+    userPoint: hasUserPoint
+      ? {
+          xPercent: userLeft,
+          yPercent: userTop,
+          style: `left:${userLeft}%;top:${userTop}%;`,
+        }
+      : null,
     radarFeatures,
+    radarCaption,
     strengthNote: payload.strength_note || "",
     smallStep: payload.small_step || "",
     suggestedQuestions: payload.suggested_assessment_questions || [],
@@ -556,7 +522,7 @@ Page({
         wx.removeStorageSync(LATEST_TRAINING_RECOMMENDATION_KEY);
         wx.removeStorageSync(THREE_DAY_LIGHT_PLAN_KEY);
       }
-      const exploratoryAnalysis = buildExploratoryAnalysisView(exploratoryPayload);
+      const exploratoryAnalysis = buildEmotionInsightsView(exploratoryPayload);
       saveLatestTrainingRecommendation(trainingRecommendation);
       this.setData(
         {

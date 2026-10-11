@@ -10,7 +10,7 @@ const WORKSPACES = [
   { id: "pending", label: "待处理", capability: "research.dashboard.read" },
   { id: "participants", label: "参与者", capability: "research.participant.read" },
   { id: "feedback", label: "反馈与消息", capability: "research.feedback.write" },
-  { id: "analysis", label: "在线分析", capability: "research.analysis.read" },
+  { id: "analysis", label: "群体分析", capability: "research.analysis.read" },
   { id: "assessment", label: "评估证据", capability: "research.dashboard.read" },
   { id: "pilots", label: "试点项目", capability: "research.dashboard.read" },
   { id: "mine", label: "我的工作", capability: "research.dashboard.read" },
@@ -28,6 +28,77 @@ const PRIORITY_ORDER = { urgent: 0, attention: 1, routine: 2 };
 const PRIORITY_LABELS = { urgent: "优先处理", attention: "需要关注", routine: "常规" };
 const DRAFT_PREFIX = "researcher_workspace_draft_v1:";
 const MODULE_PRIMARY_FIELDS = ["title", "worksheet_title", "scene", "card_id", "message_type", "task_type", "status", "created_at"];
+const MODULE_FIELD_LABELS = {
+  title: "标题",
+  worksheet_title: "量表",
+  scene: "场景",
+  card_id: "训练卡",
+  message_type: "消息类型",
+  task_type: "任务类型",
+  status: "状态",
+  created_at: "时间",
+};
+const ROLE_LABELS = { researcher: "研究员", supervisor: "督导", admin: "管理员" };
+const SCOPE_LABELS = { assigned_participants: "分配给我的参与者", all_participants: "全部参与者" };
+const VISIBILITY_LABELS = { participant: "参与者", research_team: "研究团队", supervisor: "督导" };
+const EVIDENCE_REVIEW_LABELS = {
+  recorded: "已记录",
+  candidate: "候选",
+  draft: "草稿",
+  human_reviewed: "已人工复核",
+  changes_requested: "需修改",
+  participant_checked: "参与者已核对",
+};
+const GROUP_WINDOWS = [30, 90, 180, 365];
+
+// Server times are UTC ISO strings; show them in the phone's local time.
+function parseTime(value) {
+  const text = String(value || "").trim();
+  if (!text) return null;
+  // Python writes microseconds; some iOS engines only parse milliseconds.
+  const parsed = Date.parse(text.replace(/(\.\d{3})\d+/, "$1"));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function localTime(value) {
+  const parsed = parseTime(value);
+  if (parsed === null) return String(value || "").slice(0, 16).replace("T", " ");
+  const date = new Date(parsed);
+  const pad = (number) => String(number).padStart(2, "0");
+  const year = date.getFullYear() === new Date().getFullYear() ? "" : `${date.getFullYear()}-`;
+  return `${year}${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function durationText(minutes) {
+  const value = Math.max(0, Math.round(Number(minutes) || 0));
+  if (value < 60) return `${value} 分钟`;
+  const hours = Math.floor(value / 60);
+  if (hours < 24) return value % 60 ? `${hours} 小时 ${value % 60} 分` : `${hours} 小时`;
+  const days = Math.floor(hours / 24);
+  return hours % 24 ? `${days} 天 ${hours % 24} 小时` : `${days} 天`;
+}
+
+function dueState(dueAt, now = Date.now()) {
+  const due = parseTime(dueAt);
+  if (due === null) return { text: "", overdue: false };
+  const minutes = Math.round((due - now) / 60000);
+  return minutes < 0
+    ? { text: `已超时 ${durationText(-minutes)}`, overdue: true }
+    : { text: `剩余 ${durationText(minutes)}`, overdue: false };
+}
+
+function shareText(value) {
+  return `${Math.round(Number(value || 0) * 100)}%`;
+}
+
+function barWidth(value, max) {
+  const ratio = (Number(value) || 0) / Math.max(Number(max) || 0, 1e-9);
+  return `${Math.max(6, Math.min(100, Math.round(ratio * 100)))}%`;
+}
+
+function windowLabel(days) {
+  return Number(days) === 365 ? "近一年" : `近 ${days} 天`;
+}
 
 function moduleRows(items) {
   return (items || []).map((item) => {
@@ -65,7 +136,12 @@ function moduleRows(items) {
       displayLines: MODULE_PRIMARY_FIELDS
         .filter((key) => item[key] !== undefined && item[key] !== null && item[key] !== "")
         .slice(0, 4)
-        .map((key) => `${key === "created_at" ? "时间" : key}：${String(item[key]).slice(0, 180)}`),
+        .map((key) => {
+          let value = item[key];
+          if (key === "created_at") value = localTime(value);
+          if (key === "status") value = STATUS_LABELS[value] || value;
+          return `${MODULE_FIELD_LABELS[key]}：${String(value).slice(0, 180)}`;
+        }),
     };
   });
 }
@@ -95,17 +171,23 @@ function queuePreview(results) {
       return;
     }
     total += Number(result.value.total || result.value.count || 0);
-    (result.value.items || []).forEach((item) => items.push({
-      workItemId: item.work_item_id,
-      queueType: queue.id,
-      queueLabel: queue.label,
-      title: item.title || queue.label,
-      priority: item.priority || "routine",
-      priorityText: PRIORITY_LABELS[item.priority] || PRIORITY_LABELS.routine,
-      status: item.status || "open",
-      waitMinutes: Number(item.wait_minutes || 0),
-      dueAt: item.due_at || "",
-    }));
+    (result.value.items || []).forEach((item) => {
+      const due = dueState(item.due_at);
+      items.push({
+        workItemId: item.work_item_id,
+        queueType: queue.id,
+        queueLabel: queue.label,
+        title: item.title || queue.label,
+        priority: item.priority || "routine",
+        priorityText: PRIORITY_LABELS[item.priority] || PRIORITY_LABELS.routine,
+        status: item.status || "open",
+        waitMinutes: Number(item.wait_minutes || 0),
+        waitText: durationText(item.wait_minutes),
+        dueAt: item.due_at || "",
+        dueText: due.text,
+        overdue: due.overdue,
+      });
+    });
   });
   items.sort((a, b) => (PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]) || (b.waitMinutes - a.waitMinutes));
   return { items, failures, total };
@@ -152,10 +234,15 @@ const MESSAGE_QUEUES = ["stage_feedback", "supervision", "feedback_review"];
 const ACTIVE_WORK_STATUSES = ["claimed", "processing", "waiting"];
 
 function shortTime(value) {
-  return String(value || "").slice(0, 16).replace("T", " ");
+  return localTime(value);
 }
 
-function buildWorkItemView(detail, queueLabel, privileged) {
+function assigneeLabel(assigneeId, currentUserId) {
+  if (!assigneeId) return "尚未领取";
+  return currentUserId && assigneeId === currentUserId ? "我" : "其他成员";
+}
+
+function buildWorkItemView(detail, queueLabel, privileged, currentUserId = "") {
   const item = (detail && detail.work_item) || {};
   const source = (detail && detail.source) || {};
   const status = item.status || "open";
@@ -166,6 +253,7 @@ function buildWorkItemView(detail, queueLabel, privileged) {
   const notes = ((detail && detail.notes) || []).map((note) => (
     `${shortTime(note.created_at)} · ${note.note_type === "internal" ? "内部说明" : "处理说明"} · ${note.content}`
   ));
+  const due = active || status === "open" ? dueState(item.due_at) : { text: "", overdue: false };
   return {
     id: item.id,
     version: Number(item.version || 0),
@@ -174,8 +262,9 @@ function buildWorkItemView(detail, queueLabel, privileged) {
     status,
     statusText: WORK_ITEM_STATUS_LABELS[status] || "待核对",
     priorityText: PRIORITY_LABELS[item.priority] || PRIORITY_LABELS.routine,
-    assigneeText: item.assignee_id || "尚未领取",
-    dueText: shortTime(item.due_at) || "未设置",
+    assigneeText: assigneeLabel(item.assignee_id, currentUserId),
+    dueText: item.due_at ? `${shortTime(item.due_at)}${due.text ? `（${due.text}）` : ""}` : "未设置",
+    overdue: due.overdue,
     sourceId: source.source_id || item.source_id,
     privileged,
     canClaim: status === "open",
@@ -324,9 +413,115 @@ function normalizeBenchmarkRuns(payload) {
         : "",
       networkNextCheck: isNetwork ? (analysisSummary.next_check_text || "") : "",
       rawTextText: item.raw_text_included ? "含原文（不应出现）" : "不含原文",
-      createdText: String(item.created_at || "").slice(0, 16).replace("T", " "),
+      createdText: localTime(item.created_at),
     };
   });
+}
+
+function withSentText(workflow) {
+  return workflow ? { ...workflow, sentText: workflow.sent_at ? localTime(workflow.sent_at) : "" } : workflow;
+}
+
+function metricText(value) {
+  return value === null || value === undefined ? "—" : Number(value).toFixed(2);
+}
+
+function hiddenCategoryText(emotionHidden = {}, sceneHidden = {}) {
+  const parts = [];
+  if (emotionHidden.hidden_category_count) parts.push(`${emotionHidden.hidden_category_count} 种情绪`);
+  if (sceneHidden.hidden_category_count) parts.push(`${sceneHidden.hidden_category_count} 个场景`);
+  return parts.length ? `另有 ${parts.join("、")}因记录人数少于 3 人未单独列出。` : "";
+}
+
+function labelBars(rows) {
+  const max = Math.max(1, ...rows.map((item) => Number(item.participant_count) || 0));
+  return rows.map((item) => ({
+    key: item.label,
+    label: item.label,
+    width: barWidth(item.participant_count, max),
+    valueText: `${item.participant_count} 人 · ${item.record_count} 条 · 平均强度 ${item.average_intensity}`,
+  }));
+}
+
+function buildGroupInsightsView(payload) {
+  if (!payload) return null;
+  const thresholds = payload.thresholds || {};
+  const view = {
+    available: payload.availability === "available",
+    windowText: windowLabel(payload.window_days),
+    scopeText: SCOPE_LABELS[payload.scope] || "授权范围内",
+    generatedText: localTime(payload.generated_at),
+    reason: payload.reason || "",
+    consentRule: payload.consent_rule || "",
+    boundaryNotice: payload.boundary_notice || "",
+    thresholdText: `保护规则：总人数少于 ${thresholds.minimum_participants} 人不展示；单项少于 ${thresholds.minimum_cell_participants} 人不单独列出；每周少于 ${thresholds.minimum_week_participants} 人不显示该周。`,
+  };
+  if (!view.available) return view;
+  const affect = payload.affect || {};
+  const network = payload.network || {};
+  const cooccurrence = network.emotion_cooccurrence || {};
+  const persistence = cooccurrence.persistence || {};
+  const weekly = affect.weekly_trend || {};
+  const parentChild = affect.parent_child || {};
+  const sceneEmotion = network.scene_emotion || {};
+  return {
+    ...view,
+    summaryText: payload.summary_text || "",
+    headline: [
+      { key: "participants", label: "参与者", value: payload.participant_count, unit: "人" },
+      { key: "records", label: "可汇总记录", value: payload.usable_record_count, unit: "条" },
+      { key: "intensity", label: "平均强度", value: affect.average_intensity, unit: "/10" },
+    ],
+    excludedText: payload.excluded_record_count
+      ? `另有 ${payload.excluded_record_count} 条记录缺少场景、情绪或有效强度，未计入。`
+      : "",
+    emotionBars: labelBars(affect.emotions || []),
+    sceneBars: labelBars(affect.scenes || []),
+    hiddenText: hiddenCategoryText(affect.emotion_hidden, affect.scene_hidden),
+    intensityBands: (affect.intensity_bands || []).map((band) => ({
+      key: band.key,
+      label: band.label,
+      width: barWidth(band.record_share, 1),
+      valueText: `${shareText(band.record_share)} · ${band.record_count} 条`,
+    })),
+    weeklyRows: (weekly.items || []).map((item) => ({
+      key: item.week_start,
+      label: `${String(item.week_start).slice(5)} 这一周`,
+      width: barWidth(item.average_intensity, 10),
+      valueText: `${item.participant_count} 人 · ${item.record_count} 条 · 平均强度 ${item.average_intensity}`,
+    })),
+    weeklyNote: weekly.suppressed_week_count
+      ? `${weekly.suppressed_week_count} 周的记录人数少于 ${weekly.minimum_week_participants} 人，未单独显示。`
+      : "",
+    linkRows: (sceneEmotion.links || []).map((item) => ({
+      key: `${item.scene}:${item.emotion}`,
+      title: `${item.scene} → ${item.emotion}`,
+      meta: `${item.participant_count} 人 · 该场景中占 ${shareText(item.share_in_scene)} · 提升度 ${item.lift} · 平均强度 ${item.average_intensity}`,
+    })),
+    networkSizeText: `${cooccurrence.node_count || 0} 种情绪 · ${cooccurrence.edge_count || 0} 条关联 · ${cooccurrence.component_count || 0} 个相连的组`,
+    networkMetrics: [
+      { key: "density", label: "关联密度", value: metricText(cooccurrence.density), hint: "0 表示情绪之间互不相连，1 表示两两都被同一批人一起记录过" },
+      { key: "clustering", label: "成团程度", value: metricText(cooccurrence.average_clustering), hint: "越接近 1，越常见三种情绪彼此都相连" },
+      { key: "centralization", label: "中心化", value: metricText(cooccurrence.degree_centralization), hint: "越接近 1，越像围绕一两种情绪展开" },
+      {
+        key: "persistence",
+        label: "前后稳定",
+        value: persistence.persistence_rate === null || persistence.persistence_rate === undefined ? "—" : shareText(persistence.persistence_rate),
+        hint: "前半段和后半段都出现过的关联所占比例",
+      },
+    ],
+    centralText: (cooccurrence.central_emotions || [])
+      .map((item) => `${item.emotion}（与 ${item.linked_emotion_count} 种情绪相连）`)
+      .join("、"),
+    strongestRows: (cooccurrence.strongest_links || []).map((item) => ({
+      key: `${item.emotion_a}:${item.emotion_b}`,
+      text: `${item.emotion_a} + ${item.emotion_b} · ${item.participant_count} 人`,
+    })),
+    pairRows: (parentChild.pairs || []).map((item) => ({
+      key: `${item.parent_emotion}:${item.child_emotion}`,
+      text: `家长“${item.parent_emotion}” × 孩子“${item.child_emotion}” · ${item.participant_count} 人 · 占“${item.parent_emotion}”记录的 ${shareText(item.share_of_parent_emotion)}`,
+    })),
+  };
 }
 
 Page({
@@ -382,6 +577,14 @@ Page({
     sendingFeedback: false,
     developmentFullAccess: false,
     capabilityScope: null,
+    roleText: "",
+    scopeText: "",
+    groupInsights: null,
+    groupInsightsLoading: false,
+    groupInsightsError: "",
+    groupWindow: 90,
+    groupWindowOptions: GROUP_WINDOWS.map((days) => ({ days, label: windowLabel(days) })),
+    showEngineering: false,
     analysisJobs: [],
     analysisCatalog: null,
     analysisResilience: null,
@@ -439,9 +642,11 @@ Page({
       api.getResearchCapabilities().catch(() => null),
     ]);
     const workspaces = visibleWorkspaces(capabilityScope);
+    const formalRole = capabilityScope && capabilityScope.formal_role;
     this.setData({
       developmentFullAccess: Boolean(showcase.researcher_platform_full_access),
       capabilityScope,
+      roleText: formalRole ? (ROLE_LABELS[formalRole] || formalRole) : "",
       workspaces,
       activeWorkspace: workspaces.length ? workspaces[0].id : "pending",
     });
@@ -484,6 +689,7 @@ Page({
     }
     if (this.data.activeWorkspace === "pilots") return Promise.all([this.loadWorkbench(), this.loadDashboard()]);
     if (this.data.activeWorkspace === "assessment") return this.loadAssessmentCases();
+    if (this.data.activeWorkspace === "analysis") return Promise.all([this.loadGroupInsights(), this.loadAnalysisJobs()]);
     return this.loadWorkbench();
   },
 
@@ -493,8 +699,39 @@ Page({
     this.setData({ activeWorkspace: id });
     if (id === "participants" && !this.data.participantItems.length) await this.loadParticipants(true);
     if (id === "pilots" && !this.data.items.length) await this.loadDashboard();
+    if (id === "analysis" && !this.data.groupInsights) this.loadGroupInsights();
     if (id === "analysis" && !this.data.analysisJobs.length) await this.loadAnalysisJobs();
     if (id === "assessment" && !this.data.assessmentCases.length) await this.loadAssessmentCases();
+  },
+
+  async loadGroupInsights(windowDays = this.data.groupWindow) {
+    if (this.data.offline) {
+      this.setData({ groupInsightsError: "当前离线，联网后再查看群体分析。" });
+      return;
+    }
+    this.setData({ groupInsightsLoading: true, groupInsightsError: "", groupWindow: windowDays });
+    try {
+      const payload = await api.getResearchGroupInsights(windowDays);
+      this.setData({ groupInsights: buildGroupInsightsView(payload) });
+    } catch (error) {
+      this.setData({ groupInsightsError: error.message || "群体分析暂时无法读取。" });
+    } finally {
+      this.setData({ groupInsightsLoading: false });
+    }
+  },
+
+  selectGroupWindow(event) {
+    const days = Number(event.currentTarget.dataset.days);
+    if (!GROUP_WINDOWS.includes(days) || this.data.groupInsightsLoading) return;
+    this.loadGroupInsights(days);
+  },
+
+  refreshGroupInsights() {
+    return this.loadGroupInsights();
+  },
+
+  toggleEngineering() {
+    this.setData({ showEngineering: !this.data.showEngineering });
   },
 
   async loadAssessmentCases() {
@@ -540,7 +777,9 @@ Page({
       const evidenceItems = (result.evidence_items || []).map((item) => ({
         ...item,
         kindLabel: { O: "观察", P: "模式候选", H: "人工假设", U: "未知项" }[item.kind] || item.kind,
-        visibilityText: (item.visibility_scope || []).join("、"),
+        reviewStatusText: EVIDENCE_REVIEW_LABELS[item.review_status] || "待核对",
+        observedText: item.observed_at ? localTime(item.observed_at) : "",
+        visibilityText: (item.visibility_scope || []).map((scope) => VISIBILITY_LABELS[scope] || scope).join("、"),
         supportingText: (item.supporting_evidence || []).map((entry) => entry.ref || String(entry)).join("；"),
         counterText: (item.counter_evidence || []).join("；"),
         alternativesText: (item.alternative_explanations || []).join("；"),
@@ -551,7 +790,7 @@ Page({
           evidence_summary: result.evidence_summary || null,
           case: {
             ...result.case,
-            sharedScopeText: (result.case.shared_scope || []).join("、"),
+            sharedScopeText: (result.case.shared_scope || []).map((scope) => VISIBILITY_LABELS[scope] || scope).join("、"),
           },
           evidence_items: evidenceItems,
         },
@@ -658,7 +897,7 @@ Page({
           ...item,
           analysisLabel: labels[item.analysis_type] || item.analysis_type,
           statusLabel: statuses[item.status] || "待核对",
-          createdText: String(item.created_at || "").slice(0, 16).replace("T", " "),
+          createdText: localTime(item.created_at),
           qualityText: item.artifact
             ? `覆盖 ${Math.round(Number(item.artifact.metrics.coverage_rate || 0) * 100)}% · 未知 ${Math.round(Number(item.artifact.metrics.unknown_rate || 0) * 100)}% · 样本 ${item.artifact.metrics.sample_size || 0}`
             : "",
@@ -677,7 +916,7 @@ Page({
           reviewReasonText: Object.entries(item.review_reason_counts || {})
             .map(([reason, count]) => `${AFFECT_REVIEW_REASON_LABELS[reason] || "其它待核对原因"} ${count}`)
             .join(" · "),
-          createdText: String(item.created_at || "").slice(0, 16).replace("T", " "),
+          createdText: localTime(item.created_at),
         })),
         affectShadowReviewCount: (shadowQueue.items || []).length,
         affectMonitoring,
@@ -767,6 +1006,8 @@ Page({
     this.setData({
       loading: false,
       operations,
+      scopeText: SCOPE_LABELS[operations.scope] || "授权范围内",
+      workspaces: this.data.workspaces.map((item) => ({ ...item, badge: item.id === "pending" ? preview.total : 0 })),
       pendingItems: preview.items,
       pendingTotal: preview.total,
       pendingVisibleItems: preview.items.slice(0, pageSize),
@@ -795,6 +1036,11 @@ Page({
     return Boolean(this.data.developmentFullAccess) || Boolean(user && ["supervisor", "admin"].includes(user.role));
   },
 
+  currentUserId() {
+    const user = getAuthUser();
+    return (user && user.id) || "";
+  },
+
   async openWorkItem(event) {
     const { id, label } = event.currentTarget.dataset;
     if (!id || this.data.workItemBusy) return;
@@ -808,7 +1054,7 @@ Page({
     });
     try {
       const detail = await api.getResearchWorkItem(id);
-      this.setData({ workItem: buildWorkItemView(detail, label, this.canManageSensitiveWorkItems()) });
+      this.setData({ workItem: buildWorkItemView(detail, label, this.canManageSensitiveWorkItems(), this.currentUserId()) });
     } catch (error) {
       this.setData({ workItem: null, workItemError: error.message || "待办详情暂时无法读取。" });
     } finally {
@@ -860,7 +1106,7 @@ Page({
     try {
       await api.actOnResearchWorkItem(workItem.id, payload);
       const detail = await api.getResearchWorkItem(workItem.id);
-      const patch = { workItem: buildWorkItemView(detail, workItem.queueLabel, this.canManageSensitiveWorkItems()), workItemNote: "" };
+      const patch = { workItem: buildWorkItemView(detail, workItem.queueLabel, this.canManageSensitiveWorkItems(), this.currentUserId()), workItemNote: "" };
       if (action === "send_participant_message") Object.assign(patch, { workItemMessageTitle: "", workItemMessageBody: "" });
       this.setData(patch);
       wx.showToast({ title: "已更新", icon: "success" });
@@ -1192,7 +1438,7 @@ Page({
       workflow.version,
       `delivery-preview-${workflow.id}-${nonce}`,
     );
-    this.setData({ [stateKey]: workflow });
+    this.setData({ [stateKey]: withSentText(workflow) });
     return workflow;
   },
 
@@ -1234,7 +1480,7 @@ Page({
         workflow.version,
         `delivery-${action}-${workflow.id}-${Date.now()}`,
       );
-      this.setData({ [stateKey]: result });
+      this.setData({ [stateKey]: withSentText(result) });
       if (action === "send") {
         wx.showToast({ title: "已发送到参与者消息", icon: "success" });
         if (kind === "stage") this.clearDraft(this.data.selected.id);

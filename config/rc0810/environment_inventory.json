@@ -51,7 +51,7 @@
       "layer": "miniprogram",
       "classification": "transport_contract",
       "production_eligible": false,
-      "sha256": "3dd14438a1598f86acd3a70efac2532d201bdd1e836f0be9e67164d390aa59e4"
+      "sha256": "e2afc10332cb69c344cd9400c90e4c0b030b19d63390d6f6b6ebc630cce70ddf"
     },
     {
       "path": "apps/web/vite.config.ts",
@@ -79,7 +79,7 @@
       "layer": "docs",
       "classification": "documented_api_contract",
       "production_eligible": false,
-      "sha256": "f3da801f04623649f37ca47e0937f5f23a4c44727a5a55b508e9cabf262cb26d"
+      "sha256": "ce7dc66a78564242797fb633612cedc260a8a4cf883168229736f1d81e3125c9"
     },
     {
       "path": "scripts/build_task9_cloudbase_package.ps1",

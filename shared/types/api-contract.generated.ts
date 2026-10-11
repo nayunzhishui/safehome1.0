@@ -17207,6 +17207,65 @@ export const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "research_workspace.get_research_group_insights.get",
+    "method": "GET",
+    "path": "/api/research/group-insights",
+    "handler": "research_workspace.get_research_group_insights",
+    "module": "routes.research_workspace",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [
+        "window_days"
+      ],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.research_workspace.get_research_group_insights.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "research_methodology.checks_run.post",
     "method": "POST",
     "path": "/api/research/methodology/checks/run",

@@ -2013,6 +2013,7 @@ relationship_initiation_intention_action
 | `sections.relationship` | 关系探索报名、任务、连续记录和阶段报告数量，以及最近报名ID |
 | `sections.researcher_feedback` | 研究者反馈总数、未读数和最近一条最小摘要 |
 | `thermometer` | 最近 30 次 1—10 分情绪温度，按时间返回 |
+| `emotion_insights` | 与测评结果页相同的本人情绪线索（`safehome.participant-exploratory-analysis.v1`）：情绪分布、场景—情绪共现、强度前后对比和亲子情绪组合；记录不足、存在未结高风险或非成人账号时分别为`insufficient/withheld/ineligible`；账号不存在时为`null` |
 | `assessment_groups` | 按 `worksheet_id` 分组的最近测评记录，不混合不同量尺 |
 | `timeline` | 最近 50 条日记、训练、测评、项目、本周复盘、关系探索和人工反馈事件 |
 | `boundary_notice` | 非诊断、非疗效证明边界 |
@@ -2131,6 +2132,22 @@ relationship_initiation_intention_action
 ### `GET /api/research/work-items/metrics`
 
 参数`window_days`为1至90。返回角色范围内各状态数量、超时、租约过期、关闭原因、动作量和每日新增/关闭趋势。接口明确声明这些数据只用于排班和可靠性观察，不用于评价心理支持质量或参与者好坏。
+
+### `GET /api/research/group-insights`
+
+researcher/supervisor/admin读取真实日记的群体层面描述统计（2026-10-11新增）。参数`window_days`取30、90、180或365，其他值按90处理。研究员和督导只统计分配给自己的参与者，管理员统计全部。
+
+纳入条件：家长或成人账号；研究同意（`anonymous_research`或`research_authorization`）最新为同意，且两类研究同意都没有撤回；记录含场景、情绪和0—10强度。保护规则：合计少于10人时`availability=suppressed`，只返回原因和人数区间；单个情绪、场景、组合或关联少于3人不单独列出；单周少于5人不显示该周。不返回原文、用户ID或任何个人指标。
+
+| 字段 | 说明 |
+|---|---|
+| `availability` | `available`或`suppressed` |
+| `affect` | 平均与中位强度、强度分档、情绪和场景分布（人数、条数、平均强度）、按周变化、亲子情绪组合 |
+| `network.scene_emotion` | 场景—情绪关联：人数、条数、场景内占比、整体占比、提升度 |
+| `network.emotion_cooccurrence` | 同一参与者在窗口内都记录过的两种情绪构成关联：节点与关联数、密度、平均聚类、度中心势、连通组数、中心情绪、最强关联、前后两段的稳定比例 |
+| `consent_rule`、`thresholds`、`boundary_notice` | 纳入规则、隐私阈值和非因果、非诊断边界 |
+
+每次读取写入`research_group_insights_viewed`审计，只记录窗口、范围、可用性和人数。
 
 ## 2026-07-20：受控AI合成研究沙盒
 

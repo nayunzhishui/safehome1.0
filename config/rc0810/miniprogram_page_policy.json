@@ -1,8 +1,9 @@
 {
   "schema": "safehome.rc0810.miniprogram-page-policy.v1",
   "source_manifest": "apps/miniprogram/app.json",
-  "classifications": ["participant", "internal", "debug"],
-  "production_allowlist_rule": "classification=participant",
+  "classifications": ["participant", "role_gated", "internal", "debug"],
+  "production_allowlist_rule": "classification in [participant, role_gated]",
+  "role_gated_note": "研究者工作台与评估质量与更正随正式版发布，页面内按登录角色显示，接口按角色授权（负责人2026-10-10决定）。",
   "pages": [
     {"page": "pages/home/index", "classification": "participant"},
     {"page": "pages/login/index", "classification": "participant"},
@@ -33,12 +34,12 @@
     {"page": "pages/therapeutic-assessment-feedback-check/index", "classification": "participant"},
     {"page": "pages/therapeutic-assessment-action-review/index", "classification": "participant"},
     {"page": "pages/therapeutic-assessment-action-followup/index", "classification": "participant"},
-    {"page": "pages/therapeutic-assessment-quality/index", "classification": "internal"},
+    {"page": "pages/therapeutic-assessment-quality/index", "classification": "role_gated"},
     {"page": "pages/supportive-review-step/index", "classification": "participant"},
     {"page": "pages/supportive-review-letter/index", "classification": "participant"},
     {"page": "pages/growth-dashboard/index", "classification": "participant"},
     {"page": "pages/relationship-narrative/index", "classification": "participant"},
-    {"page": "pages/researcher-dashboard/index", "classification": "internal"},
+    {"page": "pages/researcher-dashboard/index", "classification": "role_gated"},
     {"page": "pages/course/index", "classification": "participant"},
     {"page": "pages/course-detail/index", "classification": "participant"},
     {"page": "pages/profile/index", "classification": "participant"},
@@ -67,15 +68,11 @@
   ],
   "production_route_rewrites": {
     "pages/home/index.js": ["openIntegrationTest"],
-    "pages/assessment/index.js": ["openIntegrationTest"],
-    "pages/profile/index.js": ["goResearcher"],
-    "pages/therapeutic-assessment/index.js": ["openQualityRecord"]
+    "pages/assessment/index.js": ["openIntegrationTest"]
   },
   "production_template_handlers": {
     "pages/home/index.wxml": ["openIntegrationTest"],
-    "pages/assessment/index.wxml": ["openIntegrationTest"],
-    "pages/profile/index.wxml": ["goResearcher"],
-    "pages/therapeutic-assessment/index.wxml": ["openQualityRecord"]
+    "pages/assessment/index.wxml": ["openIntegrationTest"]
   },
   "accessibility_gate": {
     "min_width_px": 320,

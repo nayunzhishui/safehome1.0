@@ -21,6 +21,7 @@ from services.research_delivery_service import (
 )
 from services.research_work_item_service import WorkItemError, get_work_item_detail, get_work_item_metrics, perform_work_item_action
 from services.research_participant_service import anonymous_id, list_module, participant_summary
+from services.research_group_insights_service import build_group_insights, normalize_window
 
 
 bp = Blueprint("research_workspace", __name__, url_prefix="/api/research")
@@ -591,3 +592,39 @@ def get_research_work_item_metric_snapshot():
         )
         conn.commit()
     return ok(metrics)
+
+
+@bp.get("/group-insights")
+def get_research_group_insights():
+    """Return consented, group-level emotion summaries and networks; never rows or raw text."""
+
+    actor, error = _actor()
+    if error:
+        return error
+    window_days = normalize_window(request.args.get("window_days"))
+    scope_clause, params = _scoped_user_column(actor, "d.user_id")
+    scope_label = "assigned_participants" if actor.get("role") in {"researcher", "supervisor"} else "all_participants"
+    with get_connection() as conn:
+        payload = build_group_insights(
+            conn,
+            window_days=window_days,
+            scope_clause=scope_clause,
+            scope_params=params,
+            scope_label=scope_label,
+        )
+        write_audit_log(
+            conn,
+            "research_group_insights_viewed",
+            actor["id"],
+            "research_group_insights",
+            f"window_{window_days}",
+            {
+                "scope": scope_label,
+                "availability": payload["availability"],
+                "participant_count": payload["participant_count"],
+                "raw_text_included": False,
+                "individual_results_included": False,
+            },
+        )
+        conn.commit()
+    return ok(payload)

@@ -281,6 +281,7 @@
 | POST | `/api/research/deliveries/<workflow_id>/preview` | role:researcher,supervisor,admin | relationship_delivery_bound_to_active_unexpired_enrollment_assignment | — | — | active |
 | POST | `/api/research/deliveries/<workflow_id>/send` | role:researcher,supervisor,admin | relationship_delivery_bound_to_active_unexpired_enrollment_assignment | — | — | active |
 | POST | `/api/research/deliveries/<workflow_id>/withdraw` | role:researcher,supervisor,admin | relationship_delivery_bound_to_active_unexpired_enrollment_assignment | — | — | active |
+| GET | `/api/research/group-insights` | role:researcher,supervisor,admin | active_unexpired_assignment_for_researcher_supervisor_full_for_admin | — | — | active |
 | POST | `/api/research/methodology/checks/run` | role:researcher,supervisor,admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |
 | GET | `/api/research/methodology/config` | role:researcher,supervisor,admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |
 | POST | `/api/research/methodology/disable` | role:admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |

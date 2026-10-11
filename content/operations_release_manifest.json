@@ -155,8 +155,8 @@
     {
       "artifact_type": "capability_registry",
       "path": "content/operations_capability_registry.json",
-      "sha256": "cb3b25f8285b84041ca6a0305e1d03aeb3c84465227c4d1ffbbafb2c4bfac299",
-      "size_bytes": 86444
+      "sha256": "e028b0f6c7b4c4db34ded3e4478b95f0f00d4c8c089ad6b46d3a84898ae2a8aa",
+      "size_bytes": 84808
     }
   ],
   "fixed_replay_suites": [
@@ -172,5 +172,5 @@
   "revision_policy": "never_edit_verified_package_create_new_version",
   "atomic_runtime_switch": true,
   "production_release_approved": false,
-  "manifest_hash": "1c31e6577d62bdabfc5d38c17f1183108f2d278ba95fa53b016a431e4d94facd"
+  "manifest_hash": "8fbd9cf85ce825b210799469dbdb4672279aa52e3c5a715ac0fb1f37c98b3e6a"
 }

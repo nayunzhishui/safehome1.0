@@ -6741,6 +6741,31 @@
       }
     },
     {
+      "operation_id": "research_workspace.get_research_group_insights.get",
+      "method": "GET",
+      "path": "/api/research/group-insights",
+      "object_type": "research_workspace",
+      "action": "read",
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
+      "allowed_roles": [
+        "admin",
+        "researcher",
+        "supervisor"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "research_methodology.checks_run.post",
       "method": "POST",
       "path": "/api/research/methodology/checks/run",

@@ -9,6 +9,7 @@ from flask import Blueprint, request
 from database import get_connection, json_loads, rows_to_dicts
 from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
 from routes.utils import ok
+from services.participant_exploratory_analysis_service import build_participant_exploratory_analysis
 
 
 bp = Blueprint("general_growth", __name__, url_prefix="/api/growth")
@@ -150,6 +151,11 @@ def get_growth_overview():
                 (user_id,),
             ).fetchall()
         )
+        # Same self-only emotion clues as the result page, so parents see them without taking a scale first.
+        try:
+            emotion_insights = build_participant_exploratory_analysis(conn, user_id)
+        except KeyError:
+            emotion_insights = None
 
     programs = []
     for row in program_rows:
@@ -332,6 +338,7 @@ def get_growth_overview():
                 },
             },
             "thermometer": list(reversed(thermometer)),
+            "emotion_insights": emotion_insights,
             "assessment_groups": assessment_group_rows,
             "timeline": timeline[:50],
             "boundary_notice": "本页只汇总你已保存的记录。不同量尺分开呈现；记录变化不等于诊断、能力评价或疗效证明。",

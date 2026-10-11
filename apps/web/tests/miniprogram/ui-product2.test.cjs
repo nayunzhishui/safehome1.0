@@ -1058,3 +1058,125 @@ test('三个Web测评草稿键按账号隔离，旧无归属键不恢复', () =>
     assert.equal(restored.answer, 'synthetic-A-answer');
   }
 });
+
+const SYNTHETIC_GROUP_INSIGHTS = {
+  availability: 'available', window_days: 30, scope: 'all_participants', generated_at: '2026-10-11T02:30:00.123456+00:00',
+  thresholds: { minimum_participants: 10, minimum_cell_participants: 3, minimum_week_participants: 5 },
+  consent_rule: '只纳入同意研究使用的成人。', boundary_notice: '群体层面的描述性统计。',
+  participant_count: 14, usable_record_count: 26, excluded_record_count: 1, summary_text: '近 30 天，14 位参与者留下 26 条可汇总的情绪记录。',
+  affect: {
+    average_intensity: 5.6,
+    emotions: [{ label: '着急', participant_count: 12, record_count: 12, average_intensity: 7 }, { label: '担心', participant_count: 6, record_count: 12, average_intensity: 4 }],
+    emotion_hidden: { hidden_category_count: 1 }, scenes: [], scene_hidden: { hidden_category_count: 0 },
+    intensity_bands: [{ key: 'high', label: '较高（7–10）', record_count: 12, record_share: 0.462 }],
+    weekly_trend: { items: [{ week_start: '2026-10-05', participant_count: 14, record_count: 26, average_intensity: 5.6 }], suppressed_week_count: 2, minimum_week_participants: 5 },
+    parent_child: { pairs: [{ parent_emotion: '着急', child_emotion: '委屈', participant_count: 12, share_of_parent_emotion: 1 }] },
+  },
+  network: {
+    scene_emotion: { links: [{ scene: '亲子沟通', emotion: '着急', participant_count: 12, share_in_scene: 1, lift: 2.17, average_intensity: 7 }] },
+    emotion_cooccurrence: {
+      node_count: 2, edge_count: 1, component_count: 1, density: 1, average_clustering: 0, degree_centralization: 0,
+      persistence: { persistence_rate: null }, central_emotions: [{ emotion: '担心', linked_emotion_count: 1 }],
+      strongest_links: [{ emotion_a: '担心', emotion_b: '着急', participant_count: 12 }],
+    },
+  },
+};
+
+test('研究者群体分析按人数展示情绪与网络指标，人数不足时只给原因', async () => {
+  const requested = [];
+  let payload = SYNTHETIC_GROUP_INSIGHTS;
+  const h = pageHarness('researcher-dashboard', { getResearchGroupInsights: async (days) => { requested.push(days); return payload; } });
+  await h.page.loadGroupInsights(30);
+  const view = h.page.data.groupInsights;
+  assert.deepEqual(requested, [30]);
+  assert.equal(h.page.data.groupWindow, 30);
+  assert.equal(view.windowText, '近 30 天');
+  assert.equal(view.emotionBars[0].valueText, '12 人 · 12 条 · 平均强度 7');
+  assert.equal(view.emotionBars[1].width, '50%');
+  assert.equal(view.hiddenText, '另有 1 种情绪因记录人数少于 3 人未单独列出。');
+  assert.equal(view.networkMetrics.find((item) => item.key === 'density').value, '1.00');
+  assert.equal(view.networkMetrics.find((item) => item.key === 'persistence').value, '—');
+  assert.equal(view.linkRows[0].title, '亲子沟通 → 着急');
+  assert.equal(view.weeklyNote, '2 周的记录人数少于 5 人，未单独显示。');
+  assert.equal(view.excludedText, '另有 1 条记录缺少场景、情绪或有效强度，未计入。');
+  assert.match(view.thresholdText, /总人数少于 10 人不展示/);
+
+  payload = { ...SYNTHETIC_GROUP_INSIGHTS, availability: 'suppressed', window_days: 365, reason: '少于 10 人，不展示群体结果。' };
+  h.page.selectGroupWindow({ currentTarget: { dataset: { days: '365' } } });
+  await new Promise(setImmediate);
+  assert.deepEqual(requested, [30, 365]);
+  assert.equal(h.page.data.groupInsights.available, false);
+  assert.equal(h.page.data.groupInsights.windowText, '近一年');
+  assert.equal(h.page.data.groupInsights.emotionBars, undefined);
+  h.page.selectGroupWindow({ currentTarget: { dataset: { days: '7' } } });
+  assert.deepEqual(requested, [30, 365]);
+});
+
+test('研究者待办显示本地截止时间、剩余或超时，以及是否由我领取', () => {
+  const { context } = pageHarness('researcher-dashboard');
+  const build = vm.runInNewContext('buildWorkItemView', context);
+  const due = new Date(Date.now() + 90 * 60000).toISOString();
+  const mine = build({ work_item: { id: 'wi', status: 'claimed', assignee_id: 'me', due_at: due } }, '风险信号复核', true, 'me');
+  assert.equal(mine.assigneeText, '我');
+  assert.match(mine.dueText, /（剩余 1 小时 30 分）$/);
+  assert.equal(mine.overdue, false);
+  const late = build({ work_item: { id: 'wi', status: 'open', due_at: new Date(Date.now() - 3 * 86400000).toISOString() } }, '人工支持', false, 'me');
+  assert.equal(late.assigneeText, '尚未领取');
+  assert.match(late.dueText, /（已超时 3 天）$/);
+  assert.equal(late.overdue, true);
+  assert.equal(build({ work_item: { id: 'wi', status: 'claimed', assignee_id: 'other' } }, '', true, 'me').assigneeText, '其他成员');
+  const [row] = vm.runInNewContext('moduleRows', context)([{ id: 'm1', status: 'confirmed', worksheet_title: '家庭关系量表', created_at: '2026-10-11T02:30:00+00:00' }]);
+  assert.equal(row.displayLines[0], '量表：家庭关系量表');
+  assert.equal(row.displayLines[1], '状态：已确认');
+  assert.match(row.displayLines[2], /^时间：\d{2}-\d{2} \d{2}:\d{2}$/);
+});
+
+test('成长仪表盘直接显示近期情绪线索，记录不足去记录、暂缓时去看求助资源', async () => {
+  let emotion = {
+    availability: 'available', boundary_notice: '只描述近期记录。',
+    affect: { summary_text: '5 条记录中有 5 条可用于汇总。', items: [{ label: '着急', count: 3, average_intensity: 6 }, { label: '担心', count: 2, average_intensity: 4 }], trend: {} },
+    interaction_network: { edges: [{ source: 'scene:0', target: 'emotion:0', scene: '亲子沟通', emotion: '着急', support: 3 }] },
+    parent_child: {},
+  };
+  const h = pageHarness('growth-dashboard', { getGrowthOverview: async () => ({ sections: {}, timeline: [], thermometer: [], emotion_insights: emotion }) });
+  await h.page.loadGrowth();
+  assert.equal(h.page.data.emotionInsights.available, true);
+  assert.equal(h.page.data.emotionInsights.affectItems[1].width, '67%');
+  assert.equal(h.page.data.emotionInsights.interactionEdges[0].summary, '亲子沟通 × 着急 · 3 次');
+
+  emotion = { availability: 'insufficient', reason: '至少需要 5 条情绪记录后再生成近期线索。' };
+  await h.page.loadGrowth();
+  assert.equal(h.page.data.emotionInsights.actionLabel, '记录一件小事');
+  h.page.onEmotionInsightsAction();
+  assert.equal(h.navigation.at(-1).url, '/pages/diary-form/index');
+
+  emotion = { availability: 'withheld', reason: '近期记录包含需要优先人工关注的安全线索。' };
+  await h.page.loadGrowth();
+  assert.equal(h.page.data.emotionInsights.actionLabel, '查看紧急求助资源');
+  h.page.onEmotionInsightsAction();
+  assert.equal(h.navigation.at(-1).url, '/pages/emergency-resources/index');
+});
+
+test('画像结果按模型类型给出匹配清晰度，反向题按题目原意方向画雷达', () => {
+  const { context } = pageHarness('assessment-result');
+  const build = vm.runInNewContext('buildProfilePositionSummary', context);
+  const base = {
+    available: true, n_cases: 652, interpretation: { status: 'usable', can_use_interpretation: true },
+    clusters: [{ cluster_id: 0, display_name: '支持联结较可用的阶段性位置', pca_centroid: { pc1: 1, pc2: 0 } }, { cluster_id: 1, display_name: '较多独立应对的阶段性位置', pca_centroid: { pc1: -1, pc2: 0 } }],
+    feature_profile: [
+      { feature_id: 'a', label: '9.当我遇到困难需要帮助时，我不知道该去找谁。', z_score: 1.2, reverse_scored: true },
+      { feature_id: 'b', label: '3.我的生活有明确的目标。', z_score: 0.8, reverse_scored: false },
+      { feature_id: 'c', label: '4.我能控制自己的情绪。', z_score: -0.4, reverse_scored: false },
+    ],
+  };
+  const margin = build({ ...base, position: { cluster_id: 0, display_name: '支持联结较可用的阶段性位置', pc1: 0.8, pc2: 0.1, posterior: 0.46, assignment_version: 'euclidean_center_v1' } });
+  assert.equal(margin.confidenceText, '较高');
+  assert.equal(build({ ...base, position: { cluster_id: 0, pc1: 0, pc2: 0, posterior: 0.3, assignment_version: 'euclidean_center_v1' } }).confidenceText, '中等');
+  assert.equal(build({ ...base, position: { cluster_id: 0, pc1: 0, pc2: 0, posterior: 0.7, assignment_version: 'gmm_diag_posterior_v1' } }).confidenceText, '中等');
+  const reversed = margin.radarFeatures.find((item) => item.id === 'a');
+  assert.equal(reversed.zScore, -1.2);
+  assert.match(margin.radarCaption, /越靠外表示越认同该题的说法/);
+  assert.ok(margin.userPoint);
+  const noPoint = build({ ...base, position: { cluster_id: 0, pc1: null, pc2: null, posterior: 0.5, assignment_version: 'euclidean_center_v1' } });
+  assert.equal(noPoint.userPoint, null);
+});

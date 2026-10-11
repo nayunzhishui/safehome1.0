@@ -45,6 +45,35 @@
         <page-state wx:else kind="empty" title="还没有温度记录" description="第一次记录只作为起点，不判断趋势。" />
       </view>
 
+      <view wx:if="{{emotionInsights && emotionInsights.availability !== 'ineligible'}}" class="dashboard-section">
+        <view class="section-heading">
+          <view><text class="section-title">近期情绪线索</text><text class="section-copy">来自你最近的情绪记录，只描述常一起出现的情况</text></view>
+          <status-pill label="{{emotionInsights.statusText}}" tone="info" aria-label="近期情绪线索：{{emotionInsights.statusText}}" />
+        </view>
+        <block wx:if="{{emotionInsights.available}}">
+          <text class="insight-summary">{{emotionInsights.affect.summary_text}}</text>
+          <view class="thermometer-list">
+            <view wx:for="{{emotionInsights.affectItems}}" wx:key="label" class="thermometer-row">
+              <view class="thermometer-meta"><text>{{item.label}}</text><text>{{item.summary}}</text></view>
+              <view class="bar-track"><view class="bar-fill" style="width: {{item.width}};"></view></view>
+            </view>
+          </view>
+          <text class="insight-label">常一起出现的场景和情绪</text>
+          <text wx:for="{{emotionInsights.interactionEdges}}" wx:key="key" class="insight-line">{{item.summary}}</text>
+          <text wx:if="{{!emotionInsights.interactionEdges.length}}" class="insight-line">暂时没有重复至少 2 次的组合。</text>
+          <block wx:if="{{emotionInsights.trendText}}">
+            <text class="insight-label">强度前后对比</text>
+            <text class="insight-line">{{emotionInsights.trendText}}</text>
+          </block>
+          <block wx:if="{{emotionInsights.parentChildSummary}}">
+            <text class="insight-label">你的情绪与孩子的情绪</text>
+            <text class="insight-line">{{emotionInsights.parentChildSummary}}</text>
+          </block>
+          <text class="insight-note">{{emotionInsights.boundary_notice}}</text>
+        </block>
+        <page-state wx:else kind="empty" title="{{emotionInsights.statusText}}" description="{{emotionInsights.reason}}" action-label="{{emotionInsights.actionLabel}}" bind:action="onEmotionInsightsAction" />
+      </view>
+
       <view class="dashboard-section">
         <view class="section-heading"><view><text class="section-title">记录与练习时间线</text><text class="section-copy">只呈现做过的事情，不把次数写成改善</text></view></view>
         <view wx:if="{{activityTimeline.length}}" class="timeline-list">

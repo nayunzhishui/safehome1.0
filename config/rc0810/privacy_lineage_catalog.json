@@ -936,6 +936,7 @@
         "backend/services/data_claim_service.py",
         "backend/services/privacy_request_service.py",
         "backend/services/research_analysis_service.py",
+        "backend/services/research_group_insights_service.py",
         "backend/services/research_queue_service.py",
         "backend/services/schema_migration_service.py"
       ],
@@ -1196,6 +1197,7 @@
         "backend/services/privacy_request_service.py",
         "backend/services/progress_summary_service.py",
         "backend/services/report_service.py",
+        "backend/services/research_group_insights_service.py",
         "backend/services/research_participant_service.py",
         "backend/services/schema_migration_service.py"
       ],
@@ -2628,6 +2630,7 @@
         "backend/services/progress_summary_service.py",
         "backend/services/redis_service.py",
         "backend/services/relationship_growth_service.py",
+        "backend/services/research_group_insights_service.py",
         "backend/services/research_participant_service.py",
         "backend/services/risk_review_service.py",
         "backend/services/risk_service.py",
@@ -4965,6 +4968,7 @@
         "backend/services/privacy_request_service.py",
         "backend/services/relationship_growth_service.py",
         "backend/services/research_access_service.py",
+        "backend/services/research_group_insights_service.py",
         "backend/services/research_participant_service.py",
         "backend/services/research_work_item_service.py",
         "backend/services/schema_migration_service.py",
@@ -5245,7 +5249,7 @@
   "source_bindings": {
     "models_sha256": "083cb33ad4bd2c2242b0807e283f6a55a2867aa4d02d958e7a5b988ac28671aa",
     "migration_manifest_sha256": "09a7a8d1a1e7ff7fc2c78980850ae7b774696aa6a6ced9d7f6787c9b1a09aed8",
-    "route_manifest_sha256": "6fba229c3a1666b59bfa3ee4bebce96b2136be3ff75364887e6a4b8c98ff6aee",
-    "service_manifest_sha256": "fae9ee01bfbe6d70d1136dffe929eec3dae22c871f495d90757c4a7f0bed3ba8"
+    "route_manifest_sha256": "4830b54472e88a011036275cb2b2cf7183234fb089d100548791eda53c74f888",
+    "service_manifest_sha256": "2d8cdacd5e249780038886fbd8dc11aac02ec81efe433c7a66a7e8008aaf3d74"
   }
 }

@@ -463,6 +463,8 @@ def build_assessment_profile_position(
                 if isinstance(model_input_scores.get(str(feature.get("feature_id"))), (int, float))
                 else None,
                 "z_score": round(z_lookup[str(feature.get("feature_id"))], 4),
+                # z_score is in model space; a reversed item's z runs opposite to its wording.
+                "reverse_scored": bool(feature.get("reverse_scored")),
             }
             for feature in features
             if str(feature.get("feature_id")) in z_lookup

@@ -1,5 +1,6 @@
 const { createSafeHomeApi } = require("../../services/api");
 const { requireLogin } = require("../../utils/authGuard");
+const { buildEmotionInsightsView } = require("../../utils/emotion-insights-view");
 
 const api = createSafeHomeApi();
 const SECTION_KEYS = ["activity", "assessments", "relationship", "researcher_feedback"];
@@ -43,6 +44,7 @@ Page({
     relationshipTimeline: [],
     feedbackTimeline: [],
     thermometer: [],
+    emotionInsights: null,
     assessmentGroups: [],
     relationshipSummary: {},
     feedbackSummary: {},
@@ -75,6 +77,7 @@ Page({
           dateText: formatDate(item.created_at),
           width: `${Math.max(10, Number(item.intensity_level || 0) * 10)}%`,
         })),
+        emotionInsights: buildEmotionInsightsView(growth.emotion_insights),
         assessmentGroups: (growth.assessment_groups || []).map((group) => ({
           ...group,
           items: (group.items || []).map((item) => ({
@@ -106,6 +109,15 @@ Page({
 
   startDiary() {
     wx.navigateTo({ url: "/pages/diary-form/index" });
+  },
+
+  onEmotionInsightsAction() {
+    const insights = this.data.emotionInsights;
+    if (insights && insights.availability === "withheld") {
+      wx.navigateTo({ url: "/pages/emergency-resources/index" });
+      return;
+    }
+    this.startDiary();
   },
 
   openTraining() {

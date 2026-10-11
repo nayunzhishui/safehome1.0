@@ -154,6 +154,7 @@ const API_ENDPOINTS = {
   privacyDeleteMyData: "/api/privacy/delete-my-data",
   researchParticipants: "/api/research/participants",
   researchOperations: "/api/research/operations",
+  researchGroupInsights: "/api/research/group-insights",
   researchQueues: "/api/research/queues",
   researchWorkItems: "/api/research/work-items",
   researchWorkItemMetrics: "/api/research/work-items/metrics",
@@ -1165,6 +1166,10 @@ function createSafeHomeApi(options = {}) {
 
     getResearchOperations() {
       return request(API_ENDPOINTS.researchOperations, { requiresAuth: true });
+    },
+
+    getResearchGroupInsights(windowDays) {
+      return request(`${API_ENDPOINTS.researchGroupInsights}${queryString({ window_days: windowDays })}`, { requiresAuth: true });
     },
 
     getResearchParticipants(params = {}) {

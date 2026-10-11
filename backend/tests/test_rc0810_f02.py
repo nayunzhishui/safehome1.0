@@ -29,15 +29,16 @@ def test_f02_policy_classifies_every_registered_page():
     assert len(classified) == len(app["pages"])
 
 
-def test_f02_production_manifest_excludes_internal_pages_and_keeps_participant_tabs(tmp_path):
+def test_f02_production_manifest_excludes_debug_pages_and_keeps_role_gated_pages(tmp_path):
     result = run_builder("--profile", "production", "--output", str(tmp_path))
     assert result.returncode == 0, result.stderr
     manifest = json.loads((tmp_path / "app.json").read_text(encoding="utf-8"))
 
     assert "pages/integration-test/index" not in manifest["pages"]
     assert "pages/debug/index" not in manifest["pages"]
-    assert "pages/researcher-dashboard/index" not in manifest["pages"]
-    assert "pages/therapeutic-assessment-quality/index" not in manifest["pages"]
+    # Owner decision 2026-10-10: the researcher workbench and assessment quality page ship in production.
+    assert "pages/researcher-dashboard/index" in manifest["pages"]
+    assert "pages/therapeutic-assessment-quality/index" in manifest["pages"]
     assert {item["pagePath"] for item in manifest["tabBar"]["list"]} <= set(manifest["pages"])
 
 
@@ -78,7 +79,7 @@ def test_f02_production_package_contains_no_internal_page_files_or_routes(tmp_pa
     result = run_builder("--profile", "production", "--output", str(tmp_path), "--copy-source")
     assert result.returncode == 0, result.stderr
     policy = json.loads(POLICY.read_text(encoding="utf-8"))
-    internal = {item["page"] for item in policy["pages"] if item["classification"] != "participant"}
+    internal = {item["page"] for item in policy["pages"] if item["classification"] not in {"participant", "role_gated"}}
     files = [path for path in tmp_path.rglob("*") if path.is_file()]
     relative = {path.relative_to(tmp_path).as_posix() for path in files}
     text = "\n".join(path.read_text(encoding="utf-8", errors="ignore") for path in files)
@@ -86,8 +87,9 @@ def test_f02_production_package_contains_no_internal_page_files_or_routes(tmp_pa
     for page in internal:
         assert not any(name.startswith(f"{page}.") for name in relative)
         assert f"/{page}" not in text
-    for method in ["openIntegrationTest", "goResearcher", "openQualityRecord"]:
-        assert method not in text
+    assert "openIntegrationTest" not in text
+    for method in ["goResearcher", "openQualityRecord"]:
+        assert method in text
 
 
 def test_f02_unclassified_page_fails_closed(tmp_path):

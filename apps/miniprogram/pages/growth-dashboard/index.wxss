@@ -213,6 +213,31 @@
   background: var(--safe-primary);
 }
 
+.insight-summary,
+.insight-line {
+  display: block;
+  margin-top: 12rpx;
+  color: var(--safe-text);
+  font-size: 28rpx;
+  line-height: 1.65;
+}
+
+.insight-label {
+  display: block;
+  margin-top: 28rpx;
+  color: var(--safe-primary-deep);
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.insight-note {
+  display: block;
+  margin-top: 24rpx;
+  color: var(--safe-muted);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
 .assessment-group {
   padding: 24rpx 0;
   border-top: 1rpx solid var(--safe-border);
