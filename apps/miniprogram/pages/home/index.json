@@ -4,6 +4,7 @@
     "journey-action-card": "/components/journey-action-card/index",
     "entry-row": "/components/entry-row/index",
     "dual-entry": "/components/dual-entry/index",
-    "section-heading": "/components/section-heading/index"
+    "section-heading": "/components/section-heading/index",
+    "onboarding-guide": "/components/onboarding-guide/index"
   }
 }

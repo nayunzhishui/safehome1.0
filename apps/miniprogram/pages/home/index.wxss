@@ -155,3 +155,17 @@
 .home-privacy-notice button { min-height:88rpx; padding:18rpx 24rpx; margin-top:16rpx; font-size:30rpx; line-height:1.6; white-space:normal; border-radius:24rpx; }
 .home-privacy-link { color:var(--ui2-primary); background:transparent; border:1rpx solid var(--ui2-control-border); }
 .home-privacy-dismiss { color:var(--ui2-muted); background:transparent; }
+
+.guide-replay {
+  display: block;
+  margin: 24rpx auto 8rpx;
+  padding: 0 24rpx;
+  background: transparent;
+  color: var(--safe-muted);
+  font-size: 26rpx;
+  line-height: 64rpx;
+}
+
+.guide-replay::after {
+  border: 0;
+}

@@ -4,10 +4,20 @@ const { captureAuthSession, isCurrentAuthSession, isLoggedIn } = require("../../
 const api = createSafeHomeApi();
 const PRIVACY_NOTICE_VERSION = "2026.10-privacy-notice-v1";
 const PRIVACY_NOTICE_KEY = "safehome_privacy_notice_seen";
-// The three-step guide opens by itself once, right after a new user first
-// acknowledges the privacy reminder; afterwards it stays under “如何开始”.
-const GETTING_STARTED_VERSION = "2026.10-getting-started-v1";
-const GETTING_STARTED_KEY = "safehome_getting_started_opened";
+// The spotlight tour (components/onboarding-guide, ported from the
+// codex/cloudrun-login-onboarding branch) runs once after the privacy reminder is
+// acknowledged; “重看使用教程” replays it, and the longer three-step guide stays
+// under “如何开始”. It only points at entries and never records consent.
+const HOME_TOUR_VERSION = "2026.10-home-tour-v1";
+const HOME_TOUR_KEY = "safehome_home_tour_seen";
+const HOME_TOUR_STEPS = [
+  { selector: "#guide-today", title: "每天先看这里", text: "“今天的一小步”会根据你的记录和练习节奏，提示今天可以做的一件事。还没登录时，它会先带你登录。" },
+  { selector: "#guide-capture", title: "两种开始方式，选一个就行", text: "想先了解自己，点“测一测”，大约 5 分钟；想处理刚发生的事，点“情绪日记”记一件小事，大约 3 分钟，只有“发生了什么”必须写。没时间写的话，点一下“情绪温度计”记下此刻的感受也可以。第一次提交前会先说明数据用途，请你单独确认。" },
+  { selector: "#guide-start", title: "想了解完整用法", text: "这里有三步说明：记一件小事、看一条支持性反馈、做一个小练习。" },
+  { selector: "#guide-training", title: "选一个小练习", text: "训练卡和三个分节书写的练习项目都在训练中心。按自己的节奏选一个，做完记下感受。" },
+  { selector: "#guide-support", title: "需要时，找人帮忙", text: "这里可以提交人工支持请求。它不是实时聊天，也不是紧急救助；遇到紧急情况，请先联系身边可信任的人或当地紧急服务。" },
+  { selector: "#guide-replay", title: "随时可以重看", text: "点“重看使用教程”可以再走一遍。教程只介绍入口，不会替你填写、提交或同意任何用途。" },
+];
 const PROTECTION_URL = "/pages/settings-detail/index?type=protection";
 
 function trackJourneyEvent(eventName, journey, status, extra = {}) {
@@ -169,6 +179,12 @@ Page({
   data: {
     homeLoginRequired: false,
     privacyNoticeVisible: true,
+    tourVisible: false,
+    tourIndex: 0,
+    tourTotal: 0,
+    tourRect: null,
+    tourStep: {},
+    tourPosition: { top: 80 },
     todayRecordCount: 0,
     todayRecordCountReady: false,
     thermometerRecordCount: 0,
@@ -214,11 +230,17 @@ Page({
       });
     }
     this._homeSession = captureAuthSession();
-    this.setData({ privacyNoticeVisible: wx.getStorageSync(PRIVACY_NOTICE_KEY) !== PRIVACY_NOTICE_VERSION });
+    const privacyNoticeVisible = wx.getStorageSync(PRIVACY_NOTICE_KEY) !== PRIVACY_NOTICE_VERSION;
+    this.setData({ privacyNoticeVisible });
     this.refreshHomeData();
+    if (!privacyNoticeVisible && !this.data.tourVisible && wx.getStorageSync(HOME_TOUR_KEY) !== HOME_TOUR_VERSION) this.startGuide();
   },
 
-  onHide() { this._homeHidden = true; },
+  onHide() {
+    this._homeHidden = true;
+    // Leaving mid-tour closes it without marking it seen, so it resumes next time.
+    if (this.data.tourVisible) { this.setData({ tourVisible: false }); if (wx.showTabBar) wx.showTabBar({ animation: false }); }
+  },
   onUnload() { this._homeDisposed = true; },
 
   openPrivacyNotice() { wx.navigateTo({ url: "/pages/settings-detail/index?type=privacy" }); },
@@ -227,10 +249,52 @@ Page({
     // Reading this reminder is not agreement to any data purpose.
     wx.setStorageSync(PRIVACY_NOTICE_KEY, PRIVACY_NOTICE_VERSION);
     this.setData({ privacyNoticeVisible: false });
-    if (wx.getStorageSync(GETTING_STARTED_KEY) !== GETTING_STARTED_VERSION) {
-      wx.setStorageSync(GETTING_STARTED_KEY, GETTING_STARTED_VERSION);
-      this.openGettingStarted();
-    }
+    if (wx.getStorageSync(HOME_TOUR_KEY) !== HOME_TOUR_VERSION) this.startGuide();
+  },
+
+  startGuide() {
+    this.setData({ tourVisible: true });
+    if (wx.hideTabBar) wx.hideTabBar({ animation: false });
+    this.positionGuide(0);
+  },
+
+  positionGuide(index) {
+    const step = HOME_TOUR_STEPS[index];
+    if (!step) return;
+    this.setData({ tourStep: step, tourIndex: index, tourTotal: HOME_TOUR_STEPS.length, tourRect: null, tourPosition: { top: 80 } });
+    const current = () => !this._homeHidden && this.data.tourVisible && this.data.tourIndex === index;
+    const measure = () => {
+      if (!current() || !wx.createSelectorQuery) return;
+      wx.createSelectorQuery().select(step.selector).boundingClientRect((rect) => {
+        if (!current()) return;
+        const info = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
+        const height = info.windowHeight;
+        const width = info.windowWidth;
+        const valid = rect && rect.height > 0 && rect.top >= 0 && rect.bottom <= height;
+        const below = valid && rect.bottom + 310 < height;
+        const above = valid && rect.top > 310;
+        const top = below ? rect.bottom + 18 : above ? rect.top - 300 : Math.max(16, (height - 300) / 2);
+        const arrowLeft = valid ? Math.max(20, Math.min(width - 68, rect.left + rect.width / 2 - 24)) : 20;
+        this.setData({ tourRect: valid ? rect : null, tourPosition: { top, arrow: below ? "up" : above ? "down" : "", arrowLeft } });
+      }).exec();
+    };
+    if (wx.pageScrollTo) wx.pageScrollTo({ selector: step.selector, offsetTop: -90, duration: 0, complete: measure });
+    else measure();
+  },
+
+  nextGuide() {
+    if (this.data.tourIndex + 1 >= HOME_TOUR_STEPS.length) this.endGuide();
+    else this.positionGuide(this.data.tourIndex + 1);
+  },
+
+  previousGuide() {
+    if (this.data.tourIndex > 0) this.positionGuide(this.data.tourIndex - 1);
+  },
+
+  endGuide() {
+    wx.setStorageSync(HOME_TOUR_KEY, HOME_TOUR_VERSION);
+    this.setData({ tourVisible: false });
+    if (wx.showTabBar) wx.showTabBar({ animation: false });
   },
 
   showLoginRequired() {

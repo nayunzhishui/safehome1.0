@@ -2,6 +2,7 @@
   <view class="intro-block">
     <text class="intro-title">从一件具体小事开始</text>
     <text class="intro-text">把一次亲子冲突写成一个小片段，看看反馈里的线索，再挑一个今天能做的小动作。</text>
+    <text class="intro-text">也可以先“测一测”了解自己，大约 5 分钟；没时间写的话，在首页点一下“情绪温度计”记下此刻的感受。</text>
   </view>
 
   <view class="before-start" aria-label="开始前的说明与保护入口">
@@ -30,9 +31,9 @@
     <view class="practice-step">
       <text class="step-number" aria-hidden="true">02</text>
       <view class="step-content">
-        <text class="step-title">标一个位置</text>
+        <text class="step-title">看反馈，标一个位置</text>
         <text class="step-text">{{exerciseSteps[1].text}}</text>
-        <text class="arc-intro">把事件放进以下七个位置，梳理发生的全过程：</text>
+        <text class="arc-intro">保存后先看支持性反馈，再对照以下七个位置梳理发生的全过程：</text>
         <view class="arc-chain" role="list" aria-label="情绪反射弧七个位置">
           <view wx:for="{{arcNodes}}" wx:key="*this" class="arc-row" role="listitem">
             <text class="arc-index">{{index + 1}}</text>
@@ -48,6 +49,7 @@
         <text class="step-title">做一个动作</text>
         <text class="step-text">{{exerciseSteps[2].text}}</text>
         <text class="step-route">记录一次 → 查看反馈线索 → 去训练中心练一个小动作</text>
+        <text class="step-text">训练中心里还有三个分节书写的练习项目，适合想多练几次的时候。</text>
       </view>
     </view>
   </view>
@@ -62,6 +64,13 @@
 
   <view class="action-row">
     <button class="safe-primary-button primary-action" bindtap="startDiary">记录一次</button>
+    <button class="safe-outline-button secondary-action" bindtap="openAssessment">先测一测</button>
     <button class="safe-outline-button secondary-action" bindtap="openTraining">去训练中心</button>
+  </view>
+
+  <view class="before-start" aria-label="需要帮助时">
+    <text class="before-start-title">需要帮助时</text>
+    <navigator class="before-start-link" url="/pages/emergency-resources/index">查看求助资源 <text aria-hidden="true">›</text></navigator>
+    <navigator class="before-start-link" url="/pages/supervision/index">提交人工支持请求 <text aria-hidden="true">›</text></navigator>
   </view>
 </view>

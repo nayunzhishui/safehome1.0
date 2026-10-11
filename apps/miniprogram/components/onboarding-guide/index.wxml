@@ -1,0 +1,11 @@
+<view wx:if="{{visible}}" class="tour-layer" catchtouchmove="stop">
+  <view wx:if="{{rect}}" class="tour-highlight" style="left:{{rect.left}}px;top:{{rect.top}}px;width:{{rect.width}}px;height:{{rect.height}}px;" aria-hidden="true"></view>
+  <view wx:else class="tour-fallback"></view>
+  <view class="tour-dialog" style="top:{{position.top}}px;" role="dialog" aria-modal="true" aria-label="{{step.title}}">
+    <view wx:if="{{rect && position.arrow}}" class="tour-arrow {{position.arrow}}" style="left:{{position.arrowLeft}}px;" aria-hidden="true"></view>
+    <text class="guide-kicker">使用教程 · {{index + 1}} / {{total}}</text><text class="guide-title">{{step.title}}</text>
+    <scroll-view scroll-y class="tour-copy"><text>{{step.text}}</text></scroll-view>
+    <view class="tour-actions"><button class="guide-secondary" bindtap="previous" disabled="{{index === 0}}">上一步</button><button class="guide-primary" bindtap="next">{{index + 1 === total ? '完成教程' : '下一步'}}</button></view>
+    <button class="guide-link" bindtap="skip">跳过教程，稍后再看</button>
+  </view>
+</view>

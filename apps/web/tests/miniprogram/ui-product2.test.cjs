@@ -355,13 +355,21 @@ test('测评历史加载更多使用真实页码而不是重新读取第一页',
   assert.equal(page.data.hasMore, false);
 });
 
-test('新用户首次确认隐私提醒后自动打开三步开始说明，只打开一次', () => {
+test('新用户首次确认隐私提醒后开始首页使用教程，看完或跳过后不再自动出现', () => {
   const h = pageHarness('home');
   h.page.acknowledgePrivacyNotice();
   assert.equal(h.page.data.privacyNoticeVisible, false);
-  assert.deepEqual(h.navigation.map((item) => item.url), ['/pages/getting-started/index']);
+  assert.equal(h.page.data.tourVisible, true);
+  assert.equal(h.page.data.tourIndex, 0);
+  assert.equal(h.page.data.tourTotal, 6);
+  h.page.nextGuide();
+  assert.equal(h.page.data.tourIndex, 1);
+  h.page.endGuide();
+  assert.equal(h.page.data.tourVisible, false);
   h.page.acknowledgePrivacyNotice();
-  assert.equal(h.navigation.length, 1);
+  assert.equal(h.page.data.tourVisible, false);
+  assert.equal(h.navigation.length, 0);
+  assert.match(read('pages/home/index.wxml'), /<onboarding-guide visible="\{\{tourVisible\}\}"/);
   const guideScript = read('pages/getting-started/index.js');
   assert.doesNotMatch(guideScript, /Storage|createSafeHomeApi/);
   assert.ok(read('pages/getting-started/index.wxml').includes('class="intro-text"'));
@@ -555,8 +563,10 @@ test('first privacy reminder records reading only, without creating any purpose 
   page.onShow();
   assert.equal(page.data.privacyNoticeVisible, false);
   assert.equal(consentWrites, 0);
-  // Only the reading marker and the one-time guide marker; neither is a consent.
-  assert.deepEqual(writes.map((item) => item.key), ['safehome_privacy_notice_seen', 'safehome_getting_started_opened']);
+  // Only the reading marker; the tour marker is written when the tour ends. Neither is a consent.
+  assert.deepEqual(writes.map((item) => item.key), ['safehome_privacy_notice_seen']);
+  page.endGuide();
+  assert.deepEqual(writes.map((item) => item.key), ['safehome_privacy_notice_seen', 'safehome_home_tour_seen']);
 });
 
 test('optional-purpose withdrawal uses the latest self decision and needs explicit confirmation', async () => {
