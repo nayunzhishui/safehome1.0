@@ -30,12 +30,6 @@ EXPLICIT_PROFILES = {
 }
 
 
-def _source_sha256(path: Path) -> str:
-    raw = path.read_bytes()
-    normalized = raw.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
-    return hashlib.sha256(normalized).hexdigest()
-
-
 def _environment_name(node: ast.AST) -> str:
     if isinstance(node, ast.Constant) and isinstance(node.value, str):
         return node.value

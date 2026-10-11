@@ -121,6 +121,8 @@ Page({
   },
 
   async submitSupervision() {
+    // Defense in depth: the form is hidden until consent, and submit refuses too.
+    if (!this.data.serviceReady) return;
     const message = this.data.message.trim();
 
     if (!message) {

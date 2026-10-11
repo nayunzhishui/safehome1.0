@@ -1,0 +1,885 @@
+{
+  "schema": "safehome.rc0810.f25b-evidence.v1",
+  "phase": "F25-B",
+  "generated_at": "2026-08-31T00:06:41.521741+00:00",
+  "engineering_status": "evidence_ready",
+  "external_verification_complete": false,
+  "production_gate_eligible": false,
+  "release_recommendation": "NO_GO",
+  "artifact_source": {
+    "commit": "b20026dfaa3d2d4079c1bcf953c85a286e91aa6d",
+    "source_tree": "8c0b9efaa8757ae749fd58f3709763e56f19380a",
+    "release_input_sha256": "4cfc3b8bfc06f10c0c09daa1a2e29b68d5ac69ced3e1e8db1ec7a1bf84155d35",
+    "backend_build_context_sha256": "65802710c072b0461a9bf4c55bc6cb6ecba6c16d5ba5584c8b6dfb25ed252566",
+    "files": {
+      "apps/miniprogram/app.json": "2dfaa5009db98bd1dcbb7961eda8a1911daf54113b8e2c56ccb645112f8cecaf",
+      "apps/miniprogram/project.config.json": "b5f76b3605b7940c414b44141850aac9302bdba9a8fdea02155a2dbddfee1cad",
+      "apps/miniprogram/services/cloudConfig.js": "0d3b6a77279b5954783444dad5bf62384d8627df7d9b798fd3e053449673e75f",
+      "config/rc0810/miniprogram_cloud_targets.json": "9ed6b32dc52ebecacd0c98f65848ced8376981c68b8e5154ca2ad2a596d5b179",
+      "config/rc0810/miniprogram_page_policy.json": "d8eddf2e0c0c44f1601ffc4ea7d07f36b40ce53b6c4928ed80aa20fc9b46a42c",
+      "content/privacy.md": "8021cb639acfba388c33a0a32f6d36c6c596b8d475c2b7f0c4c22cc053f269e7"
+    }
+  },
+  "artifact_binding": {
+    "miniprogram_package": {
+      "path": ".codex_tmp/rc0810/f25b/b20026dfaa3d2d4079c1bcf953c85a286e91aa6d/safehome-miniprogram-production.zip",
+      "sha256": "d37b939b7b9adbddb88c3e4ead5584f680d3e72354c2d986ee94a7539775d408",
+      "content_manifest_sha256": "099bd82e53bbfab1d77af73eb78c05f0b4c56d23432aeef396105cacba84696c",
+      "status": "evidence_ready",
+      "profile": "production",
+      "static_journey_gate_passed": true,
+      "size_bytes": 997139
+    },
+    "backend_image": {
+      "status": "pending_external",
+      "image_digest": null,
+      "blocker": "image_security_findings_attestation_and_remote_raw_evidence_pending",
+      "registry_evidence": {
+        "status": "recorded_no_go",
+        "registry_ref": "ghcr.io/nayunzhishui/safehome-rc0810:rc0810-b20026df",
+        "immutable_ref": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:5e14fe15cc0d9ca006d1a5b198eef22d96d2068fb5598379d298ac4d668c832d",
+        "digest": "sha256:5e14fe15cc0d9ca006d1a5b198eef22d96d2068fb5598379d298ac4d668c832d",
+        "source_commit": "b20026dfaa3d2d4079c1bcf953c85a286e91aa6d",
+        "platform": "linux/amd64",
+        "revision_label": "b20026dfaa3d2d4079c1bcf953c85a286e91aa6d",
+        "source_label": "https://github.com/nayunzhishui/safehome1.0",
+        "version_label": "rc0810-b20026df",
+        "provenance": {
+          "status": "recorded_unverified",
+          "builder_id": null,
+          "build_type": "https://mobyproject.org/buildkit@v1"
+        },
+        "container_scan": {
+          "status": "completed_no_go",
+          "scanner": "trivy",
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "unknown": 0
+        },
+        "image_sbom": {
+          "status": "completed",
+          "generator": "trivy",
+          "format": "CycloneDX",
+          "spec_version": "1.7",
+          "component_count": 72,
+          "root_name": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:5e14fe15cc0d9ca006d1a5b198eef22d96d2068fb5598379d298ac4d668c832d",
+          "root_purl": "pkg:oci/safehome-rc0810@sha256:5e14fe15cc0d9ca006d1a5b198eef22d96d2068fb5598379d298ac4d668c832d?arch=amd64&repository_url=ghcr.io%2Fnayunzhishui%2Fsafehome-rc0810"
+        },
+        "attestation": {
+          "status": "pending_external",
+          "reason": "signed_attestation_not_verified"
+        },
+        "files": {
+          "build_metadata": {
+            "path": ".codex_tmp/rc0810/registry/b20026df-build-metadata.json",
+            "sha256": "87091bc14bcbdca8081bb03bf1eff8390af5a5efb1d11f65d55180d8c16fd2b3",
+            "size_bytes": 2691
+          },
+          "container_scan": {
+            "path": ".codex_tmp/rc0810/registry/b20026df-trivy-container.json",
+            "sha256": "33b3cd894c1e933549858891f10dc90e59a43f6d201943338c26cbf30278531a",
+            "size_bytes": 59619
+          },
+          "image_sbom": {
+            "path": ".codex_tmp/rc0810/registry/b20026df-trivy-sbom.cdx.json",
+            "sha256": "1ba5ddda6888e204649cc721e9def1ecb7f34fefaefa94411bff12b3b3beecc3",
+            "size_bytes": 91596
+          }
+        },
+        "raw_evidence_publication": {
+          "status": "pending_actions_artifact",
+          "artifact_name": null,
+          "artifact_url": null,
+          "production_blocking": true
+        },
+        "production_gate_eligible": false
+      }
+    },
+    "appid_fingerprint": "sha256:ac88112a1d98d0ac0841781d3e32eff906eaa3198de05148c3beca59385288bb",
+    "cloudbase_env_id": "prod-d3gl35otiaa7c8d24",
+    "cloudbase_service": "flask-gh3l",
+    "cloudbase_config_sha256": "9ed6b32dc52ebecacd0c98f65848ced8376981c68b8e5154ca2ad2a596d5b179",
+    "privacy_text_sha256": "8021cb639acfba388c33a0a32f6d36c6c596b8d475c2b7f0c4c22cc053f269e7",
+    "base_library_version": "3.8.12"
+  },
+  "platform_checks": [
+    {
+      "id": "appid_subject",
+      "status": "pending_external",
+      "owner": "wechat_platform_operator",
+      "reviewer": "independent_platform_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "service_category",
+      "status": "pending_external",
+      "owner": "wechat_platform_operator",
+      "reviewer": "independent_platform_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "interface_permissions",
+      "status": "pending_external",
+      "owner": "wechat_platform_operator",
+      "reviewer": "independent_platform_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "legal_domains",
+      "status": "pending_external",
+      "owner": "wechat_platform_operator",
+      "reviewer": "independent_platform_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "cloudbase_environment",
+      "status": "pending_external",
+      "owner": "wechat_platform_operator",
+      "reviewer": "independent_platform_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "privacy_guideline",
+      "status": "pending_external",
+      "owner": "wechat_platform_operator",
+      "reviewer": "independent_platform_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "filing_status",
+      "status": "pending_external",
+      "owner": "wechat_platform_operator",
+      "reviewer": "independent_platform_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "qualification_materials",
+      "status": "pending_external",
+      "owner": "wechat_platform_operator",
+      "reviewer": "independent_platform_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    }
+  ],
+  "account_scenarios": [
+    {
+      "id": "wechat_one_tap_login",
+      "status": "pending_external",
+      "owner": "account_test_operator",
+      "reviewer": "independent_qa_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "phone_login",
+      "status": "pending_external",
+      "owner": "account_test_operator",
+      "reviewer": "independent_qa_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "account_login",
+      "status": "pending_external",
+      "owner": "account_test_operator",
+      "reviewer": "independent_qa_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "logout",
+      "status": "pending_external",
+      "owner": "account_test_operator",
+      "reviewer": "independent_qa_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "legacy_account",
+      "status": "pending_external",
+      "owner": "account_test_operator",
+      "reviewer": "independent_qa_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "locked_account",
+      "status": "pending_external",
+      "owner": "account_test_operator",
+      "reviewer": "independent_qa_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "multi_device_session",
+      "status": "pending_external",
+      "owner": "account_test_operator",
+      "reviewer": "independent_qa_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    }
+  ],
+  "message_scenarios": [
+    {
+      "id": "subscription_denied",
+      "status": "pending_external",
+      "owner": "message_test_operator",
+      "reviewer": "independent_qa_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "subscription_expired",
+      "status": "pending_external",
+      "owner": "message_test_operator",
+      "reviewer": "independent_qa_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "subscription_duplicate",
+      "status": "pending_external",
+      "owner": "message_test_operator",
+      "reviewer": "independent_qa_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "training_record",
+      "status": "pending_external",
+      "owner": "message_test_operator",
+      "reviewer": "independent_qa_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "historical_feedback",
+      "status": "pending_external",
+      "owner": "message_test_operator",
+      "reviewer": "independent_qa_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    },
+    {
+      "id": "researcher_feedback_message",
+      "status": "pending_external",
+      "owner": "message_test_operator",
+      "reviewer": "independent_qa_reviewer",
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "cloudbase_target",
+        "test_account_or_data"
+      ]
+    }
+  ],
+  "devtools": {
+    "status": "pending_external",
+    "cli_detected": false,
+    "cli_path": null,
+    "blocker": "wechat_devtools_cli_not_found",
+    "checks": [
+      {
+        "id": "compile",
+        "status": "pending_external",
+        "owner": "wechat_devtools_operator",
+        "reviewer": "independent_qa_reviewer",
+        "captured_at": null,
+        "valid_until": null,
+        "request_id": null,
+        "invalidation_conditions": [
+          "package_or_image",
+          "cloudbase_target",
+          "test_account_or_data"
+        ]
+      },
+      {
+        "id": "subpackages",
+        "status": "pending_external",
+        "owner": "wechat_devtools_operator",
+        "reviewer": "independent_qa_reviewer",
+        "captured_at": null,
+        "valid_until": null,
+        "request_id": null,
+        "invalidation_conditions": [
+          "package_or_image",
+          "cloudbase_target",
+          "test_account_or_data"
+        ]
+      },
+      {
+        "id": "package_size",
+        "status": "pending_external",
+        "owner": "wechat_devtools_operator",
+        "reviewer": "independent_qa_reviewer",
+        "captured_at": null,
+        "valid_until": null,
+        "request_id": null,
+        "invalidation_conditions": [
+          "package_or_image",
+          "cloudbase_target",
+          "test_account_or_data"
+        ]
+      },
+      {
+        "id": "network",
+        "status": "pending_external",
+        "owner": "wechat_devtools_operator",
+        "reviewer": "independent_qa_reviewer",
+        "captured_at": null,
+        "valid_until": null,
+        "request_id": null,
+        "invalidation_conditions": [
+          "package_or_image",
+          "cloudbase_target",
+          "test_account_or_data"
+        ]
+      },
+      {
+        "id": "base_library",
+        "status": "pending_external",
+        "owner": "wechat_devtools_operator",
+        "reviewer": "independent_qa_reviewer",
+        "captured_at": null,
+        "valid_until": null,
+        "request_id": null,
+        "invalidation_conditions": [
+          "package_or_image",
+          "cloudbase_target",
+          "test_account_or_data"
+        ]
+      },
+      {
+        "id": "page_warnings",
+        "status": "pending_external",
+        "owner": "wechat_devtools_operator",
+        "reviewer": "independent_qa_reviewer",
+        "captured_at": null,
+        "valid_until": null,
+        "request_id": null,
+        "invalidation_conditions": [
+          "package_or_image",
+          "cloudbase_target",
+          "test_account_or_data"
+        ]
+      }
+    ],
+    "raw_log_path": null
+  },
+  "device_matrix": [
+    {
+      "platform": "iOS",
+      "device_id": null,
+      "operator_id": null,
+      "reviewer_id": null,
+      "status": "pending_external",
+      "scenarios": [
+        "cold_start",
+        "warm_start",
+        "foreground_background",
+        "weak_network",
+        "offline_recovery",
+        "large_font",
+        "keyboard",
+        "safe_area"
+      ],
+      "evidence_paths": [],
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "base_library",
+        "device_replacement"
+      ]
+    },
+    {
+      "platform": "Android",
+      "device_id": null,
+      "operator_id": null,
+      "reviewer_id": null,
+      "status": "pending_external",
+      "scenarios": [
+        "cold_start",
+        "warm_start",
+        "foreground_background",
+        "weak_network",
+        "offline_recovery",
+        "large_font",
+        "keyboard",
+        "safe_area"
+      ],
+      "evidence_paths": [],
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "package_or_image",
+        "base_library",
+        "device_replacement"
+      ]
+    }
+  ],
+  "journeys": {
+    "participant_core": [
+      "goal",
+      "diary",
+      "feedback",
+      "training",
+      "checkin",
+      "weekly_report",
+      "supervision"
+    ],
+    "production_negative": [
+      "internal_route_hidden",
+      "temporary_privilege_disabled",
+      "debug_entry_hidden"
+    ],
+    "static_package_status": "evidence_ready",
+    "real_device_status": "pending_external"
+  },
+  "review_materials": {
+    "status": "evidence_ready",
+    "review_notes": "使用冻结 production 候选包；不得口头补充、临时提权、改库或现场调试。",
+    "test_account_guide": "账号由授权负责人在仓库外提供；仅使用冻结角色与测试数据，不在仓库保存凭据。",
+    "feature_paths": [
+      "目标→记录→反馈→训练→打卡→周报→督导",
+      "消息→历次反馈→研究者反馈"
+    ],
+    "boundary_statement": "系统提供非诊断、支持性训练；高风险内容进入人工支持路径，不替代诊断或危机干预。",
+    "failure_recovery": "失败时保留请求 ID，使用页面重试；不得切换未登记环境、放宽权限或修改数据库绕过。"
+  },
+  "zero_context_review": {
+    "status": "pending_external",
+    "reviewer_id": null,
+    "captured_at": null,
+    "valid_until": null,
+    "request_id": null,
+    "invalidation_conditions": [
+      "package_or_image",
+      "test_account_or_data",
+      "submitted_materials"
+    ],
+    "allowed_inputs": [
+      "submitted_materials",
+      "test_account",
+      "frozen_release_candidate"
+    ],
+    "forbidden_assistance": [
+      "oral_supplement",
+      "database_mutation",
+      "temporary_privilege",
+      "live_debugging",
+      "out_of_band_instruction"
+    ]
+  },
+  "freeze_window": {
+    "status": "evidence_ready",
+    "frozen_inputs": [
+      "backend_contract",
+      "test_accounts",
+      "test_data",
+      "miniprogram_package",
+      "backend_image",
+      "cloudbase_target",
+      "privacy_text",
+      "base_library"
+    ],
+    "invalidation_rules": {
+      "package_or_image": [
+        "artifact",
+        "device",
+        "journey",
+        "materials",
+        "platform"
+      ],
+      "cloudbase_target": [
+        "platform",
+        "journey",
+        "device"
+      ],
+      "privacy_text": [
+        "privacy",
+        "materials",
+        "platform"
+      ],
+      "base_library": [
+        "devtools",
+        "device",
+        "journey"
+      ],
+      "test_account_or_data": [
+        "zero_context",
+        "journey",
+        "messages"
+      ]
+    }
+  },
+  "raci": [
+    {
+      "domain": "filing_and_category",
+      "responsible": null,
+      "accountable": null,
+      "consulted": null,
+      "informed": null,
+      "status": "pending_external"
+    },
+    {
+      "domain": "privacy",
+      "responsible": null,
+      "accountable": null,
+      "consulted": null,
+      "informed": null,
+      "status": "pending_external"
+    },
+    {
+      "domain": "psychology_content",
+      "responsible": null,
+      "accountable": null,
+      "consulted": null,
+      "informed": null,
+      "status": "pending_external"
+    },
+    {
+      "domain": "deployment",
+      "responsible": null,
+      "accountable": null,
+      "consulted": null,
+      "informed": null,
+      "status": "pending_external"
+    },
+    {
+      "domain": "database",
+      "responsible": null,
+      "accountable": null,
+      "consulted": null,
+      "informed": null,
+      "status": "pending_external"
+    },
+    {
+      "domain": "ai_supplier",
+      "responsible": null,
+      "accountable": null,
+      "consulted": null,
+      "informed": null,
+      "status": "pending_external"
+    },
+    {
+      "domain": "device_acceptance",
+      "responsible": null,
+      "accountable": null,
+      "consulted": null,
+      "informed": null,
+      "status": "pending_external"
+    },
+    {
+      "domain": "incident_response",
+      "responsible": null,
+      "accountable": null,
+      "consulted": null,
+      "informed": null,
+      "status": "pending_external"
+    }
+  ],
+  "real_world_evidence": [
+    {
+      "id": "core_funnel",
+      "owner": null,
+      "reviewer": "independent_pilot_reviewer",
+      "status": "pending_external",
+      "evidence_paths": [],
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "pilot_scope",
+        "package_or_image",
+        "measurement_definition"
+      ]
+    },
+    {
+      "id": "failure_recovery",
+      "owner": null,
+      "reviewer": "independent_pilot_reviewer",
+      "status": "pending_external",
+      "evidence_paths": [],
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "pilot_scope",
+        "package_or_image",
+        "measurement_definition"
+      ]
+    },
+    {
+      "id": "user_understanding_interview",
+      "owner": null,
+      "reviewer": "independent_pilot_reviewer",
+      "status": "pending_external",
+      "evidence_paths": [],
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "pilot_scope",
+        "package_or_image",
+        "measurement_definition"
+      ]
+    },
+    {
+      "id": "human_processing_capacity",
+      "owner": null,
+      "reviewer": "independent_pilot_reviewer",
+      "status": "pending_external",
+      "evidence_paths": [],
+      "captured_at": null,
+      "valid_until": null,
+      "request_id": null,
+      "invalidation_conditions": [
+        "pilot_scope",
+        "package_or_image",
+        "measurement_definition"
+      ]
+    }
+  ],
+  "subtasks": [
+    {
+      "id": "F25.1",
+      "status": "blocked_external"
+    },
+    {
+      "id": "F25.2",
+      "status": "blocked_external"
+    },
+    {
+      "id": "F25.3",
+      "status": "blocked_external"
+    },
+    {
+      "id": "F25.4",
+      "status": "blocked_external"
+    },
+    {
+      "id": "F25.5",
+      "status": "blocked_external"
+    },
+    {
+      "id": "F25.6",
+      "status": "blocked_external"
+    },
+    {
+      "id": "F25.7",
+      "status": "blocked_external"
+    },
+    {
+      "id": "F25.8",
+      "status": "evidence_ready"
+    },
+    {
+      "id": "F25.9",
+      "status": "evidence_ready"
+    },
+    {
+      "id": "F25.10",
+      "status": "evidence_ready"
+    },
+    {
+      "id": "F25.11",
+      "status": "blocked_external"
+    },
+    {
+      "id": "F25.12",
+      "status": "evidence_ready"
+    },
+    {
+      "id": "F25.13",
+      "status": "blocked_external"
+    },
+    {
+      "id": "F25.14",
+      "status": "blocked_external"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "F25-EXT-01",
+      "scope": "backend_image",
+      "status": "pending_external",
+      "reason": "image_security_findings_attestation_and_remote_raw_evidence_pending"
+    },
+    {
+      "id": "F25-EXT-02",
+      "scope": "wechat_platform",
+      "status": "pending_external",
+      "reason": "console_receipts_and_qualifications_missing"
+    },
+    {
+      "id": "F25-EXT-03",
+      "scope": "accounts_and_messages",
+      "status": "pending_external",
+      "reason": "real_accounts_and_request_logs_missing"
+    },
+    {
+      "id": "F25-EXT-04",
+      "scope": "devtools",
+      "status": "pending_external",
+      "reason": "wechat_devtools_cli_not_found"
+    },
+    {
+      "id": "F25-EXT-05",
+      "scope": "ios_android",
+      "status": "pending_external",
+      "reason": "real_device_evidence_missing"
+    },
+    {
+      "id": "F25-EXT-06",
+      "scope": "zero_context_review",
+      "status": "pending_external",
+      "reason": "independent_human_review_missing"
+    },
+    {
+      "id": "F25-EXT-07",
+      "scope": "raci",
+      "status": "pending_external",
+      "reason": "authorized_people_not_assigned"
+    },
+    {
+      "id": "F25-EXT-08",
+      "scope": "real_world",
+      "status": "pending_external",
+      "reason": "pilot_observation_and_capacity_evidence_missing"
+    }
+  ]
+}

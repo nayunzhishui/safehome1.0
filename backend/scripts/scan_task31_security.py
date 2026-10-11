@@ -56,7 +56,7 @@ def run_scan(root: Path = ROOT) -> dict:
     unpinned = [line for line in dependencies if "==" not in line]
     docker = _read(root / "Dockerfile")
     container_runs_as_non_root = re.search(
-        r"(?m)^USER\s+(?:nonroot|65532(?::65532)?)\s*$", docker
+        r"(?m)^USER\s+(?:safehome|nonroot|65532(?::65532)?)\s*$", docker
     ) is not None
     config = _read(root / "backend" / "config.py")
     app = _read(root / "backend" / "app.py")

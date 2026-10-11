@@ -39,6 +39,7 @@ def test_database_roundtrip_preserves_scoring_metadata(w):
     assert source.total_score == stored.total_score
     assert source.scores == stored.scores
 
+@pytest.mark.skip(reason='2026-10-11合并：主线隐私页采用10-03与实际页面同步的方案，本分支内嵌privacy-policy.json的显示方式未采用（文件保留备查）')
 def test_privacy_is_readable_in_app_and_explicit_about_pending_fields():
     policy = (ROOT / "content/privacy.md").read_text(encoding="utf-8")
     snapshot = json.loads((ROOT / "apps/miniprogram/utils/privacy-policy.json").read_text(encoding="utf-8"))
@@ -73,6 +74,7 @@ def test_import_plan_only_reads_definitions_and_rejects_unknown_selection():
         importer.plan_worksheet_sync(ReadOnlyConnection(), [w], ["missing"])
 
 
+@pytest.mark.skip(reason='2026-10-11合并：主线隐私页采用10-03与实际页面同步的方案，本分支内嵌privacy-policy.json的显示方式未采用（文件保留备查）')
 def test_launch_report_is_read_only_and_privacy_snapshot_is_synchronized(monkeypatch):
     spec = importlib.util.spec_from_file_location("launch_readiness_test", ROOT / "scripts/check_launch_readiness.py")
     checker = importlib.util.module_from_spec(spec)
