@@ -12,6 +12,7 @@ from services.assessment_execution_service import (
     replay_assessment_snapshot,
     submit_assessment,
 )
+from services.assessment_dimension_guide_service import build_dimension_guides
 from services.assessment_profile_position_store import backfill_profile_position, profile_cluster_value
 from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
 from services.idempotency_service import public_idempotent_resource
@@ -384,7 +385,11 @@ def get_assessment_result(result_id: str):
         ).fetchone()
     if row is None:
         return fail("not_found", "没有找到对应的测一测结果", status=404)
-    return ok(_expand_result_row(row_to_dict(row), include_replay=True))
+    payload = _expand_result_row(row_to_dict(row), include_replay=True)
+    worksheet = _find_worksheet(payload.get("worksheet_id"), include_disabled=True, include_unapproved=True)
+    if worksheet:
+        payload["dimension_guides"] = build_dimension_guides(worksheet, payload["scores"].get("dimensions") or [])
+    return ok(payload)
 
 
 @bp.get("/assessment-results/<result_id>/profile-position")

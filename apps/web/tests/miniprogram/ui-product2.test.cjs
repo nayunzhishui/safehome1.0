@@ -285,6 +285,47 @@ test('结果页显示量表自身的结果说明，并用后端量尺范围定�
   assert.equal(row.positionPercent, 50);
 });
 
+test('结果页在维度下展示“看的是”和分档提示，综合分不进雷达图', async () => {
+  const range = { minimum: 1, maximum: 5 };
+  const dims = ['A', 'B', 'C'].map((key) => ({ key, label: `维度${key}`, score: 3, item_count: 4, score_method: 'mean', score_range: range }));
+  const harness = (dimensions, items) => pageHarness('assessment-result', {
+    getAssessmentResult: async () => ({ id: 'synthetic-result', category: '量表', scores_json: JSON.stringify({ dimensions }),
+      dimension_guides: { boundary: '只描述本次作答的位置。', items } }),
+    getAssessment: async () => ({ id: 'synthetic-worksheet', questions: [], dimensions: [] }),
+    listCards: async () => ({ items: [] }),
+    getAssessmentExploratoryAnalysis: async () => null,
+    getAssessmentProfilePosition: async () => null,
+  });
+  const h = harness(dims.concat([{ key: 'ALL', label: '综合观察', score: 3, item_count: 3, score_method: 'mean_dimensions', score_range: range }]), [
+    { key: 'A', definition: '困难时对自己是否温和。', band: 'low', band_label: '这次偏低', hint: '可以先对自己说一句支持的话。', composite: false },
+    { key: 'B', definition: '是否常想到别人也会这样。', band: 'middle', band_label: null, hint: '这次处在中间位置，没有明显偏向。', composite: false },
+    { key: 'ALL', definition: '几个方面合在一起的整体情况。', band: 'middle', band_label: null, hint: '这次处在中间位置，没有明显偏向。', composite: true },
+  ]);
+  h.page.data.resultId = 'synthetic-result';
+  h.page.data.worksheetId = 'synthetic-worksheet';
+  h.page.drawProfilePositionCharts = () => {};
+  h.page.drawScaleDimensionChart = () => {};
+  await h.page.loadResult();
+  const view = h.page.data.scaleVisualization;
+  assert.equal(view.showRadar, true);
+  assert.equal(view.radarFeatures.map((item) => item.key).join(','), 'A,B,C');
+  assert.equal(view.composites.map((item) => item.key).join(','), 'ALL');
+  assert.equal(view.dimensions[0].definition, '困难时对自己是否温和。');
+  assert.equal(view.dimensions[0].bandLabel, '这次偏低');
+  assert.equal(view.dimensions[1].bandLabel, '');
+  assert.equal(view.dimensions[2].hint, '');
+  assert.equal(h.page.data.dimensionGuideBoundary, '只描述本次作答的位置。');
+
+  const two = harness(dims.slice(0, 2), []);
+  two.page.data.resultId = 'synthetic-result';
+  two.page.data.worksheetId = 'synthetic-worksheet';
+  two.page.drawProfilePositionCharts = () => {};
+  two.page.drawScaleDimensionChart = () => {};
+  await two.page.loadResult();
+  assert.equal(two.page.data.scaleVisualization.showRadar, false);
+  assert.match(two.page.data.scaleVisualization.chartNote, /^本量表只有 2 个维度，用维度条展示/);
+});
+
 test('结果页按计分方式标注均值、合计与得分', async () => {
   const h = resultHarness({ dimensions: [
     { key: 'MEAN', label: '均值维度', score: 3.5, item_count: 2, score_method: 'mean_terms' },

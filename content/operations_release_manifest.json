@@ -53,8 +53,8 @@
     {
       "artifact_type": "rule",
       "path": "content/assessment_training_map.json",
-      "sha256": "82159a0e3a6523f57506f5044e73882c5befe90817b1100132bf911ecedeb791",
-      "size_bytes": 163691
+      "sha256": "18e7a6b6f2611cccb30ae7dcf437590bd1a98445dc4e94fe01fa01448a595664",
+      "size_bytes": 163706
     },
     {
       "artifact_type": "rule",
@@ -172,5 +172,5 @@
   "revision_policy": "never_edit_verified_package_create_new_version",
   "atomic_runtime_switch": true,
   "production_release_approved": false,
-  "manifest_hash": "1c31e6577d62bdabfc5d38c17f1183108f2d278ba95fa53b016a431e4d94facd"
+  "manifest_hash": "a77c41e9e0e6322b10c4a7465571476bd57a686bed9cff9a35b5feeb5449a546"
 }

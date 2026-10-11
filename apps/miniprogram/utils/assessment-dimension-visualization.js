@@ -65,7 +65,7 @@ function deriveDimensionRange(dimension, worksheet) {
 }
 
 function buildDimensionVisualization(dimensions, worksheet) {
-  const rows = (Array.isArray(dimensions) ? dimensions : []).map((dimension) => {
+  const allRows = (Array.isArray(dimensions) ? dimensions : []).map((dimension) => {
     const score = toFiniteNumber(dimension && dimension.score);
     const range = deriveDimensionRange(dimension, worksheet);
     if (score === null || !range) {
@@ -95,21 +95,30 @@ function buildDimensionVisualization(dimensions, worksheet) {
     };
   });
 
+  // A composite (the average of the other dimensions) is shown on its own above the
+  // chart; drawing it as one more axis would mix the whole with its parts.
+  const composites = allRows.filter((item) => item.composite);
+  const rows = allRows.filter((item) => !item.composite);
   const comparableRows = rows.filter((item) => item.hasComparableRange);
   const showRadar = rows.length >= MIN_RADAR_DIMENSIONS
     && rows.length <= MAX_RADAR_DIMENSIONS
     && comparableRows.length === rows.length;
+  let chartNote = "图形展示各维度在自身量尺中的相对位置；量尺中点不是常模、目标值或好坏标准。";
+  if (!showRadar && rows.length > MAX_RADAR_DIMENSIONS) {
+    chartNote = `本量表包含 ${rows.length} 个维度，为避免标签拥挤，改用维度卡片展示。`;
+  } else if (!showRadar && rows.length < MIN_RADAR_DIMENSIONS) {
+    chartNote = `本量表只有 ${rows.length} 个维度，用维度条展示；量尺中点不是常模、目标值或好坏标准。`;
+  } else if (!showRadar) {
+    chartNote = "部分维度的可比量尺范围尚未核定，暂以原始得分卡片展示。";
+  }
   return {
     dimensions: rows,
+    composites,
     radarFeatures: showRadar ? comparableRows : [],
     showRadar,
     currentLabel: "本次填写",
     referenceLabel: "量尺中点",
-    chartNote: showRadar
-      ? "图形展示各维度在自身量尺中的相对位置；量尺中点不是常模、目标值或好坏标准。"
-      : rows.length > MAX_RADAR_DIMENSIONS
-        ? `本量表包含 ${rows.length} 个维度，为避免标签拥挤，改用维度卡片展示。`
-        : "部分维度的可比量尺范围尚未核定，暂以原始得分卡片展示。",
+    chartNote,
   };
 }
 

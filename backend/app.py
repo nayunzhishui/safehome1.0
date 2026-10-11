@@ -127,6 +127,7 @@ REQUIRED_CONTENT_FILES = [
     "operations_release_manifest.json",
     "readfeedback/student_profile_model.json",
     "supportive_review_guide.json",
+    "assessment_dimension_guides.json",
 ]
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
 REQUEST_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]{8,64}$")

@@ -381,6 +381,52 @@
   line-height: 1.55;
 }
 
+.dimension-definition {
+  display: block;
+  margin-top: 6rpx;
+  color: var(--safe-muted);
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
+.dimension-hint {
+  display: block;
+  margin-top: 14rpx;
+  padding: 18rpx 22rpx;
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-bg);
+}
+
+.dimension-hint-label {
+  display: block;
+  color: var(--safe-text);
+  font-size: 24rpx;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.dimension-hint-text {
+  display: block;
+  color: var(--safe-text);
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
+.dimension-row--composite {
+  margin-bottom: 16rpx;
+  border-bottom: none;
+  border-radius: var(--safe-radius-md);
+  background: var(--safe-card);
+}
+
+.dimension-guide-boundary {
+  display: block;
+  margin-top: 16rpx;
+  color: var(--safe-muted);
+  font-size: 24rpx;
+  line-height: 1.55;
+}
+
 .recommendation-block { margin-top: 16rpx; }
 
 .exploratory-card {

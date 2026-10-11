@@ -1836,22 +1836,22 @@
     },
     {
       "file": "backend/routes/assessments.py",
-      "line": 329,
+      "line": 330,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/assessments.py",
-      "line": 376,
+      "line": 377,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/assessments.py",
-      "line": 393,
+      "line": 398,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/assessments.py",
-      "line": 436,
+      "line": 441,
       "parameter": "user_id"
     },
     {

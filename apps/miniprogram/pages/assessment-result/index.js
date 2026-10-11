@@ -60,6 +60,9 @@ function buildScaleDimensions(result, profileSummary) {
   if (profileSummary || !result) return [];
   const scores = parseJsonSafe(result.scores_json, {});
   const dimensions = Array.isArray(scores.dimensions) ? scores.dimensions : [];
+  const guideItems = result.dimension_guides && Array.isArray(result.dimension_guides.items) ? result.dimension_guides.items : [];
+  const guides = {};
+  guideItems.forEach((guide) => { if (guide && guide.key) guides[guide.key] = guide; });
   return dimensions
     .filter((item) => item && (item.label || item.key))
     .map((item) => {
@@ -67,6 +70,7 @@ function buildScaleDimensions(result, profileSummary) {
       const hasCount = item.item_count !== undefined && item.item_count !== null;
       const valueText = methodText === "均值" ? `平均 ${item.score} 分` : `${methodText} ${item.score} 分`;
       const countText = hasCount ? `${item.item_count} 题${methodText} ${item.score} 分` : valueText;
+      const guide = guides[item.key] || {};
       return {
         key: item.key || item.label,
         label: item.label || item.key,
@@ -75,6 +79,12 @@ function buildScaleDimensions(result, profileSummary) {
         scoreMethod: item.score_method || "sum",
         scoreRange: item.score_range || null,
         summary: `${countText}（仅本维度内观察，不与其它维度相加比较）`,
+        // What the dimension looks at, and a short hint for where this answer falls.
+        definition: guide.definition || "",
+        band: guide.band || "",
+        bandLabel: guide.band_label || "",
+        hint: guide.hint || "",
+        composite: Boolean(guide.composite),
       };
     });
 }
@@ -572,6 +582,7 @@ Page({
           profileSummary,
           scaleDimensions,
           scaleVisualization,
+          dimensionGuideBoundary: result && result.dimension_guides ? String(result.dimension_guides.boundary || "") : "",
           // Scale-specific reading guide saved with the result (what it observes, what it is not).
           resultSummaryText: !profileSummary && result && result.result_summary ? String(result.result_summary) : "",
           sourceNotice,

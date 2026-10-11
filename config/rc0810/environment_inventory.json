@@ -30,7 +30,7 @@
       "layer": "backend",
       "classification": "runtime_entrypoint",
       "production_eligible": false,
-      "sha256": "d33546e76594836a4426203f7238858ae1677a05756743506a4f76ed291699e9"
+      "sha256": "5998daaa6a7b1f7bf985aea1cf48ac990452e8715eb7e4b92a629fd756b293d2"
     },
     {
       "path": "backend/gunicorn.conf.py",
