@@ -1,0 +1,19 @@
+{
+  "name": "safehome-miniprogram-acceptance",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SafeHome WeChat DevTools quasi-device acceptance harness",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "validate": "python ../../scripts/validate_miniprogram_acceptance.py",
+    "routes": "node run.js routes",
+    "smoke": "node run.js smoke",
+    "auth": "node run.js auth",
+    "all": "node run.js all"
+  },
+  "dependencies": {
+    "miniprogram-automator": "0.12.1"
+  }
+}
