@@ -45,6 +45,19 @@ def _fresh_app(tmp_path, monkeypatch):
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "rc0810-f09-admin-token")
     app = importlib.import_module("app").app
     app.config["APP_ENV"] = "production"
+    # Idempotency tests need an available synthetic card, not an unknown ID
+    # which is correctly rejected by the production content gate.
+    cards = importlib.import_module("services.card_service")
+    original_loader = cards.load_content_json
+    def load_test_cards(filename):
+        payload = original_loader(filename)
+        if filename == "training_cards.json":
+            return {**payload, "cards": [*payload.get("cards", []), {
+                "id": "pause_and_breathe", "enabled": True,
+                "review_status": "production_approved", "title": "Synthetic test card",
+            }]}
+        return payload
+    monkeypatch.setattr(cards, "load_content_json", load_test_cards)
     return app
 
 

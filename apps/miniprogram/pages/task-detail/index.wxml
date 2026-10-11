@@ -72,3 +72,4 @@
   </view>
 
 </view>
+<service-consent notice="{{serviceConsent}}" bind:decision="onServiceConsent" />

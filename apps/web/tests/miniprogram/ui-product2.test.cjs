@@ -511,6 +511,9 @@ test('人工支持仅显式提交时调用API，传递原有来源字段', async
   assert.equal(submitted.length, 0);
   page.data.message = ' 请一起看看这次记录 ';
   await page.submitSupervision();
+  assert.equal(submitted.length, 0, '未确认用途前不能提交');
+  page.data.serviceReady = true; // Explicitly simulate the completed consent flow.
+  await page.submitSupervision();
   assert.equal(submitted.length, 1);
   assert.equal(submitted[0].source_type, 'diary');
   assert.equal(submitted[0].source_id, 'diary-a');
@@ -559,6 +562,7 @@ test('关联读取失败后主动不关联，重试成功及提交仍保持不�
   await page.retrySources();
   assert.equal(page.data.selectedSource.id, '');
   assert.equal(page.data.draftRestored, false);
+  page.data.serviceReady = true; // Consent is required in the integrated candidate.
   await page.submitSupervision();
   assert.equal(submitted.length, 1);
   assert.equal(submitted[0].source_id, undefined);

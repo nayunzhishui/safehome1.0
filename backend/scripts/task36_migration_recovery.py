@@ -20,6 +20,7 @@ if str(BACKEND) not in sys.path:
 from config import Config
 import database
 import models
+from services.schema_migration_service import apply_pending_schema_migrations
 
 
 MATRIX_PATH = ROOT / "config" / "task36_migration_matrix.json"

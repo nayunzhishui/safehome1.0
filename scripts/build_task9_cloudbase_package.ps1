@@ -151,6 +151,12 @@ try {
   Expand-Archive -LiteralPath $SourceArchive -DestinationPath $StagingRoot -Force
 
   Remove-CloudBasePackageArtifacts -SourceRoot $StagingRoot
+  # Production images must not contain the test suite. Keep tests in the
+  # source repository for CI, but remove them from the CloudRun artifact.
+  $backendTests = Join-Path $StagingRoot "backend\tests"
+  if (Test-Path -LiteralPath $backendTests) {
+    Remove-Item -LiteralPath $backendTests -Recurse -Force
+  }
   Rename-CloudBaseProfileModels -SourceRoot $StagingRoot
 
   $buildTime = (Get-Date).ToUniversalTime().ToString("o")

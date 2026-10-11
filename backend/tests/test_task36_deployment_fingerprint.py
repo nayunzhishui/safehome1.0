@@ -57,16 +57,22 @@ def test_deep_health_requires_token_and_exposes_safe_build_identity(tmp_path, mo
     body = response.get_json()
 
     assert response.status_code == 200
-    assert body["build"]["commit_sha"] == "abcdef1234567890"
-    assert body["build"]["build_time"] == "2026-07-22T12:00:00+00:00"
-    assert len(body["build"]["api_contract_hash"]) == 64
-    assert len(body["build"]["content_manifest_hash"]) == 64
-    assert body["build"]["schema_expected"] == {
+    assert set(body) == {"ok", "service", "version"}
+    assert response.headers["X-SafeHome-Build-ID"] == info["build_id"]
+    assert response.headers["X-SafeHome-Service-Version"] == body["version"]
+    ready = app.test_client().get(
+        "/readyz", headers={"X-Operations-Token": "task36-f09-operations-token"}
+    )
+    ready_body = ready.get_json()
+    assert ready.status_code == 200
+    assert ready_body["build"]["commit_sha"] == "abcdef1234567890"
+    assert ready_body["build"]["build_time"] == "2026-07-22T12:00:00+00:00"
+    assert len(ready_body["build"]["api_contract_hash"]) == 64
+    assert len(ready_body["build"]["content_manifest_hash"]) == 64
+    assert ready_body["build"]["schema_expected"] == {
         "name": CURRENT_SCHEMA_NAME,
         "version": CURRENT_SCHEMA_VERSION,
     }
-    assert response.headers["X-SafeHome-Build-ID"] == body["build"]["build_id"]
-    assert response.headers["X-SafeHome-Service-Version"] == body["version"]
     serialized = response.get_data(as_text=True)
     assert str(ROOT) not in serialized
     assert "task36-f09-admin-token" not in serialized

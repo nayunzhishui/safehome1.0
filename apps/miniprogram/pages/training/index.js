@@ -12,151 +12,56 @@ Page({
     threeDayPlan: null,
     lightPlanExpanded: false,
     libraryExpanded: false,
-    trainingStages: [
-      {
-        title: "阶段一：认识和稳定情绪",
-        subtitle: "先看见情绪，再让身体慢下来",
-        tasks: [
-          {
-            id: "emotion_education",
-            title: "情绪教育",
-            subtitle: "理解情绪，不急着压下去",
-            stage: "阶段一",
-            duration: "5 分钟",
-            scenario: "不知道孩子为什么突然激动时",
-            tag: "新手",
-            tags: ["emotion_awareness"],
-            tagsText: "emotion_awareness",
-          },
-          {
-            id: "emotion_awareness",
-            title: "情绪觉察",
-            subtitle: "看见自己的情绪变化",
-            stage: "阶段一",
-            duration: "3-5 分钟",
-            scenario: "发现自己语速变快、胸口发紧时",
-            tag: "推荐",
-            tags: ["emotion_awareness", "high_emotion_intensity"],
-            tagsText: "emotion_awareness,high_emotion_intensity",
-          },
-          {
-            id: "body_regulation",
-            title: "身体调节",
-            subtitle: "通过呼吸和放松稳定身体",
-            stage: "阶段一",
-            duration: "5-8 分钟",
-            scenario: "准备提高音量或身体紧绷时",
-            tag: "新手",
-            tags: ["high_emotion_intensity", "emotional_behavior"],
-            tagsText: "high_emotion_intensity,emotional_behavior",
-          },
-          {
-            id: "pause_training",
-            title: "暂停训练",
-            subtitle: "在冲突前先停一停",
-            stage: "阶段一",
-            duration: "3-5 分钟",
-            scenario: "亲子冲突前、催促前",
-            tag: "推荐",
-            tags: ["high_demand_language", "emotional_behavior"],
-            tagsText: "high_demand_language,emotional_behavior",
-          },
-        ],
-      },
-      {
-        title: "阶段二：改变想法和行为",
-        subtitle: "从自动反应转向更有帮助的回应",
-        tasks: [
-          {
-            id: "cognitive_adjustment",
-            title: "认知调整",
-            subtitle: "换一个角度理解事件",
-            stage: "阶段二",
-            duration: "5-8 分钟",
-            scenario: "觉得孩子就是故意拖延时",
-            tag: "进阶",
-            tags: ["negative_attribution", "catastrophic_prediction"],
-            tagsText: "negative_attribution,catastrophic_prediction",
-          },
-          {
-            id: "alternative_thought",
-            title: "替代想法",
-            subtitle: "找到更有帮助的想法",
-            stage: "阶段二",
-            duration: "5 分钟",
-            scenario: "脑中反复出现责备或担心时",
-            tag: "进阶",
-            tags: ["negative_attribution", "cognitive_flexibility"],
-            tagsText: "negative_attribution,cognitive_flexibility",
-          },
-          {
-            id: "communication_expression",
-            title: "沟通表达",
-            subtitle: "把感受说清楚",
-            stage: "阶段二",
-            duration: "5-10 分钟",
-            scenario: "想表达要求但担心变成指责时",
-            tag: "练习",
-            tags: ["high_demand_language", "judgmental_language"],
-            tagsText: "high_demand_language,judgmental_language",
-          },
-        ],
-      },
-      {
-        title: "阶段三：改善亲子关系",
-        subtitle: "先连接，再讨论问题",
-        tasks: [
-          {
-            id: "nonjudgmental_company",
-            title: "非评判陪伴",
-            subtitle: "先接住孩子的情绪",
-            stage: "阶段三",
-            duration: "5-10 分钟",
-            scenario: "孩子委屈、生气或不愿说话时",
-            tag: "推荐",
-            tags: ["judgmental_language", "parent_child_conflict"],
-            tagsText: "judgmental_language,parent_child_conflict",
-          },
-          {
-            id: "relationship_repair",
-            title: "关系修复",
-            subtitle: "冲突后重新连接",
-            stage: "阶段三",
-            duration: "8-10 分钟",
-            scenario: "刚发生争吵或冷处理后",
-            tag: "进阶",
-            tags: ["parent_child_conflict", "emotional_behavior"],
-            tagsText: "parent_child_conflict,emotional_behavior",
-          },
-          {
-            id: "positive_interaction",
-            title: "积极互动",
-            subtitle: "增加家庭中的正向时刻",
-            stage: "阶段三",
-            duration: "5 分钟",
-            scenario: "想减少指责、增加合作时",
-            tag: "练习",
-            tags: ["behavior_substitution", "nonjudgmental_response"],
-            tagsText: "behavior_substitution,nonjudgmental_response",
-          },
-        ],
-      },
-    ],
+    trainingStages: [],
+    cardsLoading: true,
+    cardsError: "",
   },
 
+  async loadAvailableCards() {
+    const loadId = this._cardsLoadId = (this._cardsLoadId || 0) + 1;
+    const token = wx.getStorageSync("auth_token");
+    this._availableCards = [];
+    this.setData({ cardsLoading: true, cardsError: "", trainingStages: [], latestRecommendation: null, threeDayPlan: null });
+    try {
+      const result = await api.listCards();
+      if (loadId !== this._cardsLoadId || token !== wx.getStorageSync("auth_token")) return;
+      const cards = result.items || [];
+      this._availableCards = cards;
+      this.setData({ cardsLoading: false, trainingStages: cards.length ? [{
+        title: "当前可用练习", subtitle: "", tasks: cards.map(card => ({
+          id: card.id, title: card.title, subtitle: card.purpose || "",
+          duration: card.duration_minutes ? `${card.duration_minutes} 分钟` : "按个人节奏",
+          scenario: card.suitable_scene || (card.suitable_for || [])[0] || "",
+          stage: "", tag: "", tagsText: "",
+        })),
+      }] : [] });
+      this.loadLatestRecommendation();
+      this.loadThreeDayPlan();
+      this.filterCompletedRecommendations(getAuthUser());
+    } catch (error) {
+      if (loadId === this._cardsLoadId && token === wx.getStorageSync("auth_token")) this.setData({ cardsLoading: false, cardsError: error.message || "可用练习暂时无法读取，请重试。" });
+    }
+  },
+  onHide() { this._cardsLoadId = (this._cardsLoadId || 0) + 1; this._availableCards = []; this.setData({ trainingStages: [], latestRecommendation: null, threeDayPlan: null }); },
+  onUnload() { this.onHide(); },
+
   async onShow() {
+    const cardsReady = this.loadAvailableCards();
+    const loadId = this._cardsLoadId;
+    const token = wx.getStorageSync("auth_token");
     const user = getAuthUser();
     const showcase = await api.getShowcaseAccess().catch(() => ({ enabled: false }));
-    this.setData({ relationshipPilotAvailable: !!showcase.enabled || !!(user && user.role === "student") });
-    this.loadLatestRecommendation();
-    this.loadThreeDayPlan();
-    this.filterCompletedRecommendations(user);
+    if (loadId === this._cardsLoadId && token === wx.getStorageSync("auth_token")) this.setData({ relationshipPilotAvailable: !!showcase.enabled || !!(user && user.role === "student") });
+    await cardsReady;
   },
 
   async filterCompletedRecommendations(user) {
     if (!user) return;
+    const loadId = this._cardsLoadId;
+    const token = wx.getStorageSync("auth_token");
     try {
       const plan = await api.getTrainingPlan();
+      if (loadId !== this._cardsLoadId || token !== wx.getStorageSync("auth_token")) return;
       const completed = new Set(plan.recently_completed_card_ids || []);
       if (!completed.size) return;
       const recommendation = this.data.latestRecommendation;
@@ -182,12 +87,15 @@ Page({
   },
 
   loadLatestRecommendation() {
-    const recommendation = wx.getStorageSync(LATEST_TRAINING_RECOMMENDATION_KEY);
+    let recommendation = wx.getStorageSync(LATEST_TRAINING_RECOMMENDATION_KEY);
     if (!recommendation || !Array.isArray(recommendation.cardIds) || !recommendation.cardIds.length) {
       this.setData({ latestRecommendation: null });
       return;
     }
-
+    const available = new Map((this._availableCards || []).map(card => [card.id, card]));
+    const cardIds = recommendation.cardIds.filter(id => available.has(id));
+    if (!cardIds.length) { this.setData({ latestRecommendation: null }); return; }
+    recommendation = { ...recommendation, cardIds, cards: cardIds.map(id => available.get(id)) };
     this.setData({
       latestRecommendation: {
         ...recommendation,
@@ -200,12 +108,15 @@ Page({
   },
 
   loadThreeDayPlan() {
-    const plan = wx.getStorageSync(THREE_DAY_LIGHT_PLAN_KEY);
+    let plan = wx.getStorageSync(THREE_DAY_LIGHT_PLAN_KEY);
     if (!plan || plan.sourceType !== "assessment" || !Array.isArray(plan.days) || !plan.days.length) {
       this.setData({ threeDayPlan: null });
       return;
     }
-
+    const available = new Map((this._availableCards || []).map(card => [card.id, card]));
+    const days = plan.days.filter(day => available.has(day.cardId)).map(day => ({ ...day, cardTitle: available.get(day.cardId).title }));
+    if (!days.length) { this.setData({ threeDayPlan: null }); return; }
+    plan = { ...plan, days };
     this.setData({
       threeDayPlan: {
         ...plan,
@@ -267,7 +178,7 @@ Page({
   openTrainingCard(event) {
     const id = (event.detail && event.detail.id) || event.currentTarget.dataset.id || event.target.dataset.id || "";
     wx.navigateTo({
-      url: `/pages/task-detail/index?id=${encodeURIComponent(id)}`,
+      url: `/pages/task-detail/index?card_id=${encodeURIComponent(id)}`,
     });
   },
 });

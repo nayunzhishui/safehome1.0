@@ -11,8 +11,8 @@ const BASE_SUPPORT_ENTRIES = [
     private: true,
   },
   {
-    title: "人工督导",
-    subtitle: "获得专业补充反馈",
+    title: "人工支持",
+    subtitle: "提交补充理解请求",
     url: "/pages/supervision/index",
     private: true,
   },

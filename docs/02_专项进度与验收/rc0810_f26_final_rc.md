@@ -4,20 +4,21 @@
 
 ## 候选基线
 
-- commit：`f879440ecb2d82cb1ebe7798ff87db558f14e35a`
-- tree：`cc6be2cca3dd73217dc26ef8df5733b58f1c7ec5`
+- commit：`b20026dfaa3d2d4079c1bcf953c85a286e91aa6d`
+- tree：`8c0b9efaa8757ae749fd58f3709763e56f19380a`
 - 打包方式：隔离 Git archive；未从脏工作区直接打包
-- production 小程序 ZIP：`ce5d3075469793bc8bfd96cfd5f234cf4bc80af5b5667b1970e7510b04aadcfd`
-- 后端镜像：缺失，未伪造 digest
+- production 小程序 ZIP：`6431ef3800cde6309c5b5819e8985a6c1d81e43a224de8a0c77d260e2f19aea0`
+- 后端镜像：`ghcr.io/nayunzhishui/safehome-rc0810@sha256:5e14fe15cc0d9ca006d1a5b198eef22d96d2068fb5598379d298ac4d668c832d`；Trivy CycloneDX SBOM 已绑定，Critical/High 均为 0，签名证明待外部核验
 
 ## 阻断原因
 
-- required_ci_not_run_by_user_direction
-- current_security_scan_missing_and_f22_evidence_stale
-- backend_image_and_digest_missing
+- official_required_ci_not_verified_for_candidate
+- signed_attestation_verification_pending
+- registry_raw_evidence_actions_artifact_pending
 - wechat_platform_real_device_and_human_evidence_missing
 - product_platform_engineering_professional_go_incomplete
 - 72h_candidate_observation_not_executed
+- wave_c_independent_review_pending
 
 ## 四方 GO
 
@@ -40,4 +41,4 @@
 
 ## 下一动作
 
-波次 C 固定 reviewer 已审查通过工程实现与如实 NO-GO 结论。仍须补齐 required CI、当前安全扫描、正式后端镜像、微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。
+波次 C 先由固定 reviewer 独立审查累计 diff 与本证据包。之后仍须完成 required CI、关闭镜像安全发现并核验签名证明、微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。

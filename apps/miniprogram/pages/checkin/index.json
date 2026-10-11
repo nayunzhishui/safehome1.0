@@ -1,3 +1,7 @@
 {
-  "navigationBarTitleText": "记录尝试"
+  "navigationBarTitleText": "记录尝试",
+  "usingComponents": {
+    "service-consent": "/components/service-consent/index",
+    "page-state": "/components/page-state/index"
+  }
 }

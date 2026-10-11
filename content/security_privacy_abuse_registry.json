@@ -3,6 +3,8 @@
   "version": "2026-07-20-t31-security-v1",
   "status": "engineering_controls_ready_formal_acceptance_blocked",
   "generated_from_contract_version": "2026-08-26.f24",
+  "matrix_source": "shared/contracts/api-contract.json",
+  "persisted_matrix_is_authoritative": false,
   "asset_inventory": [
     {
       "asset_id": "identity_and_tokens",
@@ -102,9 +104,9 @@
       "action": "read",
       "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -206,8 +208,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -231,8 +233,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -256,8 +258,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -281,8 +283,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -306,8 +308,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -329,7 +331,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -344,16 +352,16 @@
       "method": "POST",
       "path": "/api/ai-qa/evaluation/<run_id>/reviews",
       "object_type": "ai_qa",
-      "action": "create",
+      "action": "update",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -372,9 +380,9 @@
       "action": "create",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -401,8 +409,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -422,8 +430,8 @@
       "action": "read",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -447,8 +455,8 @@
       "action": "create",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -472,8 +480,8 @@
       "action": "create",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -497,8 +505,8 @@
       "action": "create",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -522,8 +530,8 @@
       "action": "read",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -547,8 +555,8 @@
       "action": "create",
       "object_scope": "own_synthetic_research_sessions_only",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -572,8 +580,8 @@
       "action": "read",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -597,8 +605,8 @@
       "action": "read",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -622,8 +630,8 @@
       "action": "create",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -647,8 +655,8 @@
       "action": "create",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -672,8 +680,8 @@
       "action": "create",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -697,8 +705,8 @@
       "action": "create",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -722,8 +730,8 @@
       "action": "read",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -744,11 +752,11 @@
       "method": "POST",
       "path": "/api/ai-qa/release/transition",
       "object_type": "ai_qa",
-      "action": "create",
+      "action": "update",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -772,8 +780,8 @@
       "action": "create",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -797,8 +805,8 @@
       "action": "read",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -822,8 +830,8 @@
       "action": "read",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -844,11 +852,11 @@
       "method": "POST",
       "path": "/api/ai-qa/review-cases/<case_id>/decisions",
       "object_type": "ai_qa",
-      "action": "create",
+      "action": "update",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -872,9 +880,9 @@
       "action": "read",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -897,8 +905,8 @@
       "action": "read",
       "object_scope": "own_synthetic_research_sessions_only",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -922,8 +930,8 @@
       "action": "create",
       "object_scope": "own_synthetic_research_sessions_only",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -947,8 +955,8 @@
       "action": "delete",
       "object_scope": "own_synthetic_research_sessions_only",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -972,8 +980,8 @@
       "action": "read",
       "object_scope": "own_synthetic_research_sessions_only",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -997,8 +1005,8 @@
       "action": "create",
       "object_scope": "own_synthetic_research_sessions_only",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -1022,8 +1030,8 @@
       "action": "read",
       "object_scope": "internal_synthetic_evidence_role_scoped",
       "allowed_roles": [
-        "admin",
-        "researcher"
+        "researcher",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -1047,11 +1055,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -1071,11 +1079,11 @@
       "action": "create",
       "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -1095,11 +1103,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -1119,11 +1127,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -1143,11 +1151,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -1169,7 +1177,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -1189,7 +1203,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -1211,8 +1231,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": false,
@@ -1236,8 +1256,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": false,
@@ -1254,15 +1274,15 @@
       "method": "POST",
       "path": "/api/auth/admin-account-merges/<workflow_id>/confirm",
       "object_type": "auth",
-      "action": "create",
+      "action": "update",
       "object_scope": "role_scoped",
       "allowed_roles": [
         "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": false,
@@ -1286,8 +1306,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": false,
@@ -1311,8 +1331,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": false,
@@ -1336,8 +1356,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": false,
@@ -1361,8 +1381,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -1386,8 +1406,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -1411,8 +1431,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -1436,8 +1456,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -1457,11 +1477,11 @@
       "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -1483,7 +1503,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -1501,11 +1527,11 @@
       "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -1525,11 +1551,11 @@
       "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -1549,11 +1575,11 @@
       "action": "read",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -1573,11 +1599,11 @@
       "action": "read",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -1597,11 +1623,11 @@
       "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -1623,7 +1649,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -1643,7 +1675,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -1661,11 +1699,11 @@
       "action": "read",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -1687,7 +1725,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -1707,7 +1751,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -1727,7 +1777,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -1745,9 +1801,9 @@
       "action": "read",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -1772,7 +1828,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -1790,11 +1852,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -1814,11 +1876,11 @@
       "action": "create",
       "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -1838,11 +1900,11 @@
       "action": "read",
       "object_scope": "authenticated_self_only_consent_event_history",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": false,
@@ -1862,11 +1924,11 @@
       "action": "create",
       "object_scope": "authenticated_self_only_consent_event_history",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": false,
@@ -1890,8 +1952,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": false,
@@ -1913,7 +1975,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -1933,7 +2001,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -1953,7 +2027,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -1973,7 +2053,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -1993,7 +2079,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -2015,8 +2107,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -2038,7 +2130,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -2058,7 +2156,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -2078,7 +2182,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -2098,7 +2208,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -2118,7 +2234,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -2133,12 +2255,18 @@
       "method": "POST",
       "path": "/api/content-review/versions/<version_id>/reviews",
       "object_type": "content_review",
-      "action": "create",
+      "action": "update",
       "object_scope": "not_applicable_or_development_legacy",
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -2158,7 +2286,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -2178,7 +2312,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -2198,7 +2338,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -2216,11 +2362,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2240,11 +2386,11 @@
       "action": "create",
       "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2266,7 +2412,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -2284,11 +2436,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2308,11 +2460,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2332,11 +2484,11 @@
       "action": "create",
       "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2356,11 +2508,11 @@
       "action": "create",
       "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2380,11 +2532,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2407,10 +2559,10 @@
         "student"
       ],
       "denied_roles": [
-        "admin",
         "parent",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
@@ -2432,10 +2584,10 @@
         "parent"
       ],
       "denied_roles": [
-        "admin",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
@@ -2454,11 +2606,11 @@
       "action": "read",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2478,11 +2630,11 @@
       "action": "delete",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2502,11 +2654,11 @@
       "action": "read",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2526,11 +2678,11 @@
       "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2550,11 +2702,11 @@
       "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2574,9 +2726,9 @@
       "action": "read",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -2599,11 +2751,11 @@
       "action": "create",
       "object_scope": "self_or_research_feedback_write_capability_and_active_assignment",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2623,11 +2775,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2647,11 +2799,11 @@
       "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2671,11 +2823,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2695,11 +2847,11 @@
       "action": "read",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2719,11 +2871,11 @@
       "action": "read",
       "object_scope": "self_for_participant_active_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2740,12 +2892,12 @@
       "method": "POST",
       "path": "/api/messages",
       "object_type": "messages",
-      "action": "send",
+      "action": "create",
       "object_scope": "explicit_active_assignment_for_research_message_send",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -2768,11 +2920,11 @@
       "action": "read",
       "object_scope": "self_for_participant_active_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2792,11 +2944,11 @@
       "action": "create",
       "object_scope": "self_only_for_message_read_state_writes",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2816,11 +2968,11 @@
       "action": "create",
       "object_scope": "self_only_for_message_read_state_writes",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2843,10 +2995,10 @@
         "student"
       ],
       "denied_roles": [
-        "admin",
         "parent",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
@@ -2865,13 +3017,13 @@
       "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -2893,10 +3045,10 @@
         "student"
       ],
       "denied_roles": [
-        "admin",
         "parent",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
@@ -2918,10 +3070,10 @@
         "parent"
       ],
       "denied_roles": [
-        "admin",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
@@ -2940,11 +3092,11 @@
       "action": "read",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -2966,7 +3118,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -2984,11 +3142,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -3005,14 +3163,14 @@
       "method": "POST",
       "path": "/api/notifications/consent",
       "object_type": "notifications",
-      "action": "create",
+      "action": "send",
       "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -3029,15 +3187,15 @@
       "method": "POST",
       "path": "/api/notifications/run-due",
       "object_type": "notifications",
-      "action": "create",
+      "action": "send",
       "object_scope": "role_scoped",
       "allowed_roles": [
         "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": false,
@@ -3057,13 +3215,13 @@
       "action": "create",
       "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -3082,9 +3240,9 @@
       "action": "create",
       "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -3104,15 +3262,15 @@
       "method": "POST",
       "path": "/api/operations-governance/incidents/<incident_id>/notifications/<notification_id>/<action>",
       "object_type": "operations_governance",
-      "action": "create",
+      "action": "send",
       "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
       "allowed_roles": [
         "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -3132,13 +3290,13 @@
       "action": "create",
       "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -3157,9 +3315,9 @@
       "action": "create",
       "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -3182,9 +3340,9 @@
       "action": "create",
       "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -3207,9 +3365,9 @@
       "action": "read",
       "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -3236,8 +3394,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -3257,9 +3415,9 @@
       "action": "create",
       "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -3286,8 +3444,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -3307,9 +3465,9 @@
       "action": "create",
       "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -3329,12 +3487,12 @@
       "method": "POST",
       "path": "/api/operations-governance/packages/<package_id>/reviews",
       "object_type": "operations_governance",
-      "action": "create",
+      "action": "update",
       "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -3357,9 +3515,9 @@
       "action": "create",
       "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -3384,7 +3542,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -3402,9 +3566,9 @@
       "action": "read",
       "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -3431,8 +3595,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -3452,9 +3616,9 @@
       "action": "read",
       "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -3479,7 +3643,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -3501,8 +3671,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -3522,11 +3692,11 @@
       "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -3546,11 +3716,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -3570,11 +3740,11 @@
       "action": "create",
       "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -3594,13 +3764,13 @@
       "action": "read",
       "object_scope": "full_for_supervisor_admin",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -3619,13 +3789,13 @@
       "action": "read",
       "object_scope": "full_for_supervisor_admin",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -3644,13 +3814,13 @@
       "action": "create",
       "object_scope": "full_for_supervisor_admin",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -3669,13 +3839,13 @@
       "action": "create",
       "object_scope": "full_for_supervisor_admin",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -3694,13 +3864,13 @@
       "action": "read",
       "object_scope": "full_for_supervisor_admin",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -3716,16 +3886,16 @@
       "method": "POST",
       "path": "/api/privacy/admin/requests/<request_id>/transition",
       "object_type": "privacy",
-      "action": "create",
+      "action": "update",
       "object_scope": "full_for_supervisor_admin",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -3744,13 +3914,13 @@
       "action": "read",
       "object_scope": "full_for_supervisor_admin",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -3769,11 +3939,11 @@
       "action": "read",
       "object_scope": "self",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -3790,14 +3960,14 @@
       "method": "POST",
       "path": "/api/privacy/delete-my-data",
       "object_type": "privacy",
-      "action": "create",
+      "action": "delete",
       "object_scope": "self",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -3817,11 +3987,11 @@
       "action": "export",
       "object_scope": "self",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -3841,11 +4011,11 @@
       "action": "read",
       "object_scope": "self",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -3865,11 +4035,11 @@
       "action": "create",
       "object_scope": "self",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -3889,11 +4059,11 @@
       "action": "create",
       "object_scope": "self",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -3913,11 +4083,11 @@
       "action": "create",
       "object_scope": "self",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -3937,11 +4107,11 @@
       "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -3961,11 +4131,11 @@
       "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -3989,8 +4159,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -4010,11 +4180,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4034,11 +4204,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4058,11 +4228,11 @@
       "action": "create",
       "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4079,14 +4249,14 @@
       "method": "POST",
       "path": "/api/profile-results/<profile_id>/review",
       "object_type": "profile",
-      "action": "create",
+      "action": "update",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4106,11 +4276,11 @@
       "action": "read",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4130,11 +4300,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4154,11 +4324,11 @@
       "action": "create",
       "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4178,11 +4348,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4202,11 +4372,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4226,11 +4396,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4252,7 +4422,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -4272,7 +4448,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -4290,11 +4472,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4314,11 +4496,11 @@
       "action": "create",
       "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4338,11 +4520,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4362,11 +4544,11 @@
       "action": "read",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4386,11 +4568,11 @@
       "action": "create",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4410,11 +4592,11 @@
       "action": "read",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4434,11 +4616,11 @@
       "action": "create",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4458,9 +4640,9 @@
       "action": "create",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -4483,9 +4665,9 @@
       "action": "create",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -4508,9 +4690,9 @@
       "action": "create",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -4533,11 +4715,11 @@
       "action": "create",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4557,11 +4739,11 @@
       "action": "read",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4581,11 +4763,11 @@
       "action": "read",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4602,12 +4784,12 @@
       "method": "POST",
       "path": "/api/relationship-pilot/narratives/<narrative_id>/confirm",
       "object_type": "relationship_pilot",
-      "action": "create",
+      "action": "update",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -4630,11 +4812,11 @@
       "action": "read",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4654,9 +4836,9 @@
       "action": "update",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -4676,12 +4858,12 @@
       "method": "POST",
       "path": "/api/relationship-pilot/reports/<report_id>/confirm",
       "object_type": "relationship_pilot",
-      "action": "create",
+      "action": "update",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -4704,11 +4886,11 @@
       "action": "update",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -4728,9 +4910,9 @@
       "action": "send",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -4753,9 +4935,9 @@
       "action": "read",
       "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -4778,9 +4960,9 @@
       "action": "read",
       "object_scope": "internal_redacted_reliability_metadata_no_participant_payload",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -4807,8 +4989,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -4832,8 +5014,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -4857,8 +5039,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -4882,8 +5064,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -4907,8 +5089,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -4928,9 +5110,9 @@
       "action": "read",
       "object_scope": "internal_redacted_reliability_metadata_no_participant_payload",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -4957,8 +5139,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -4978,13 +5160,13 @@
       "action": "create",
       "object_scope": "internal_redacted_reliability_metadata_no_participant_payload",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -5003,9 +5185,9 @@
       "action": "read",
       "object_scope": "internal_redacted_reliability_metadata_no_participant_payload",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5032,8 +5214,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -5057,8 +5239,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -5078,9 +5260,9 @@
       "action": "read",
       "object_scope": "internal_redacted_reliability_metadata_no_participant_payload",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5107,8 +5289,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -5125,15 +5307,15 @@
       "method": "POST",
       "path": "/api/reliability/jobs/<job_id>/claim",
       "object_type": "reliability",
-      "action": "create",
+      "action": "update",
       "object_scope": "internal_redacted_reliability_metadata_no_participant_payload",
       "allowed_roles": [
         "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -5157,8 +5339,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -5182,8 +5364,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -5207,8 +5389,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -5230,7 +5412,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -5248,9 +5436,9 @@
       "action": "create",
       "object_scope": "internal_redacted_reliability_metadata_no_participant_payload",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5273,9 +5461,9 @@
       "action": "read",
       "object_scope": "internal_redacted_reliability_metadata_no_participant_payload",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5298,9 +5486,9 @@
       "action": "read",
       "object_scope": "admin_managed_versioned_assignment_lifecycle",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5323,9 +5511,9 @@
       "action": "create",
       "object_scope": "admin_managed_versioned_assignment_lifecycle",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5348,9 +5536,9 @@
       "action": "update",
       "object_scope": "admin_managed_versioned_assignment_lifecycle",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5373,9 +5561,9 @@
       "action": "read",
       "object_scope": "authenticated_actor_capability_summary",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5395,12 +5583,12 @@
       "method": "POST",
       "path": "/api/research/access/enrollments/<enrollment_id>/claim",
       "object_type": "research_access",
-      "action": "create",
+      "action": "update",
       "object_scope": "researcher_explicit_enrollment_claim_without_implicit_write_claim",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5427,8 +5615,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -5448,9 +5636,9 @@
       "action": "read",
       "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5473,9 +5661,9 @@
       "action": "read",
       "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5498,9 +5686,9 @@
       "action": "read",
       "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5523,9 +5711,9 @@
       "action": "create",
       "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5548,9 +5736,9 @@
       "action": "read",
       "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5573,9 +5761,9 @@
       "action": "create",
       "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5595,15 +5783,15 @@
       "method": "POST",
       "path": "/api/research/analysis/jobs/<job_id>/claim",
       "object_type": "research_analysis",
-      "action": "create",
+      "action": "update",
       "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
         "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -5627,8 +5815,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -5652,8 +5840,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -5677,8 +5865,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -5702,8 +5890,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -5727,8 +5915,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -5748,9 +5936,9 @@
       "action": "create",
       "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5773,9 +5961,9 @@
       "action": "read",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5798,13 +5986,13 @@
       "action": "read",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -5823,9 +6011,9 @@
       "action": "read",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5848,9 +6036,9 @@
       "action": "read",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5873,9 +6061,9 @@
       "action": "create",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5898,9 +6086,9 @@
       "action": "create",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5923,9 +6111,9 @@
       "action": "read",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5948,9 +6136,9 @@
       "action": "read",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -5977,8 +6165,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -5995,15 +6183,15 @@
       "method": "POST",
       "path": "/api/research/benchmarks/disable",
       "object_type": "offline_benchmarks",
-      "action": "create",
+      "action": "update",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
         "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -6023,9 +6211,9 @@
       "action": "read",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6048,9 +6236,9 @@
       "action": "read",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6073,9 +6261,9 @@
       "action": "create",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6098,9 +6286,9 @@
       "action": "read",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6123,9 +6311,9 @@
       "action": "create",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6148,9 +6336,9 @@
       "action": "read",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6173,9 +6361,9 @@
       "action": "create",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6198,9 +6386,9 @@
       "action": "read",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6223,9 +6411,9 @@
       "action": "create",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6248,9 +6436,9 @@
       "action": "create",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6273,9 +6461,9 @@
       "action": "read",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6295,16 +6483,16 @@
       "method": "POST",
       "path": "/api/research/benchmarks/runs/<run_id>/reviews",
       "object_type": "offline_benchmarks",
-      "action": "create",
+      "action": "update",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -6323,9 +6511,9 @@
       "action": "create",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6348,9 +6536,9 @@
       "action": "create",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6373,9 +6561,9 @@
       "action": "create",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6398,9 +6586,9 @@
       "action": "read",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6423,9 +6611,9 @@
       "action": "read",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6448,9 +6636,9 @@
       "action": "create",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6473,9 +6661,9 @@
       "action": "create",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6498,9 +6686,9 @@
       "action": "read",
       "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6523,9 +6711,9 @@
       "action": "read",
       "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6548,9 +6736,9 @@
       "action": "read",
       "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6573,9 +6761,9 @@
       "action": "create",
       "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6598,9 +6786,9 @@
       "action": "read",
       "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6623,9 +6811,9 @@
       "action": "update",
       "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6645,12 +6833,12 @@
       "method": "POST",
       "path": "/api/research/deliveries/<workflow_id>/confirm",
       "object_type": "research_workspace",
-      "action": "create",
+      "action": "update",
       "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6673,9 +6861,9 @@
       "action": "create",
       "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6698,9 +6886,9 @@
       "action": "send",
       "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6723,9 +6911,9 @@
       "action": "create",
       "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6773,9 +6961,9 @@
       "action": "create",
       "object_scope": "internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6798,9 +6986,9 @@
       "action": "read",
       "object_scope": "internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6820,15 +7008,15 @@
       "method": "POST",
       "path": "/api/research/methodology/disable",
       "object_type": "research_methodology",
-      "action": "create",
+      "action": "update",
       "object_scope": "internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows",
       "allowed_roles": [
         "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -6848,9 +7036,9 @@
       "action": "read",
       "object_scope": "internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6873,13 +7061,13 @@
       "action": "create",
       "object_scope": "internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -6900,7 +7088,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -6918,9 +7112,9 @@
       "action": "read",
       "object_scope": "internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6943,9 +7137,9 @@
       "action": "create",
       "object_scope": "internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6968,9 +7162,9 @@
       "action": "read",
       "object_scope": "internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -6997,8 +7191,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -7018,9 +7212,9 @@
       "action": "read",
       "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -7043,9 +7237,9 @@
       "action": "read",
       "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -7068,9 +7262,9 @@
       "action": "read",
       "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -7093,9 +7287,9 @@
       "action": "read",
       "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -7118,9 +7312,9 @@
       "action": "read",
       "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -7143,9 +7337,9 @@
       "action": "read",
       "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -7168,9 +7362,9 @@
       "action": "create",
       "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -7193,9 +7387,9 @@
       "action": "read",
       "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -7218,13 +7412,13 @@
       "action": "read",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -7240,16 +7434,16 @@
       "method": "POST",
       "path": "/api/risk-review/<review_id>/review",
       "object_type": "risk_review",
-      "action": "create",
+      "action": "update",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -7270,7 +7464,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -7292,8 +7492,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -7310,15 +7510,15 @@
       "method": "POST",
       "path": "/api/security/events/<event_id>/resolve",
       "object_type": "security_controls",
-      "action": "create",
+      "action": "update",
       "object_scope": "internal_redacted_security_evidence_no_secret_values",
       "allowed_roles": [
         "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -7340,7 +7540,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -7362,8 +7568,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -7383,9 +7589,9 @@
       "action": "read",
       "object_scope": "internal_redacted_security_evidence_no_secret_values",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -7410,7 +7616,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -7430,7 +7642,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -7448,11 +7666,11 @@
       "action": "create",
       "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -7472,11 +7690,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -7496,13 +7714,13 @@
       "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -7521,13 +7739,13 @@
       "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -7543,16 +7761,16 @@
       "method": "POST",
       "path": "/api/supervision/<request_id>/resolve",
       "object_type": "supervision",
-      "action": "create",
+      "action": "update",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -7571,13 +7789,13 @@
       "action": "read",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -7771,11 +7989,11 @@
       "action": "update",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -7795,11 +8013,11 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -7819,11 +8037,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -7843,11 +8061,11 @@
       "action": "update",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -7867,11 +8085,11 @@
       "action": "read",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -7891,11 +8109,11 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -7915,11 +8133,11 @@
       "action": "read",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -7939,11 +8157,11 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -7963,11 +8181,11 @@
       "action": "read",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -7987,11 +8205,11 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8011,13 +8229,13 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -8036,11 +8254,11 @@
       "action": "read",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8060,11 +8278,11 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8084,11 +8302,11 @@
       "action": "update",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8108,11 +8326,11 @@
       "action": "update",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8132,11 +8350,11 @@
       "action": "create",
       "object_scope": "case_participant_owned_data_item_creation",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8156,11 +8374,11 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8180,11 +8398,11 @@
       "action": "read",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8204,11 +8422,11 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8228,9 +8446,9 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -8253,11 +8471,11 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8277,11 +8495,11 @@
       "action": "read",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8301,11 +8519,11 @@
       "action": "read",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8325,11 +8543,11 @@
       "action": "read",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8349,11 +8567,11 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8373,11 +8591,11 @@
       "action": "update",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8397,11 +8615,11 @@
       "action": "update",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8421,11 +8639,11 @@
       "action": "update",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8445,11 +8663,11 @@
       "action": "read",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8469,11 +8687,11 @@
       "action": "update",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8493,11 +8711,11 @@
       "action": "create",
       "object_scope": "participant_owned_or_authorized_case_quality_incident_append_only",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8517,11 +8735,11 @@
       "action": "update",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8541,13 +8759,13 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -8566,11 +8784,11 @@
       "action": "read",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8590,11 +8808,11 @@
       "action": "update",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8614,11 +8832,11 @@
       "action": "update",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8638,11 +8856,11 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8662,11 +8880,11 @@
       "action": "update",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8683,14 +8901,14 @@
       "method": "POST",
       "path": "/api/therapeutic-assessment/cases/<case_id>/transitions",
       "object_type": "therapeutic_assessment",
-      "action": "create",
+      "action": "update",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8710,11 +8928,11 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8734,11 +8952,11 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8758,11 +8976,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8782,11 +9000,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8806,11 +9024,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8830,11 +9048,11 @@
       "action": "update",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8854,11 +9072,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8878,11 +9096,11 @@
       "action": "read",
       "object_scope": "data_controller_or_provider_or_explicit_allowed_viewer_with_dynamic_consent",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8902,11 +9120,11 @@
       "action": "update",
       "object_scope": "data_subject_or_involved_participant_consent_control",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8926,11 +9144,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8950,11 +9168,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -8971,16 +9189,16 @@
       "method": "POST",
       "path": "/api/therapeutic-assessment/evidence/<evidence_id>/review",
       "object_type": "therapeutic_assessment",
-      "action": "create",
+      "action": "update",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -8996,14 +9214,14 @@
       "method": "POST",
       "path": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/resend",
       "object_type": "therapeutic_assessment",
-      "action": "send",
+      "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9023,11 +9241,11 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9044,16 +9262,16 @@
       "method": "POST",
       "path": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/review",
       "object_type": "therapeutic_assessment",
-      "action": "create",
+      "action": "update",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -9072,11 +9290,11 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9096,13 +9314,13 @@
       "action": "send",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -9121,11 +9339,11 @@
       "action": "create",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9145,11 +9363,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9169,11 +9387,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9193,11 +9411,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9217,11 +9435,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9241,11 +9459,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9265,11 +9483,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9289,11 +9507,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9313,11 +9531,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9337,11 +9555,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9361,11 +9579,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9385,11 +9603,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9409,11 +9627,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9433,11 +9651,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9457,11 +9675,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9481,11 +9699,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9505,11 +9723,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9529,11 +9747,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9553,11 +9771,11 @@
       "action": "read",
       "object_scope": "participant_owned_assigned_or_task_authorized_quality_incident_history",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9577,13 +9795,13 @@
       "action": "create",
       "object_scope": "participant_owned_assigned_or_task_authorized_quality_incident_history",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -9599,16 +9817,16 @@
       "method": "POST",
       "path": "/api/therapeutic-assessment/quality/incidents/<incident_id>/resolve",
       "object_type": "therapeutic_assessment",
-      "action": "create",
+      "action": "update",
       "object_scope": "participant_owned_assigned_or_task_authorized_quality_incident_history",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -9627,13 +9845,13 @@
       "action": "read",
       "object_scope": "task_authorized_case_scoped_quality_review_with_version_and_independence_gates",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -9649,16 +9867,16 @@
       "method": "POST",
       "path": "/api/therapeutic-assessment/quality/reviews/<review_id>/claim",
       "object_type": "therapeutic_assessment",
-      "action": "create",
+      "action": "update",
       "object_scope": "task_authorized_case_scoped_quality_review_with_version_and_independence_gates",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -9674,16 +9892,16 @@
       "method": "POST",
       "path": "/api/therapeutic-assessment/quality/reviews/<review_id>/complete",
       "object_type": "therapeutic_assessment",
-      "action": "create",
+      "action": "update",
       "object_scope": "task_authorized_case_scoped_quality_review_with_version_and_independence_gates",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -9702,11 +9920,11 @@
       "action": "read",
       "object_scope": "authenticated_quality_queue_counts_and_pause_state_no_participant_text",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9723,14 +9941,14 @@
       "method": "POST",
       "path": "/api/therapeutic-assessment/research-export/preview",
       "object_type": "therapeutic_assessment",
-      "action": "create",
+      "action": "export",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9750,11 +9968,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9771,14 +9989,14 @@
       "method": "POST",
       "path": "/api/therapeutic-assessment/safety-events/<event_id>/resolve",
       "object_type": "therapeutic_assessment",
-      "action": "create",
+      "action": "update",
       "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9798,11 +10016,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9822,11 +10040,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9846,11 +10064,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9870,11 +10088,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9894,11 +10112,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9918,11 +10136,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9942,11 +10160,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9966,11 +10184,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -9990,11 +10208,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -10011,14 +10229,14 @@
       "method": "POST",
       "path": "/api/therapeutic-assessment/work-queue/<item_id>/claim",
       "object_type": "therapeutic_assessment",
-      "action": "create",
+      "action": "update",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -10038,11 +10256,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -10062,11 +10280,11 @@
       "action": "create",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -10086,11 +10304,11 @@
       "action": "read",
       "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -10110,11 +10328,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -10134,11 +10352,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -10158,11 +10376,11 @@
       "action": "create",
       "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -10182,11 +10400,11 @@
       "action": "read",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -10206,11 +10424,11 @@
       "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -10234,8 +10452,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": true,
@@ -10255,13 +10473,13 @@
       "action": "create",
       "object_scope": "internal_page_inventory_and_redacted_machine_evidence_no_participant_text",
       "allowed_roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student"
+        "student",
+        "researcher"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -10282,7 +10500,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -10300,9 +10524,9 @@
       "action": "read",
       "object_scope": "internal_page_inventory_and_redacted_machine_evidence_no_participant_text",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -10325,9 +10549,9 @@
       "action": "read",
       "object_scope": "internal_page_inventory_and_redacted_machine_evidence_no_participant_text",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -10350,11 +10574,11 @@
       "action": "read",
       "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
-        "admin",
         "parent",
-        "researcher",
         "student",
-        "supervisor"
+        "researcher",
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [],
       "legacy_admin_token": true,
@@ -10376,7 +10600,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -10396,7 +10626,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -10416,7 +10652,13 @@
       "allowed_roles": [
         "public"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
@@ -10428,7 +10670,7 @@
     }
   ],
   "authorization_summary": {
-    "operation_count": 407,
+    "operation_count": 417,
     "showcase_bypass_operation_count": 10,
     "formal_permission_acceptance_passed": false,
     "reason": "临时展示越权按负责人要求保留，不能作为正式权限验收证据。"

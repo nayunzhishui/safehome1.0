@@ -49,7 +49,7 @@
         <text class="step-title">做一个动作</text>
         <text class="step-text">{{exerciseSteps[2].text}}</text>
         <text class="step-route">记录一次 → 查看反馈线索 → 去训练中心练一个小动作</text>
-        <text class="step-text">训练中心里还有三个分节书写的练习项目，适合想多练几次的时候。</text>
+        <text class="step-text">训练中心里还有三个“陪伴项目”，都是分节的书写练习，适合想多练几次的时候。</text>
       </view>
     </view>
   </view>

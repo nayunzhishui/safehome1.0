@@ -1,3 +1,7 @@
 {
-  "navigationBarTitleText": "本周小目标"
+  "navigationBarTitleText": "本周小目标",
+  "usingComponents": {
+    "service-consent": "/components/service-consent/index",
+    "page-state": "/components/page-state/index"
+  }
 }

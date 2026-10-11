@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "训练",
   "usingComponents": {
+    "page-state": "/components/page-state/index",
     "section-title": "/components/section-title/index",
     "training-task-card": "/components/training-task-card/index",
     "bottom-tip-card": "/components/bottom-tip-card/index"

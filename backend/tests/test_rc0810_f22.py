@@ -1,5 +1,6 @@
 import json
 import importlib.util
+import hashlib
 import re
 import subprocess
 import sys
@@ -8,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 VERIFIER = ROOT / "scripts" / "verify_rc0810_f22_security.py"
+SCANNER = ROOT / "scripts" / "run_rc0810_f22_scans.py"
 POLICY = ROOT / "config" / "rc0810" / "security_gate_policy.json"
 EXCEPTIONS = ROOT / "config" / "rc0810" / "security_exception_registry.json"
 BASELINE = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22b_security_gate.json"
@@ -32,6 +34,129 @@ def load_verifier_module():
     assert spec.loader is not None
     spec.loader.exec_module(module)
     return module
+
+
+def load_scanner_module():
+    spec = importlib.util.spec_from_file_location("run_rc0810_f22_scans", SCANNER)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_f22b_reviewed_false_positive_does_not_hide_new_secret(tmp_path):
+    module = load_scanner_module()
+    reports = {
+        "detect-secrets": {
+            "results": {
+                "fixture.py": [
+                    {
+                        "type": "Hex High Entropy String",
+                        "line_number": 1,
+                        "hashed_secret": "a" * 64,
+                        "is_secret": False,
+                    },
+                    {
+                        "type": "AWS Access Key",
+                        "line_number": 2,
+                        "hashed_secret": "b" * 64,
+                    },
+                ]
+            }
+        },
+        "bandit": {"results": []},
+        "pip-audit": {"dependencies": []},
+        "npm-audit": {
+            "metadata": {
+                "vulnerabilities": {
+                    "critical": 0,
+                    "high": 0,
+                    "moderate": 0,
+                    "low": 0,
+                }
+            }
+        },
+    }
+    paths = {}
+    for tool, payload in reports.items():
+        path = tmp_path / f"{tool}.json"
+        path.write_text(json.dumps(payload), encoding="utf-8")
+        paths[tool] = path
+
+    assert module.summarize(paths)["secret"] == 1
+    findings = module.build_blocking_findings(paths, "c" * 40)
+    assert len(findings) == 1
+    assert findings[0]["category"] == "secret"
+
+
+def test_f22b_reviewed_baseline_survives_detect_secrets_report_rewrite(monkeypatch):
+    module = load_scanner_module()
+    reviewed = {("fixture.py", "Hex High Entropy String", "a" * 64)}
+    monkeypatch.setattr(module, "reviewed_secret_keys", lambda: reviewed)
+    item = {
+        "filename": "fixture.py",
+        "type": "Hex High Entropy String",
+        "hashed_secret": "a" * 64,
+    }
+    assert module.secret_is_reviewed("fixture.py", item, reviewed)
+
+
+def test_f22b_source_binding_allows_later_evidence_only_commit(monkeypatch):
+    module = load_verifier_module()
+    recorded_head = "a" * 40
+    recorded_tree = "b" * 40
+    source_tree = "c" * 40
+    diff_bytes = b"frozen security diff"
+    gate = {
+        "head": recorded_head,
+        "head_tree": recorded_tree,
+        "source_tree": source_tree,
+        "dirty_diff_sha256": hashlib.sha256(diff_bytes).hexdigest(),
+        "source_manifest_sha256": "d" * 64,
+    }
+    current = {
+        "head": "e" * 40,
+        "head_tree": "f" * 40,
+        "source_tree": source_tree,
+        "dirty_diff_sha256": "0" * 64,
+        "source_manifest_sha256": "d" * 64,
+    }
+
+    def fake_git_bytes(*args):
+        if args[:2] == ("cat-file", "-e"):
+            return b""
+        if args[:2] == ("merge-base", "--is-ancestor"):
+            return b""
+        if args[0] == "rev-parse":
+            return f"{recorded_tree}\n".encode("ascii")
+        if args[0] == "diff-tree":
+            return diff_bytes
+        raise AssertionError(args)
+
+    monkeypatch.setattr(module, "git_bytes", fake_git_bytes)
+    assert module.source_binding_errors(gate, current) == []
+
+
+def test_f22b_source_binding_accepts_exact_tree_in_depth_one_checkout(monkeypatch):
+    module = load_verifier_module()
+    gate = {
+        "head": "a" * 40,
+        "head_tree": "b" * 40,
+        "source_tree": "c" * 40,
+        "dirty_diff_sha256": "d" * 64,
+        "source_manifest_sha256": "e" * 64,
+    }
+    current = {
+        "source_tree": gate["source_tree"],
+        "source_manifest_sha256": gate["source_manifest_sha256"],
+    }
+
+    def missing_shallow_history(*args):
+        assert args[:2] == ("cat-file", "-e")
+        raise RuntimeError("missing in depth=1 checkout")
+
+    monkeypatch.setattr(module, "git_bytes", missing_shallow_history)
+    assert module.source_binding_errors(gate, current) == []
 
 
 def test_f22b_default_gate_is_valid_but_release_stays_no_go():
@@ -59,7 +184,34 @@ def test_f22b_policy_pins_tool_versions_images_and_action_commits():
     assert all(re.fullmatch(r"[0-9a-f]{40}", value) for value in policy["action_commits"].values())
 
 
+def test_f22_scan_is_not_blocked_by_expired_human_review_checkpoint():
+    runner_path = ROOT / "scripts" / "run_rc0810_f22_scans.py"
+    spec = importlib.util.spec_from_file_location("run_rc0810_f22_scans", runner_path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    registry = module.load_registry(require_current_review_evidence=False)
+    assert registry["schema"] == "safehome.rc0810.registry.v1"
+
+
 def test_f22b_policy_covers_every_required_scan_and_excludes_no_business_source():
+    runner_path = ROOT / "scripts" / "run_rc0810_f22_scans.py"
+    spec = importlib.util.spec_from_file_location("run_rc0810_f22_scans", runner_path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    assert set(module.SECURITY_REPORT_RELATIVES) == {
+        "docs/02_专项进度与验收/rc0810_f22a_security_baseline.json",
+        "docs/02_专项进度与验收/rc0810_f22b_security_gate.json",
+        "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+        "docs/02_专项进度与验收/rc0810_f25a_platform_baseline_current.json",
+        "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
+        "docs/02_专项进度与验收/rc0810_f26_final_rc.json",
+        "docs/02_专项进度与验收/rc0810_f26_final_rc.md",
+        "docs/02_专项进度与验收/rc0810_required_ci_evidence.json",
+        "docs/02_专项进度与验收/rc0810_wave_c_review_packet.json",
+        "docs/02_专项进度与验收/rc0810_wave_c_review_decision.json",
+    }
     policy = json.loads(POLICY.read_text(encoding="utf-8"))
     scans = {item["id"]: item for item in policy["scans"]}
     assert set(scans) == {
@@ -131,6 +283,7 @@ def test_f22b_exception_registry_is_empty_and_schema_requires_owner_reason_expir
 
 def test_f22b_gate_binds_source_locks_actions_image_and_reports():
     gate = json.loads(BASELINE.read_text(encoding="utf-8"))
+    scanner = load_scanner_module()
     assert len(gate["source_tree"]) == 40
     assert len(gate["dirty_diff_sha256"]) == 64
     assert set(gate["dependency_inputs"]) == {
@@ -140,9 +293,24 @@ def test_f22b_gate_binds_source_locks_actions_image_and_reports():
         "apps/web/package-lock.json",
         "Dockerfile",
         "config/rc0810/database_profiles.json",
+        "config/rc0810/detect_secrets.baseline.json",
     }
     assert all(len(value) == 64 for value in gate["dependency_inputs"].values())
     assert set(gate["action_inputs"]) == {".github/workflows/check.yml", ".github/workflows/security-gate.yml"}
+    assert gate["policy_sha256"] == scanner.sha256_git_blob(
+        gate["source_tree"], "config/rc0810/security_gate_policy.json"
+    )
+    assert gate["exception_registry_sha256"] == scanner.sha256_git_blob(
+        gate["source_tree"], "config/rc0810/security_exception_registry.json"
+    )
+    assert gate["dependency_inputs"] == {
+        path: scanner.sha256_git_blob(gate["source_tree"], path)
+        for path in gate["dependency_inputs"]
+    }
+    assert gate["action_inputs"] == {
+        path: scanner.sha256_git_blob(gate["source_tree"], path)
+        for path in gate["action_inputs"]
+    }
     assert len(gate["policy_sha256"]) == 64
     assert len(gate["exception_registry_sha256"]) == 64
     assert {item["tool"] for item in gate["source_reports"]} == {
@@ -183,6 +351,13 @@ def test_f22b_require_runtime_rejects_missing_or_hash_mismatched_reports(tmp_pat
     assert "runtime_report_missing" in completed.stdout
 
     forged = json.loads(BASELINE.read_text(encoding="utf-8"))
+    forged_report = (
+        tmp_path / ".codex_tmp" / "rc0810" / "security" / "f22b"
+        / baseline["source_tree"] / "reports" / "trivy-container.json"
+    )
+    forged_report.parent.mkdir(parents=True, exist_ok=True)
+    forged_report.write_text("{}", encoding="utf-8")
+    forged["container_scan"]["report"]["path"] = str(forged_report)
     forged["container_scan"]["report"]["sha256"] = "0" * 64
     forged_path = tmp_path / "forged-runtime.json"
     forged_path.write_text(json.dumps(forged), encoding="utf-8")
@@ -234,13 +409,35 @@ def test_f22b_workflow_uses_pinned_actions_and_immutable_trivy_image():
     assert "cffe3f5161a47a6823fbd23d985795b3ed72a4c806da4c4df16266c02accdd6f" in json.loads(POLICY.read_text(encoding="utf-8"))["tool_images"]["trivy"]
 
 
+def test_f22b_workflow_publishes_raw_runtime_evidence_with_immutable_name():
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    policy = json.loads(POLICY.read_text(encoding="utf-8"))
+    upload_sha = policy["action_commits"]["actions/upload-artifact"]
+    assert f"actions/upload-artifact@{upload_sha}" in workflow
+    assert "if: always()" in workflow
+    assert "name: rc0810-f22b-${{ github.sha }}-${{ github.run_id }}" in workflow
+    assert "include-hidden-files: true" in workflow
+    assert ".codex_tmp/rc0810/security/f22b/" in workflow
+    assert "docs/02_专项进度与验收/rc0810_f22b_security_gate.json" in workflow
+    assert "--platform linux/amd64" in workflow
+    assert "--provenance=mode=max" in workflow
+    assert "org.opencontainers.image.revision=${GITHUB_SHA}" in workflow
+    assert "name: rc0810-registry-evidence-${{ github.sha }}-${{ github.run_id }}" in workflow
+
+
 def test_f22b_container_sbom_license_complete_but_attestation_blocks_production():
     gate = json.loads(BASELINE.read_text(encoding="utf-8"))
+    verifier = load_verifier_module()
     assert gate["container_scan"]["status"] == "completed"
     assert gate["sbom_status"]["status"] == "completed"
     assert gate["license_status"]["status"] == "completed"
     assert gate["supply_chain_attestation"]["status"] == "pending_external"
     assert gate["supply_chain_attestation"]["production_blocking"] is True
+    reuse = gate["supply_chain_attestation"].get("local_artifact_reuse")
+    if reuse is not None:
+        assert reuse[
+            "docker_context_manifest_sha256"
+        ] == verifier.docker_context_manifest_sha256(gate["source_tree"])
     assert gate["production_gate_eligible"] is False
 
 

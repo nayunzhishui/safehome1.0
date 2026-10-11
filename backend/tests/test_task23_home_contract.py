@@ -51,7 +51,8 @@ def test_today_step_card_has_accessible_action_and_all_states():
 
 def test_home_progress_fallback_actions_do_not_clip_button_labels():
     wxml = _read("apps/miniprogram/pages/home/index.wxml")
-    wxss = _read("apps/miniprogram/pages/home/index.wxss")
+    component_wxml = _read("apps/miniprogram/components/journey-action-card/index.wxml")
+    component_wxss = _read("apps/miniprogram/components/journey-action-card/index.wxss")
 
     assert 'action-label="查看说明" expanded wrap-title bind:action="openWeeklyReport"' in wxml
     component = _read("apps/miniprogram/components/entry-row/index.wxss")

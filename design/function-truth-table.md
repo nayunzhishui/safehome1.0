@@ -1,5 +1,13 @@
 # 小程序功能真值表
 
+## 本轮未验收增量（用户已要求暂停）
+
+- 2026-09-10用户已允许恢复：训练中心的“全部训练”改由GET /api/cards渲染当前开放卡库，保持原组件和折叠交互，不再用十个硬编码任务冒充完整清单。加载/空/错误/重试状态使用page-state；进入详情传真实card_id，旧id链接仍由详情映射核验。
+- settings-detail的privacy说明改为读取utils/privacy-policy.json，由content/privacy.md同步；全文包含待负责人填写字段，不能称正式完备。构建脚本已增加正文同步，新增整体编译尚未执行。
+- 测评空列表区分无开放内容与搜索无匹配；临时开放通过既有review_note/boundary_notice披露，不改底层审核记录。项目只读预览与原写入权限仍保留。
+- 本地标题调整：教育热榜→亲子沟通主题、项目测试→陪伴项目、个性化训练方案→练习建议、人工督导入口→人工支持。profile与supervision相关文案减少未经核实的专业人员承诺。
+- 本节仅登记源码改动，不代表Figma、真机、全量UI或生产验收通过。主线恢复前不自动继续设计/测试。
+
 > **UIproduct2 当前入口（2026-09-08）**：以本文件“UIproduct2 当前全页功能真值”及当前源码为准。下方旧手工段落保留作历史；“尚无情绪记录页”、旧活动页和 UIproduct 分支限制不适用于本轮。执行顺序为功能核对 → 需求冻结 → Figma → 前端实现 → 全页统一检查 → 用户最终验收；不使用 ImageGen，不逐页等待用户验收。
 
 更新时间：2026-09-09
@@ -1935,6 +1943,8 @@
 
 ### 47 UP任务卡 — `pages/task-detail/index`
 
+2026-09-10恢复修复冻结：布局沿用现有阅读页，补page-state失败/重试与service-consent输入前确认；不新增视觉方案。旧任务id只用于映射卡id，实际题名、步骤、示例、停止与边界说明以GET /api/cards当次可用结果为准。失效/未知卡、加载失败或旧缓存不得回退到默认练习；onShow重查、onHide/卸载丢弃待返回结果。练习后本页输入须先确认checkin用途，仅留页面内存，不自动传给打卡；进入打卡仍走现有知情与草稿流程。后端POST /api/checkins在新增记录前校验同一开放清单，关闭后保留历史及幂等回放。
+
 2026-09-09复核：startPractice仅Toast“可以从第一步开始”；recordFeeling仅Toast说明感受在本页，不写storage、不提交API；finishPractice只跳打卡，不携带reflection/emotionLevel。UI改称“练习提示”“查看填写状态”“去填写打卡”，明确本页感受不是持久保存，原处理器不改。
 
 **用户任务：** 阅读当前本地任务步骤与示例、做一次记录并进入打卡；不冒充服务端新增任务。
@@ -2177,3 +2187,31 @@
 - “我的议题”在无议题时会带入最近一次自助整理的问题，并提示“提交后复核人员会看到这段文字，可以先修改或删掉”。
 - `pages/assessment-result`：风险条新增“查看紧急求助资源”按钮。
 - `pages/profile`：入口标题由“协作式评估”改为“支持性评估”。
+
+## 2026-09-21：发布整合冻结与真值补充
+
+- 固定输入：登录上线 `dd1f7a1f`（已包含发布分支 `d48791bb`），UI `03142a85`；共同祖先 `b531b9d9`。本轮只整合既有实现和修复审查发现，不新增页面、接口、迁移或视觉方案。
+- assessment-detail / diary-form / goal-setting / checkin / supervision：保留 `serviceReady` 外层与 `service-consent`，未同意不出现表单、不恢复草稿；内部保留 UIproduct2 样式、输入标签和状态。
+- supervision：保留负责人员措辞、关联列表加载/失败/重试、URL默认关联，以及用户手动“不关联”和草稿选择优先规则。
+- task-detail：当次 `GET /api/cards` 决定是否可读；未知或关闭卡不回退本地内容；失败可重试。同意后才可输入本页感受，离开清空，打卡另填；继续使用新版样式、输入标签和实际导航参数。
+- assessment-result：合并后仍保留 high 风险隐藏推荐、清理派生缓存与阻断普通练习；开发/联调页保留源码，仅 production 构建剥离。
+- 历史自动真值表的行号和旧“本地任务内容”说明只作历史；以上接口/同意条件以本轮整合实现为准。没有声称新增 Figma 或真机证据。
+
+## 2026-09-08：登录与首次使用增量（独立分支，待合入）
+
+2026-09-09后续补齐（覆盖下方“尚未完成”记录）：goal-setting/checkin/supervision/program-detail/relationship-task五页先读取并保存功能同意，再初始化表单/恢复本地草稿；serviceReady为假时无表单。项目preview=1保持只读且不保存/提交。独立项目/关系草稿按进入账号分键，首页只发现当前账号后缀草稿。说明升级2026.09.09-service-notice-v2，明确本地存储用途；不是研究或材料授权。复用当前service-consent/page-state，未重设计页面视觉；原生编译通过，真机仍待验收。
+
+2026-09-09逻辑修复补充：功能同意在GET consent前重新查询微信隐私状态；拒绝首页基础说明时保留遮罩直至导航离开；账号/手机号登录处理函数拒绝并发重入。共用resilientForm草稿按账号保存且旧控制器拒绝跨账号保存/获取提交ID，旧无归属草稿不自动恢复。项目与关系任务独立草稿及home扫描尚未完成归属修复；不宣称全部草稿或首次本地保存同意覆盖已完成。本轮未改变视觉设计。
+
+本节仅对应codex/cloudrun-login-onboarding，以b531b9d9为UI基线，不覆盖UIproduct2并行页面工作。
+
+| 目标 | 新交互 | 真实调用/状态 | 保护边界 |
+|---|---|---|---|
+| home | 首次大弹窗；同意后六步箭头引导、上一步/下一步/跳过/重看 | wx.getPrivacySetting、agreePrivacyAuthorization；本机教程状态；查询完成前不加载首页账号数据 | 平台同意、本地阅读状态、研究同意互不替代 |
+| login | 已配置可信云身份模式走callContainer直接登录 | GET auth/capabilities；POST auth/wechat-login；标准code路线仍保留 | 不伪造身份头，不开启真实云端信任开关 |
+| phone login | 继续使用用户触发的getPhoneNumber code | POST auth/phone-login；后端新增显式OpenAPI路线 | 拒绝、失败不当作登录成功；不保存手机号原文 |
+| diary-form / assessment-detail | 展示并保存知情选择后才初始化表单/恢复草稿 | GET/POST consent → 原有数据API | 保存同意失败、拒绝或账号/页面变化时不提交 |
+| program-detail | 首次保存草稿/提交前功能确认 | consent → 原有本地草稿/项目API | 不改变项目开放、研究和年龄条件 |
+| goals / checkins / thermometer / supervision / relationship enrollment | 原生弹窗明确用途，确认后才执行原API | service_data按purpose分开记录 | 不授予可选研究权限，不替代专门同意链路 |
+
+当前六步引导介绍首页真实入口，不自动跳入并操作实际表单，不创建演示记录。新弹窗采用既有青绿/暖白主题、正文28rpx以上；位置取真实节点边界，缺节点时回退居中说明，不绘制假目标。

@@ -21,6 +21,7 @@ from flask import current_app
 from database import get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, write_audit_log
 from services.artifact_integrity_service import artifact_bytes
 from services.ai_qa_service import _evaluate_case
+from services.artifact_integrity_service import artifact_bytes
 from services.feedback_service import generate_feedback
 from services.risk_service import check_text_risk
 from services.operations_reliability_service import (

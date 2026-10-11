@@ -7,12 +7,16 @@ trains on external text, signs a human gate, or enables production replacement.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
+import sys
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "backend"))
+
+from services.artifact_integrity_service import artifact_sha256
+
+
 REGISTRY_PATH = ROOT / "config" / "task35_registry.json"
 MANIFEST_PATH = ROOT / "content" / "offline_baseline_manifest.json"
 

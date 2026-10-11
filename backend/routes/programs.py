@@ -9,6 +9,7 @@ from routes.auth_utils import AuthError, auth_error_response, require_role, reso
 from routes.utils import fail, ok, parse_bool, parse_int
 from services.risk_service import check_text_risk
 from services.showcase_access_service import showcase_programs_open
+from services.temporary_content_access import temporary_content_open, boundary_with_temporary_notice
 
 
 bp = Blueprint("programs", __name__, url_prefix="/api/programs")
@@ -58,7 +59,7 @@ def _program_summary(program: dict) -> dict:
         "showcase_open": showcase_programs_open(),
         "minimum_dose": program.get("minimum_dose"),
         "completion_definition": program.get("completion_definition"),
-        "boundary_notice": program.get("boundary_notice"),
+        "boundary_notice": boundary_with_temporary_notice("programs", program.get("boundary_notice")),
         "session_count": len(program.get("sessions", [])),
         "first_session_title": (program.get("sessions") or [{}])[0].get("title"),
         "measurement_plan": {
@@ -98,6 +99,8 @@ def list_programs():
                 "showcase_mode": showcase_mode,
                 "status": "showcase_open" if showcase_mode else "available" if released_count else "pending_review",
                 "message": (
+                    "临时开放给已登录用户；三方正式审核记录保持原状。"
+                    if temporary_content_open("programs") else
                     "临时展示模式已开启，三个项目方案均可查看和试用；正式发布前仍需恢复审核门禁。"
                     if showcase_mode
                     else "当前项目方案仍在研究、心理和伦理审核中，审核完成后开放。"
@@ -122,11 +125,11 @@ def get_program(program_id: str):
             return ok(
                 {
                     "version": payload.get("version"),
-                    "program": {**program, "showcase_open": showcase_programs_open()},
+                    "program": {**program, "showcase_open": showcase_programs_open(), "boundary_notice": boundary_with_temporary_notice("programs", program.get("boundary_notice"))},
                     "preview_mode": include_drafts,
                 }
             )
-    return fail("not_found", "未找到对应的项目测试内容", status=404)
+    return fail("not_found", "未找到对应的陪伴项目内容", status=404)
 
 
 @bp.get("/<program_id>/entries")
@@ -192,7 +195,7 @@ def create_program_entry(program_id: str):
     answers = payload.get("answers") if isinstance(payload.get("answers"), dict) else {}
     reflection = str(payload.get("reflection") or "").strip()
     analysis_consent = parse_bool(payload.get("analysis_consent"), False)
-    boundary_notice = program.get("boundary_notice") or programs_payload.get("boundary_notice") or "项目测试内容只用于陪伴练习和自我观察，不构成诊断、筛查或治疗方案。"
+    boundary_notice = program.get("boundary_notice") or programs_payload.get("boundary_notice") or "陪伴项目内容只用于陪伴练习和自我观察，不构成诊断、筛查或治疗方案。"
     if not session_no:
         return fail("validation_error", "缺少 session_no", status=400)
     if not any(int(session.get("session_no") or 0) == session_no for session in program.get("sessions", [])):

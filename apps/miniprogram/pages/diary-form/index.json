@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "记录情绪事件"
+  "navigationBarTitleText": "记录情绪事件",
+  "usingComponents": {
+    "service-consent": "/components/service-consent/index"
+  }
 }
