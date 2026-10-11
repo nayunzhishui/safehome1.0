@@ -41,14 +41,8 @@ RELEASE_INPUTS = (
     "config/rc0810/miniprogram_page_policy.json",
     "content/privacy.md",
 )
-BACKEND_CONTEXTS = (
-    "Dockerfile", ".dockerignore", "backend", "content", "shared",
-    "config/rc0810/database_profiles.json",
-    "config/rc0810/operations_reliability_policy.json",
-    "config/rc0810/research_execution_manifest_policy.json",
-    "config/rc0810/database_recovery_policy.json",
-    "deploy/verify_rc0810_f03_images.py",
-)
+BACKEND_CONTEXTS = ("Dockerfile", ".dockerignore", "backend", "content", "shared")
+BACKEND_CONTEXT_EXCLUDED_PREFIXES = ("backend/tests/",)
 ACCOUNT_SCENARIOS = (
     "wechat_one_tap_login", "phone_login", "account_login", "logout",
     "legacy_account", "locked_account", "multi_device_session",

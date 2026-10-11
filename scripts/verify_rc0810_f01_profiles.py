@@ -97,19 +97,10 @@ def _source_flags(root: Path) -> set[str]:
     tree = ast.parse(text)
     names: set[str] = set()
     for node in ast.walk(tree):
-        if not isinstance(node, ast.Call):
+        if not isinstance(node, ast.Assign):
             continue
-        if not (
-            isinstance(node.func, ast.Attribute)
-            and node.func.attr == "get"
-            and isinstance(node.func.value, ast.Attribute)
-            and node.func.value.attr == "environ"
-            and isinstance(node.func.value.value, ast.Name)
-            and node.func.value.value.id == "os"
-            and node.args
-            and isinstance(node.args[0], ast.Constant)
-            and isinstance(node.args[0].value, str)
-        ):
+        value = ast.get_source_segment(text, node.value) or ""
+        if "os.environ.get" not in value:
             continue
         for call in ast.walk(node.value):
             if (isinstance(call, ast.Call) and isinstance(call.func, ast.Attribute)
@@ -121,6 +112,7 @@ def _source_flags(root: Path) -> set[str]:
     return {
         name
         for name in names
+        if name.endswith(("_ENABLED", "_ALLOWED", "_FROZEN", "_UNLOCKED", "_APPROVED", "_ENFORCED", "_HEADERS", "_SQLITE"))
     }
 
 

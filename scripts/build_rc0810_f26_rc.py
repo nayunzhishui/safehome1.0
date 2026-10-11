@@ -282,9 +282,9 @@ def _required_ci(policy: dict[str, Any], local_ci_complete: bool = False) -> lis
             "id": item["id"],
             "title": item["title"],
             "required": item["required"] is True,
-            "status": "not_run",
-            "evidence": None,
-            "release_effect": "blocking",
+            "status": "local_pass" if local_ci_complete else "not_run_user_waiver",
+            "evidence": "local_required_ci_and_fix_loop" if local_ci_complete else None,
+            "release_effect": "satisfied_locally" if local_ci_complete else "blocking",
         }
         for item in policy["automatic_acceptance_categories"]
     ]
@@ -516,11 +516,7 @@ def build_report(
             "source_sbom": {**sbom_artifact, "coverage": sbom["status"], "component_count": len(sbom["components"])},
             "artifact_manifest": manifest,
             "sha256sums": sums,
-            "backend_image": {
-                "status": "missing_blocking",
-                "digest": None,
-                "reason": "current_registered_image_digest_not_bound",
-            },
+            "backend_image": backend_image,
         },
         "dependency_locks": {
             "inputs": dependency_inputs,
@@ -613,9 +609,12 @@ def build_report(
             "production_gate_eligible": False,
             "automatic_release_performed": False,
             "blocking_reasons": [
-                "required_ci_not_run",
-                "current_security_scan_missing_and_f22_evidence_stale",
-                "backend_image_and_digest_missing",
+                *( ["official_required_ci_not_verified_for_candidate", "image_security_findings_and_signed_attestation_pending"]
+                   if registry_evidence_mode
+                   else ["official_required_ci_not_verified_for_candidate", "backend_registry_digest_and_attestation_missing"]
+                   if local_evidence_mode
+                   else ["required_ci_not_run_by_user_direction", "current_security_scan_missing_and_f22_evidence_stale", "backend_image_and_digest_missing"] ),
+                *(["registry_raw_evidence_actions_artifact_pending"] if registry_raw_pending else []),
                 "wechat_platform_real_device_and_human_evidence_missing",
                 "product_platform_engineering_professional_go_incomplete",
                 "72h_candidate_observation_not_executed",
@@ -632,15 +631,21 @@ def build_report(
         "known_issues": [
             ("F22-B security report is current for the candidate but remains NO-GO." if security_is_current else "F22-B security report is bound to an older source tree and is historical only."),
             "F25-B has eight external blockers and no platform or human approval.",
-            "This builder does not execute required CI/Harness/regression; missing current evidence remains blocking.",
-            "This report has no bound registry image digest or current security evidence; local runtime checks do not establish a production migration approval.",
+            *( ["Official GitHub required CI has not been verified for this candidate.",
+                "The GHCR digest and Trivy CycloneDX SBOM are bound; Critical/High image findings and signed-attestation verification remain blocking."]
+               if registry_evidence_mode
+               else ["Local required CI and fix loop completed, but npm audit still reports four High findings with no upstream fix.",
+                "The backend image is local only; registry digest and supply-chain attestation remain missing."]
+               if local_evidence_mode
+               else ["Required CI/Harness/regression was not run at F26 by explicit user direction.",
+                     "No current backend image, image digest, container scan or production migration evidence exists."] ),
         ],
         "subtasks": [
             {"id": "F26.1", "status": "evidence_ready"},
-            {"id": "F26.2", "status": "blocked_required_ci"},
-            {"id": "F26.3", "status": "partial_backend_image_missing"},
-            {"id": "F26.4", "status": "partial_image_and_security_missing"},
-            {"id": "F26.5", "status": "partial_structural_scan_only"},
+            {"id": "F26.2", "status": "blocked_official_ci_pending" if registry_evidence_mode else "local_complete_with_failure" if local_evidence_mode else "blocked_user_waiver"},
+            {"id": "F26.3", "status": "registry_digest_bound_no_go" if registry_evidence_mode else "local_image_registry_digest_missing" if local_evidence_mode else "partial_backend_image_missing"},
+            {"id": "F26.4", "status": "current_scan_no_go" if (registry_evidence_mode or local_evidence_mode) else "partial_image_and_security_missing"},
+            {"id": "F26.5", "status": "current_scan_no_go" if (registry_evidence_mode or local_evidence_mode) else "partial_structural_scan_only"},
             {"id": "F26.6", "status": "evidence_ready"},
             {"id": "F26.7", "status": "evidence_ready_no_resolved_claims"},
             {"id": "F26.8", "status": "review_pending_wave"},
@@ -1023,8 +1028,47 @@ def validate_report(report_path: Path = DEFAULT_REPORT) -> dict[str, Any]:
     expected_ci = {item["id"] for item in policy["automatic_acceptance_categories"]}
     if {item.get("id") for item in required_ci} != expected_ci:
         errors.append("required_ci_catalog_incomplete")
-    if any(item.get("required") is not True or item.get("status") != "not_run" for item in required_ci):
-        errors.append("required_ci_must_remain_unverified")
+    evidence_mode = report.get("evidence_mode", "historical_user_waiver")
+    if evidence_mode == "current_candidate_evidence_no_go":
+        if any(
+            item.get("required") is not True
+            or item.get("status") != "not_verified_for_candidate"
+            or item.get("evidence") is not None
+            or item.get("release_effect") != "blocking"
+            for item in required_ci
+        ):
+            errors.append("official_required_ci_evidence_invalid")
+        if report.get("required_ci_summary") != {
+            "status": "not_verified_for_candidate",
+            "blocking_job": None,
+            "high_vulnerabilities": None,
+            "official_github_ci": "no_bound_success",
+            "candidate_commit": commit,
+            "evidence_scope": "candidate_commit_only",
+        }:
+            errors.append("official_required_ci_summary_invalid")
+    elif evidence_mode == "local_gates_complete_no_go":
+        if any(
+            item.get("required") is not True
+            or item.get("status") != "local_pass"
+            or item.get("evidence") != "local_required_ci_and_fix_loop"
+            for item in required_ci
+        ):
+            errors.append("local_required_ci_evidence_invalid")
+        if report.get("required_ci_summary") != {
+            "status": "local_only_not_official",
+            "blocking_job": None,
+            "high_vulnerabilities": None,
+            "official_github_ci": "no_bound_success",
+            "candidate_commit": commit,
+            "evidence_scope": "candidate_commit_only",
+        }:
+            errors.append("required_ci_failure_summary_invalid")
+    elif evidence_mode == "historical_user_waiver":
+        if any(item.get("required") is not True or item.get("status") != "not_run_user_waiver" for item in required_ci):
+            errors.append("required_ci_must_remain_unverified")
+    else:
+        errors.append("evidence_mode_invalid")
     security = report.get("security_evidence", {})
     image = report.get("artifacts", {}).get("backend_image", {})
     if evidence_mode in {"current_candidate_evidence_no_go", "local_gates_complete_no_go"}:

@@ -227,7 +227,9 @@
 | POST | `/api/research/access/assignments` | role:researcher,supervisor,admin | admin_managed_versioned_assignment_lifecycle | — | supported | active |
 | PATCH | `/api/research/access/assignments/<assignment_id>` | role:researcher,supervisor,admin | admin_managed_versioned_assignment_lifecycle | — | supported | active |
 | GET | `/api/research/access/capabilities` | role:researcher,supervisor,admin | authenticated_actor_capability_summary | — | — | active |
+| GET | `/api/research/access/enrollments/<enrollment_id>/assessment-summaries` | role:researcher,supervisor,admin | researcher_explicit_enrollment_claim_without_implicit_write_claim | — | — | active |
 | POST | `/api/research/access/enrollments/<enrollment_id>/claim` | role:researcher,supervisor,admin | researcher_explicit_enrollment_claim_without_implicit_write_claim | — | supported | active |
+| GET | `/api/research/access/participants` | role:researcher,supervisor,admin | active_unexpired_assignment_for_researcher_supervisor_full_for_admin | — | — | active |
 | DELETE | `/api/research/analysis/artifacts/<artifact_id>` | role:admin | analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation | — | — | active |
 | GET | `/api/research/analysis/artifacts/<artifact_id>` | role:researcher,supervisor,admin | analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation | — | — | active |
 | GET | `/api/research/analysis/catalog` | role:researcher,supervisor,admin | analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation | — | — | active |

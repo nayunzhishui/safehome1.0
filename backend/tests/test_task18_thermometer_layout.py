@@ -1,4 +1,3 @@
-import re
 from pathlib import Path
 
 
@@ -7,6 +6,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def test_supplemental_observation_values_are_outside_slider_tracks():
     wxml = (ROOT / "apps/miniprogram/pages/thermometer/index.wxml").read_text(encoding="utf-8")
+    wxss = (ROOT / "apps/miniprogram/pages/thermometer/index.wxss").read_text(encoding="utf-8")
 
     assert wxml.count('class="micro-value"') == 3
     assert wxml.count('class="micro-slider"') == 3

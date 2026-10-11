@@ -253,7 +253,15 @@ def report_contract_errors(
         )
     elif not negative and tool == "detect-secrets":
         valid_command = python_command(
-            argv, "detect_secrets", ["scan", "--no-verify", "--all-files", staging]
+            argv,
+            "detect_secrets",
+            [
+                "scan",
+                "--exclude-files",
+                contract_arg(r"config[\\/]rc0810[\\/]detect_secrets\.baseline\.json$"),
+                "--all-files",
+                staging,
+            ],
         )
     elif not negative and tool == "bandit":
         valid_command = python_command(
@@ -379,7 +387,10 @@ def validate_f22b(
         source["source_tree"], EXCEPTIONS_PATH.relative_to(ROOT).as_posix()
     ):
         errors.append("exception_registry_hash_mismatch")
-    current_inputs = {item: sha256_file(ROOT / item) for item in EXPECTED_F22B_INPUTS}
+    current_inputs = {
+        item: sha256_git_blob(source["source_tree"], item)
+        for item in EXPECTED_INPUTS
+    }
     if gate.get("dependency_inputs") != current_inputs:
         errors.append("dependency_input_mismatch")
     action_paths = (".github/workflows/security-gate.yml", ".github/workflows/check.yml")

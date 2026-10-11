@@ -484,6 +484,7 @@
       ],
       "access_paths": [
         "backend/routes/ai_qa.py",
+        "backend/services/ai_participant_delivery_service.py",
         "backend/services/ai_qa_review_service.py",
         "backend/services/ai_qa_service.py"
       ],
@@ -608,9 +609,11 @@
         "backend/services/participant_action_planner.py",
         "backend/services/privacy_request_service.py",
         "backend/services/progress_summary_service.py",
+        "backend/services/referential_integrity_service.py",
         "backend/services/relationship_enrollment_service.py",
         "backend/services/report_service.py",
         "backend/services/research_participant_service.py",
+        "backend/services/research_sensitive_access_service.py",
         "backend/services/schema_migration_service.py",
         "backend/services/supportive_review_service.py"
       ],
@@ -935,9 +938,11 @@
         "backend/services/consent_service.py",
         "backend/services/data_claim_service.py",
         "backend/services/privacy_request_service.py",
+        "backend/services/referential_integrity_service.py",
         "backend/services/research_analysis_service.py",
         "backend/services/research_group_insights_service.py",
         "backend/services/research_queue_service.py",
+        "backend/services/research_sensitive_access_service.py",
         "backend/services/schema_migration_service.py"
       ],
       "collection_purpose": "pending_privacy_owner_confirmation",
@@ -1196,6 +1201,7 @@
         "backend/services/participant_exploratory_analysis_service.py",
         "backend/services/privacy_request_service.py",
         "backend/services/progress_summary_service.py",
+        "backend/services/referential_integrity_service.py",
         "backend/services/report_service.py",
         "backend/services/research_group_insights_service.py",
         "backend/services/research_participant_service.py",
@@ -1308,6 +1314,7 @@
         "backend/services/identity_lifecycle_service.py",
         "backend/services/participant_safeguard_service.py",
         "backend/services/privacy_request_service.py",
+        "backend/services/referential_integrity_service.py",
         "backend/services/schema_migration_service.py"
       ],
       "collection_purpose": "pending_privacy_owner_confirmation",
@@ -1543,6 +1550,7 @@
         "backend/routes/messages.py",
         "backend/routes/profile.py",
         "backend/routes/research_workspace.py",
+        "backend/services/ai_participant_delivery_service.py",
         "backend/services/ai_qa_provider.py",
         "backend/services/ai_qa_service.py",
         "backend/services/data_claim_service.py",
@@ -2636,6 +2644,7 @@
         "backend/services/risk_service.py",
         "backend/services/schema_migration_service.py",
         "backend/services/supportive_review_service.py",
+        "backend/services/temporary_content_access.py",
         "backend/services/text_analysis_service.py",
         "backend/services/therapeutic_assessment_level_service.py"
       ],
@@ -2761,13 +2770,15 @@
         "backend/services/feedback_ledger_service.py",
         "backend/services/message_service.py",
         "backend/services/privacy_request_service.py",
+        "backend/services/referential_integrity_service.py",
         "backend/services/relationship_enrollment_service.py",
         "backend/services/relationship_growth_service.py",
         "backend/services/relationship_pilot_common.py",
         "backend/services/research_access_service.py",
         "backend/services/research_analysis_service.py",
         "backend/services/research_delivery_service.py",
-        "backend/services/research_participant_service.py"
+        "backend/services/research_participant_service.py",
+        "backend/services/research_sensitive_access_service.py"
       ],
       "collection_purpose": "pending_privacy_owner_confirmation",
       "retention_policy": "pending_privacy_owner_confirmation",
@@ -3214,6 +3225,7 @@
         "source_report_id"
       ],
       "access_paths": [
+        "backend/services/referential_integrity_service.py",
         "backend/services/research_delivery_service.py"
       ],
       "collection_purpose": "pending_privacy_owner_confirmation",
@@ -3424,7 +3436,8 @@
         "backend/services/relationship_enrollment_service.py",
         "backend/services/relationship_growth_service.py",
         "backend/services/research_access_service.py",
-        "backend/services/research_participant_service.py"
+        "backend/services/research_participant_service.py",
+        "backend/services/research_sensitive_access_service.py"
       ],
       "collection_purpose": "pending_privacy_owner_confirmation",
       "retention_policy": "pending_privacy_owner_confirmation",
@@ -3565,6 +3578,7 @@
         "backend/services/data_claim_service.py",
         "backend/services/participant_exploratory_analysis_service.py",
         "backend/services/privacy_request_service.py",
+        "backend/services/referential_integrity_service.py",
         "backend/services/research_delivery_service.py",
         "backend/services/research_queue_service.py",
         "backend/services/risk_review_service.py",
@@ -4925,6 +4939,7 @@
         "backend/services/feedback_ledger_service.py",
         "backend/services/operations_governance_service.py",
         "backend/services/psychological_content_governance_service.py",
+        "backend/services/temporary_content_access.py",
         "backend/services/therapeutic_assessment_service.py",
         "backend/services/training_recommendation_service.py"
       ],
@@ -4966,6 +4981,7 @@
         "backend/services/participant_exploratory_analysis_service.py",
         "backend/services/participant_safeguard_service.py",
         "backend/services/privacy_request_service.py",
+        "backend/services/referential_integrity_service.py",
         "backend/services/relationship_growth_service.py",
         "backend/services/research_access_service.py",
         "backend/services/research_group_insights_service.py",
@@ -5248,8 +5264,8 @@
   "release_gate_eligible": false,
   "source_bindings": {
     "models_sha256": "083cb33ad4bd2c2242b0807e283f6a55a2867aa4d02d958e7a5b988ac28671aa",
-    "migration_manifest_sha256": "09a7a8d1a1e7ff7fc2c78980850ae7b774696aa6a6ced9d7f6787c9b1a09aed8",
-    "route_manifest_sha256": "22595c6cbb94301b5d725da63b92a6666852da15563331025c643812d9c51000",
-    "service_manifest_sha256": "2d8cdacd5e249780038886fbd8dc11aac02ec81efe433c7a66a7e8008aaf3d74"
+    "migration_manifest_sha256": "08eedec062d01f6e535c65ac153b97050eb291592da79f832ec80f296dabed72",
+    "route_manifest_sha256": "72c6835d01587f1f718b05e3c88133e9d1fbccdd8e3bb9cff93960440c36012c",
+    "service_manifest_sha256": "6ebc91d1a5d3ec59ed7a1610ef6342a588af32c3a36a41d2faaf761936d5371c"
   }
 }

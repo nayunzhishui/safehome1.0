@@ -40,11 +40,15 @@ COPY shared /app/shared
 COPY config/rc0810/database_profiles.json /app/config/rc0810/database_profiles.json
 COPY config/rc0810/operations_reliability_policy.json config/rc0810/research_execution_manifest_policy.json config/rc0810/database_recovery_policy.json /app/config/rc0810/
 COPY deploy/verify_rc0810_f03_images.py /app/verify_rc0810_f03_images.py
-COPY --from=builder --chown=65532:65532 /runtime-data /app/data
+
+RUN addgroup --system safehome \
+    && adduser --system --ingroup safehome safehome \
+    && mkdir -p /app/data \
+    && chown -R safehome:safehome /app/data
 
 WORKDIR /app/backend
 
-USER 65532:65532
+USER safehome
 
-ENTRYPOINT ["/usr/bin/python3", "/app/verify_rc0810_f03_images.py", "--entrypoint", "--profile", "production", "--"]
+ENTRYPOINT ["python", "/app/verify_rc0810_f03_images.py", "--entrypoint", "--profile", "production", "--"]
 CMD ["gunicorn", "-c", "gunicorn.conf.py", "wsgi:app"]

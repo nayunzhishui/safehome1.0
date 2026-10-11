@@ -50,8 +50,8 @@ def verify() -> dict:
         if not path.is_file():
             failures.append({"task": "T35-F00", "path": artifact["path"], "reason": "missing"})
             continue
-        actual = hashlib.sha256(_canonical_bytes(path)).hexdigest()
-        if actual != artifact["sha256"]:
+        normalized_hash = artifact_sha256(path)
+        if artifact["sha256"] != normalized_hash:
             failures.append({"task": "T35-F00", "path": artifact["path"], "reason": "sha256_mismatch"})
     return {
         "schema": "safehome.task35.verify.v1",

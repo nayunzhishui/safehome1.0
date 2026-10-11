@@ -15,7 +15,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable
 
-from database import audit_event_hash, ensure_column, ensure_mysql_index_columns, json_loads, mysqlize_schema_statement, new_id, now_iso
+from database import (
+    ensure_mysql_index_columns,
+    audit_event_hash,
+    ensure_column,
+    json_loads,
+    mysqlize_column_definition,
+    mysqlize_schema_statement,
+    new_id,
+    now_iso,
+)
 from services.idempotency_service import canonical_request_hash
 
 MYSQL_MIGRATION_LOCK_NAME = "safehome_explicit_schema_migrations"

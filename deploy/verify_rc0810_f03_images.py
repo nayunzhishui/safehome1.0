@@ -234,7 +234,7 @@ def verify_runtime_images() -> dict:
             "print(json.dumps({'tests_dir':(root/'backend/tests').exists(),'forbidden':bad}))"
         )
         filesystem = subprocess.run(
-            ["docker", "run", "--rm", "--entrypoint", runtime_python, image, "-c", filesystem_probe],
+            ["docker", "run", "--rm", "--entrypoint", "python", image, "-c", filesystem_probe],
             capture_output=True,
             text=True,
             encoding="utf-8",

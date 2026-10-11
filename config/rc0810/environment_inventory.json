@@ -9,21 +9,21 @@
       "layer": "deployment",
       "classification": "development_template",
       "production_eligible": false,
-      "sha256": "b6aeb78a2377a0c6317ea20fe9dfaf63d5d3328d7ba1071cf5b2f4a0ff10ba27"
+      "sha256": "1728d78467a94a230be61099e7eb868f2d2c0069b6df6a51d4b52847dd4d0d10"
     },
     {
       "path": "Dockerfile",
       "layer": "deployment",
       "classification": "production_candidate_not_approved",
       "production_eligible": false,
-      "sha256": "a94c0213af58139627cf2e4e5f95f306c401e5f3475504cf996f90a8436bb618"
+      "sha256": "e54914e3f94897f2037c21daa6efeecd46be47a71138cea7d619f18560e54f89"
     },
     {
       "path": "backend/config.py",
       "layer": "backend",
       "classification": "runtime_configuration",
       "production_eligible": false,
-      "sha256": "efb63593265925802e5a58af36c97ca15ed65ce27f6bf310b34ddafffec6a5e5"
+      "sha256": "52c3c3fd8195f31aeeacd7d6895e0d28bb11f8a7628c19b64a3a3b0b05fc4ad4"
     },
     {
       "path": "backend/app.py",
@@ -79,14 +79,14 @@
       "layer": "docs",
       "classification": "documented_api_contract",
       "production_eligible": false,
-      "sha256": "02855cccd29e2175c70a1c3fd09c7b6b3a953f9c9264129f896f757165f8d31b"
+      "sha256": "9b688fab6e21cba7101853217c9c1f44792f37b4c6ebf1d24cbb800e0dd88d03"
     },
     {
       "path": "scripts/build_task9_cloudbase_package.ps1",
       "layer": "deployment",
       "classification": "legacy_validation_packager",
       "production_eligible": false,
-      "sha256": "e12eae9e9070bd721246656af675a0969c8b975ec0c561f7b812697d5d054fc2"
+      "sha256": "fddcf8c9dde2c7ef99a700d035f4c68748e49255461164946f1e6660e8114f40"
     }
   ],
   "environment_variable_classes": {

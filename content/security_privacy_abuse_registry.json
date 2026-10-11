@@ -133,8 +133,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": false,
@@ -158,8 +158,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": false,
@@ -183,8 +183,8 @@
       ],
       "denied_roles": [
         "parent",
-        "researcher",
         "student",
+        "researcher",
         "supervisor"
       ],
       "legacy_admin_token": false,
@@ -5579,6 +5579,31 @@
       }
     },
     {
+      "operation_id": "research_access.authorized_assessment_summaries_route.get",
+      "method": "GET",
+      "path": "/api/research/access/enrollments/<enrollment_id>/assessment-summaries",
+      "object_type": "research_access",
+      "action": "read",
+      "object_scope": "researcher_explicit_enrollment_claim_without_implicit_write_claim",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "research_access.claim_enrollment_route.post",
       "method": "POST",
       "path": "/api/research/access/enrollments/<enrollment_id>/claim",
@@ -5601,6 +5626,31 @@
         "required": false,
         "header": "Idempotency-Key",
         "max_length": 120
+      }
+    },
+    {
+      "operation_id": "research_access.authorized_participants_route.get",
+      "method": "GET",
+      "path": "/api/research/access/participants",
+      "object_type": "research_access",
+      "action": "read",
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
       }
     },
     {
@@ -6936,9 +6986,9 @@
       "action": "read",
       "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "denied_roles": [
         "parent",
@@ -7818,9 +7868,9 @@
         "student"
       ],
       "denied_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
@@ -7843,9 +7893,9 @@
         "student"
       ],
       "denied_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
@@ -7861,16 +7911,16 @@
       "method": "POST",
       "path": "/api/supportive-review/reviews",
       "object_type": "supportive_review",
-      "action": "create",
+      "action": "update",
       "object_scope": "participant_owned_self_review_records_only_no_staff_access",
       "allowed_roles": [
         "parent",
         "student"
       ],
       "denied_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
@@ -7893,9 +7943,9 @@
         "student"
       ],
       "denied_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
@@ -7918,9 +7968,9 @@
         "student"
       ],
       "denied_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,
@@ -7943,9 +7993,9 @@
         "student"
       ],
       "denied_roles": [
-        "admin",
         "researcher",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "legacy_admin_token": false,
       "showcase_read_bypass": false,

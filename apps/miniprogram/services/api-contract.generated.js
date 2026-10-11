@@ -4672,11 +4672,13 @@ const GENERATED_API_ENDPOINTS = [
       "request_id": "string"
     },
     "error_codes": [
+      "age_verification_required",
       "consent_self_only",
       "consent_version_conflict",
       "forbidden",
       "http_error",
       "internal_error",
+      "minor_safeguards_required",
       "unauthorized",
       "validation_error"
     ],
@@ -13886,6 +13888,69 @@ const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "research_access.authorized_assessment_summaries_route.get",
+    "method": "GET",
+    "path": "/api/research/access/enrollments/<enrollment_id>/assessment-summaries",
+    "handler": "research_access.authorized_assessment_summaries_route",
+    "module": "routes.research_access",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "researcher_explicit_enrollment_claim_without_implicit_write_claim",
+    "request": {
+      "content_type": null,
+      "path_parameters": [
+        "enrollment_id"
+      ],
+      "query_parameters": [
+        "limit"
+      ],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.research_access.authorized_assessment_summaries_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [
+      "assessment_status"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "research_access.claim_enrollment_route.post",
     "method": "POST",
     "path": "/api/research/access/enrollments/<enrollment_id>/claim",
@@ -13924,6 +13989,65 @@ const GENERATED_API_ENDPOINTS = [
       "envelope": "standard",
       "request_id": true,
       "data_contract": "routes.research_access.claim_enrollment_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "research_access.authorized_participants_route.get",
+    "method": "GET",
+    "path": "/api/research/access/participants",
+    "handler": "research_access.authorized_participants_route",
+    "module": "routes.research_access",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [
+        "limit"
+      ],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.research_access.authorized_participants_route.data"
     },
     "error_envelope": {
       "ok": false,

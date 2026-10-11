@@ -3,7 +3,7 @@
   "version": "2026-07-21-t34-v1",
   "status": "engineering_registry_complete_release_approval_pending",
   "generated_from_contract_version": "2026-08-26.f24",
-  "operation_count": 428,
+  "operation_count": 430,
   "capability_count": 46,
   "capabilities": [
     {
@@ -1544,7 +1544,7 @@
       "feature_flags": [],
       "version": "2026-08-26.f24",
       "tests": [
-        "backend/tests (operation coverage: 5)",
+        "backend/tests (operation coverage: 7)",
         "shared/contracts/api-contract.json"
       ],
       "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
@@ -1553,6 +1553,8 @@
       "production_release_approved": false,
       "operation_ids": [
         "research_access.assignments_route.get",
+        "research_access.authorized_assessment_summaries_route.get",
+        "research_access.authorized_participants_route.get",
         "research_access.capabilities_route.get",
         "research_access.claim_enrollment_route.post",
         "research_access.create_assignment_route.post",

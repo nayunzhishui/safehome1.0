@@ -916,6 +916,15 @@
       ]
     },
     {
+      "route": "/api/research/access/enrollments/<enrollment_id>/assessment-summaries",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "enrollment_id"
+      ]
+    },
+    {
       "route": "/api/research/access/enrollments/<enrollment_id>/claim",
       "methods": [
         "POST"
@@ -1836,22 +1845,22 @@
     },
     {
       "file": "backend/routes/assessments.py",
-      "line": 330,
+      "line": 333,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/assessments.py",
-      "line": 377,
+      "line": 380,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/assessments.py",
-      "line": 398,
+      "line": 401,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/assessments.py",
-      "line": 441,
+      "line": 444,
       "parameter": "user_id"
     },
     {
@@ -1866,17 +1875,17 @@
     },
     {
       "file": "backend/routes/consent.py",
-      "line": 47,
+      "line": 48,
       "parameter": "user_id"
     },
     {
       "file": "backend/routes/consent.py",
-      "line": 47,
+      "line": 48,
       "parameter": "subject_id"
     },
     {
       "file": "backend/routes/consent.py",
-      "line": 93,
+      "line": 113,
       "parameter": "user_id"
     },
     {
@@ -2001,7 +2010,7 @@
     },
     {
       "file": "backend/routes/programs.py",
-      "line": 135,
+      "line": 138,
       "parameter": "user_id"
     },
     {
