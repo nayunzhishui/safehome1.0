@@ -17,8 +17,8 @@
     {
       "artifact_type": "content",
       "path": "content/programs.json",
-      "sha256": "b17ee963a6efc4c15376d3d1169ba73ac2cb11c599d7bc7b7a7f80bd793ab420",
-      "size_bytes": 26038
+      "sha256": "d7d66dc0f802ce5db60d242aee6526826103473bcd81f91f3feeb3fd05b44de0",
+      "size_bytes": 26971
     },
     {
       "artifact_type": "content",
@@ -172,5 +172,5 @@
   "revision_policy": "never_edit_verified_package_create_new_version",
   "atomic_runtime_switch": true,
   "production_release_approved": false,
-  "manifest_hash": "8fbd9cf85ce825b210799469dbdb4672279aa52e3c5a715ac0fb1f37c98b3e6a"
+  "manifest_hash": "e955f87166c10dde71b4b876ba2a8eb59485ef22cb406f4471450639e8f19028"
 }

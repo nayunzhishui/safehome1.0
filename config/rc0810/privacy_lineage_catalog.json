@@ -5249,7 +5249,7 @@
   "source_bindings": {
     "models_sha256": "083cb33ad4bd2c2242b0807e283f6a55a2867aa4d02d958e7a5b988ac28671aa",
     "migration_manifest_sha256": "09a7a8d1a1e7ff7fc2c78980850ae7b774696aa6a6ced9d7f6787c9b1a09aed8",
-    "route_manifest_sha256": "4830b54472e88a011036275cb2b2cf7183234fb089d100548791eda53c74f888",
+    "route_manifest_sha256": "6393ece34a94e2ced94c196ea557ef70fd6773faafced35f46d4c4b329c06131",
     "service_manifest_sha256": "2d8cdacd5e249780038886fbd8dc11aac02ec81efe433c7a66a7e8008aaf3d74"
   }
 }

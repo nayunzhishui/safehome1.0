@@ -139,6 +139,20 @@ def test_program_measurement_plan_rejects_unknown_worksheet(tmp_path):
     assert any("measurement_plan.baseline_worksheet_ids 包含不存在的 worksheet：missing_worksheet" in error for error in errors)
 
 
+def test_owner_released_program_requires_release_record(tmp_path):
+    validator = _validator()
+    content_dir = tmp_path / "content"
+    _copy_required_content(content_dir)
+    path = content_dir / "programs.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload.pop("release_approval")
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    errors = validator.validate_content(content_dir, SCHEMA_ROOT)
+
+    assert any("programs.json.programs[self_compassion_exam_anxiety] 缺少负责人开放记录" in error for error in errors)
+
+
 def _write_profile_model(content_dir: Path, **overrides) -> None:
     profile_dir = content_dir / "profiles"
     profile_dir.mkdir(exist_ok=True)

@@ -1,3 +1,4 @@
+import copy
 import importlib
 import json
 import os
@@ -46,6 +47,59 @@ def test_validation_showcase_opens_all_programs_without_marking_them_approved(tm
     assert client.get("/api/programs/self_compassion_exam_anxiety").status_code == 200
 
 
+def _participant_headers(app, user_id="task18-program-parent"):
+    with app.app_context():
+        from database import get_connection, now_iso
+        from routes.auth_utils import generate_auth_token
+
+        timestamp = now_iso()
+        with get_connection() as conn:
+            conn.execute(
+                "INSERT OR IGNORE INTO users (id, nickname, role, status, created_at, updated_at) VALUES (?, ?, 'parent', 'active', ?, ?)",
+                (user_id, user_id, timestamp, timestamp),
+            )
+            conn.commit()
+        token = generate_auth_token({"id": user_id, "role": "parent"})
+    return {"Authorization": f"Bearer {token}"}
+
+
+def test_production_opens_owner_released_programs_and_keeps_drafts_closed(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    app.config.update(APP_ENV="production")
+    client = app.test_client()
+    headers = _participant_headers(app)
+    entry = {"session_no": 1, "reflection": "今天先写下一点感受。", "recommendation_source": "user_choice"}
+
+    listing = client.get("/api/programs")
+    detail = client.get("/api/programs/self_compassion_exam_anxiety")
+    created = client.post("/api/programs/self_compassion_exam_anxiety/entries", json=entry, headers=headers)
+
+    assert listing.status_code == 200
+    data = listing.get_json()["data"]
+    assert len(data["items"]) == 3
+    assert all(item["preview_only"] is False and item["showcase_open"] is False for item in data["items"])
+    assert data["availability"]["status"] == "available"
+    assert data["availability"]["approved_count"] == 0
+    assert data["availability"]["released_count"] == 3
+    assert data["availability"]["pending_review_count"] == 3
+    assert "负责人" in data["availability"]["message"]
+    assert detail.status_code == 200
+    assert all(item["status"] == "pending" for item in detail.get_json()["data"]["program"]["approval"].values())
+    assert created.status_code == 201
+
+    programs_route = sys.modules["routes.programs"]
+    with app.app_context():
+        draft = copy.deepcopy(programs_route._load_programs_payload())
+    draft["programs"][0]["review_status"] = "pilot_draft"
+    monkeypatch.setattr(programs_route, "_load_programs_payload", lambda: draft)
+    blocked = client.post("/api/programs/self_compassion_exam_anxiety/entries", json=entry, headers=headers)
+
+    assert len(client.get("/api/programs").get_json()["data"]["items"]) == 2
+    assert client.get("/api/programs/self_compassion_exam_anxiety").status_code == 404
+    assert blocked.status_code == 409
+    assert blocked.get_json()["error"]["code"] == "program_not_approved"
+
+
 def test_reviewer_can_preview_drafts_but_preview_does_not_approve_them(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
@@ -62,9 +116,9 @@ def test_reviewer_can_preview_drafts_but_preview_does_not_approve_them(tmp_path,
     assert len(list_data["items"]) == 3
     assert list_data["availability"]["preview_mode"] is True
     assert all(item["preview_only"] is False for item in list_data["items"])
-    assert all(item["review_status"] == "pilot_draft" for item in list_data["items"])
+    assert all(item["review_status"] == "production_approved" for item in list_data["items"])
     assert detail.status_code == 200
-    assert detail.get_json()["data"]["program"]["review_status"] == "pilot_draft"
+    assert detail.get_json()["data"]["program"]["review_status"] == "production_approved"
     assert detail.get_json()["data"]["preview_mode"] is True
 
 

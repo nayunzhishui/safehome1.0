@@ -2,8 +2,8 @@
   "generated_at": "2026-07-12",
   "rule": "仅同时满足治理状态、技术链、权限和质量门禁的能力开放",
   "counts": {
-    "开放": 102,
-    "待人工签字": 8,
+    "开放": 105,
+    "待人工签字": 5,
     "历史对照": 1,
     "继续隐藏": 3,
     "研究者受控": 2
@@ -1078,33 +1078,33 @@
       "kind": "项目",
       "item_id": "self_compassion_exam_anxiety",
       "title": "考试焦虑下的自我关怀书写",
-      "governance_status": "pilot_draft",
+      "governance_status": "production_approved",
       "enabled_flag": true,
       "technical_chain": "完整",
-      "opening_category": "待人工签字",
-      "reason": "治理状态或独立审核证据未达到生产开放条件",
+      "opening_category": "开放",
+      "reason": "治理批准、入口启用且技术链存在",
       "evidence": "content/programs.json；/api/programs；小程序 program-detail 页面"
     },
     {
       "kind": "项目",
       "item_id": "self_compassion_relationship_growth",
       "title": "亲密关系中的自我成长书写",
-      "governance_status": "pilot_draft",
+      "governance_status": "production_approved",
       "enabled_flag": true,
       "technical_chain": "完整",
-      "opening_category": "待人工签字",
-      "reason": "治理状态或独立审核证据未达到生产开放条件",
+      "opening_category": "开放",
+      "reason": "治理批准、入口启用且技术链存在",
       "evidence": "content/programs.json；/api/programs；小程序 program-detail 页面"
     },
     {
       "kind": "项目",
       "item_id": "academic_pressure_sleep_health",
       "title": "学业压力与睡眠健康促进",
-      "governance_status": "pilot_draft",
+      "governance_status": "production_approved",
       "enabled_flag": true,
       "technical_chain": "完整",
-      "opening_category": "待人工签字",
-      "reason": "治理状态或独立审核证据未达到生产开放条件",
+      "opening_category": "开放",
+      "reason": "治理批准、入口启用且技术链存在",
       "evidence": "content/programs.json；/api/programs；小程序 program-detail 页面"
     },
     {

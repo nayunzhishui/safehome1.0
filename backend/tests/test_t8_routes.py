@@ -78,7 +78,7 @@ def test_programs_endpoints_return_pilot_programs(tmp_path, monkeypatch):
     detail_response = client.get("/api/programs/self_compassion_exam_anxiety")
     assert detail_response.status_code == 200
     program = detail_response.get_json()["data"]["program"]
-    assert program["review_status"] == "pilot_draft"
+    assert program["review_status"] == "production_approved"
     assert len(program["sessions"]) >= 3
     assert program["measurement_plan"]["baseline_worksheet_ids"]
     assert program["measurement_plan"]["post_worksheet_ids"]

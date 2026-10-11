@@ -246,7 +246,7 @@ F21 补充：`/healthz` 是公开最小探针；`/healthz/deep` 和 `/readyz` �
 
 ### `GET /api/programs`
 
-用途：返回满足治理状态的项目测试练习包摘要。内容来自 `content/programs.json`。生产环境普通用户只看到 `pilot_approved`；没有批准项目时 `items=[]`，并通过 `availability.approved_count/pending_review_count/status/message` 说明真实状态。研究者、督导或管理员可携带身份令牌并传 `include_drafts=true` 受控预览草案；预览不改变治理状态，也不能绕过提交门禁。每项同时返回 `measurement_plan.status`、测量时间点中文标签和是否仍需人工审核；列表不暴露 worksheet 内部 ID。
+用途：返回满足治理状态的项目测试练习包摘要。内容来自 `content/programs.json`。生产环境普通用户只看到 `pilot_approved`（研究、心理、伦理三方已批准）和 `production_approved`（项目负责人开放，三方审核仍待完成，开放记录见 `programs.json.release_approval`）的项目；没有可开放项目时 `items=[]`。`availability.approved_count` 只计三方已批准项目，`released_count` 计全部已开放项目，`pending_review_count` 计仍待三方审核的项目（含负责人开放的），`status/message` 说明真实状态。研究者、督导或管理员可携带身份令牌并传 `include_drafts=true` 受控预览草案；预览不改变治理状态，也不能绕过提交门禁。每项同时返回 `measurement_plan.status`、测量时间点中文标签和是否仍需人工审核；列表不暴露 worksheet 内部 ID。
 
 ### `GET /api/programs/<id>`
 
@@ -1711,7 +1711,7 @@ Invoke-WebRequest `
 | `distress_after` | number | 否 | 练习后不适，0至10 |
 | `adverse_response` | boolean | 否 | 是否出现明显不适或负面体验 |
 
-服务端校验 session 属于当前方案版本，并对反思文本执行透明风险分流。生产环境只允许 `pilot_approved` 项目提交；开发环境可预览草案。返回 `record`、`protocol_version`、`requires_review`、必要时的 `risk_safe_response` 和 `boundary_notice`。
+服务端校验 session 属于当前方案版本，并对反思文本执行透明风险分流。生产环境只允许 `pilot_approved` 或 `production_approved` 项目提交，其他状态返回 409 `program_not_approved`；开发环境可预览草案。记录中的 `program_review_status` 保存提交时的项目状态。返回 `record`、`protocol_version`、`requires_review`、必要时的 `risk_safe_response` 和 `boundary_notice`。
 
 保存位置：`records`，其中 `module_type=program_entry`，`source_id=<program_id>`；`data_json`绑定当前 `protocol_version`，不随之后内容升级漂移。
 

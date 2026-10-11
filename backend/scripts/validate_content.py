@@ -358,12 +358,18 @@ def validate_programs(payload: dict, card_ids: set[str], worksheet_ids: set[str]
     if not any(term in root_boundary for term in BOUNDARY_TERMS):
         errors.append("programs.json.boundary_notice 需包含非诊断或不替代边界")
 
+    release_approval = payload.get("release_approval") or {}
     for program in payload.get("programs", []):
         if not isinstance(program, dict):
             continue
         program_id = program.get("id", "unknown")
-        if program.get("review_status") not in REVIEW_STATUSES:
+        if program.get("review_status") not in REVIEW_STATUSES | {"production_approved"}:
             errors.append(f"programs.json.programs[{program_id}].review_status 不在允许枚举中")
+        if program.get("review_status") == "production_approved" and not (
+            all(release_approval.get(field) for field in ("approved_by", "approved_at", "evidence_path"))
+            and program_id in (release_approval.get("previous_review_status") or {})
+        ):
+            errors.append(f"programs.json.programs[{program_id}] 缺少负责人开放记录（release_approval），不得标记 production_approved")
         boundary_text = str(program.get("boundary_notice", ""))
         if not any(term in boundary_text for term in BOUNDARY_TERMS):
             errors.append(f"programs.json.programs[{program_id}].boundary_notice 需包含非诊断或不替代边界")

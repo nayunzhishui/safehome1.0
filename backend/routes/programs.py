@@ -13,6 +13,12 @@ from services.showcase_access_service import showcase_programs_open
 
 bp = Blueprint("programs", __name__, url_prefix="/api/programs")
 
+# pilot_approved: research, psychology and ethics sign-offs are complete.
+# production_approved: the project owner opened the program (programs.json release_approval)
+# while those three reviews are still pending.
+RELEASED_REVIEW_STATUSES = {"pilot_approved", "production_approved"}
+AWAITING_REVIEW_STATUSES = {"pilot_draft", "production_approved"}
+
 
 def _load_programs_payload() -> dict:
     return load_content_json("programs.json")
@@ -24,7 +30,7 @@ def _is_program_available(program: dict) -> bool:
     if showcase_programs_open():
         return True
     is_production = str(current_app.config.get("APP_ENV", "development")).lower() == "production"
-    return not is_production or program.get("review_status") == "pilot_approved"
+    return not is_production or program.get("review_status") in RELEASED_REVIEW_STATUSES
 
 
 def _reviewer_preview_requested() -> tuple[bool, object | None]:
@@ -47,7 +53,7 @@ def _program_summary(program: dict) -> dict:
         "theory_source": program.get("theory_source"),
         "review_status": program.get("review_status"),
         "protocol_version": program.get("protocol_version"),
-        "preview_only": program.get("review_status") != "pilot_approved" and not showcase_programs_open(),
+        "preview_only": program.get("review_status") not in RELEASED_REVIEW_STATUSES and not showcase_programs_open(),
         "showcase_open": showcase_programs_open(),
         "minimum_dose": program.get("minimum_dose"),
         "completion_definition": program.get("completion_definition"),
@@ -74,8 +80,9 @@ def list_programs():
     if error_response is not None:
         return error_response
     available = [program for program in programs if include_drafts or _is_program_available(program)]
-    pending_count = sum(1 for program in programs if program.get("review_status") == "pilot_draft")
+    pending_count = sum(1 for program in programs if program.get("review_status") in AWAITING_REVIEW_STATUSES)
     approved_count = sum(1 for program in programs if program.get("review_status") == "pilot_approved")
+    released_count = sum(1 for program in programs if program.get("review_status") in RELEASED_REVIEW_STATUSES)
     showcase_mode = showcase_programs_open()
     return ok(
         {
@@ -84,15 +91,18 @@ def list_programs():
             "items": [_program_summary(program) for program in available],
             "availability": {
                 "approved_count": approved_count,
+                "released_count": released_count,
                 "pending_review_count": pending_count,
                 "preview_mode": include_drafts,
                 "showcase_mode": showcase_mode,
-                "status": "showcase_open" if showcase_mode else "available" if approved_count else "pending_review",
+                "status": "showcase_open" if showcase_mode else "available" if released_count else "pending_review",
                 "message": (
                     "临时展示模式已开启，三个项目方案均可查看和试用；正式发布前仍需恢复审核门禁。"
                     if showcase_mode
                     else "当前项目方案仍在研究、心理和伦理审核中，审核完成后开放。"
-                    if not approved_count and pending_count
+                    if not released_count and pending_count
+                    else "项目方案已按项目负责人决定开放；研究、心理和伦理审核仍在进行。"
+                    if released_count > approved_count
                     else "仅显示已完成治理审核的项目方案。"
                 ),
             },
@@ -174,7 +184,7 @@ def create_program_entry(program_id: str):
     )
     if not program:
         return fail("not_found", "未找到对应的项目测试内容", status=404)
-    if str(current_app.config.get("APP_ENV", "development")).lower() == "production" and program.get("review_status") != "pilot_approved" and not showcase_programs_open():
+    if str(current_app.config.get("APP_ENV", "development")).lower() == "production" and program.get("review_status") not in RELEASED_REVIEW_STATUSES and not showcase_programs_open():
         return fail("program_not_approved", "该项目尚未完成研究、心理和伦理审核。", status=409)
 
     session_no = parse_int(payload.get("session_no"), None)

@@ -24,7 +24,8 @@ def test_task17_baseline_covers_all_current_content():
     assert audit["training_card_quality"]["cards_missing_governance_fields"] == []
     assert audit["course_structure_gaps"] == []
     assert audit["program_protocol_gaps"] == []
-    assert all(item["review_status"] == "pilot_draft" for item in audit["program_governance"])
+    assert all(item["review_status"] == "production_approved" for item in audit["program_governance"])
+    assert all(set(item["approval_statuses"].values()) == {"pending"} for item in audit["program_governance"])
 
 
 def test_task17_baseline_has_no_invalid_card_references():

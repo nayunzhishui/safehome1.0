@@ -17,7 +17,8 @@ def test_task18_opening_matrix_covers_all_governed_content():
     assert sum(1 for item in rows if item["kind"] == "课程") == 5
     assert sum(1 for item in rows if item["kind"] == "项目") == 3
     assert sum(1 for item in rows if item["kind"] == "画像模型") == 11
-    assert all(item["opening_category"] != "开放" for item in rows if item["kind"] in {"课程", "项目"})
+    assert all(item["opening_category"] != "开放" for item in rows if item["kind"] == "课程")
+    assert all(item["opening_category"] == "开放" for item in rows if item["kind"] == "项目")
     assert all(item["opening_category"] in {"研究者受控", "继续隐藏"} for item in rows if item["kind"] == "研究分析")
 
 

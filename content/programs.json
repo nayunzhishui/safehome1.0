@@ -1,5 +1,5 @@
 {
-  "version": "2026.07-task17-program-protocol-v1",
+  "version": "2026.10-program-protocol-v1-release-20261011",
   "boundary_notice": "项目测试内容只用于陪伴练习和自我观察，不构成诊断、筛查或治疗方案。",
   "programs": [
     {
@@ -13,7 +13,7 @@
       "theory_source": "以自我关怀书写与UP跨诊断情绪调节框架为基础的试点草案",
       "audience": "学生与家长陪伴练习",
       "enabled": true,
-      "review_status": "pilot_draft",
+      "review_status": "production_approved",
       "measurement_plan": {
         "status": "draft_requires_research_review",
         "baseline_worksheet_ids": [
@@ -208,7 +208,7 @@
       "theory_source": "以亲密关系自我成长主题和自我关怀书写为基础的试点草案",
       "audience": "学生与青年自我观察练习",
       "enabled": true,
-      "review_status": "pilot_draft",
+      "review_status": "production_approved",
       "measurement_plan": {
         "status": "draft_requires_research_review",
         "baseline_worksheet_ids": [
@@ -408,7 +408,7 @@
       "theory_source": "以学业压力、健康促进生活方式和睡眠管理主题为基础的试点草案",
       "audience": "学生与家长支持性练习",
       "enabled": true,
-      "review_status": "pilot_draft",
+      "review_status": "production_approved",
       "measurement_plan": {
         "status": "draft_requires_research_review",
         "baseline_worksheet_ids": [
@@ -593,5 +593,19 @@
       "clinical_boundary": "项目名称固定为睡眠健康促进，不称为CBT-I、失眠治疗或医疗方案；ISI/PSQI未审核前不输出筛查结论。"
     }
   ],
-  "updated_at": "2026-07-15"
+  "updated_at": "2026-10-11",
+  "release_approval": {
+    "approved_by": "项目负责人",
+    "approved_at": "2026-10-11",
+    "scope": "训练卡页中的三个项目方案在生产环境开放查看与参与",
+    "basis": "负责人2026-10-11要求“把我的训练卡中的三个项目生产开关打开然后提交改动”",
+    "professional_review": "pending_owner_arranged",
+    "evidence_path": "docs/02_专项进度与验收/项目方案生产开放负责人批准记录_20261011.md",
+    "unchanged": "研究、心理、伦理三方审核（approval）与测量计划（measurement_plan.status）仍为待审核；方案内容、纳入排除、暂停退出、不良反应处理与安全门槛不变。",
+    "previous_review_status": {
+      "self_compassion_exam_anxiety": "pilot_draft",
+      "self_compassion_relationship_growth": "pilot_draft",
+      "academic_pressure_sleep_health": "pilot_draft"
+    }
+  }
 }

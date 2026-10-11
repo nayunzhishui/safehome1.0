@@ -31,6 +31,7 @@ RELEASE_STATUSES = {"trial_enabled", "enabled", "pilot_approved"}
 EVIDENCE_GOVERNED_TYPES = {"scale", "training_card", "course"}
 PROGRAM_TRANSITIONS = {
     "pilot_draft": {"pilot_approved"},
+    "production_approved": {"pilot_approved", "paused"},
     "pilot_approved": {"paused", "completed"},
     "paused": {"pilot_approved", "completed"},
     "completed": set(),

@@ -24,11 +24,12 @@ Page({
     api
       .listPrograms(previewMode ? { include_drafts: true } : {})
       .then((data) => {
+        const programs = data.items || [];
         this.setData({
           loading: false,
-          programs: data.items || [],
+          programs,
           availability: data.availability || null,
-          previewMode,
+          previewMode: previewMode && programs.some((item) => item.preview_only),
           boundaryNotice: data.boundary_notice || this.data.boundaryNotice,
         });
       })
