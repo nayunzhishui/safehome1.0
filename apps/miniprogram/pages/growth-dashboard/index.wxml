@@ -1,138 +1,172 @@
-<view class="safe-page ui2-page growth-dashboard-page" role="main" aria-label="我的成长">
-  <view class="growth-hero">
-    <text class="growth-title">我的成长</text>
-  </view>
-
-  <view class="meaning-boundary">四类线索分别查看，不合成总分</view>
+<view class="growth-page" role="main" aria-label="我的成长">
+  <text class="growth-intro">四类线索分别查看，不合成总分</text>
 
   <page-state wx:if="{{loading}}" kind="loading" title="正在整理已保存的线索" description="四类信息会分别读取，不会合并成总分。" />
   <page-state wx:elif="{{errorMessage}}" kind="error" title="成长线索暂时没有读取成功" description="{{errorMessage}}" action-label="重新读取" action-aria-label="重新读取成长线索" bind:action="loadGrowth" />
 
-  <view wx:elif="{{growth}}" class="growth-content">
-    <view class="growth-rail" aria-label="成长线索分类">
-      <growth-segment
+  <block wx:elif="{{growth}}">
+    <view class="growth-tiles" role="tablist" aria-label="成长线索分类">
+      <button
         wx:for="{{sectionTabs}}"
         wx:key="key"
-        segment-key="{{item.key}}"
-        label="{{item.label}}"
-        count="{{item.count}}"
-        active="{{item.active}}"
-        bind:change="selectSection"
-      />
+        class="growth-tile {{item.active ? 'growth-tile--active' : ''}}"
+        role="tab"
+        aria-selected="{{item.active}}"
+        aria-label="查看{{item.label}}，当前{{item.count}}{{item.key === 'assessments' ? '组量表' : '条线索'}}"
+        data-key="{{item.key}}"
+        bindtap="selectSection"
+      >
+        <view class="growth-tile__head">
+          <text class="growth-tile__label">{{item.label}}</text>
+          <text class="growth-tile__count">{{item.count}}</text>
+        </view>
+        <text class="growth-tile__hint">{{item.hint}}</text>
+      </button>
     </view>
 
-    <view wx:if="{{activeSection === 'activity'}}" class="section-stack">
-      <view class="next-step-card">
-        <text class="section-eyebrow">现在可以做什么</text>
-        <text class="next-step-copy">{{growth.summary.next_step}}</text>
-        <view class="action-row">
-          <button class="section-action" bindtap="startDiary">记录一件小事</button>
-          <button class="section-action section-action--quiet" bindtap="openTraining">查看练习</button>
-        </view>
+    <block wx:if="{{activeSection === 'activity'}}">
+      <view class="p3-card growth-next" aria-label="现在可以做什么">
+        <text class="growth-next__kicker">现在可以做什么</text>
+        <text class="growth-next__text">{{growth.summary.next_step}}</text>
+        <button class="p3-btn p3-btn--primary" bindtap="startDiary">记录一件小事</button>
+        <button class="p3-btn p3-btn--quiet" bindtap="openTraining">查看练习</button>
       </view>
 
-      <view class="dashboard-section">
-        <view class="section-heading">
-          <view><text class="section-title">情绪温度</text><text class="section-copy">1—10分，只与同一量尺的记录比较</text></view>
-          <status-pill label="{{thermometer.length}} 次" tone="info" aria-label="情绪温度记录{{thermometer.length}}次" />
-        </view>
-        <view wx:if="{{thermometer.length}}" class="thermometer-list">
-          <view wx:for="{{thermometer}}" wx:key="id" class="thermometer-row">
-            <view class="thermometer-meta"><text>{{item.dateText}}</text><text>{{item.emotion_label || "一次温度记录"}} · {{item.intensity_level}}</text></view>
-            <view class="bar-track"><view class="bar-fill" style="width: {{item.width}};"></view></view>
+      <view class="growth-section">
+        <p3-section-header title="情绪温度" subtitle="1—10 分，只与同一量尺的记录比较" />
+        <view wx:if="{{thermometer.length}}" class="p3-group">
+          <view wx:for="{{thermometer}}" wx:key="id" class="growth-bar-row {{index < thermometer.length - 1 ? 'growth-bar-row--divided' : ''}}">
+            <view class="growth-bar-row__head">
+              <text class="growth-bar-row__date">{{item.dateText}}</text>
+              <text class="growth-bar-row__value">{{item.emotion_label || "一次温度记录"}} · {{item.intensity_level}}</text>
+            </view>
+            <view class="growth-bar" aria-hidden="true">
+              <view class="growth-bar__fill" style="width: {{item.width}}; background: var(--p3-intensity-{{item.level}});"></view>
+            </view>
           </view>
         </view>
         <page-state wx:else kind="empty" title="还没有温度记录" description="第一次记录只作为起点，不判断趋势。" />
       </view>
 
-      <view wx:if="{{emotionInsights && emotionInsights.availability !== 'ineligible'}}" class="dashboard-section">
-        <view class="section-heading">
-          <view><text class="section-title">近期情绪线索</text><text class="section-copy">来自你最近的情绪记录，只描述常一起出现的情况</text></view>
-          <status-pill label="{{emotionInsights.statusText}}" tone="info" aria-label="近期情绪线索：{{emotionInsights.statusText}}" />
+      <view wx:if="{{emotionInsights && emotionInsights.availability !== 'ineligible'}}" class="growth-section">
+        <view class="growth-section__head">
+          <p3-section-header class="growth-section__header" title="近期情绪线索" subtitle="来自你最近的情绪记录，只描述常一起出现的情况" />
+          <status-pill class="growth-section__pill" label="{{emotionInsights.statusText}}" tone="info" aria-label="近期情绪线索：{{emotionInsights.statusText}}" />
         </view>
         <block wx:if="{{emotionInsights.available}}">
-          <text class="insight-summary">{{emotionInsights.affect.summary_text}}</text>
-          <view class="thermometer-list">
-            <view wx:for="{{emotionInsights.affectItems}}" wx:key="label" class="thermometer-row">
-              <view class="thermometer-meta"><text>{{item.label}}</text><text>{{item.summary}}</text></view>
-              <view class="bar-track"><view class="bar-fill" style="width: {{item.width}};"></view></view>
+          <view class="p3-group growth-insights">
+            <text class="growth-insights__summary">{{emotionInsights.affect.summary_text}}</text>
+            <view wx:for="{{emotionInsights.affectItems}}" wx:key="label" class="growth-bar-row">
+              <view class="growth-bar-row__head">
+                <text class="growth-bar-row__date">{{item.label}}</text>
+                <text class="growth-bar-row__value">{{item.summary}}</text>
+              </view>
+              <view class="growth-bar" aria-hidden="true">
+                <view class="growth-bar__fill growth-bar__fill--primary" style="width: {{item.width}};"></view>
+              </view>
             </view>
+            <text class="growth-insights__label">常一起出现的场景和情绪</text>
+            <text wx:for="{{emotionInsights.interactionEdges}}" wx:key="key" class="growth-insights__line">{{item.summary}}</text>
+            <text wx:if="{{!emotionInsights.interactionEdges.length}}" class="growth-insights__line">暂时没有重复至少 2 次的组合。</text>
+            <block wx:if="{{emotionInsights.trendText}}">
+              <text class="growth-insights__label">强度前后对比</text>
+              <text class="growth-insights__line">{{emotionInsights.trendText}}</text>
+            </block>
+            <block wx:if="{{emotionInsights.parentChildSummary}}">
+              <text class="growth-insights__label">你的情绪与孩子的情绪</text>
+              <text class="growth-insights__line">{{emotionInsights.parentChildSummary}}</text>
+            </block>
           </view>
-          <text class="insight-label">常一起出现的场景和情绪</text>
-          <text wx:for="{{emotionInsights.interactionEdges}}" wx:key="key" class="insight-line">{{item.summary}}</text>
-          <text wx:if="{{!emotionInsights.interactionEdges.length}}" class="insight-line">暂时没有重复至少 2 次的组合。</text>
-          <block wx:if="{{emotionInsights.trendText}}">
-            <text class="insight-label">强度前后对比</text>
-            <text class="insight-line">{{emotionInsights.trendText}}</text>
-          </block>
-          <block wx:if="{{emotionInsights.parentChildSummary}}">
-            <text class="insight-label">你的情绪与孩子的情绪</text>
-            <text class="insight-line">{{emotionInsights.parentChildSummary}}</text>
-          </block>
-          <text class="insight-note">{{emotionInsights.boundary_notice}}</text>
+          <text class="p3-footnote">{{emotionInsights.boundary_notice}}</text>
         </block>
         <page-state wx:else kind="empty" title="{{emotionInsights.statusText}}" description="{{emotionInsights.reason}}" action-label="{{emotionInsights.actionLabel}}" bind:action="onEmotionInsightsAction" />
       </view>
 
-      <view class="dashboard-section">
-        <view class="section-heading"><view><text class="section-title">记录与练习时间线</text><text class="section-copy">只呈现做过的事情，不把次数写成改善</text></view></view>
-        <view wx:if="{{activityTimeline.length}}" class="timeline-list">
-          <timeline-record wx:for="{{activityTimeline}}" wx:key="id" item="{{item}}" />
+      <view class="growth-section">
+        <p3-section-header title="记录与练习时间线" subtitle="只呈现做过的事情，不把次数写成改善" />
+        <view wx:if="{{activityTimeline.length}}" class="growth-timeline">
+          <p3-timeline-item
+            wx:for="{{activityTimeline}}"
+            wx:key="id"
+            state="{{index === 0 ? 'current' : 'upcoming'}}"
+            kicker="{{item.kicker}}"
+            title="{{item.title}}"
+            body="{{item.summary}}"
+            show-line="{{index < activityTimeline.length - 1}}"
+          />
         </view>
         <page-state wx:else kind="empty" title="还没有记录或练习" description="可以先留下一件具体小事，形成第一条时间线。" action-label="开始记录" bind:action="startDiary" />
       </view>
-    </view>
+    </block>
 
-    <view wx:elif="{{activeSection === 'assessments'}}" class="section-stack">
-      <view class="dashboard-section">
-        <view class="section-heading"><view><text class="section-title">支持性测评</text><text class="section-copy">每份量表独立成组，不把不同分值放在同一条曲线上</text></view></view>
-        <view wx:if="{{assessmentGroups.length}}" class="assessment-list">
-          <view wx:for="{{assessmentGroups}}" wx:key="worksheet_id" class="assessment-group">
-            <text class="assessment-title">{{item.title}}</text>
-            <view class="assessment-values">
-              <text wx:for="{{item.items}}" wx:for-item="score" wx:key="id" class="assessment-value">{{score.dateText}}{{score.hasValue ? ' · 记录值 ' + score.value : ''}}</text>
+    <block wx:elif="{{activeSection === 'assessments'}}">
+      <view class="growth-section">
+        <p3-section-header title="支持性测评" subtitle="每份量表独立成组，不把不同分值放在同一条曲线上" />
+        <block wx:if="{{assessmentGroups.length}}">
+          <view wx:for="{{assessmentGroups}}" wx:key="worksheet_id" class="p3-group growth-assessment">
+            <text class="growth-assessment__title">{{item.title}}</text>
+            <view wx:for="{{item.items}}" wx:for-item="score" wx:for-index="scoreIndex" wx:key="id" class="growth-assessment__row">
+              <text class="growth-assessment__date">{{score.dateText}}</text>
+              <text wx:if="{{score.hasValue}}" class="growth-assessment__value">记录值 {{score.value}}</text>
             </view>
-            <text class="assessment-note">只在同一量尺再次填写后观察变化，不自动解释好坏。</text>
+            <text class="growth-assessment__note">只在同一量尺再次填写后观察变化，不自动解释好坏。</text>
           </view>
-        </view>
+        </block>
         <page-state wx:else kind="empty" title="还没有支持性测评" description="完成一次测评后，这里会按量表分别保留结果。" action-label="去测一测" bind:action="openAssessment" />
       </view>
-    </view>
+    </block>
 
-    <view wx:elif="{{activeSection === 'relationship'}}" class="section-stack">
-      <view class="relationship-card">
-        <text class="section-title">关系探索单独呈现</text>
-        <text class="section-copy">不与日记次数或测评分值合并</text>
-        <view class="relationship-facts">
-          <view class="fact-cell"><text class="fact-label">探索任务</text><text class="fact-value">{{relationshipSummary.task_count || 0}}</text></view>
-          <view class="fact-cell"><text class="fact-label">连续记录</text><text class="fact-value">{{relationshipSummary.longitudinal_count || 0}}</text></view>
-          <view class="fact-cell"><text class="fact-label">阶段报告</text><text class="fact-value">{{relationshipSummary.report_count || 0}}</text></view>
+    <block wx:elif="{{activeSection === 'relationship'}}">
+      <view class="growth-section">
+        <p3-section-header title="关系探索单独呈现" subtitle="不与日记次数或测评分值合并" />
+        <view class="growth-cells">
+          <view class="growth-cell"><text class="growth-cell__value">{{relationshipSummary.task_count || 0}}</text><text class="growth-cell__label">探索任务</text></view>
+          <view class="growth-cell"><text class="growth-cell__value">{{relationshipSummary.longitudinal_count || 0}}</text><text class="growth-cell__label">连续记录</text></view>
+          <view class="growth-cell"><text class="growth-cell__value">{{relationshipSummary.report_count || 0}}</text><text class="growth-cell__label">阶段报告</text></view>
         </view>
-        <button class="section-action relationship-action" bindtap="openRelationship">{{relationshipSummary.available ? '查看关系探索详情' : '了解关系探索'}}</button>
+        <button class="p3-btn p3-btn--secondary" bindtap="openRelationship">{{relationshipSummary.available ? '查看关系探索详情' : '了解关系探索'}}</button>
       </view>
-      <view class="dashboard-section">
-        <view class="section-heading"><view><text class="section-title">关系探索时间线</text><text class="section-copy">这里只显示任务、连续记录和阶段报告的事实</text></view></view>
-        <view wx:if="{{relationshipTimeline.length}}" class="timeline-list">
-          <timeline-record wx:for="{{relationshipTimeline}}" wx:key="id" item="{{item}}" tone="relationship" />
+      <view class="growth-section">
+        <p3-section-header title="关系探索时间线" subtitle="这里只显示任务、连续记录和阶段报告的事实" />
+        <view wx:if="{{relationshipTimeline.length}}" class="growth-timeline">
+          <p3-timeline-item
+            wx:for="{{relationshipTimeline}}"
+            wx:key="id"
+            state="{{index === 0 ? 'current' : 'upcoming'}}"
+            kicker="{{item.kicker}}"
+            title="{{item.title}}"
+            body="{{item.summary}}"
+            show-line="{{index < relationshipTimeline.length - 1}}"
+          />
         </view>
         <page-state wx:else kind="empty" title="还没有关系探索记录" description="是否参与由你决定；没有记录时不生成关系结论。" />
       </view>
-    </view>
+    </block>
 
-    <view wx:else class="section-stack">
-      <view class="feedback-summary-card">
-        <view><text class="relationship-title">研究者反馈 {{feedbackSummary.count || 0}} 条</text></view>
-        <status-pill label="{{feedbackSummary.unread_count || 0}} 条未读" tone="warning" aria-label="研究者反馈未读{{feedbackSummary.unread_count || 0}}条" />
-      </view>
-      <view class="dashboard-section">
-        <view wx:if="{{feedbackTimeline.length}}" class="timeline-list">
-          <timeline-record wx:for="{{feedbackTimeline}}" wx:key="id" item="{{item}}" tone="feedback" />
+    <block wx:else>
+      <view class="growth-section">
+        <view class="growth-section__head">
+          <p3-section-header class="growth-section__header" title="研究者反馈" subtitle="共 {{feedbackSummary.count || 0}} 条，需要时可在消息里继续核对" />
+          <status-pill class="growth-section__pill" label="{{feedbackSummary.unread_count || 0}} 条未读" tone="warning" aria-label="研究者反馈未读{{feedbackSummary.unread_count || 0}}条" />
+        </view>
+        <view wx:if="{{feedbackTimeline.length}}" class="growth-timeline">
+          <p3-timeline-item
+            wx:for="{{feedbackTimeline}}"
+            wx:key="id"
+            state="{{index === 0 ? 'current' : 'upcoming'}}"
+            kicker="{{item.kicker}}"
+            title="{{item.title}}"
+            body="{{item.summary}}"
+            show-line="{{index < feedbackTimeline.length - 1}}"
+          />
         </view>
         <page-state wx:else kind="empty" title="暂时没有研究者反馈" description="没有反馈不代表好或不好；需要人工支持时可从消息或人工支持入口联系。" />
-        <button class="section-action feedback-action" bindtap="openMessages">打开消息列表</button>
+        <button class="p3-btn p3-btn--secondary" bindtap="openMessages">打开消息列表</button>
       </view>
-    </view>
+    </block>
 
-    <view class="boundary-card"><text>{{growth.boundary_notice}}</text></view>
-  </view>
+    <view class="p3-notice">
+      <text class="p3-notice__body">{{growth.boundary_notice}}</text>
+    </view>
+  </block>
 </view>

@@ -1,9 +1,12 @@
 {
   "navigationBarTitleText": "训练",
+  "navigationStyle": "custom",
   "usingComponents": {
     "page-state": "/components/page-state/index",
-    "section-title": "/components/section-title/index",
-    "training-task-card": "/components/training-task-card/index",
-    "bottom-tip-card": "/components/bottom-tip-card/index"
+    "status-pill": "/components/status-pill/index",
+    "p3-tab-hero": "/components/p3-tab-hero/index",
+    "p3-section-header": "/components/p3-section-header/index",
+    "p3-timeline-item": "/components/p3-timeline-item/index",
+    "p3-stage-header": "/components/p3-stage-header/index"
   }
 }

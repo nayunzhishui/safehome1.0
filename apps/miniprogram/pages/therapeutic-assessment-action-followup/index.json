@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "行动回看",
+  "navigationBarTitleText": "回看这次小行动",
   "usingComponents": {
     "page-state": "/components/page-state/index"
   }

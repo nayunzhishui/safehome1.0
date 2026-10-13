@@ -1,0 +1,53 @@
+/* SectionHeader（Figma 620:21）：竹节短标记 + 小标签（14/20，字距 1），可选一行说明。 */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.p3-section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.p3-section-header__label {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.p3-section-header__mark {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  flex: 0 0 auto;
+}
+
+.p3-section-header__node {
+  height: 4rpx;
+  border-radius: 2rpx;
+  background: var(--p3-primary);
+}
+
+.p3-section-header__node--long {
+  width: 24rpx;
+}
+
+.p3-section-header__node--short {
+  width: 6rpx;
+}
+
+.p3-section-header__title {
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 40rpx;
+  letter-spacing: 2rpx;
+  font-weight: 500;
+}
+
+.p3-section-header__subtitle {
+  display: block;
+  color: var(--p3-muted);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}

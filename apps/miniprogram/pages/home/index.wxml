@@ -1,106 +1,135 @@
-<view class="safe-page safe-page--with-tabbar ui2-page home-page" role="main" aria-hidden="{{tourVisible}}" aria-label="安心陪伴首页">
-  <view class="home-header">
-    <text class="home-title">安心陪伴</text>
-    <button class="notice-button" aria-label="打开消息中心{{unreadMessageCount > 0 ? '，有未读消息' : ''}}" bindtap="openMessages">
-      <view class="notice-icon" aria-hidden="true">
-        <view class="notice-icon-dome"></view>
-        <view class="notice-icon-base"></view>
-        <view class="notice-icon-clapper"></view>
-      </view>
-      <view wx:if="{{unreadMessageCount > 0}}" class="notice-dot"></view>
+<view class="home-page" role="main" aria-hidden="{{tourVisible}}" aria-label="安心陪伴首页">
+  <view class="home-hero" style="padding-top: {{hero.greetingTop}}px;">
+    <view wx:if="{{hero.offset > 0}}" class="home-hero__sky" style="height: {{hero.offset}}px;" aria-hidden="true"></view>
+    <image class="home-hero__art" src="/assets/art/home-hero.svg" style="top: {{hero.offset}}px;" aria-hidden="true" />
+    <button class="home-bell" style="top: {{hero.bellTop}}px;" aria-label="打开消息中心{{unreadMessageCount > 0 ? '，有未读消息' : ''}}" bindtap="openMessages">
+      <p3-icon name="bell" size="20" tone="ink" />
+      <view wx:if="{{unreadMessageCount > 0}}" class="home-bell__dot" aria-hidden="true"></view>
     </button>
+    <text class="p3-greeting home-greeting" role="heading" aria-level="1">{{greeting}}</text>
+    <text class="home-date">{{dateText}} · 安心陪伴</text>
+
+    <view class="home-thermo" id="guide-thermometer">
+      <view class="home-thermo__head">
+        <text class="home-thermo__title">情绪温度计</text>
+        <text class="home-thermo__count">{{thermometerCountText}}</text>
+      </view>
+      <text class="home-thermo__hint">此刻的情绪有多强？点一个刻度记下来</text>
+      <p3-thermometer value="{{thermometerLatest}}" aria-label="情绪温度计，点一个刻度去记录" bind:pick="pickThermometer" />
+    </view>
   </view>
 
-  <view wx:if="{{privacyNoticeVisible}}" class="home-privacy-notice" aria-label="首次隐私说明">
-    <text class="home-privacy-title">使用前，先了解记录与隐私</text>
-    <text class="home-privacy-copy">你提交的记录可与账号关联，用于反馈与复盘。这里不做诊断，也不提供实时监护或紧急救助。</text>
-    <text class="home-privacy-copy">查看说明或点“知道了”不代表同意研究、模型训练等可选用途。</text>
-    <button class="home-privacy-link" bindtap="openPrivacyNotice">查看隐私与删除说明</button>
-    <button class="home-privacy-dismiss" bindtap="acknowledgePrivacyNotice">知道了</button>
-  </view>
+  <view class="home-content">
+    <view wx:if="{{privacyNoticeVisible}}" class="home-privacy" aria-label="首次隐私说明">
+      <text class="home-privacy__title">使用前，先了解记录与隐私</text>
+      <text class="home-privacy__copy">你提交的记录可与账号关联，用于反馈与复盘。这里不做诊断，也不提供实时监护或紧急救助。</text>
+      <text class="home-privacy__copy">查看说明或点“知道了”不代表同意研究、模型训练等可选用途。</text>
+      <view class="home-privacy__actions">
+        <button class="p3-link" bindtap="openPrivacyNotice">查看隐私与删除说明</button>
+        <button class="p3-btn p3-btn--secondary home-privacy__ok" bindtap="acknowledgePrivacyNotice">知道了</button>
+      </view>
+    </view>
 
-  <page-state
-    wx:if="{{homeOverviewError}}"
-    kind="error"
-    title="首页摘要暂时不可用"
-    description="{{homeOverviewError}}"
-    action-label="重新加载"
-    bind:action="retryHomeData"
-  />
-
-  <journey-action-card
-    id="guide-today"
-    class="today-step-entry"
-    loading="{{todayJourneyLoading}}"
-    error-message="{{todayJourneyError}}"
-    state="{{todayJourney ? todayJourney.state : 'not_due'}}"
-    state-label="{{todayJourney ? todayJourney.stateLabel : '按节奏进行'}}"
-    title="{{todayJourney ? todayJourney.title : '继续今天的一小步'}}"
-    description="{{todayJourney ? todayJourney.description : ''}}"
-    meta-text="{{todayJourney ? todayJourney.metaText : ''}}"
-    button-label="{{todayJourney ? todayJourney.buttonLabel : '继续'}}"
-    action-aria-label="{{todayJourney ? todayJourney.actionAriaLabel : '继续今天的一小步'}}"
-    bind:action="openTodayAction"
-    bind:retry="retryTodayJourney"
-  />
-
-  <view class="home-capture" id="guide-capture">
-    <entry-row class="thermometer-entry" icon="thermometer" title="情绪温度计" subtitle="{{homeLoginRequired ? '登录后记录与查看' : (thermometerRecordReady ? '今天已记录 ' + thermometerRecordCount + ' 次' : '记录次数待更新')}}" bind:action="openThermometer" />
-    <dual-entry left-key="assessment" left-icon="assessment" left-title="测一测" left-subtitle="了解此刻状态" right-key="diary" right-icon="diary" right-title="情绪日记" right-subtitle="记录具体小事" bind:action="openCoreEntry" />
-  </view>
-
-  <entry-row id="guide-start" class="how-to-entry" icon="start" title="如何开始" subtitle="记录 · 反馈 · 练习" bind:action="openGettingStarted" />
-
-  <view class="home-section home-more">
-    <section-heading title="更多" />
-    <entry-row icon="feedback" title="支持性反馈" subtitle="记录后获得对应反馈" action-key="feedback" bind:action="openCoreEntry" />
-    <entry-row id="guide-training" icon="training" title="训练中心" subtitle="查看训练计划与练习" action-key="training" bind:action="openCoreEntry" />
-    <entry-row id="guide-support" icon="person" title="人工支持" subtitle="提交非实时支持请求" action-key="supervision" bind:action="openCoreEntry" />
-  </view>
-
-  <view class="home-section">
-    <section-heading title="最近记录" />
-    <page-state wx:if="{{homeLoginRequired}}" kind="empty" title="登录后查看最近记录" />
     <page-state
-      wx:elif="{{!latestRecordReady && !latestRecordError}}"
-      kind="loading"
-      title="正在读取最近记录"
-    />
-    <page-state
-      wx:elif="{{latestRecordError}}"
+      wx:if="{{homeOverviewError}}"
       kind="error"
-      title="暂时无法读取最近记录"
-      description="{{latestRecordError}}"
+      title="首页摘要暂时不可用"
+      description="{{homeOverviewError}}"
       action-label="重新加载"
       bind:action="retryHomeData"
     />
-    <entry-row wx:elif="{{latestRecord}}" class="summary-entry" icon="diary" title="{{latestRecord.time}} · {{latestRecord.trigger}}" subtitle="{{latestRecord.mood}}" action-label="{{latestRecord.status}}" expanded wrap-title bind:action="openDiaryHistory" />
-    <entry-row wx:else class="summary-entry" icon="diary" title="还没有保存的记录" subtitle="可以先写下一件刚发生的小事" action-label="去记录" expanded wrap-title bind:action="startDiary" />
-  </view>
 
-  <view class="home-section">
-    <section-heading title="阶段性反馈" />
-    <page-state wx:if="{{homeLoginRequired}}" kind="empty" title="登录后查看阶段性反馈" />
-    <page-state
-      wx:elif="{{!progressSummaryReady && !progressSummaryError}}"
-      kind="loading"
-      title="正在读取阶段性反馈"
+    <journey-action-card
+      id="guide-today"
+      class="today-step-entry"
+      loading="{{todayJourneyLoading}}"
+      error-message="{{todayJourneyError}}"
+      state="{{todayJourney ? todayJourney.state : 'not_due'}}"
+      state-label="{{todayJourney ? todayJourney.stateLabel : '按节奏进行'}}"
+      title="{{todayJourney ? todayJourney.title : '继续今天的一小步'}}"
+      description="{{todayJourney ? todayJourney.description : ''}}"
+      meta-text="{{todayJourney ? todayJourney.metaText : ''}}"
+      button-label="{{todayJourney ? todayJourney.buttonLabel : '继续'}}"
+      action-aria-label="{{todayJourney ? todayJourney.actionAriaLabel : '继续今天的一小步'}}"
+      bind:action="openTodayAction"
+      bind:retry="retryTodayJourney"
     />
-    <entry-row wx:elif="{{progressSummary}}" class="summary-entry" icon="feedback" title="{{progressSummary.summaryText}}" subtitle="{{progressSummary.nextAction}}" expanded wrap-title bind:action="openWeeklyReport" />
-    <page-state
-      wx:elif="{{progressSummaryError}}"
-      kind="error"
-      title="暂时无法读取阶段性反馈"
-      description="{{progressSummaryError}}"
-      action-label="重新加载"
-      bind:action="retryHomeData"
-    />
-    <entry-row wx:else class="summary-entry" icon="feedback" title="记录还不够，继续观察" subtitle="完成更多记录后，这里会呈现阶段摘要" action-label="查看说明" expanded wrap-title bind:action="openWeeklyReport" />
-  </view>
 
-  <button id="guide-replay" class="guide-replay" bindtap="startGuide">重看使用教程</button>
-  <view wx:if="{{showDevEntry}}" class="dev-entry-section">
-    <button class="dev-entry" bindtap="openIntegrationTest">进入联调测试页</button>
+    <view class="home-capture" id="guide-capture">
+      <button
+        wx:for="{{quickActions}}"
+        wx:key="key"
+        class="home-quick"
+        aria-label="{{item.title}}，{{item.subtitle}}"
+        data-key="{{item.key}}"
+        bindtap="openCoreEntry"
+      >
+        <view class="home-quick__badge home-quick__badge--{{item.badge}}">
+          <p3-icon name="{{item.icon}}" size="24" tone="ink" />
+        </view>
+        <text class="home-quick__title">{{item.title}}</text>
+        <text class="home-quick__subtitle">{{item.subtitle}}</text>
+      </button>
+    </view>
+
+    <view class="home-section">
+      <p3-section-header title="最近" />
+      <button wx:if="{{homeLoginRequired}}" class="home-recent" aria-label="登录后查看最近记录" bindtap="openLogin">
+        <image class="home-recent__art" src="/assets/art/empty-sprout.svg" aria-hidden="true" />
+        <view class="home-recent__text">
+          <text class="home-recent__title">登录后查看最近记录</text>
+          <text class="home-recent__subtitle">登录后可以接着看你写过的小事</text>
+        </view>
+        <text class="home-recent__action">去登录 ›</text>
+      </button>
+      <view wx:elif="{{!latestRecordReady && !latestRecordError}}" class="home-recent" role="status" aria-live="polite">
+        <image class="home-recent__art" src="/assets/art/empty-sprout.svg" aria-hidden="true" />
+        <view class="home-recent__text">
+          <text class="home-recent__title">正在读取最近记录</text>
+        </view>
+      </view>
+      <button wx:elif="{{latestRecordError}}" class="home-recent" aria-label="暂时无法读取最近记录，重新加载" bindtap="retryHomeData">
+        <image class="home-recent__art" src="/assets/art/empty-sprout.svg" aria-hidden="true" />
+        <view class="home-recent__text">
+          <text class="home-recent__title">暂时无法读取最近记录</text>
+          <text class="home-recent__subtitle">{{latestRecordError}}</text>
+        </view>
+        <text class="home-recent__action">重新加载 ›</text>
+      </button>
+      <button wx:elif="{{latestRecord}}" class="home-recent" aria-label="最近记录：{{latestRecord.time}} {{latestRecord.trigger}}，{{latestRecord.status}}" bindtap="openDiaryHistory">
+        <view class="home-recent__badge" aria-hidden="true">
+          <p3-icon name="diary" size="24" tone="ink" />
+        </view>
+        <view class="home-recent__text">
+          <text class="home-recent__title">{{latestRecord.trigger}}</text>
+          <text class="home-recent__subtitle">{{latestRecord.time}} · {{latestRecord.mood}}</text>
+        </view>
+        <text class="home-recent__action">{{latestRecord.status}} ›</text>
+      </button>
+      <button wx:else class="home-recent" aria-label="还没有记录，去写一件刚发生的小事" bindtap="startDiary">
+        <image class="home-recent__art" src="/assets/art/empty-sprout.svg" aria-hidden="true" />
+        <view class="home-recent__text">
+          <text class="home-recent__title">还没有记录</text>
+          <text class="home-recent__subtitle">写下一件刚发生的小事</text>
+        </view>
+        <text class="home-recent__action">去写 ›</text>
+      </button>
+    </view>
+
+    <view class="home-footer">
+      <view class="home-footer__links">
+        <button id="guide-start" class="home-footer__link" bindtap="openGettingStarted">三步开始</button>
+        <text class="home-footer__dot" aria-hidden="true">·</text>
+        <button id="guide-support" class="home-footer__link" data-key="supervision" bindtap="openCoreEntry">人工支持</button>
+        <text class="home-footer__dot" aria-hidden="true">·</text>
+        <button id="guide-emergency" class="home-footer__link home-footer__link--risk" bindtap="openEmergencyGuide">紧急求助</button>
+      </view>
+      <button id="guide-replay" class="home-footer__link home-footer__replay" bindtap="startGuide">重看使用教程</button>
+    </view>
+
+    <view wx:if="{{showDevEntry}}" class="dev-entry-section">
+      <button class="p3-btn p3-btn--secondary" bindtap="openIntegrationTest">进入联调测试页</button>
+    </view>
   </view>
 </view>
 

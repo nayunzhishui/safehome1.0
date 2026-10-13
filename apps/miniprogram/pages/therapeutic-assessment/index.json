@@ -1,3 +1,10 @@
 {
-  "navigationBarTitleText": "支持性评估"
+  "navigationBarTitleText": "支持性评估",
+  "usingComponents": {
+    "page-state": "/components/page-state/index",
+    "p3-group-row": "/components/p3-group-row/index",
+    "p3-section-header": "/components/p3-section-header/index",
+    "p3-stage-header": "/components/p3-stage-header/index",
+    "status-pill": "/components/status-pill/index"
+  }
 }

@@ -1,4 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { firstSentence } = require("../../utils/card-text");
 
 const api = createSafeHomeApi();
 
@@ -22,6 +23,38 @@ const CADENCE_OPTIONS = [
   { value: "weekly", label: "每周 1 次" },
 ];
 
+// “2026年10月10日”（Figma 655:1676 开始日期）
+function dateText(value) {
+  const matched = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return matched ? `${matched[1]}年${Number(matched[2])}月${Number(matched[3])}日` : "选择开始日期";
+}
+
+// 微信提醒状态（Figma 655:1751）：一行“状态 · 说明”，按钮随状态出现。
+function reminderView(notification) {
+  const status = notification && notification.preference ? notification.preference.consent_status : "unknown";
+  if (!notification || !notification.available) {
+    return { title: "暂未开放", text: "管理员完成微信模板审核后，这里可以开启。", showRequest: false, showSettings: false };
+  }
+  if (status === "accepted") {
+    return { title: "已同意本次提醒", text: "到达下一次练习日期后发送；一次性授权使用后需要重新开启。", showRequest: false, showSettings: false };
+  }
+  if (status === "consumed") {
+    return { title: "上次授权已使用", text: "如需下一次提醒，请再次主动开启。", showRequest: true, showSettings: false };
+  }
+  if (status === "banned") {
+    return { title: "微信设置中已关闭", text: "如需恢复，请前往小程序设置调整订阅消息权限。", showRequest: false, showSettings: true };
+  }
+  return { title: "需要时再开启", text: "建议在保存好练习节奏后，开启一次微信提醒。", showRequest: true, showSettings: false };
+}
+
+function assignmentView(assignment) {
+  return {
+    assignment,
+    startDateText: dateText(assignment.start_date),
+    goalCount: String(assignment.goal_text || "").length,
+  };
+}
+
 const STATUS_OPTIONS = [
   { value: "active", label: "进行中" },
   { value: "paused", label: "暂缓" },
@@ -43,8 +76,11 @@ Page({
       start_date: todayKey(),
       goal_text: "",
     },
+    startDateText: dateText(todayKey()),
+    goalCount: 0,
     savingAssignment: false,
     requestingReminder: false,
+    reminder: reminderView(null),
     notification: {
       available: false,
       template_id: "",
@@ -63,13 +99,14 @@ Page({
   loadNotificationConfig() {
     api
       .getNotificationConfig()
-      .then((notification) => this.setData({
-        notification: {
+      .then((notification) => {
+        const next = {
           ...notification,
           preference: notification.preference || { consent_status: "unknown" },
-        },
-      }))
-      .catch(() => this.setData({ "notification.available": false }));
+        };
+        this.setData({ notification: next, reminder: reminderView(next) });
+      })
+      .catch(() => this.setData({ "notification.available": false, reminder: reminderView(null) }));
   },
 
   loadPlan() {
@@ -81,15 +118,20 @@ Page({
         this.setData({
           loading: false,
           plan,
-          assignment,
+          ...assignmentView(assignment),
           planItems: (
             plan.assignment
               ? (plan.assignment.is_due_today ? plan.today_plan_items || [] : [])
               : plan.plan_items || []
           ).map((item) => ({
             ...item,
-            sourceLabel: item.source_type === "profile_cluster" ? "画像推荐" : "测评推荐",
+            sourceLabel: item.source_type === "profile_cluster" ? "画像推荐" : "测一测推荐",
             cardIdsText: Array.isArray(item.card_ids) ? item.card_ids.join(",") : "",
+            cards: (item.cards || []).map((card) => ({
+              ...card,
+              sceneText: firstSentence(card.purpose),
+              metaText: card.duration_minutes ? `${card.duration_minutes} 分钟` : "",
+            })),
           })),
           boundaryNotice: plan.boundary_notice || this.data.boundaryNotice,
         });
@@ -111,11 +153,11 @@ Page({
   },
 
   onStartDateChange(event) {
-    this.setData({ "assignment.start_date": event.detail.value });
+    this.setData({ "assignment.start_date": event.detail.value, startDateText: dateText(event.detail.value) });
   },
 
   onGoalInput(event) {
-    this.setData({ "assignment.goal_text": event.detail.value });
+    this.setData({ "assignment.goal_text": event.detail.value, goalCount: String(event.detail.value || "").length });
   },
 
   saveAssignment() {
@@ -124,7 +166,7 @@ Page({
     api
       .saveTrainingPlanAssignment(this.data.assignment)
       .then((assignment) => {
-        this.setData({ assignment, savingAssignment: false });
+        this.setData({ ...assignmentView(assignment), savingAssignment: false });
         wx.showToast({ title: "练习节奏已保存", icon: "success" });
         this.loadPlan();
         this.loadNotificationConfig();
@@ -150,7 +192,11 @@ Page({
         api
           .saveNotificationConsent({ template_id: notification.template_id, decision })
           .then(({ preference }) => {
-            this.setData({ "notification.preference": preference, requestingReminder: false });
+            this.setData({
+              "notification.preference": preference,
+              reminder: reminderView({ ...this.data.notification, preference }),
+              requestingReminder: false,
+            });
             wx.showToast({
               title: decision === "accept" ? "已开启一次提醒" : "未开启提醒",
               icon: "none",

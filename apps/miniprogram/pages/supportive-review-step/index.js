@@ -65,6 +65,7 @@ Page({
     topicId: "",
     topicExamples: [],
     starters: [],
+    startersText: "",
     rewrites: [],
     rewritesOpen: false,
     intensityItems: [],
@@ -86,7 +87,7 @@ Page({
     nextChoice: "",
     stepDone: false,
     canSkip: false,
-    primaryLabel: "保存并继续",
+    primaryLabel: "保存，下一步",
   },
 
   onLoad(options = {}) {
@@ -99,7 +100,7 @@ Page({
       progress: progressFor(step),
       stepNumber: Math.max(1, FLOW_STEPS.indexOf(step) + 1),
       todayDate: localDay(Date.now()),
-      primaryLabel: step === "experiment" ? "记下这个实验" : step === "followup" ? "保存回看" : "保存并继续",
+      primaryLabel: step === "experiment" ? "记下这个实验" : step === "followup" ? "保存回看" : "保存，下一步",
     });
     if (!requireLogin({ redirectUrl: stepUrl(reviewId, step), message: "请先登录后再开始自助整理。" })) {
       this.setData({ loading: false, loadError: "需要先登录。" });
@@ -191,6 +192,7 @@ Page({
         topicId,
         topicExamples: topic ? topic.examples || [] : [],
         starters: (guide.question_guide || {}).starters || [],
+        startersText: ((guide.question_guide || {}).starters || []).join(" · "),
         rewrites: (guide.question_guide || {}).rewrites || [],
       });
     }

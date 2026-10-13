@@ -1,65 +1,77 @@
-<view class="safe-page ui2-page relationship-pilot-page">
-  <view class="pilot-hero">
-    <text class="pilot-title">关系探索试点</text>
+<view class="p3-page pilot-page" role="main" aria-label="关系探索试点">
+  <view class="p3-notice" role="note">
+    <text class="p3-notice__body">从起点测评到连续记录，每一步都可以暂停。这里不判断你是否“适合恋爱”，也不替代心理咨询。</text>
   </view>
 
-  <view class="pilot-boundary" role="note">从起点测评到连续记录，每一步都可以暂停。这里不判断你是否“适合恋爱”，也不替代心理咨询。</view>
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取你的探索进度" />
 
-  <view wx:if="{{loading}}" class="pilot-section loading-section">正在读取你的探索进度...</view>
-
-  <view wx:elif="{{roleBlocked}}" class="pilot-section unavailable-section">
-    <text class="section-heading">当前仅向学生试点账号开放</text>
-    <text class="pilot-text">你仍可使用情绪记录、训练卡和其它支持功能。若需参加关系探索试点，请切换到已授权的学生账号。</text>
+  <view wx:elif="{{roleBlocked}}" class="pilot-card">
+    <text class="p3-item-title">当前仅向学生试点账号开放</text>
+    <text class="pilot-card__text">你仍可使用情绪记录、训练卡和其它支持功能。若需参加关系探索试点，请切换到已授权的学生账号。</text>
   </view>
 
-  <view wx:elif="{{!enrollment}}" class="pilot-section enrollment-section">
-    <view class="stage-eyebrow">第一步 · 起点测评与报名</view>
-    <text class="section-heading">确认是否进入第二阶段</text>
-    <text class="pilot-text">报名会关联你最近一份关系探索测评的维度、阶段性画像与报告。逐行研究数据不会显示给其他用户。</text>
-    <checkbox-group bindchange="toggleConsent">
-      <label class="consent-row"><checkbox value="agree" checked="{{consent}}" />我已阅读并同意将本次测评用于关系探索试点的评估与复盘。</label>
+  <view wx:elif="{{!enrollment}}" class="pilot-card">
+    <view class="pilot-card__head">
+      <text class="p3-meta">第一步 · 起点测评与报名</text>
+      <text class="p3-item-title">确认是否进入第二阶段</text>
+    </view>
+    <text class="pilot-card__text">报名会关联你最近一份关系探索测评的维度、阶段性画像与报告。逐行研究数据不会显示给其他用户。</text>
+    <checkbox-group class="p3-agreement" aria-label="研究用途确认" bindchange="toggleConsent">
+      <label class="p3-agreement__box {{consent ? 'p3-agreement__box--checked' : ''}}">
+        <checkbox class="p3-agreement__native" value="agree" checked="{{consent}}" aria-label="我已阅读并同意将本次测评用于关系探索试点的评估与复盘" />
+        <image wx:if="{{consent}}" class="p3-agreement__tick" src="/assets/icons/p3/tick-14-white.svg" aria-hidden="true" />
+      </label>
+      <text class="p3-agreement__text" bindtap="flipConsent">我已阅读并同意将本次测评用于关系探索试点的评估与复盘。</text>
     </checkbox-group>
-    <button class="safe-primary-button" loading="{{submitting}}" disabled="{{submitting}}" bindtap="enroll">确认报名</button>
-    <button class="text-action" bindtap="goAssessment">还没测评？先完成关系测一测</button>
+    <view class="pilot-card__actions">
+      <button class="p3-btn p3-btn--primary" loading="{{submitting}}" disabled="{{submitting}}" bindtap="enroll">确认报名</button>
+      <button class="p3-btn p3-btn--quiet" bindtap="goAssessment">还没测评？先完成关系测一测</button>
+    </view>
   </view>
 
-  <view wx:else>
+  <block wx:else>
     <journey-action-card
       class="current-action-entry"
+      variant="stage"
+      show-marker
       eyebrow="当前步骤"
       marker="{{currentStepNumber}}"
       region-aria-label="关系探索当前步骤"
       state="{{currentActionState}}"
       state-label="{{reportStatusText}}"
       title="{{currentStageTitle}}"
-      description="{{enrollment.profile.profile_description}}"
+      description="{{currentStageLead}}"
       button-label="{{primaryLabel}}"
       action-aria-label="{{primaryLabel}}：{{currentStageTitle}}"
       bind:action="runPrimaryAction"
     />
 
-    <view class="pilot-section journey-section">
-      <text class="section-heading">五阶段探索路径</text>
-      <view class="journey-list">
-        <view wx:for="{{journeySteps}}" wx:key="key" class="journey-step journey-step--{{item.state}}">
-          <view class="journey-marker"><text>{{item.number}}</text></view>
-          <view class="journey-content">
-            <view class="journey-title-row"><text class="journey-title">{{item.title}}</text><text class="journey-state">{{item.stateText}}</text></view>
-            <text class="journey-description">{{item.description}}</text>
-          </view>
-        </view>
+    <view class="pilot-section">
+      <p3-section-header title="五阶段探索路径" />
+      <view class="pilot-path" role="list">
+        <p3-timeline-item
+          wx:for="{{journeySteps}}"
+          wx:key="key"
+          role="listitem"
+          state="{{item.timelineState}}"
+          kicker="第 {{item.number}} 步 · {{item.stateText}}"
+          title="{{item.title}}"
+          body="{{item.description}}"
+          show-line="{{index < journeySteps.length - 1}}"
+        />
       </view>
     </view>
 
-    <view class="pilot-section secondary-section">
-      <text class="section-heading">其它入口</text>
-      <button wx:for="{{secondaryActions}}" wx:key="key" class="secondary-row" data-action="{{item.key}}" bindtap="runSecondaryAction">
-        <view><text class="secondary-title">{{item.label}}</text><text class="secondary-description">{{item.description}}</text></view>
-        <text class="secondary-arrow">›</text>
-      </button>
+    <view class="pilot-section">
+      <p3-section-header title="其它入口" />
+      <view class="p3-group">
+        <button wx:for="{{secondaryActions}}" wx:key="key" class="pilot-row" data-action="{{item.key}}" aria-label="{{item.label}}：{{item.description}}" bindtap="runSecondaryAction">
+          <p3-group-row icon="{{item.icon}}" title="{{item.label}}" subtitle="{{item.description}}" show-divider="{{index < secondaryActions.length - 1}}" />
+        </button>
+      </view>
     </view>
-  </view>
+  </block>
 
-  <text wx:if="{{errorMessage}}" class="error-text">{{errorMessage}}</text>
-  <view class="boundary-note">所有画像和报告都只作阶段性观察，不构成诊断、人格标签、关系能力评价或疗效证明。</view>
+  <text wx:if="{{errorMessage}}" class="p3-form-message p3-form-message--error" role="alert">{{errorMessage}}</text>
+  <text class="p3-footnote">所有画像和报告都只作阶段性观察，不构成诊断、人格标签、关系能力评价或疗效证明。</text>
 </view>

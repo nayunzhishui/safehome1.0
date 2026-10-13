@@ -1,0 +1,51 @@
+/* StageHeader（Figma 642:447）：三节竹 6×16、间距 3；标题 16/24 中黑，说明 14/22。 */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.p3-stage-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.p3-stage-header__head {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.p3-stage-header__joints {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  flex: 0 0 auto;
+}
+
+.p3-stage-header__joint {
+  width: 12rpx;
+  height: 32rpx;
+  border-radius: 999rpx;
+  background: var(--p3-primary);
+}
+
+.p3-stage-header__joint--later {
+  opacity: 0.22;
+}
+
+.p3-stage-header__title {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+.p3-stage-header__subtitle {
+  display: block;
+  color: var(--p3-muted);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}

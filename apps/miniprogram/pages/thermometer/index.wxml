@@ -1,135 +1,106 @@
-<view class="safe-page ui2-page thermometer-page" role="main" aria-label="情绪温度计">
-  <view class="page-head">
-    <text class="page-title">情绪温度计</text>
+<view class="thermo-page" role="main" aria-label="情绪温度计">
+  <view class="p3-card thermo-now">
+    <view class="thermo-now__head">
+      <text class="thermo-now__title">现在的强度</text>
+      <text class="thermo-now__value">{{intensityLevel}}</text>
+      <text class="thermo-now__range">/ 10</text>
+    </view>
+    <p3-thermometer value="{{intensityLevel}}" aria-label="情绪强度，当前 {{intensityLevel}}，点刻度调整" bind:pick="onIntensityChange" />
+    <view class="thermo-now__steps">
+      <button class="thermo-step" aria-label="情绪强度减一" bindtap="decreaseIntensity">−</button>
+      <button class="thermo-step" aria-label="情绪强度加一" bindtap="increaseIntensity">＋</button>
+    </view>
   </view>
 
-  <view class="record-section">
-    <view class="panel-top">
-      <text class="section-title">现在的强度</text>
-      <text class="level-text">{{intensityLevel}} <text class="level-range">/ 10</text></text>
+  <view class="thermo-section">
+    <p3-section-header title="补充观察" subtitle="可保持默认，不填也能记录" />
+    <view class="thermo-micro">
+      <text class="micro-value">愉悦度 {{valenceLevel}} / 10</text>
+      <p3-intensity-slider class="micro-slider" min="1" max="10" value="{{valenceLevel}}" aria-label="调整愉悦度" bind:change="onValenceChange" />
     </view>
+    <view class="thermo-micro">
+      <text class="micro-value">身体唤起 {{arousalLevel}} / 10</text>
+      <p3-intensity-slider class="micro-slider" min="1" max="10" value="{{arousalLevel}}" aria-label="调整身体唤起" bind:change="onArousalChange" />
+    </view>
+    <view class="thermo-micro">
+      <text class="micro-value">可控感 {{controlLevel}} / 10</text>
+      <p3-intensity-slider class="micro-slider" min="1" max="10" value="{{controlLevel}}" aria-label="调整可控感" bind:change="onControlChange" />
+    </view>
+    <view class="p3-field">
+      <text class="p3-field__label">情绪名称（可选）</text>
+      <input class="p3-field__input" value="{{emotionLabel}}" maxlength="40" placeholder="例如：着急、烦躁、平静" aria-label="情绪名称，可选，最多40字" placeholder-class="p3-field__placeholder" bindinput="onEmotionLabelInput" />
+      <text class="p3-field__hint">{{emotionLabel.length || 0}} / 40</text>
+    </view>
+    <view class="p3-field">
+      <text class="p3-field__label">简短记录（可选）</text>
+      <textarea class="p3-field__input p3-field__input--multi" value="{{briefText}}" maxlength="200" placeholder="用一句话写下刚才发生了什么。" aria-label="简短记录，可选，最多200字" placeholder-class="p3-field__placeholder" bindinput="onBriefInput" />
+      <text class="p3-field__hint">{{briefText.length || 0}} / 200</text>
+    </view>
+  </view>
 
-    <view class="thermometer-control">
-      <intensity-scale value="{{intensityLevel}}" bind:change="onIntensityChange" />
+  <view class="thermo-save">
+    <text wx:if="{{saveError}}" class="p3-form-message p3-form-message--error" role="alert">{{saveError}}</text>
+    <button class="p3-btn p3-btn--primary" loading="{{saving}}" disabled="{{saving}}" bindtap="saveRecord">{{saving ? '正在记录…' : '记录一次'}}</button>
+  </view>
 
-      <view class="thermometer-actions">
-        <view class="step-button-row">
-          <button class="step-button" aria-label="情绪强度减一" bindtap="decreaseIntensity">−</button>
-          <button class="step-button" aria-label="情绪强度加一" bindtap="increaseIntensity">＋</button>
+  <view wx:if="{{receipt}}" class="p3-notice" aria-label="本次记录回执">
+    <view class="thermo-receipt__head">
+      <text class="p3-notice__title">记录完成</text>
+      <button class="thermo-receipt__close" aria-label="收起记录回执" bindtap="dismissReceipt">×</button>
+    </view>
+    <text wx:for="{{receipt.messages}}" wx:key="*this" class="p3-notice__body">{{item}}</text>
+    <text wx:if="{{receipt.boundary_notice}}" class="thermo-receipt__boundary">{{receipt.boundary_notice}}</text>
+    <button wx:if="{{receipt.practice_available}}" class="p3-btn p3-btn--secondary thermo-receipt__action" bindtap="openPractice">去练一张卡</button>
+  </view>
+
+  <view class="thermo-section" aria-busy="{{loading}}">
+    <view class="thermo-section__head">
+      <p3-section-header class="thermo-section__header" title="今日曲线" subtitle="{{summary.count ? '共 ' + summary.count + ' 次，平均 ' + (summary.avg || '-') : '今天还没有记录'}}" />
+      <button class="p3-link" bindtap="loadDay">刷新</button>
+    </view>
+    <page-state wx:if="{{loading}}" kind="loading" title="正在读取今天的记录" />
+    <page-state wx:elif="{{errorMessage}}" kind="error" title="暂时没能完成" description="{{errorMessage}}" action-label="重试读取" bind:action="loadDay" />
+    <view wx:elif="{{curve && curve.points.length}}" class="thermo-curve" style="height: {{curve.height}}px;" aria-label="今日情绪强度变化曲线，具体记录见下方列表">
+      <view wx:for="{{curve.grid}}" wx:key="*this" class="thermo-curve__grid" style="top: {{item}}px;" aria-hidden="true"></view>
+      <view wx:for="{{curve.segments}}" wx:key="key" class="thermo-curve__segment" style="left: {{item.left}}px; top: {{item.top}}px; width: {{item.width}}px; transform: rotate({{item.angle}}deg);" aria-hidden="true"></view>
+      <button
+        wx:for="{{curve.points}}"
+        wx:key="id"
+        class="thermo-curve__point"
+        style="left: {{item.x}}px; top: {{item.y}}px;"
+        aria-label="{{item.label}}，强度 {{item.level}} / 10"
+        data-index="{{index}}"
+        bindtap="selectPoint"
+      >
+        <view class="thermo-curve__dot" style="background: var(--p3-intensity-{{item.level}});"></view>
+      </button>
+      <block wx:for="{{curve.points}}" wx:key="id">
+        <text wx:if="{{item.showLabel}}" class="thermo-curve__label" style="left: {{item.x}}px; top: {{curve.labelTop}}px;" aria-hidden="true">{{item.label}}</text>
+      </block>
+    </view>
+    <page-state wx:else kind="empty" title="今天还没有记录" description="先记录一次，再看曲线。" />
+    <view wx:if="{{selectedPoint}}" class="thermo-selected" aria-live="polite">
+      <text class="thermo-selected__title">{{selectedPoint.label}} · 强度 {{selectedPoint.level}} / 10</text>
+      <text class="thermo-selected__body">{{selectedPoint.brief || "这次没有写备注。"}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{recentRecords.length}}" class="thermo-section">
+    <p3-section-header title="今天的记录" />
+    <view class="p3-group">
+      <view wx:for="{{recentRecords}}" wx:key="id" class="thermo-record {{index < recentRecords.length - 1 ? 'thermo-record--divided' : ''}}">
+        <view class="thermo-record__badge" style="background: var(--p3-intensity-{{item.intensity_level}});">{{item.intensity_level}}</view>
+        <view class="thermo-record__text">
+          <view class="thermo-record__head">
+            <text class="thermo-record__time">{{item.timeLabel}}</text>
+            <text class="thermo-record__level">强度 {{item.intensity_level}} / 10</text>
+          </view>
+          <text wx:if="{{item.metaText}}" class="thermo-record__meta">{{item.metaText}}</text>
+          <text class="thermo-record__brief">{{item.brief_text || "没有备注"}}</text>
         </view>
       </view>
     </view>
-
-    <view class="micro-panel">
-      <text class="micro-title">补充观察（可保持默认）</text>
-      <view class="micro-row">
-        <view class="micro-heading">
-          <text class="micro-label">愉悦度</text>
-          <text class="micro-value" aria-label="愉悦度 {{valenceLevel}} 分">{{valenceLevel}} / 10</text>
-        </view>
-        <slider class="micro-slider" min="1" max="10" step="1" value="{{valenceLevel}}" activeColor="#23666e" backgroundColor="#d5e3e3" bindchange="onValenceChange" bindchanging="onValenceChange" aria-label="调整愉悦度" />
-      </view>
-      <view class="micro-row">
-        <view class="micro-heading">
-          <text class="micro-label">身体唤起</text>
-          <text class="micro-value" aria-label="身体唤起 {{arousalLevel}} 分">{{arousalLevel}} / 10</text>
-        </view>
-        <slider class="micro-slider" min="1" max="10" step="1" value="{{arousalLevel}}" activeColor="#23666e" backgroundColor="#d5e3e3" bindchange="onArousalChange" bindchanging="onArousalChange" aria-label="调整身体唤起" />
-      </view>
-      <view class="micro-row">
-        <view class="micro-heading">
-          <text class="micro-label">可控感</text>
-          <text class="micro-value" aria-label="可控感 {{controlLevel}} 分">{{controlLevel}} / 10</text>
-        </view>
-        <slider class="micro-slider" min="1" max="10" step="1" value="{{controlLevel}}" activeColor="#23666e" backgroundColor="#d5e3e3" bindchange="onControlChange" bindchanging="onControlChange" aria-label="调整可控感" />
-      </view>
-
-      <text class="field-label">情绪名称（可选）</text>
-      <view class="text-field">
-        <input
-          class="emotion-input"
-          value="{{emotionLabel}}"
-          maxlength="40"
-          placeholder="例如：着急、烦躁、平静" aria-label="情绪名称，可选，最多40字" placeholder-class="field-placeholder"
-          bindinput="onEmotionLabelInput"
-        />
-        <text class="field-limit">{{emotionLabel.length || 0}} / 40</text>
-      </view>
-      <text class="field-label">简短记录（可选）</text>
-      <view class="text-field text-field-brief">
-        <textarea
-          class="brief-input"
-          value="{{briefText}}"
-          maxlength="200"
-          placeholder="用一句话写下刚才发生了什么。" aria-label="简短记录，可选，最多200字" placeholder-class="field-placeholder"
-          bindinput="onBriefInput"
-        />
-        <text class="field-limit">{{briefText.length || 0}} / 200</text>
-      </view>
-    </view>
-
-    <button class="safe-primary-button save-button" loading="{{saving}}" disabled="{{saving}}" bindtap="saveRecord">{{saving ? '正在记录…' : '记录一次'}}</button>
   </view>
 
-  <view wx:if="{{receipt}}" class="receipt-panel" aria-label="本次记录回执">
-    <view class="receipt-heading">
-      <view class="receipt-title-group">
-        <text class="receipt-kicker">记录完成</text>
-      </view>
-      <button class="receipt-close" aria-label="收起记录回执" bindtap="dismissReceipt">×</button>
-    </view>
-    <text wx:for="{{receipt.messages}}" wx:key="*this" class="receipt-message">{{item}}</text>
-    <text class="receipt-boundary">{{receipt.boundary_notice}}</text>
-    <button wx:if="{{receipt.practice_available}}" class="safe-outline-button receipt-action" bindtap="openPractice">去练一张卡</button>
-  </view>
-
-  <view class="curve-section" aria-busy="{{loading}}">
-    <view class="panel-top curve-heading">
-      <view>
-        <text class="section-title">今日曲线</text>
-        <text class="section-meta">共 {{summary.count}} 次，平均 {{summary.avg || "-"}}</text>
-      </view>
-      <button class="refresh-button" bindtap="loadDay">刷新</button>
-    </view>
-    <view wx:if="{{loading}}" class="quiet-state">正在读取今天的记录…</view>
-    <canvas
-      wx:if="{{summary.count && !loading}}"
-      id="moodCurve"
-      class="curve-canvas"
-      type="2d"
-      aria-label="今日情绪强度变化曲线，具体记录见下方列表"
-      bindtouchstart="handleCanvasTap"
-    ></canvas>
-    <view wx:if="{{selectedPoint}}" class="selected-point">
-      <text class="selected-title">{{selectedPoint.label}} · 强度 {{selectedPoint.intensity_level}} / 10</text>
-      <text class="selected-desc">{{selectedPoint.brief_text || "这次没有写备注。"}}</text>
-    </view>
-    <view wx:if="{{!summary.count && !loading && !errorMessage}}" class="quiet-state curve-empty">
-      <text class="state-title">今天还没有记录</text>
-      <text class="state-text">先记录一次，再看曲线。</text>
-    </view>
-  </view>
-
-  <view wx:if="{{errorMessage}}" class="error-panel" role="alert">
-    <text class="state-title">暂时没能完成</text>
-    <text class="state-text">{{errorMessage}}</text>
-    <button class="safe-outline-button retry-button" bindtap="loadDay">重试读取</button>
-  </view>
-
-  <view class="list-section">
-    <text class="section-title">今天的记录</text>
-    <view wx:for="{{records}}" wx:key="id" class="record-row">
-      <view class="record-badge">{{item.intensity_level}}</view>
-      <view class="record-copy">
-        <view class="record-heading">
-          <text class="row-title">{{item.timeLabel}}</text>
-          <text class="row-level">强度 {{item.intensity_level}} / 10</text>
-        </view>
-        <text wx:if="{{item.emotion_label}}" class="row-meta">{{item.emotion_label}} · 愉悦 {{item.valence_level || '-'}} · 唤起 {{item.arousal_level || '-'}} · 可控 {{item.control_level || '-'}}</text>
-        <text class="row-desc">{{item.brief_text || "没有备注"}}</text>
-      </view>
-    </view>
-  </view>
-
-  <view class="boundary-note">{{boundaryNotice}}</view>
+  <text class="p3-footnote">{{boundaryNotice}}</text>
 </view>

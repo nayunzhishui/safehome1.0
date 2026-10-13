@@ -5,6 +5,8 @@ const { createResilientForm } = require("../../utils/resilientForm");
 
 const api = createSafeHomeApi();
 
+const REFLECTION_PROMPTS = ["这次做到哪一步？", "练习前后情绪有什么变化？", "下次想轻一点尝试什么？"];
+
 Page({
   retryServiceEntry() { return this.onLoad(this._entryOptions || {}); },
   returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
@@ -24,11 +26,8 @@ Page({
     helpfulnessRating: "",
     skipReason: "",
     reflection: "",
-    reflectionPrompts: [
-      "这次做到哪一步？",
-      "练习前后情绪有什么变化？",
-      "下次想轻一点尝试什么？",
-    ],
+    reflectionPrompts: REFLECTION_PROMPTS,
+    reflectionPromptsText: REFLECTION_PROMPTS.join(" · "),
     submitting: false,
     successMessage: "",
     errorMessage: "",

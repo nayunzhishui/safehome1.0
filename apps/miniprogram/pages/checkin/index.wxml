@@ -1,80 +1,61 @@
-<view wx:if="{{!serviceReady}}" class="safe-page ui2-page" role="main" aria-label="功能知情说明">
+<view wx:if="{{!serviceReady}}" class="checkin-page" role="main" aria-label="功能知情说明">
   <page-state kind="error" title="使用前请阅读本功能说明" description="{{errorMessage || '确认数据用途后，再填写和保存；暂不同意可以返回。'}}" action-label="重新确认" bind:action="retryServiceEntry" />
-  <button class="safe-primary-button" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
+  <button class="p3-btn p3-btn--primary" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
 </view>
 <block wx:if="{{serviceReady}}">
-<view class="page ui2-page" role="main" aria-label="训练打卡">
-  <view class="hero">
-    <text class="title">练习打卡</text>
+<view class="checkin-page" role="main" aria-label="记录练习尝试">
+  <view class="checkin-card">
+    <text class="checkin-card__kicker">本次练习</text>
+    <text class="checkin-card__title">{{cardTitle}}</text>
+    <text class="checkin-card__body">记录这次尝试和练习前后的感受变化即可。</text>
   </view>
 
-  <view class="panel">
-    <view class="tip-box">
-      <text class="tip-text">记录这次尝试和练习前后的感受变化即可。</text>
+  <view class="checkin-section">
+    <view class="checkin-slider">
+      <text class="checkin-slider__label">练习前情绪强度 {{emotionBefore}} / 10</text>
+      <p3-intensity-slider min="0" max="10" value="{{emotionBefore}}" aria-label="练习前情绪强度" bind:change="onEmotionBeforeChange" />
     </view>
-
-    <view class="selected-card">
-      <text class="label">本次练习</text>
-      <text class="card-title">{{cardTitle}}</text>
-      <view class="meta-row">
-      </view>
+    <view class="checkin-slider">
+      <text class="checkin-slider__label">练习后情绪强度 {{emotionAfter}} / 10</text>
+      <p3-intensity-slider min="0" max="10" value="{{emotionAfter}}" aria-label="练习后情绪强度" bind:change="onEmotionAfterChange" />
     </view>
+  </view>
 
-    <view class="field">
-      <text class="label">练习前情绪强度：{{emotionBefore}} / 10</text>
-      <slider min="0" max="10" step="1" value="{{emotionBefore}}" activeColor="#23666E" bindchange="onEmotionBeforeChange" />
+  <view class="checkin-section">
+    <text class="checkin-label">这次练习对你有帮助吗？</text>
+    <view class="checkin-chips" role="radiogroup" aria-label="这次练习对你有帮助吗">
+      <button
+        wx:for="{{helpfulnessOptions}}"
+        wx:key="value"
+        class="p3-chip {{helpfulnessRating === item.value ? 'p3-chip--selected' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="chooseHelpfulness"
+        aria-pressed="{{helpfulnessRating === item.value}}"
+      >{{item.label}}</button>
     </view>
+  </view>
 
-    <view class="field">
-      <text class="label">练习后情绪强度：{{emotionAfter}} / 10</text>
-      <slider min="0" max="10" step="1" value="{{emotionAfter}}" activeColor="#23666E" bindchange="onEmotionAfterChange" />
+  <view class="p3-field">
+    <text class="p3-field__label">需要暂停的原因（可选）</text>
+    <input class="p3-field__input" aria-label="暂停原因，可选" placeholder-class="p3-field__placeholder" value="{{skipReason}}" placeholder="例如：今天太累，先暂停一下。" bindinput="onSkipReasonInput" />
+  </view>
+
+  <view class="checkin-section">
+    <text class="checkin-label">练习复盘</text>
+    <text class="checkin-prompts">{{reflectionPromptsText}}</text>
+    <view class="p3-field">
+      <text class="p3-field__label">写几句就好</text>
+      <textarea class="p3-field__input p3-field__input--multi" aria-label="练习复盘" placeholder-class="p3-field__placeholder" value="{{reflection}}" placeholder="例如：这次我先停了一下，说话慢了一点。下次想先从少说一句开始。" bindinput="onReflectionInput" />
     </view>
+  </view>
 
-    <view class="field">
-      <text class="label">这次练习对你有帮助吗？</text>
-      <view class="helpfulness-row">
-        <button
-          wx:for="{{helpfulnessOptions}}"
-          wx:key="value"
-          class="helpfulness-chip {{helpfulnessRating === item.value ? 'helpfulness-chip--active' : ''}}"
-          data-value="{{item.value}}"
-          bindtap="chooseHelpfulness" aria-pressed="{{helpfulnessRating === item.value}}"
-        >
-          {{item.label}}
-        </button>
-      </view>
-    </view>
-
-    <view class="field">
-      <text class="label">这次尝试中需要暂停的原因（可选）</text>
-      <input class="pause-input" aria-label="暂停原因，可选" placeholder-class="ui2-placeholder" value="{{skipReason}}" placeholder="例如：今天太累，先暂停一下。" bindinput="onSkipReasonInput" />
-    </view>
-
-    <view class="field">
-      <text class="label">练习复盘</text>
-      <view class="reflection-prompts">
-        <text wx:for="{{reflectionPrompts}}" wx:key="*this" class="prompt-item">{{item}}</text>
-      </view>
-      <textarea class="textarea" aria-label="练习复盘" placeholder-class="ui2-placeholder" value="{{reflection}}" placeholder="例如：这次我先停了一下，说话慢了一点。下次想先从少说一句开始。" bindinput="onReflectionInput" />
-    </view>
-
-    <view wx:if="{{successMessage}}" class="status success">
-      <text>{{successMessage}}</text>
-    </view>
-
-    <view wx:if="{{errorMessage}}" class="status error">
-      <text>{{errorMessage}}</text>
-    </view>
-
-    <text class="draft-status" aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
-    <text wx:if="{{slowSubmitting}}" class="draft-status draft-status--slow">网络响应较慢；草稿仍在本机，请不要重复点击。</text>
-
-    <button class="primary-button" bindtap="submitCheckin" disabled="{{submitting || submitted}}">
-      {{submitted ? '已记录' : (submitting ? '保存中...' : '记录这次尝试')}}
-    </button>
-
-    <button class="secondary-button" bindtap="goHome">回到首页</button>
+  <view class="checkin-save">
+    <text wx:if="{{successMessage}}" class="p3-form-message p3-form-message--success" role="status">{{successMessage}}</text>
+    <text wx:if="{{errorMessage}}" class="p3-form-message p3-form-message--error" role="alert">{{errorMessage}}</text>
+    <text class="checkin-save__status" aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
+    <text wx:if="{{slowSubmitting}}" class="p3-form-message">网络响应较慢；草稿仍在本机，请不要重复点击。</text>
+    <button class="p3-btn p3-btn--primary" bindtap="submitCheckin" disabled="{{submitting || submitted}}">{{submitted ? '已记录' : (submitting ? '保存中...' : '记录这次尝试')}}</button>
+    <button class="p3-btn p3-btn--quiet" bindtap="goHome">回到首页</button>
   </view>
 </view>
-
 </block>

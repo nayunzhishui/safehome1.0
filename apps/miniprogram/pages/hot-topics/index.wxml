@@ -1,91 +1,69 @@
-<view class="safe-page ui2-page hot-topics-page" role="main" aria-label="陪伴案例">
-  <view class="topic-hero">
-    <text class="hero-title">陪伴案例</text>
-  </view>
+<view class="p3-page hot-topics-page" role="main" aria-label="陪伴案例">
+  <text class="p3-meta">本地练习案例 · 非实时热榜</text>
 
-  <text class="case-source">本地练习案例 · 非实时热榜</text>
-  <view class="safe-section">
-    <scroll-view class="tag-scroll" scroll-x enhanced show-scrollbar="{{false}}">
-      <view class="tag-list">
-        <button
-          wx:for="{{tags}}"
-          wx:key="*this"
-          class="topic-tag {{activeTag === item ? 'active' : ''}}"
-          data-tag="{{item}}"
-          bindtap="selectTag" aria-pressed="{{activeTag === item}}"
-        >
-          {{item}}
-        </button>
-      </view>
-    </scroll-view>
-  </view>
+  <scroll-view class="topic-tags" scroll-x enhanced show-scrollbar="{{false}}" aria-label="案例主题">
+    <view class="topic-tags__row">
+      <button
+        wx:for="{{tags}}"
+        wx:key="*this"
+        class="p3-chip {{activeTag === item ? 'p3-chip--selected' : ''}}"
+        data-tag="{{item}}"
+        aria-pressed="{{activeTag === item}}"
+        bindtap="selectTag"
+      >{{item}}</button>
+    </view>
+  </scroll-view>
 
-  <view class="safe-section">
-    <section-title title="案例列表" />
-    <view class="topic-list">
+  <view class="topic-section">
+    <p3-section-header title="案例列表" />
+    <view class="p3-group p3-group--course">
       <button
         wx:for="{{visibleTopics}}"
         wx:key="id"
-        class="topic-card {{selectedTopic.id === item.id ? 'active' : ''}}"
+        class="topic-row {{selectedTopic.id === item.id ? 'topic-row--active' : ''}}"
         data-id="{{item.id}}"
-        bindtap="selectTopic" aria-pressed="{{selectedTopic.id === item.id}}"
+        aria-pressed="{{selectedTopic.id === item.id}}"
+        bindtap="selectTopic"
       >
-        <view class="topic-mark"></view>
-        <view class="topic-copy">
-          <text class="topic-title">{{item.title}}</text>
-          <view class="topic-meta">
-            <text>{{item.tag}}</text>
-            <text>{{item.readTime}}</text>
-          </view>
-          <text class="topic-summary">{{item.summary}}</text>
+        <view wx:if="{{selectedTopic.id === item.id}}" class="topic-current">
+          <text class="p3-item-title">{{item.title}}</text>
+          <text class="topic-current__meta">{{item.tag}} · {{item.readTime}}</text>
+          <text class="p3-body-compact">{{item.summary}}</text>
         </view>
+        <p3-course-row wx:else title="{{item.title}}" scene="{{item.scene}}" meta="{{item.tag}} · {{item.readTime}}" show-divider="{{index < visibleTopics.length - 1 && visibleTopics[index + 1].id !== selectedTopic.id}}" />
       </button>
     </view>
   </view>
 
-  <view class="safe-section">
-    <section-title title="案例拆解" />
-    <view class="detail-card">
-      <text class="detail-title">{{selectedTopic.title}}</text>
-      <view class="detail-block">
-        <text class="detail-label">问题情境</text>
-        <text class="detail-text">{{selectedTopic.situation}}</text>
-      </view>
-      <view class="detail-block">
-        <text class="detail-label">常见回应</text>
-        <text class="detail-text">{{selectedTopic.usualResponse}}</text>
-      </view>
-      <view class="detail-block">
-        <text class="detail-label">可以换一种说法</text>
-        <text class="detail-text">{{selectedTopic.supportiveResponse}}</text>
-      </view>
+  <view class="p3-card topic-breakdown">
+    <text class="p3-action-title" role="heading" aria-level="2">{{selectedTopic.title}}</text>
+    <view class="topic-block">
+      <text class="p3-meta">问题情境</text>
+      <text class="topic-block__text">{{selectedTopic.situation}}</text>
+    </view>
+    <view class="topic-block">
+      <text class="topic-block__label topic-block__label--warm">常见回应</text>
+      <text class="topic-block__text">{{selectedTopic.usualResponse}}</text>
+    </view>
+    <view class="topic-block">
+      <text class="topic-block__label">可以换一种说法</text>
+      <text class="p3-quote">{{selectedTopic.supportiveResponse}}</text>
     </view>
   </view>
 
-  <view class="safe-section">
-    <section-title title="关联练习" />
-    <view class="practice-card">
-      <training-task-card
-        title="{{selectedTopic.practiceCard.title}}"
-        subtitle="{{selectedTopic.practiceCard.subtitle}}"
-        stage="案例关联"
-        duration="{{selectedTopic.practiceCard.duration}}"
-        scenario="{{selectedTopic.practiceCard.scenario}}"
-        tag="{{selectedTopic.practiceCard.tag}}"
-        bind:tapcard="openPractice"
-      />
-      <button class="safe-primary-button practice-button" bindtap="openPractice">查看关联训练卡</button>
+  <view class="topic-section">
+    <p3-section-header title="关联练习" />
+    <view class="p3-group p3-group--course">
+      <button class="topic-row" aria-label="查看关联训练卡：{{selectedTopic.practiceCard.title}}" bindtap="openPractice">
+        <p3-course-row title="{{selectedTopic.practiceCard.title}}" scene="{{selectedTopic.practiceCard.subtitle}}" meta="{{selectedTopic.practiceCard.tag}} · {{selectedTopic.practiceCard.duration}} · {{selectedTopic.practiceCard.scenario}}" show-divider="{{false}}" />
+      </button>
     </view>
+    <button class="p3-btn p3-btn--primary" bindtap="openPractice">查看关联训练卡</button>
   </view>
 
-  <view class="safe-section">
-    <view class="boundary-card">
-      <text>这些案例只用于自我观察和陪伴练习，不用于判断孩子、家长或家庭关系。如果出现紧急安全风险，请优先寻求现实支持和专业帮助。</text>
-    </view>
+  <view class="p3-notice">
+    <text class="p3-notice__body">这些案例只用于自我观察和陪伴练习，不用于判断孩子、家长或家庭关系。如果出现紧急安全风险，请优先寻求现实支持和专业帮助。</text>
   </view>
 
-  <view class="safe-section">
-    <button class="safe-outline-button home-button" bindtap="goHome">回到首页</button>
-  </view>
-
+  <button class="p3-btn p3-btn--quiet" bindtap="goHome">回到首页</button>
 </view>

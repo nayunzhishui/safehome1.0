@@ -1,52 +1,186 @@
-.relationship-report-page {
-  --ui2-feedback-bg: var(--ui2-soft);
-  --ui2-feedback-padding: 40rpx;
-  --ui2-feedback-option-flex: 1 1 calc(50% - 16rpx);
-  padding: 48rpx 48rpx calc(64rpx + env(safe-area-inset-bottom));
-  background: var(--ui2-canvas);
+/* 阶段性报告（Figma 675:3478）：报告头与三段进度、核对卡、一张纸正文（细线分节）、边界脚注与长图导出。 */
+.report-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-section);
+  padding-top: 16rpx;
+  padding-bottom: calc(72rpx + env(safe-area-inset-bottom));
 }
-.report-title, .report-meta, .report-profile, .report-copy,
-.section-title, .section-help, .list-line, .attention-title,
-.hypothesis-text, .hypothesis-state, .download-help, .boundary-title,
-.pending-status { display: block; }
-.report-head { display: flex; flex-direction: column; gap: 32rpx; }
-.report-title { color: var(--ui2-ink); font-size: 44rpx; font-weight: 700; line-height: 1.6; text-align: center; overflow-wrap: anywhere; }
-.report-status-row { display: flex; align-items: center; flex-wrap: wrap; gap: 16rpx; }
-.report-meta-group { display: flex; flex-wrap: wrap; gap: 8rpx 16rpx; min-width: 0; }
-.report-meta, .version-chip { color: var(--ui2-muted); font-size: 26rpx; line-height: 1.6; overflow-wrap: anywhere; }
-.status-track { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12rpx; }
-.status-step { padding: 8rpx 0; color: var(--ui2-muted); font-size: 26rpx; line-height: 1.6; text-align: center; }
-.status-step--complete { color: var(--ui2-primary); text-decoration: underline; text-underline-offset: 8rpx; }
-.status-step--current { color: #72552f; font-weight: 700; background: var(--ui2-warm); border-radius: 8rpx; }
-.profile-excerpt { display: flex; flex-direction: column; gap: 24rpx; padding: 40rpx; border-radius: 24rpx; background: var(--ui2-soft); }
-.report-profile { color: var(--ui2-ink); font-size: 34rpx; font-weight: 700; line-height: 1.6; }
-.report-copy, .hypothesis-text, .list-line, .tension-clue { color: var(--ui2-ink); font-size: 30rpx; line-height: 1.6; overflow-wrap: anywhere; }
-.report-section { padding: 48rpx 0; border-bottom: 1rpx solid var(--ui2-line); }
-.report-feedback-section { padding-bottom: 0; border: 0; }
-.section-title { margin-bottom: 24rpx; color: var(--ui2-ink); font-size: 32rpx; font-weight: 700; line-height: 1.6; }
-.section-help, .download-help { color: var(--ui2-muted); font-size: 30rpx; line-height: 1.6; }
-.section-help { margin-bottom: 24rpx; }
-.radar-list { display: flex; flex-direction: column; gap: 24rpx; }
-.radar-label-row { display: flex; justify-content: space-between; gap: 24rpx; color: var(--ui2-ink); font-size: 30rpx; line-height: 1.6; }
-.radar-label-row text:first-child { min-width: 0; overflow-wrap: anywhere; }
-.radar-label-row text:last-child { flex-shrink: 0; font-variant-numeric: tabular-nums; }
-.radar-track { height: 12rpx; margin-top: 16rpx; overflow: hidden; border-radius: 6rpx; background: var(--ui2-line); }
-.radar-fill { height: 100%; border-radius: 6rpx; background: var(--ui2-primary); }
-.tension-axis { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 16rpx; margin: 24rpx 0; padding: 32rpx; border-radius: 24rpx; background: var(--ui2-soft); color: var(--ui2-primary); font-size: 30rpx; font-weight: 700; text-align: center; }
-.axis-connector { color: var(--ui2-muted); font-size: 26rpx; font-weight: 400; }
-.tension-clue + .tension-clue { margin-top: 24rpx; }
-.hypothesis-card { padding: 24rpx 0; }
-.hypothesis-card + .hypothesis-card { border-top: 1rpx solid var(--ui2-line); }
-.hypothesis-state { margin-top: 20rpx; color: var(--ui2-muted); font-size: 26rpx; line-height: 1.6; }
-.feedback-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12rpx; margin-top: 24rpx; }
-.feedback-option { display: flex; align-items: center; justify-content: center; min-height: 96rpx; padding: 20rpx 8rpx; border: 2rpx solid var(--ui2-control-border); border-radius: 24rpx; background: var(--ui2-surface); color: var(--ui2-ink); font-size: 30rpx; line-height: 1.6; }
-.feedback-option::after { border: 0; }
-.feedback-option--active { border-color: var(--ui2-primary); background: var(--ui2-soft); color: var(--ui2-primary); font-weight: 700; }
-.feedback-option:focus-visible { outline: 4rpx solid var(--ui2-primary); outline-offset: 4rpx; }
-.list-line { padding: 8rpx 0; }
-.report-export { display: flex; flex-direction: column; gap: 48rpx; padding-top: 48rpx; }
-.attention-notice, .boundary-note { padding: 32rpx; border-radius: 24rpx; background: var(--ui2-warm); color: var(--ui2-ink); font-size: 30rpx; line-height: 1.6; }
-.attention-title, .boundary-title { margin-bottom: 16rpx; font-weight: 700; }
-.report-pending-body { display: flex; flex-direction: column; gap: 32rpx; }
-.pending-status { color: var(--ui2-primary); font-size: 32rpx; font-weight: 700; }
-.share-canvas { position: fixed; top: 0; left: -10000px; pointer-events: none; }
+
+.report-head {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--p3-stack);
+}
+
+.report-head__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+/* 已生成 → 已确认 → 已发送：3px 青瓷短条 + 小字，未到的步骤用细线色 */
+.report-steps {
+  display: flex;
+  gap: var(--p3-tight);
+}
+
+.report-step {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 12rpx;
+  min-width: 0;
+}
+
+.report-step__bar {
+  height: 6rpx;
+  border-radius: 999rpx;
+  background: var(--p3-hairline);
+}
+
+.report-step__label {
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+  white-space: nowrap;
+}
+
+.report-step--complete .report-step__bar {
+  background: var(--p3-primary);
+}
+
+.report-step--complete .report-step__label {
+  color: var(--p3-primary);
+}
+
+.report-excerpt {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  padding-top: 8rpx;
+}
+
+.report-body {
+  display: block;
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
+  overflow-wrap: anywhere;
+}
+
+.report-body--muted {
+  color: var(--p3-muted);
+}
+
+/* 报告正文：一张纸白卡，节与节之间一条细线 */
+.report-paper {
+  display: flex;
+  flex-direction: column;
+  padding: 8rpx var(--p3-card);
+  border-radius: var(--p3-radius-card);
+  background: var(--p3-surface);
+}
+
+.report-paper--padded {
+  padding: var(--p3-card);
+}
+
+.report-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+  padding: 36rpx 0;
+}
+
+.report-section + .report-section {
+  border-top: 2rpx solid var(--p3-hairline);
+}
+
+.report-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  padding-top: 12rpx;
+}
+
+.report-bar__label {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--p3-tight);
+}
+
+.report-bar__name {
+  min-width: 0;
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.report-bar__track {
+  overflow: hidden;
+  height: 12rpx;
+  border-radius: 999rpx;
+  background: var(--p3-paper);
+}
+
+.report-bar__fill {
+  height: 100%;
+  border-radius: 999rpx;
+  background: var(--p3-primary);
+}
+
+/* 两种需要：青瓷“靠近”与暖棕“保护”之间以细线和“同时”相连 */
+.report-axis {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-tight);
+  font-size: 28rpx;
+  line-height: 44rpx;
+  white-space: nowrap;
+}
+
+.report-axis__near {
+  color: var(--p3-primary);
+}
+
+.report-axis__guard {
+  color: var(--p3-warm-ink);
+}
+
+.report-axis__line {
+  flex: 1 0 0;
+  min-width: 16rpx;
+  height: 2rpx;
+  background: var(--p3-hairline);
+}
+
+.report-hypothesis {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+}
+
+.report-hypothesis + .report-hypothesis {
+  padding-top: 24rpx;
+  border-top: 2rpx solid var(--p3-hairline);
+}
+
+.report-export {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+}
+
+.report-export__help {
+  text-align: center;
+}
+
+.share-canvas {
+  position: fixed;
+  top: 0;
+  left: -10000px;
+  pointer-events: none;
+}

@@ -296,9 +296,24 @@ function protectionStatusLabel(status) {
   return map[status] || status || "待确认";
 }
 
+// 长文（隐私政策、用户协议）前两章展开，其余折叠成一行一章（Figma 672:3412）；
+// “【上线前请填写：…】”这类负责人尚未确定的字段原样保留，只用暖棕色标出。
+function noticeView(notice) {
+  const sections = (notice.sections || []).map((section) => ({
+    title: section.title,
+    items: (section.items || []).map((text) => ({ text, pending: /【[^】]*填写/.test(text) })),
+  }));
+  const foldFrom = sections.length > 4 ? 2 : sections.length;
+  return {
+    openSections: sections.slice(0, foldFrom),
+    foldSections: sections.slice(foldFrom).map((section) => ({ ...section, expanded: false })),
+  };
+}
+
 Page({
   data: {
     notice: NOTICE_MAP.boundary,
+    ...noticeView(NOTICE_MAP.boundary),
     noticeType: "boundary",
     privacyLoading: false,
     privacyError: "",
@@ -321,12 +336,23 @@ Page({
     generatedBindExpiresAt: "",
   },
 
+  toggleSection(event) {
+    const index = Number(event.currentTarget.dataset.index);
+    const section = this.data.foldSections[index];
+    if (!section) return;
+    this.setData({ [`foldSections[${index}].expanded`]: !section.expanded });
+  },
+
   onLoad(options = {}) {
     const type = options.type || "boundary";
+    const notice = NOTICE_MAP[type] || NOTICE_MAP.boundary;
     this.setData({
-      notice: NOTICE_MAP[type] || NOTICE_MAP.boundary,
+      notice,
       noticeType: type,
+      ...noticeView(notice),
     });
+    // 导航栏显示具体说明名（Figma：知情与边界 / 隐私说明 / 参与者保护）。
+    if (notice.kicker) wx.setNavigationBarTitle({ title: notice.kicker });
   },
 
   onShow() {

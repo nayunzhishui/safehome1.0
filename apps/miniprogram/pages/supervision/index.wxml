@@ -1,48 +1,42 @@
-<view wx:if="{{!serviceReady}}" class="safe-page ui2-page" role="main" aria-label="功能知情说明">
+<view wx:if="{{!serviceReady}}" class="p3-page supervision-page" role="main" aria-label="功能知情说明">
   <page-state kind="error" title="使用前请阅读本功能说明" description="{{errorMessage || '确认数据用途后，再填写和保存；暂不同意可以返回。'}}" action-label="重新确认" bind:action="retryServiceEntry" />
-  <button class="safe-primary-button" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
+  <button class="p3-btn p3-btn--primary" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
 </view>
 <block wx:if="{{serviceReady}}">
-<view class="safe-page ui2-page supervision-page" role="main" aria-label="人工支持">
-  <view class="supervision-hero">
-    <view class="hero-copy">
-      <text class="title">人工支持</text>
+<view class="p3-page supervision-page" role="main" aria-label="人工支持">
+  <view class="supervision-boundary">
+    <view class="p3-notice p3-notice--warm" role="note">
+      <text class="p3-notice__title">先确认边界</text>
+      <text class="p3-notice__body">人工反馈可能需要等待，适合补充理解一条记录，不适合处理紧急安全风险。</text>
     </view>
+    <text class="supervision-risk">如果你或孩子正在经历自伤、自杀、暴力、失控或其他安全风险，请先联系身边可信赖的人、当地紧急服务或线下专业机构。</text>
   </view>
 
-  <view class="boundary-card">
-    <text class="boundary-title">先确认边界</text>
-    <text class="boundary-text">人工反馈可能需要等待，适合补充理解一条记录，不适合处理紧急安全风险。</text>
-    <text class="boundary-text strong">如果你或孩子正在经历自伤、自杀、暴力、失控或其他安全风险，请先联系身边可信赖的人、当地紧急服务或线下专业机构。</text>
-  </view>
-
-  <view class="form-card">
-    <view class="field linked-record">
-      <text class="label">选择想请老师一起看的记录</text>
-      <text wx:if="{{loadingSources}}" class="source-state" aria-live="polite">正在读取可关联记录…</text>
-      <view wx:if="{{sourceError}}" class="source-error"><text>{{sourceError}}</text><button class="safe-secondary-button" bindtap="retrySources">重新读取关联记录</button></view>
-      <scroll-view scroll-y class="source-list">
-        <button
-          wx:for="{{sourceOptions}}"
-          wx:key="id"
-          class="source-option {{item.selected ? 'source-option--active' : ''}}"
-          data-type="{{item.type}}"
-          data-id="{{item.id}}"
-          bindtap="selectSource" aria-pressed="{{item.selected}}"
-        >
-          <view class="source-copy">
-            <text class="source-title">{{item.title}}</text>
-            <text class="source-meta">{{item.meta}}</text>
-          </view>
-          <text class="source-check">{{item.selected ? '已选择' : '选择'}}</text>
-        </button>
-      </scroll-view>
+  <view class="supervision-form">
+    <view class="supervision-sources" role="radiogroup" aria-label="选择想请老师一起看的记录">
+      <text class="p3-field__label">选择想请老师一起看的记录</text>
+      <text wx:if="{{loadingSources}}" class="p3-meta" aria-live="polite">正在读取可关联记录…</text>
+      <view wx:if="{{sourceError}}" class="supervision-source-error">
+        <text class="p3-form-message p3-form-message--error">{{sourceError}}</text>
+        <button class="p3-btn p3-btn--quiet" bindtap="retrySources">重新读取关联记录</button>
+      </view>
+      <therapeutic-choice-option
+        wx:for="{{sourceOptions}}"
+        wx:key="id"
+        data-type="{{item.type}}"
+        data-id="{{item.id}}"
+        value="{{item.type}}:{{item.id}}"
+        label="{{item.title}}"
+        description="{{item.meta}}"
+        selected="{{item.selected}}"
+        bind:change="selectSource"
+      />
     </view>
 
-    <view class="field">
-      <text class="label">想请老师补充看的内容</text>
-      <textarea aria-label="想请老师补充看的内容" placeholder-class="ui2-placeholder"
-        class="textarea"
+    <view class="p3-field">
+      <text class="p3-field__label">想请老师补充看的内容</text>
+      <textarea aria-label="想请老师补充看的内容" placeholder-class="p3-field__placeholder"
+        class="p3-field__input p3-field__input--multi"
         value="{{message}}"
         placeholder="例如：这次记录里，我想知道可以先从哪个小动作开始练。"
         bindinput="onTextInput"
@@ -50,10 +44,11 @@
       />
     </view>
 
-    <view class="field">
-      <text class="label">可选联系方式</text>
-      <input aria-label="联系方式，可选" placeholder-class="ui2-placeholder"
-        class="input"
+    <view class="p3-field">
+      <text class="p3-field__label">可选联系方式</text>
+      <textarea aria-label="联系方式，可选" placeholder-class="p3-field__placeholder"
+        class="p3-field__input p3-field__input--auto"
+        auto-height
         value="{{contact}}"
         placeholder="可不填。只填写你愿意用于后续沟通的信息。"
         bindinput="onTextInput"
@@ -61,10 +56,10 @@
       />
     </view>
 
-    <view class="field">
-      <text class="label">可选风险提示</text>
-      <textarea aria-label="风险提示，可选" placeholder-class="ui2-placeholder"
-        class="textarea"
+    <view class="p3-field">
+      <text class="p3-field__label">可选风险提示</text>
+      <textarea aria-label="风险提示，可选" placeholder-class="p3-field__placeholder"
+        class="p3-field__input p3-field__input--multi"
         value="{{riskHint}}"
         placeholder="可不填。如果有需要老师特别留意的安全或压力信息，可以简单写一句。紧急情况请先找现实支持。"
         bindinput="onTextInput"
@@ -72,23 +67,14 @@
       />
     </view>
 
-    <view wx:if="{{successMessage}}" class="status success">
-      <text>{{successMessage}}</text>
-    </view>
+    <text wx:if="{{successMessage}}" class="p3-form-message p3-form-message--success" role="status">{{successMessage}}</text>
+    <text wx:if="{{errorMessage}}" class="p3-form-message p3-form-message--error" role="alert">{{errorMessage}}</text>
 
-    <view wx:if="{{errorMessage}}" class="status error">
-      <text>{{errorMessage}}</text>
-    </view>
+    <text class="p3-meta" aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
+    <text wx:if="{{slowSubmitting}}" class="p3-form-message p3-form-message--error">网络响应较慢；草稿仍在本机，请不要重复点击。</text>
 
-    <text class="draft-status" aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
-    <text wx:if="{{slowSubmitting}}" class="draft-status draft-status--slow">网络响应较慢；草稿仍在本机，请不要重复点击。</text>
-
-    <button class="safe-primary-button submit-button" bindtap="submitSupervision" disabled="{{submitting}}">
-      {{submitting ? '提交中...' : '提交给老师补充看看'}}
-    </button>
-
-    <button class="safe-secondary-button back-button" bindtap="goHome">回到首页</button>
+    <button class="p3-btn p3-btn--primary" bindtap="submitSupervision" disabled="{{submitting}}">{{submitting ? '提交中...' : '提交给老师补充看看'}}</button>
+    <button class="p3-btn p3-btn--secondary" bindtap="goHome">回到首页</button>
   </view>
 </view>
-
 </block>

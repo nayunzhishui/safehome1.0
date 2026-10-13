@@ -1,7 +1,0 @@
-{
-  "component": true,
-  "styleIsolation": "isolated",
-  "usingComponents": {
-    "bamboo-timeline-node": "/components/bamboo-timeline-node/index"
-  }
-}

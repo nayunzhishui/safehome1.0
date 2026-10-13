@@ -4,8 +4,23 @@ const { buildDimensionVisualization } = require("../../utils/assessment-dimensio
 const { buildEmotionInsightsView } = require("../../utils/emotion-insights-view");
 
 const api = createSafeHomeApi();
+// 图表颜色与 UIproduct3 令牌一致（画布里不能用 CSS 变量）。
+const CHART_COLORS = {
+  ink: "#173C43",
+  muted: "#536E73",
+  primary: "#23666E",
+  primaryFill: "rgba(35, 102, 110, 0.16)",
+  hairline: "#E7E1D6",
+  soft: "#E2F0ED",
+};
+const RADAR_LABEL_SIZE = 13;
 const LATEST_TRAINING_RECOMMENDATION_KEY = "safehome:latestTrainingRecommendation";
 const THREE_DAY_LIGHT_PLAN_KEY = "safehome:threeDayLightPlan";
+
+// 画布标签宽度估算：中文与全角符号按一个字宽，其余按 0.56 个字宽（Noto Sans SC 近似），不依赖各端 measureText 差异。
+function estimateTextWidth(text, fontSize) {
+  return String(text || "").split("").reduce((sum, char) => sum + (char.charCodeAt(0) > 0x2e7f ? fontSize : fontSize * 0.56), 0);
+}
 
 function parseJsonSafe(value, fallback) {
   if (!value) return fallback;
@@ -88,6 +103,51 @@ function buildScaleDimensions(result, profileSummary) {
         composite: Boolean(guide.composite),
       };
     });
+}
+
+function formatScoreNumber(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return value === undefined || value === null ? "" : String(value);
+  return Number.isInteger(number) ? String(number) : String(Math.round(number * 10) / 10);
+}
+
+function decorateDimensionRow(item) {
+  const methodText = scoreMethodText(item.scoreMethod);
+  const countText = item.itemCount !== undefined && item.itemCount !== null ? `${item.itemCount} 题${methodText}` : methodText;
+  return {
+    ...item,
+    scoreText: formatScoreNumber(item.score),
+    maxText: item.hasComparableRange ? `/ ${formatScoreNumber(item.maxScore)}` : "",
+    metaText: item.hasComparableRange
+      ? `量尺 ${formatScoreNumber(item.minScore)}–${formatScoreNumber(item.maxScore)} · ${countText} · 竖线为中点`
+      : "量尺范围暂未核定",
+    positionShort: item.hasComparableRange ? `位置 ${item.positionPercent}%` : "保留原始得分",
+    // 中间区没有单独标签时只显示统一句，用浅色字。
+    plainHint: !item.bandLabel,
+  };
+}
+
+function decorateVisualization(visualization) {
+  if (!visualization) return visualization;
+  return {
+    ...visualization,
+    dimensions: (visualization.dimensions || []).map(decorateDimensionRow),
+    composites: (visualization.composites || []).map(decorateDimensionRow),
+  };
+}
+
+// “10月10日 20:40 · 10 题”
+function buildResultMeta(result, worksheet) {
+  if (!result) return "";
+  const matched = String(result.created_at || "").match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2}))?/);
+  const parts = [];
+  if (matched) parts.push(`${Number(matched[2])}月${Number(matched[3])}日${matched[4] ? ` ${matched[4]}:${matched[5]}` : ""}`);
+  const answers = parseJsonSafe(result.answers_json, null);
+  const questionCount = worksheet && Array.isArray(worksheet.questions) && worksheet.questions.length
+    ? worksheet.questions.length
+    : Array.isArray(result.answers) ? result.answers.length : Array.isArray(answers) ? answers.length : 0;
+  if (questionCount) parts.push(`${questionCount} 题`);
+  return parts.join(" · ");
 }
 
 function buildSourceNotice(worksheet, profileSummary) {
@@ -247,6 +307,9 @@ function buildProfilePositionSummary(payload) {
   const clusters = Array.isArray(payload.clusters) ? payload.clusters : [];
   const dimensionRadarFeatures = buildDimensionRadarFeatures(payload, position, clusters);
   const radarFeatures = dimensionRadarFeatures.length >= 3 ? dimensionRadarFeatures : buildRadarFeatures(payload);
+  // 图例先排满左列再排右列（Figma 679:3889「两列」）。
+  const legendSplit = Math.ceil(radarFeatures.length / 2);
+  const radarLegendColumns = [radarFeatures.slice(0, legendSplit), radarFeatures.slice(legendSplit)].filter((column) => column.length);
   const radarCaption = dimensionRadarFeatures.length >= 3
     ? "轮廓显示这一画像组在各维度上的特点，与既往样本平均水平比较。"
     : "轮廓显示你这次在差异最大的几道题上的作答，与既往样本平均水平比较；越靠外表示越认同该题的说法。";
@@ -273,6 +336,7 @@ function buildProfilePositionSummary(payload) {
       clusterPoints: [],
       userPoint: null,
       radarFeatures,
+      radarLegendColumns,
       radarCaption,
       strengthNote: payload.strength_note || "",
       smallStep: payload.small_step || "",
@@ -327,6 +391,7 @@ function buildProfilePositionSummary(payload) {
         }
       : null,
     radarFeatures,
+    radarLegendColumns,
     radarCaption,
     strengthNote: payload.strength_note || "",
     smallStep: payload.small_step || "",
@@ -520,7 +585,7 @@ Page({
         profilePosition = buildProfilePositionSummary(positionPayload);
       }
       const scaleDimensions = buildScaleDimensions(result, profileSummary);
-      const scaleVisualization = buildDimensionVisualization(scaleDimensions, worksheet);
+      const scaleVisualization = decorateVisualization(buildDimensionVisualization(scaleDimensions, worksheet));
       const sourceNotice = buildSourceNotice(worksheet, profileSummary);
       const riskSummary = buildRiskSummary(result);
       // Apply the existing high-risk boundary before display and local recommendation caching.
@@ -538,6 +603,7 @@ Page({
         {
           result,
           worksheet,
+          resultMetaText: buildResultMeta(result, worksheet),
           loading: false,
           totalScoreText: result && result.total_score !== null && result.total_score !== undefined ? `${result.total_score}` : "本工作表不自动计分",
           recommendedCardsText: profileSummary
@@ -593,12 +659,11 @@ Page({
 
   drawPositionCanvas(profilePosition) {
     if (!profilePosition.userPoint) return;
-    this.withCanvasSize(".position-canvas", { width: 320, height: 180 }, ({ width, height }) => {
+    // 散点（Figma 679:3894）：纸色底由外框提供；十字细线；参照组 16px 浅青瓷圆 + 编号；当前位置 20px 青瓷圆。
+    this.withCanvasSize(".position-canvas", { width: 310, height: 180 }, ({ width, height }) => {
       const ctx = wx.createCanvasContext("profilePlotCanvas", this);
       ctx.clearRect(0, 0, width, height);
-      ctx.setFillStyle("#f4f8f8");
-      ctx.fillRect(0, 0, width, height);
-      ctx.setStrokeStyle("#d5e3e3");
+      ctx.setStrokeStyle(CHART_COLORS.hairline);
       ctx.setLineWidth(1);
       ctx.beginPath();
       ctx.moveTo(24, height / 2);
@@ -607,29 +672,30 @@ Page({
       ctx.lineTo(width / 2, height - 20);
       ctx.stroke();
 
+      ctx.setTextBaseline("middle");
       (profilePosition.clusterPoints || []).forEach((point) => {
         const x = (Number(point.xPercent) / 100) * width;
         const y = (Number(point.yPercent) / 100) * height;
-        ctx.setFillStyle("#e2f0ed");
+        ctx.setFillStyle(CHART_COLORS.soft);
         ctx.beginPath();
         ctx.arc(x, y, 8, 0, Math.PI * 2);
         ctx.fill();
-        ctx.setFillStyle("#536e73");
-        ctx.setFontSize(12);
+        ctx.setFillStyle(CHART_COLORS.muted);
+        ctx.setFontSize(13);
         ctx.setTextAlign("center");
-        ctx.fillText(point.axisLabel || "", x, y + 3);
+        ctx.fillText(point.axisLabel || "", x, y);
       });
 
       const ux = (Number(profilePosition.userPoint.xPercent) / 100) * width;
       const uy = (Number(profilePosition.userPoint.yPercent) / 100) * height;
-      ctx.setFillStyle("#23666e");
+      ctx.setFillStyle(CHART_COLORS.primary);
       ctx.beginPath();
       ctx.arc(ux, uy, 10, 0, Math.PI * 2);
       ctx.fill();
-      ctx.setFillStyle("#173c43");
-      ctx.setFontSize(12);
+      ctx.setFillStyle(CHART_COLORS.ink);
+      ctx.setFontSize(13);
       ctx.setTextAlign(ux > width * 0.7 ? "right" : "left");
-      ctx.fillText("当前位置", ux > width * 0.7 ? ux - 14 : ux + 14, Math.max(uy - 12, 18));
+      ctx.fillText("当前位置", ux > width * 0.7 ? ux - 14 : ux + 14, Math.max(uy - 18, 12));
       ctx.draw();
     });
   },
@@ -637,51 +703,65 @@ Page({
   drawRadarCanvas(profilePosition) {
     const features = profilePosition.radarFeatures || [];
     if (features.length < 3) return;
-    this.withCanvasSize(".radar-canvas", { width: 320, height: 240 }, ({ width, height }) => {
+    // 画像轮廓（Figma 679:3920）：33/66/100% 三圈细线，编号轴；本次轮廓青瓷 2px + 16% 填充 + 5px 点。
+    this.withCanvasSize(".radar-canvas", { width: 310, height: 200 }, ({ width, height }) => {
       const ctx = wx.createCanvasContext("profileRadarCanvas", this);
       const centerX = width / 2;
       const centerY = height / 2;
-      const radius = Math.min(width, height) * 0.31;
+      const radius = Math.min(width * 0.23, height * 0.33);
+      const pointAt = (index, distance) => {
+        const angle = (Math.PI * 2 * index) / features.length - Math.PI / 2;
+        return { angle, x: centerX + Math.cos(angle) * distance, y: centerY + Math.sin(angle) * distance };
+      };
       ctx.clearRect(0, 0, width, height);
-      ctx.setFillStyle("#ffffff");
-      ctx.fillRect(0, 0, width, height);
 
+      ctx.setStrokeStyle(CHART_COLORS.hairline);
+      ctx.setLineWidth(1);
       [0.33, 0.66, 1].forEach((ratio) => {
-        ctx.setStrokeStyle("#d5e3e3");
         ctx.beginPath();
         features.forEach((_item, index) => {
-          const angle = (Math.PI * 2 * index) / features.length - Math.PI / 2;
-          const x = centerX + Math.cos(angle) * radius * ratio;
-          const y = centerY + Math.sin(angle) * radius * ratio;
-          if (index === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
+          const point = pointAt(index, radius * ratio);
+          if (index === 0) ctx.moveTo(point.x, point.y);
+          else ctx.lineTo(point.x, point.y);
         });
         ctx.closePath();
         ctx.stroke();
       });
+      features.forEach((_item, index) => {
+        const point = pointAt(index, radius);
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(point.x, point.y);
+        ctx.stroke();
+      });
 
-      ctx.setStrokeStyle("#23666e");
-      ctx.setFillStyle("rgba(79, 124, 107, 0.18)");
+      ctx.setStrokeStyle(CHART_COLORS.primary);
+      ctx.setFillStyle(CHART_COLORS.primaryFill);
+      ctx.setLineWidth(2);
       ctx.beginPath();
       features.forEach((item, index) => {
-        const angle = (Math.PI * 2 * index) / features.length - Math.PI / 2;
-        const x = centerX + Math.cos(angle) * radius * item.value;
-        const y = centerY + Math.sin(angle) * radius * item.value;
-        if (index === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        const point = pointAt(index, radius * item.value);
+        if (index === 0) ctx.moveTo(point.x, point.y);
+        else ctx.lineTo(point.x, point.y);
       });
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
-
-      ctx.setFillStyle("#536e73");
-      ctx.setFontSize(12);
-      ctx.setTextAlign("center");
+      ctx.setFillStyle(CHART_COLORS.primary);
       features.forEach((item, index) => {
-        const angle = (Math.PI * 2 * index) / features.length - Math.PI / 2;
-        const x = centerX + Math.cos(angle) * (radius + 18);
-        const y = centerY + Math.sin(angle) * (radius + 18);
-        ctx.fillText(item.axisLabel || String(index + 1), Math.max(12, Math.min(x, width - 12)), Math.max(12, Math.min(y + 4, height - 8)));
+        const point = pointAt(index, radius * item.value);
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.setFillStyle(CHART_COLORS.muted);
+      ctx.setFontSize(13);
+      ctx.setTextAlign("center");
+      ctx.setTextBaseline("middle");
+      features.forEach((item, index) => {
+        const point = pointAt(index, radius + 16);
+        ctx.fillText(item.axisLabel || String(index + 1), Math.max(10, Math.min(point.x, width - 10)), Math.max(10, Math.min(point.y, height - 10)));
       });
       ctx.draw();
     });
@@ -691,73 +771,86 @@ Page({
     const visualization = this.data.scaleVisualization;
     const features = visualization && visualization.radarFeatures ? visualization.radarFeatures : [];
     if (!visualization || !visualization.showRadar || features.length < 3) return;
-    this.withCanvasSize(".dimension-radar-canvas", { width: 320, height: 300 }, ({ width, height }) => {
+    // 维度雷达（Figma 679:3649）：H228，R = min(.23W, .33H)；25/75/100% 细线圈；量尺中点 50% 虚线；
+    // 本次填写青瓷 2px + 16% 填充 + 5px 点；标签 13px 墨色，距外圈 12，按方向左/中/右对齐，7 字截断。
+    this.withCanvasSize(".dimension-radar-canvas", { width: 314, height: 228 }, ({ width, height }) => {
       const ctx = wx.createCanvasContext("dimensionRadarCanvas", this);
       const centerX = width / 2;
-      const centerY = height / 2 + 4;
-      const radius = Math.min(width * 0.32, height * 0.31);
-      const pointAt = (index, ratio, extra = 0) => {
-        const angle = (Math.PI * 2 * index) / features.length - Math.PI / 2;
-        return {
-          angle,
-          x: centerX + Math.cos(angle) * (radius * ratio + extra),
-          y: centerY + Math.sin(angle) * (radius * ratio + extra),
-        };
+      const centerY = height / 2;
+      const axisAngle = (index) => (Math.PI * 2 * index) / features.length - Math.PI / 2;
+      const labelWidths = features.map((item) => estimateTextWidth(item.axisLabel, RADAR_LABEL_SIZE));
+      // 侧向长标签收回画布内后与外圈顶点至少留 2px；设计宽度下不触发，窄屏时才缩小半径。
+      const fittedRadius = features.reduce((limit, _item, index) => {
+        const cos = Math.abs(Math.cos(axisAngle(index)));
+        return cos > 0.25 ? Math.min(limit, (centerX - labelWidths[index] - 2) / cos) : limit;
+      }, Math.min(width * 0.23, height * 0.33));
+      const radius = Math.max(width * 0.15, fittedRadius);
+      const pointAt = (index, distance) => {
+        const angle = axisAngle(index);
+        return { angle, x: centerX + Math.cos(angle) * distance, y: centerY + Math.sin(angle) * distance };
       };
-      const drawPolygon = (valueKey, stroke, fill, lineWidth) => {
-        ctx.setStrokeStyle(stroke);
-        ctx.setFillStyle(fill);
-        ctx.setLineWidth(lineWidth);
+      const tracePolygon = (distanceOf) => {
         ctx.beginPath();
         features.forEach((item, index) => {
-          const point = pointAt(index, Number(item[valueKey]));
+          const point = pointAt(index, distanceOf(item));
           if (index === 0) ctx.moveTo(point.x, point.y);
           else ctx.lineTo(point.x, point.y);
         });
         ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
       };
 
       ctx.clearRect(0, 0, width, height);
-      ctx.setFillStyle("#f4f8f8");
-      ctx.fillRect(0, 0, width, height);
-
-      [0.25, 0.5, 0.75, 1].forEach((ratio) => {
-        ctx.setStrokeStyle(ratio === 0.5 ? "#b8d4e8" : "#dde5df");
-        ctx.setLineWidth(ratio === 0.5 ? 1.5 : 1);
-        ctx.beginPath();
-        features.forEach((_item, index) => {
-          const point = pointAt(index, ratio);
-          if (index === 0) ctx.moveTo(point.x, point.y);
-          else ctx.lineTo(point.x, point.y);
-        });
-        ctx.closePath();
+      ctx.setStrokeStyle(CHART_COLORS.hairline);
+      ctx.setLineWidth(1);
+      [0.25, 0.75, 1].forEach((ratio) => {
+        tracePolygon(() => radius * ratio);
         ctx.stroke();
       });
-
-      ctx.setStrokeStyle("#e5e9e4");
-      ctx.setLineWidth(1);
       features.forEach((_item, index) => {
-        const point = pointAt(index, 1);
+        const point = pointAt(index, radius);
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.lineTo(point.x, point.y);
         ctx.stroke();
       });
 
-      drawPolygon("referenceValue", "#74add7", "rgba(116, 173, 215, 0.10)", 2);
-      drawPolygon("value", "#23666e", "rgba(79, 124, 107, 0.20)", 2.5);
+      // 量尺中点（参考线）：虚线，不是常模或目标值。
+      ctx.setStrokeStyle(CHART_COLORS.muted);
+      ctx.setLineWidth(1.25);
+      ctx.setLineDash([4, 3], 0);
+      tracePolygon((item) => radius * Number(item.referenceValue === undefined ? 0.5 : item.referenceValue));
+      ctx.stroke();
+      ctx.setLineDash([], 0);
 
-      ctx.setFillStyle("#173c43");
-      ctx.setFontSize(12);
+      ctx.setStrokeStyle(CHART_COLORS.primary);
+      ctx.setFillStyle(CHART_COLORS.primaryFill);
+      ctx.setLineWidth(2);
+      tracePolygon((item) => radius * Number(item.value));
+      ctx.fill();
+      ctx.stroke();
+      ctx.setFillStyle(CHART_COLORS.primary);
       features.forEach((item, index) => {
-        const point = pointAt(index, 1, 22);
+        const point = pointAt(index, radius * Number(item.value));
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.setFillStyle(CHART_COLORS.ink);
+      ctx.setFontSize(RADAR_LABEL_SIZE);
+      ctx.setTextBaseline("middle");
+      features.forEach((item, index) => {
+        const point = pointAt(index, radius + 12);
         const cos = Math.cos(point.angle);
-        ctx.setTextAlign(cos > 0.25 ? "left" : cos < -0.25 ? "right" : "center");
-        const safeX = Math.max(8, Math.min(point.x, width - 8));
-        const safeY = Math.max(14, Math.min(point.y + 4, height - 8));
-        ctx.fillText(item.axisLabel, safeX, safeY);
+        const align = cos > 0.25 ? "left" : cos < -0.25 ? "right" : "center";
+        const labelWidth = labelWidths[index];
+        // 贴边标签整段收回画布（Figma 中「较少被情绪卷入」左缘对齐画布左缘），不截字。
+        let x = point.x;
+        if (align === "right") x = Math.max(x, labelWidth);
+        else if (align === "left") x = Math.min(x, width - labelWidth);
+        else x = Math.max(labelWidth / 2, Math.min(x, width - labelWidth / 2));
+        ctx.setTextAlign(align);
+        ctx.fillText(item.axisLabel, x, Math.max(10, Math.min(point.y, height - 10)));
       });
       ctx.draw();
     });

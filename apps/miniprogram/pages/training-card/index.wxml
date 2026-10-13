@@ -1,61 +1,76 @@
-<view class="safe-page ui2-page training-card-page" role="main" aria-label="训练卡">
-  <view class="detail-hero">
-    <view class="hero-copy">
-      <text class="hero-title">训练卡</text>
-    </view>
-  </view>
-
+<view class="p3-page training-card-page" role="main" aria-label="训练卡">
   <page-state wx:if="{{loading}}" kind="loading" title="正在整理适合今天的小练习" description="每次只优先呈现一张卡。" />
 
   <page-state wx:elif="{{errorMessage}}" kind="error" title="训练建议暂时没有读取成功" description="{{errorMessage}} {{errorDetail}}" action-label="重新加载" bind:action="retryLoadCards" />
 
-  <view wx:else class="card-content">
-    <view wx:if="{{tagsText}}" class="match-card">
-      <text class="match-label">这次推荐依据</text>
-      <text class="match-text">{{tagsText}}</text>
+  <block wx:elif="{{primaryCard}}">
+    <view wx:if="{{tagsText}}" class="card-basis">
+      <text class="card-basis__label">{{librarySource ? '来自训练库' : '这次推荐依据'}}</text>
+      <text class="card-basis__text">{{tagsText}}</text>
     </view>
 
-    <view wx:for="{{cards}}" wx:key="id" class="task-card {{item.isPrimary ? 'task-card--primary' : 'task-card--alternative'}}">
-      <training-task-card
-        title="{{item.title}}"
-        subtitle="{{item.purpose}}"
-        duration="{{item.durationText}}"
-        scenario="{{item.scenarioText}}"
-        tag="{{item.isPrimary ? '优先' : '备选'}}"
-        actionable="{{false}}"
-      />
+    <view class="p3-card card-main">
+      <view class="card-main__head">
+        <text class="p3-action-title card-main__title" role="heading" aria-level="1">{{primaryCard.title}}</text>
+        <status-pill wx:if="{{!librarySource}}" label="优先" tone="success" />
+      </view>
+      <text wx:if="{{primaryCard.purpose}}" class="p3-body-compact">{{primaryCard.purpose}}</text>
+      <text class="p3-meta">{{primaryCard.metaText}}</text>
 
-      <view wx:if="{{item.isPrimary}}" class="today-step today-step--primary">
-        <text class="today-label">今天的小目标</text>
-        <text class="today-text">{{item.todayGoal}}</text>
+      <view class="card-goal">
+        <text class="card-goal__label">今天的小目标</text>
+        <text class="card-goal__text">{{primaryCard.todayGoal}}</text>
       </view>
 
-      <button wx:if="{{item.isPrimary}}" class="detail-toggle" aria-expanded="{{expandedCardId === item.id}}" data-id="{{item.id}}" bindtap="toggleCardDetails">
-        <text>{{expandedCardId === item.id ? '收起适用与安全说明' : '查看适用与安全说明'}}</text>
-        <text class="detail-toggle-icon">{{expandedCardId === item.id ? '−' : '+'}}</text>
-      </button>
-
-      <view wx:if="{{item.isPrimary && expandedCardId === item.id}}" class="details-panel">
-        <view class="detail-row"><text class="detail-label">适合</text><text class="detail-text">{{item.scenarioText}}</text></view>
-        <view class="detail-row"><text class="detail-label">节奏</text><text class="detail-text">{{item.doseText}}</text></view>
-        <view class="detail-row"><text class="detail-label">完成</text><text class="detail-text">{{item.completionText}}</text></view>
-        <view wx:if="{{item.examplePhrase}}" class="example-box"><text class="today-label">可以这样说</text><text class="today-text">“{{item.examplePhrase}}”</text></view>
-        <view wx:if="{{item.stopText}}" class="tip-box"><text class="tip-title">这些情况先停下来</text><text class="tip-text">{{item.stopText}}</text></view>
-        <text class="boundary-text">{{item.boundaryNotice}}</text>
+      <view class="card-details">
+        <button class="card-details__toggle" aria-expanded="{{expandedCardId === primaryCard.id}}" data-id="{{primaryCard.id}}" bindtap="toggleCardDetails">
+          <text class="card-details__title">适用与安全说明</text>
+          <text class="card-details__action">{{expandedCardId === primaryCard.id ? '收起 −' : '展开 +'}}</text>
+        </button>
+        <block wx:if="{{expandedCardId === primaryCard.id}}">
+          <view class="card-details__row"><text class="card-details__label">适合</text><text class="card-details__value">{{primaryCard.scenarioText}}</text></view>
+          <view class="card-details__row"><text class="card-details__label">节奏</text><text class="card-details__value">{{primaryCard.doseText}}</text></view>
+          <view class="card-details__row"><text class="card-details__label">完成</text><text class="card-details__value">{{primaryCard.completionText}}</text></view>
+          <view wx:if="{{primaryCard.examplePhrase}}" class="card-say">
+            <text class="card-say__label">可以这样说</text>
+            <text class="p3-quote">“{{primaryCard.examplePhrase}}”</text>
+          </view>
+          <view wx:if="{{primaryCard.stopText}}" class="p3-notice p3-notice--warm">
+            <text class="p3-notice__title">这些情况先停下来</text>
+            <text class="p3-notice__body">{{primaryCard.stopText}}</text>
+          </view>
+          <text class="p3-footnote">{{primaryCard.boundaryNotice}}</text>
+        </block>
       </view>
 
-      <button class="primary-button {{item.isPrimary ? '' : 'primary-button--secondary'}}" data-id="{{item.id}}" data-title="{{item.title}}" bindtap="choosePractice">{{item.isPrimary ? '开始这张练习' : '改练这张'}}</button>
+      <button class="p3-btn p3-btn--primary" data-id="{{primaryCard.id}}" data-title="{{primaryCard.title}}" bindtap="choosePractice">开始这张练习</button>
       <feedback-rating
-        wx:if="{{item.isPrimary}}"
-        value="{{item.feedbackEvaluation}}"
+        value="{{primaryCard.feedbackEvaluation}}"
         disabled="{{feedbackEvaluationSaving}}"
-        prompt="这张建议适合你吗？"
+        prompt="{{librarySource ? '这张练习适合你吗？' : '这张建议适合你吗？'}}"
         compact="{{true}}"
-        data-id="{{item.id}}"
+        data-id="{{primaryCard.id}}"
         bind:select="submitTrainingFeedback"
       />
     </view>
 
-    <page-state wx:if="{{cards.length === 0}}" kind="empty" title="暂时没有可用的训练卡" description="训练卡开放后会显示在这里，可以先继续记录具体事件。" action-label="去记录一件事" bind:action="goDiary" />
-  </view>
+    <view wx:if="{{alternativeCards.length}}" class="card-section">
+      <p3-section-header title="{{librarySource ? '同一类还有' : '也可以改练'}}" />
+      <view class="p3-group p3-group--course">
+        <button
+          wx:for="{{alternativeCards}}"
+          wx:key="id"
+          class="card-alt"
+          data-id="{{item.id}}"
+          data-title="{{item.title}}"
+          aria-label="改练：{{item.title}}"
+          bindtap="choosePractice"
+        >
+          <p3-course-row title="{{item.title}}" scene="{{item.altScene}}" meta="{{item.altMetaText}}" show-divider="{{index < alternativeCards.length - 1}}" />
+        </button>
+      </view>
+    </view>
+  </block>
+
+  <page-state wx:else kind="empty" title="暂时没有可用的训练卡" description="训练卡开放后会显示在这里，可以先继续记录具体事件。" action-label="去记录一件事" bind:action="goDiary" />
 </view>

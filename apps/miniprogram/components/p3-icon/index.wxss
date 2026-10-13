@@ -1,0 +1,15 @@
+:host {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.p3-icon {
+  position: relative;
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.p3-icon__group {
+  position: absolute;
+  display: block;
+}

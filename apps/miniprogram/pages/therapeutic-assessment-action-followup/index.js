@@ -18,6 +18,7 @@ Page({
     loading: true,
     saving: false,
     error: "",
+    submitError: "",
   },
 
   onLoad(options) {
@@ -60,15 +61,16 @@ Page({
   },
 
   onNoteInput(event) {
-    this.setData({ note: event.detail.value });
+    this.setData({ note: event.detail.value, submitError: "" });
   },
 
   async submit() {
+    // 保存前的提示留在表单里显示，不覆盖整页（加载失败才用整页错误状态）。
     if (!this.data.action || !this.data.note.trim()) {
-      this.setData({ error: "请先写下这次发生了什么，或仍有什么不确定。" });
+      this.setData({ submitError: "请先写下这次发生了什么，或仍有什么不确定。" });
       return;
     }
-    this.setData({ saving: true, error: "" });
+    this.setData({ saving: true, submitError: "" });
     try {
       const updated = await api.updateTherapeuticAssessmentAction(
         this.data.actionId,
@@ -93,7 +95,7 @@ Page({
       wx.showToast({ title: "已保存回看", icon: "success" });
       setTimeout(() => wx.redirectTo({ url: "/pages/therapeutic-assessment/index" }), 500);
     } catch (error) {
-      this.setData({ error: error.message || "暂时没有保存成功，请稍后重试。" });
+      this.setData({ submitError: error.message || "暂时没有保存成功，请稍后重试。" });
     } finally {
       this.setData({ saving: false });
     }
@@ -102,7 +104,7 @@ Page({
   openTrainingCard() {
     if (!this.data.action || !this.data.action.training_card_id) return;
     wx.navigateTo({
-      url: `/pages/training-card/index?id=${encodeURIComponent(this.data.action.training_card_id)}`,
+      url: `/pages/training-card/index?card_ids=${encodeURIComponent(this.data.action.training_card_id)}`,
     });
   },
 });

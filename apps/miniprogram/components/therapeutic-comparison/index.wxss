@@ -1,9 +1,71 @@
-.therapeutic-comparison { display: grid; gap: 32rpx; }
-.comparison-panel { min-width: 0; display: grid; grid-template-columns: var(--ui2-comparison-columns,24rpx minmax(0, 1fr)); gap: 24rpx; align-items: stretch; }
-.comparison-spine { display: var(--ui2-marker-display,block); position: relative; min-height: 160rpx; }
-.comparison-spine__line { position: absolute; top: 16rpx; bottom: 12rpx; left: 11rpx; width: 2rpx; background: var(--safe-primary); }
-.comparison-spine__joint { position: absolute; top: 0; left: 6rpx; width: 12rpx; height: 12rpx; border-radius: 50%; background: var(--safe-primary); }
-.comparison-spine__tick { position: absolute; top: 40rpx; left: 4rpx; width: 16rpx; height: 4rpx; border-radius: 2rpx; background: var(--safe-primary); }
-.comparison-copy { min-width: 0; display: grid; align-content: start; gap: 24rpx; }
-.comparison-label { color: var(--safe-primary-deep); font-size: var(--ui2-body,28rpx); font-weight: 500; line-height: 40rpx; }
-.comparison-body { color: var(--safe-text); font-size: var(--ui2-body,28rpx); line-height: 48rpx; }
+/* 竹节脊线对照（Figma 658:2059 SpineNote）：原话青瓷脊线，系统整理细线脊线。 */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.therapeutic-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+}
+
+.spine-note {
+  display: flex;
+  align-items: stretch;
+  gap: var(--p3-tight);
+}
+
+.spine-note__spine {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+  padding-top: 14rpx;
+}
+
+.spine-note__joint {
+  width: 20rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+  background: var(--p3-primary);
+}
+
+.spine-note__line {
+  flex: 1 0 0;
+  width: 4rpx;
+  background: var(--p3-primary);
+  opacity: 0.35;
+}
+
+.spine-note--muted .spine-note__joint,
+.spine-note--muted .spine-note__line {
+  background: var(--p3-hairline);
+  opacity: 1;
+}
+
+.spine-note__copy {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.spine-note__label {
+  color: var(--p3-primary);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.spine-note--muted .spine-note__label {
+  color: var(--p3-muted);
+}
+
+.spine-note__body {
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
+  overflow-wrap: anywhere;
+}

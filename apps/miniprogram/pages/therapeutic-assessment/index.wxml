@@ -1,13 +1,9 @@
-<view class="safe-page ui2-page ta-page" role="main" aria-label="支持性评估">
-  <text class="ta-title">支持性评估</text>
+<view class="p3-page ta-page" role="main" aria-label="支持性评估">
+  <view wx:if="{{notice}}" class="p3-notice" role="status"><text class="p3-notice__body">{{notice}}</text></view>
+  <view wx:if="{{errorMessage}}" class="p3-notice p3-notice--risk" role="alert"><text class="p3-notice__body">{{errorMessage}}</text></view>
 
-  <view wx:if="{{notice}}" class="ta-notice" role="status">{{notice}}</view>
-  <view wx:if="{{errorMessage}}" class="ta-error" role="alert">{{errorMessage}}</view>
-
-  <view class="ta-self" aria-label="自助整理">
-    <view class="ta-joint" aria-hidden="true"></view>
-    <text class="ta-section-title">自助整理</text>
-    <text class="ta-copy">写下你真正想弄清楚的问题，结合一两份问卷，整理成一封写给自己的回看信，再选一个小实验试试。</text>
+  <view class="p3-card ta-self" aria-label="自助整理">
+    <p3-stage-header level="1" title="自助整理" subtitle="写下想弄清楚的问题，结合一两份问卷，整理成一封写给自己的回看信，再选一个小实验试试。" />
 
     <view wx:if="{{!reviews.length && !reviewsLoading}}" class="ta-path" aria-label="自助整理的三个部分">
       <view class="ta-path__item">
@@ -25,172 +21,164 @@
     </view>
 
     <view wx:if="{{activeReview}}" class="ta-current-review">
-      <text class="ta-meta">{{activeReview.statusText}}</text>
-      <text class="ta-current-review__question">{{activeReview.question}}</text>
+      <text class="ta-current-review__kicker">{{activeReview.kickerText}}</text>
+      <text class="p3-quote p3-quote--open">{{activeReview.question}}</text>
     </view>
 
-    <button class="safe-primary-button ta-primary" bindtap="onSelfPrimary">{{selfPrimaryLabel}}</button>
-    <button wx:if="{{activeReview}}" class="ta-link-action ta-link-action--center" bindtap="startNewReview">开始新的整理</button>
+    <button class="p3-btn p3-btn--primary" bindtap="onSelfPrimary">{{selfPrimaryLabel}}</button>
+    <button wx:if="{{activeReview}}" class="p3-btn p3-btn--quiet" bindtap="startNewReview">开始新的整理</button>
   </view>
 
-  <view wx:if="{{reviews.length}}" class="ta-reviews">
-    <text class="ta-section-title">我的整理</text>
-    <view class="ta-review-list" role="list">
+  <view wx:if="{{reviews.length}}" class="ta-section">
+    <p3-section-header title="我的整理" />
+    <view class="p3-group" role="list">
       <button
         wx:for="{{reviews}}"
         wx:key="id"
-        class="ta-review-row"
+        class="ta-row-button"
         role="listitem"
         aria-label="{{item.question}}，{{item.statusText}}"
         data-index="{{index}}"
         bindtap="openReview"
         bindlongpress="manageReview"
       >
-        <view class="ta-review-row__copy">
-          <text class="ta-review-row__title">{{item.question}}</text>
-          <text class="ta-review-row__meta {{item.status === 'followup_due' ? 'ta-review-row__meta--due' : ''}}">{{item.statusText}} · {{item.dayText}}</text>
-        </view>
-        <text class="ta-chevron" aria-hidden="true">›</text>
+        <p3-group-row icon="pen" title="{{item.question}}" subtitle="{{item.shortStatus}} · {{item.dayText}}" show-divider="{{index < reviews.length - 1}}" />
       </button>
     </view>
-    <text class="ta-meta">只有你本人能看到这些记录。长按一条可以删除。</text>
+    <text class="p3-footnote">只有你本人能看到这些记录。长按一条可以删除。</text>
   </view>
 
   <view class="ta-human" aria-label="真人支持性复核">
-    <view class="ta-joint" aria-hidden="true"></view>
-    <text class="ta-section-title">真人支持性复核</text>
-    <text wx:if="{{!humanReviewOpen}}" class="ta-copy">需要先安排好人员和回复时间才会开放。开放之前，你在自助整理里写下的内容不会被工作人员查看。</text>
+    <p3-stage-header level="1" title="真人支持性复核" subtitle="{{humanReviewOpen ? '由真人和你一起核对资料，商量下一小步。每一步都可以暂停、表达不同意见或撤回。' : '需要先安排好人员和回复时间才会开放。开放之前，你在自助整理里写下的内容不会被工作人员查看。'}}" />
+    <status-pill wx:if="{{!humanReviewOpen}}" label="暂未开放" tone="success" />
     <block wx:else>
-      <text class="ta-copy">由真人和你一起核对资料，商量下一小步。每一步都可以暂停、表达不同意见或撤回。</text>
-      <text class="ta-service-level">{{activeCase ? activeCase.service_level.display_name : defaultServiceLevel.display_name}} · 可撤回</text>
-      <button class="safe-outline-button ta-outline" bindtap="onHumanPrimary">{{activeCase ? '继续最近一次复核' : '开始真人复核'}}</button>
-      <button wx:if="{{activeCase}}" class="ta-link-action ta-link-action--center" bindtap="startParticipantFlow">开始新的议题</button>
+      <text class="p3-meta">{{activeCase ? activeCase.service_level.display_name : defaultServiceLevel.display_name}} · 可撤回</text>
+      <button class="p3-btn p3-btn--secondary" bindtap="onHumanPrimary">{{activeCase ? '继续最近一次复核' : '开始真人复核'}}</button>
+      <button wx:if="{{activeCase}}" class="p3-btn p3-btn--quiet" bindtap="startParticipantFlow">开始新的议题</button>
     </block>
   </view>
 
-  <view wx:if="{{loading}}" class="ta-loading" role="status">正在读取复核记录…</view>
-  <view wx:elif="{{activeCase}}" class="ta-current">
-    <view class="ta-heading">
-      <view>
-        <text class="ta-section-title">最近一次复核</text>
-        <text class="ta-meta">{{activeCase.workflowLabel}} · {{activeCase.service_level.display_name}}</text>
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取复核记录" />
+  <view wx:elif="{{activeCase}}" class="ta-case">
+    <view class="ta-case__head">
+      <view class="ta-case__titles">
+        <text class="p3-item-title">最近一次复核</text>
+        <text class="p3-meta">{{activeCase.workflowLabel}} · {{activeCase.service_level.display_name}}</text>
       </view>
-      <text class="ta-version">版本 {{activeCase.version}}</text>
+      <status-pill label="版本 {{activeCase.version}}" tone="neutral" />
     </view>
-    <text class="ta-question">{{activeCase.assessment_question}}</text>
-    <text wx:if="{{activeCase.working_question && activeCase.working_question !== activeCase.assessment_question}}" class="ta-meta">当前改写：{{activeCase.working_question}}</text>
+    <text class="p3-quote p3-quote--open">{{activeCase.assessment_question}}</text>
+    <text wx:if="{{activeCase.working_question && activeCase.working_question !== activeCase.assessment_question}}" class="p3-meta">当前改写：{{activeCase.working_question}}</text>
 
-    <view class="ta-question-actions">
-      <button class="ta-text-action" data-action="generate_candidates" bindtap="updateQuestionAction">查看两个问题候选</button>
-      <button class="ta-text-action" data-action="none_fit" bindtap="updateQuestionAction">都不符合</button>
+    <view class="ta-links">
+      <button class="p3-link" data-action="generate_candidates" bindtap="updateQuestionAction">查看两个问题候选</button>
+      <button class="p3-link" data-action="none_fit" bindtap="updateQuestionAction">都不符合</button>
     </view>
     <text wx:for="{{activeCase.question_candidates}}" wx:key="id" class="ta-candidate">{{item.text}}</text>
 
-    <view wx:if="{{activeCase.latestFeedback}}" class="ta-feedback">
-      <text class="ta-kicker">经人工复核的反馈</text>
-      <text class="ta-feedback-copy">{{activeCase.latestFeedback.participant_content}}</text>
-      <text class="ta-meta">不确定性：{{activeCase.latestFeedback.uncertainty}}</text>
-      <text class="ta-meta">可讨论的下一步：{{activeCase.latestFeedback.next_step}}</text>
+    <view wx:if="{{activeCase.latestFeedback}}" class="ta-spine">
+      <text class="ta-spine__label">经人工复核的反馈</text>
+      <text class="ta-spine__body">{{activeCase.latestFeedback.participant_content}}</text>
+      <text class="p3-meta">不确定性：{{activeCase.latestFeedback.uncertainty}}</text>
+      <text class="p3-meta">可讨论的下一步：{{activeCase.latestFeedback.next_step}}</text>
     </view>
-    <view wx:else class="ta-waiting">未经人工复核的内容不会发送给你。</view>
+    <view wx:else class="p3-notice"><text class="p3-notice__body">未经人工复核的内容不会发送给你。</text></view>
 
     <view class="ta-evidence">
-      <text class="ta-kicker">本次可见线索</text>
-      <view wx:if="{{evidenceSummary && evidenceSummary.item_count}}" class="ta-evidence-summary">
-        <text class="ta-evidence-summary__main">{{evidenceSummary.summary_text}}</text>
-        <text class="ta-meta">下一步核对：{{evidenceSummary.next_check_text}}</text>
-        <text class="ta-meta">{{evidenceSummary.boundary_notice}}</text>
+      <text class="ta-spine__label">本次可见线索</text>
+      <view wx:if="{{evidenceSummary && evidenceSummary.item_count}}" class="ta-evidence__summary">
+        <text class="ta-evidence__main">{{evidenceSummary.summary_text}}</text>
+        <text class="p3-meta">下一步核对：{{evidenceSummary.next_check_text}}</text>
+        <text class="p3-meta">{{evidenceSummary.boundary_notice}}</text>
       </view>
       <block wx:if="{{evidenceItems.length}}">
-        <text wx:for="{{evidenceItems}}" wx:key="id" class="ta-evidence-line">{{item.content}}</text>
+        <text wx:for="{{evidenceItems}}" wx:key="id" class="ta-evidence__line">{{item.content}}</text>
       </block>
-      <text wx:else class="ta-meta">尚无可见线索；内部草稿不会提前展示。</text>
+      <text wx:else class="p3-meta">尚无可见线索；内部草稿不会提前展示。</text>
     </view>
 
-    <view class="ta-question-actions">
-      <button class="ta-text-action" bindtap="disagree">这和我的体验不一致</button>
-      <button class="ta-text-action" data-action="pause" bindtap="updateQuestionAction">暂时停一下</button>
-      <button class="ta-text-action" bindtap="openQualityRecord">更正与投诉</button>
+    <view class="ta-links">
+      <button class="p3-link" bindtap="disagree">这和我的体验不一致</button>
+      <button class="p3-link" data-action="pause" bindtap="updateQuestionAction">暂时停一下</button>
+      <button class="p3-link" bindtap="openQualityRecord">更正与投诉</button>
     </view>
-    <button class="ta-withdraw" bindtap="withdraw">撤回本次协作</button>
+    <button class="p3-btn p3-btn--quiet ta-withdraw" bindtap="withdraw">撤回本次协作</button>
   </view>
 
-  <view wx:if="{{activeCase && activeCase.latestFeedback}}" class="ta-next-action">
-    <text class="ta-section-title">选择一个愿意尝试的小行动</text>
-    <text class="ta-meta">仅在收到经人工复核的反馈后记录。</text>
-    <textarea class="ta-textarea ta-textarea--short" aria-label="愿意尝试的小行动" placeholder-class="ta-placeholder" maxlength="500" value="{{actionText}}" bindinput="onActionInput" placeholder="写下低压力、可退出、今天能完成的一小步"></textarea>
-    <button class="safe-outline-button ta-outline" loading="{{saving}}" disabled="{{saving}}" bindtap="chooseAction">记录下一小步</button>
+  <view wx:if="{{activeCase && activeCase.latestFeedback}}" class="ta-form">
+    <p3-section-header title="选择一个愿意尝试的小行动" subtitle="仅在收到经人工复核的反馈后记录。" />
+    <textarea class="p3-field__input ta-short-input" aria-label="愿意尝试的小行动" placeholder-class="p3-field__placeholder" maxlength="500" value="{{actionText}}" bindinput="onActionInput" placeholder="写下低压力、可退出、今天能完成的一小步"></textarea>
+    <button class="p3-btn p3-btn--secondary" loading="{{saving}}" disabled="{{saving}}" bindtap="chooseAction">记录下一小步</button>
   </view>
 
-  <view wx:if="{{humanReviewOpen}}" class="ta-question-form">
-    <text class="ta-section-title">直接写下想共同理解的问题</text>
-    <text class="ta-meta">描述一件具体情境或感受，不急着解释谁对谁错。</text>
-    <textarea class="ta-textarea" aria-label="想共同理解的问题" placeholder-class="ta-placeholder" maxlength="1000" value="{{question}}" bindinput="onQuestionInput" placeholder="例如：最近一次沟通中，什么让我既想靠近又想退开？"></textarea>
-    <text class="ta-field-label">本次愿意共享</text>
+  <view wx:if="{{humanReviewOpen}}" class="ta-form">
+    <p3-section-header title="直接写下想共同理解的问题" subtitle="描述一件具体情境或感受，不急着解释谁对谁错。" />
+    <textarea class="p3-field__input p3-field__input--multi" aria-label="想共同理解的问题" placeholder-class="p3-field__placeholder" maxlength="1000" value="{{question}}" bindinput="onQuestionInput" placeholder="例如：最近一次沟通中，什么让我既想靠近又想退开？"></textarea>
+    <text class="p3-field__label">本次愿意共享</text>
     <checkbox-group class="ta-scope-list" bindchange="onScopeChange">
-      <label><checkbox value="question" checked="{{shareQuestion}}" color="#23666e" />上面的问题</label>
-      <label><checkbox value="recent_record" checked="{{shareRecentRecord}}" color="#23666e" />最近一次相关记录</label>
+      <label class="ta-scope"><checkbox value="question" checked="{{shareQuestion}}" color="#23666e" /><text>上面的问题</text></label>
+      <label class="ta-scope"><checkbox value="recent_record" checked="{{shareRecentRecord}}" color="#23666e" /><text>最近一次相关记录</text></label>
     </checkbox-group>
-    <button class="safe-outline-button ta-outline" loading="{{saving}}" disabled="{{saving}}" bindtap="createCase">提交协作问题</button>
-    <text class="ta-form-boundary">提交后仍可调整共享范围、表达不同意见或撤回。高风险内容会优先进入人工支持，不生成普通自动建议。</text>
+    <button class="p3-btn p3-btn--secondary" loading="{{saving}}" disabled="{{saving}}" bindtap="createCase">提交协作问题</button>
+    <text class="p3-footnote">提交后仍可调整共享范围、表达不同意见或撤回。高风险内容会优先进入人工支持，不生成普通自动建议。</text>
   </view>
 
-  <view wx:if="{{humanReviewOpen || activeCase}}" class="ta-policy-index" aria-label="真人复核开始前了解">
-    <button class="ta-disclosure" aria-expanded="{{policyOpen}}" bindtap="togglePolicy">
-      <text class="ta-section-title">真人复核开始前了解</text>
-      <text class="ta-chevron {{policyOpen ? 'ta-chevron--open' : ''}}" aria-hidden="true">›</text>
+  <view wx:if="{{humanReviewOpen || activeCase}}" class="ta-policy" aria-label="真人复核开始前了解">
+    <button class="ta-policy__toggle" aria-expanded="{{policyOpen}}" bindtap="togglePolicy">
+      <text class="p3-item-title ta-policy__title">真人复核开始前了解</text>
+      <text class="ta-policy__action">{{policyOpen ? '收起 −' : '展开 +'}}</text>
     </button>
 
     <block wx:if="{{policyOpen}}">
-      <view wx:if="{{productionContract}}" class="ta-policy-intro">
-        <view class="ta-contract-heading">
-          <text class="ta-policy-title">协作规则</text>
-          <text class="ta-version">{{productionContract.version}}</text>
+      <view wx:if="{{productionContract}}" class="ta-policy__row">
+        <view class="ta-policy__head">
+          <text class="ta-policy__name">协作规则</text>
+          <status-pill label="{{productionContract.version}}" tone="neutral" />
         </view>
-        <text class="ta-meta">服务级别、人员胜任力、对象权限和安全状态分别判断；任一项未知都会暂停继续。</text>
+        <text class="p3-meta">服务级别、人员胜任力、对象权限和安全状态分别判断；任一项未知都会暂停继续。</text>
       </view>
 
-      <view wx:if="{{adultLaunchScope}}" class="ta-policy-row">
-        <text class="ta-policy-title">当前首发范围</text>
-        <text class="ta-policy-copy">仅面向自愿参加、单人资料、非紧急议题的成年人，提供 L1/L2 真人支持性协作。</text>
-        <text class="ta-policy-boundary">{{adultLaunchScope.boundary_notice}}</text>
-        <button wx:if="{{activeCase && (!launchScreening || launchScreening.decision === 'screening_required')}}" class="safe-outline-button ta-outline" loading="{{saving}}" disabled="{{saving}}" bindtap="confirmAdultLaunchScope">确认符合上述范围</button>
-        <text wx:elif="{{launchScreening}}" class="ta-policy-status">范围信息已记录</text>
+      <view wx:if="{{adultLaunchScope}}" class="ta-policy__row">
+        <text class="ta-policy__name">当前首发范围</text>
+        <text class="ta-policy__copy">仅面向自愿参加、单人资料、非紧急议题的成年人，提供 L1/L2 真人支持性协作。</text>
+        <text class="p3-meta">{{adultLaunchScope.boundary_notice}}</text>
+        <button wx:if="{{activeCase && (!launchScreening || launchScreening.decision === 'screening_required')}}" class="p3-btn p3-btn--secondary" loading="{{saving}}" disabled="{{saving}}" bindtap="confirmAdultLaunchScope">确认符合上述范围</button>
+        <status-pill wx:elif="{{launchScreening}}" label="范围信息已记录" tone="success" />
       </view>
 
-      <view wx:if="{{childPolicy}}" class="ta-policy-row">
-        <text class="ta-policy-title">未成年人／亲子子线</text>
-        <text class="ta-policy-copy">当前入口未开放。监护人同意和儿童知情、同意或拒绝会分别记录。</text>
-        <text class="ta-policy-boundary">{{childPolicy.boundary_notice}}</text>
+      <view wx:if="{{childPolicy}}" class="ta-policy__row">
+        <text class="ta-policy__name">未成年人／亲子子线</text>
+        <text class="ta-policy__copy">当前入口未开放。监护人同意和儿童知情、同意或拒绝会分别记录。</text>
+        <text class="p3-meta">{{childPolicy.boundary_notice}}</text>
       </view>
 
-      <view wx:if="{{multiPartyPolicy}}" class="ta-policy-row">
-        <text class="ta-policy-title">伴侣与多人子线</text>
-        <text class="ta-policy-copy">当前入口未开放。每个人的个别披露默认不会进入共同反馈。</text>
-        <text class="ta-policy-boundary">{{multiPartyPolicy.boundary_notice}}</text>
+      <view wx:if="{{multiPartyPolicy}}" class="ta-policy__row">
+        <text class="ta-policy__name">伴侣与多人子线</text>
+        <text class="ta-policy__copy">当前入口未开放。每个人的个别披露默认不会进入共同反馈。</text>
+        <text class="p3-meta">{{multiPartyPolicy.boundary_notice}}</text>
       </view>
 
-      <view wx:if="{{aiAssistPolicy}}" class="ta-policy-row">
-        <text class="ta-policy-title">AI 只提供可拒绝的整理候选</text>
-        <text class="ta-policy-copy">原话、候选、人工修改入口和“都不符合”会同时保留；AI 不能发送反馈或冒充人工复核。</text>
-        <text class="ta-policy-boundary">{{aiAssistPolicy.boundary_notice}}</text>
+      <view wx:if="{{aiAssistPolicy}}" class="ta-policy__row">
+        <text class="ta-policy__name">AI 只提供可拒绝的整理候选</text>
+        <text class="ta-policy__copy">原话、候选、人工修改入口和“都不符合”会同时保留；AI 不能发送反馈或冒充人工复核。</text>
+        <text class="p3-meta">{{aiAssistPolicy.boundary_notice}}</text>
       </view>
 
-      <view wx:if="{{methodCatalog}}" class="ta-policy-row">
-        <text class="ta-policy-title">方法内容由独立审核控制</text>
-        <text class="ta-policy-copy">已登记 {{methodCatalog.count}} 项；这里只显示适用范围和治理状态，不公开专业模板正文。</text>
-        <text class="ta-policy-boundary">{{methodCatalog.boundary}}</text>
+      <view wx:if="{{methodCatalog}}" class="ta-policy__row">
+        <text class="ta-policy__name">方法内容由独立审核控制</text>
+        <text class="ta-policy__copy">已登记 {{methodCatalog.count}} 项；这里只显示适用范围和治理状态，不公开专业模板正文。</text>
+        <text class="p3-meta">{{methodCatalog.boundary}}</text>
       </view>
 
-      <view class="ta-policy-row">
-        <text class="ta-policy-title">资料与共享</text>
-        <text class="ta-policy-copy">每条资料单独决定：仅自己、指定专业人员，或经所有相关人确认后用于共同反馈。账号绑定不会自动互看；授权可修改、到期或撤回。</text>
+      <view class="ta-policy__row">
+        <text class="ta-policy__name">资料与共享</text>
+        <text class="ta-policy__copy">每条资料单独决定：仅自己、指定专业人员，或经所有相关人确认后用于共同反馈。账号绑定不会自动互看；授权可修改、到期或撤回。</text>
       </view>
     </block>
   </view>
 
   <view class="ta-footer">
-    <text class="ta-footer-boundary">这里的内容用于自我了解和协作，不是诊断或治疗，也不能代替危机支持。</text>
-    <button class="ta-footer-link" bindtap="openEmergencyResources">查看紧急求助资源</button>
+    <text class="p3-footnote">这里的内容用于自我了解和协作，不是诊断或治疗，也不能代替危机支持。</text>
+    <button class="ta-footer__link" bindtap="openEmergencyResources">查看紧急求助资源 ›</button>
   </view>
 </view>

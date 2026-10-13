@@ -1,124 +1,146 @@
-<view wx:if="{{!serviceReady}}" class="safe-page ui2-page" role="main" aria-label="功能知情说明">
+<view wx:if="{{!serviceReady}}" class="p3-page pd-page" role="main" aria-label="功能知情说明">
   <page-state kind="error" title="使用前请阅读本功能说明" description="{{errorMessage || '确认数据用途后，再填写和保存；暂不同意可以返回。'}}" action-label="重新确认" bind:action="retryServiceEntry" />
-  <button class="safe-primary-button" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
+  <button class="p3-btn p3-btn--primary" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
 </view>
 <block wx:if="{{serviceReady}}">
-<view class="safe-page ui2-page program-detail-page" wx:if="{{program}}" role="main" aria-label="项目详情">
-  <view class="safe-card hero-card">
-    <text class="program-title">{{program.title}}</text>
-    <text wx:if="{{program.summary}}" class="program-summary">{{program.summary}}</text>
-  </view>
-
-  <view class="program-boundary" role="note">{{program.boundary_notice}}</view>
-
-  <view class="program-meta-row">
-    <text class="protocol-status">{{program.previewLabel}}<block wx:if="{{program.sessionCountText}}"> · {{program.sessionCountText}}</block></text>
-    <text wx:if="{{progressText}}" class="progress-text">{{progressText}}</text>
-    <view class="construct-row" aria-label="练习主题">
-      <text wx:for="{{program.target_constructs}}" wx:key="*this" class="construct-chip">{{item}}</text>
+<view wx:if="{{program}}" class="p3-page pd-page" role="main" aria-label="项目详情">
+  <view class="pd-head">
+    <text class="p3-serif-title" role="heading" aria-level="1">{{program.title}}</text>
+    <text wx:if="{{program.summary}}" class="pd-body pd-body--muted">{{program.summary}}</text>
+    <view class="p3-notice" role="note">
+      <text class="p3-notice__body">{{program.boundary_notice}}</text>
+    </view>
+    <view class="pd-meta">
+      <text class="p3-meta">{{program.previewLabel}}{{program.sessionCountText ? ' · ' + program.sessionCountText : ''}}</text>
+      <text wx:if="{{progressText}}" class="pd-accent">{{progressText}}</text>
+      <text wx:if="{{program.constructText}}" class="pd-accent" aria-label="练习主题：{{program.constructText}}">{{program.constructText}}</text>
     </view>
   </view>
 
-  <view wx:if="{{previewMode}}" class="preview-readonly">
-    <text class="preview-readonly-copy">研究者只读预览：当前草案尚未完成三方审核，填写、保存和提交均已关闭。</text>
+  <view wx:if="{{previewMode}}" class="p3-notice p3-notice--warm" role="status">
+    <text class="p3-notice__body">研究者只读预览：当前草案尚未完成三方审核，填写、保存和提交均已关闭。</text>
   </view>
 
-  <view class="safe-card protocol-card">
-    <text class="safe-h3">参与前先了解</text>
-    <text class="protocol-line">{{program.doseText}}</text>
-    <text class="protocol-line">每节先读一段说明和示例，再按提示写几句话，最后回答几个小问题。写多写少都可以，没有对错。</text>
-    <text class="protocol-label">适合参加的基本条件</text>
-    <text wx:for="{{program.inclusion_criteria}}" wx:key="*this" class="protocol-line">• {{item}}</text>
-    <text class="protocol-label">这些情况先不要继续</text>
-    <text wx:for="{{program.exclusion_criteria}}" wx:key="*this" class="protocol-line">• {{item}}</text>
-    <text class="protocol-warning">{{program.safety_note || program.safety_gate}}</text>
-    <text wx:if="{{program.neutral_alternative}}" class="protocol-line">可选替代：{{program.neutral_alternative}}</text>
-    <button class="safe-outline-button help-button" bindtap="openHelpResources">需要帮助时，查看求助资源</button>
+  <view class="pd-card">
+    <p3-stage-header level="1" title="参与前先了解" />
+    <text wx:if="{{program.doseText}}" class="pd-body">{{program.doseText}}</text>
+    <text class="pd-body pd-body--muted">每节先读一段说明和示例，再按提示写几句话，最后回答几个小问题。写多写少都可以，没有对错。</text>
+    <view wx:if="{{program.inclusion_criteria.length}}" class="pd-list">
+      <text class="p3-meta">适合参加的基本条件</text>
+      <text wx:for="{{program.inclusion_criteria}}" wx:key="*this" class="pd-list__item">• {{item}}</text>
+    </view>
+    <view wx:if="{{program.exclusion_criteria.length}}" class="pd-list">
+      <text class="p3-meta">这些情况先不要继续</text>
+      <text wx:for="{{program.exclusion_criteria}}" wx:key="*this" class="pd-list__item">• {{item}}</text>
+    </view>
+    <view class="p3-notice p3-notice--warm">
+      <text class="p3-notice__body">{{program.safety_note || program.safety_gate}}</text>
+    </view>
+    <text wx:if="{{program.neutral_alternative}}" class="p3-meta">可选替代：{{program.neutral_alternative}}</text>
+    <button class="p3-btn p3-btn--quiet pd-help" bindtap="openHelpResources">需要帮助时，查看求助资源</button>
   </view>
 
-  <view wx:if="{{showResearchInfo}}" class="safe-card research-card">
-    <text class="safe-h3">研究信息</text>
-    <text class="program-help">仅研究人员可见。</text>
-    <text class="protocol-line">方案 {{program.protocol_version}} · {{program.reviewText}}</text>
-    <text class="protocol-line">{{program.completion_definition}}</text>
-    <text wx:if="{{program.safety_note}}" class="protocol-line">安全门槛：{{program.safety_gate}}</text>
-    <text wx:if="{{program.interpretation_boundary}}" class="protocol-line">{{program.interpretation_boundary}}</text>
-    <text wx:if="{{program.clinical_boundary}}" class="protocol-line">{{program.clinical_boundary}}</text>
+  <view wx:if="{{showResearchInfo}}" class="pd-card">
+    <view class="pd-titles">
+      <text class="p3-item-title">研究信息</text>
+      <text class="p3-meta">仅研究人员可见。</text>
+    </view>
+    <text class="pd-body">方案 {{program.protocol_version}} · {{program.reviewText}}</text>
+    <text class="pd-body pd-body--muted">{{program.completion_definition}}</text>
+    <text wx:if="{{program.safety_note}}" class="pd-body pd-body--muted">安全门槛：{{program.safety_gate}}</text>
+    <text wx:if="{{program.interpretation_boundary}}" class="pd-body pd-body--muted">{{program.interpretation_boundary}}</text>
+    <text wx:if="{{program.clinical_boundary}}" class="pd-body pd-body--muted">{{program.clinical_boundary}}</text>
   </view>
 
-  <view wx:if="{{showResearchInfo && program.measurementPlan}}" class="safe-card measurement-card">
-    <view class="measurement-head">
-      <view>
-        <text class="safe-h3">项目记录节奏</text>
-        <text class="program-help">用于安排开始前、练习中和完成后的阶段记录。</text>
+  <view wx:if="{{showResearchInfo && program.measurementPlan}}" class="pd-card">
+    <view class="pd-card__head">
+      <view class="pd-titles">
+        <text class="p3-item-title">项目记录节奏</text>
+        <text class="p3-meta">用于安排开始前、练习中和完成后的阶段记录。</text>
       </view>
-      <text class="measurement-status">{{program.measurementPlan.statusLabel}}</text>
+      <status-pill label="{{program.measurementPlan.statusLabel}}" tone="success" />
     </view>
-    <view class="measurement-timeline">
-      <view wx:for="{{program.measurementPlan.measurement_points}}" wx:key="key" class="measurement-point">
-        <text class="measurement-label">{{item.label}}</text>
-        <text class="measurement-description">{{item.description}}</text>
-      </view>
+    <view class="pd-points" role="list">
+      <p3-timeline-item
+        wx:for="{{program.measurementPlan.measurement_points}}"
+        wx:key="key"
+        role="listitem"
+        state="upcoming"
+        kicker="第 {{index + 1}} 次"
+        title="{{item.label}}"
+        body="{{item.description}}"
+        show-line="{{index < program.measurementPlan.measurement_points.length - 1}}"
+      />
     </view>
-    <view class="outcome-row">
-      <text wx:for="{{program.measurementPlan.primary_outcomes}}" wx:key="*this" class="outcome-chip">{{item}}</text>
-    </view>
-    <text class="measurement-boundary">{{program.measurementPlan.boundary_notice}}</text>
+    <text wx:if="{{program.measurementPlan.outcomeText}}" class="pd-accent">主要关注：{{program.measurementPlan.outcomeText}}</text>
+    <text class="p3-meta">{{program.measurementPlan.boundary_notice}}</text>
   </view>
 
-  <scroll-view class="session-tabs" scroll-x="true">
+  <view class="p3-segment p3-segment--paper" role="tablist" aria-label="选择小节">
     <button
       wx:for="{{sessions}}"
       wx:key="session_no"
-      class="session-tab {{item.isActive ? 'session-tab--active' : ''}}"
+      class="p3-segment__item {{item.isActive ? 'p3-segment__item--active' : ''}}"
+      role="tab"
+      aria-selected="{{item.isActive}}"
       aria-label="第 {{item.session_no}} 节{{item.isDone ? '，已完成' : ''}}"
       data-session-no="{{item.session_no}}"
       bindtap="selectSession"
-    >
-      第 {{item.session_no}} 节<text wx:if="{{item.isDone}}" class="session-done"> ✓</text>
-    </button>
-  </scroll-view>
+    >第 {{item.session_no}} 节<text wx:if="{{item.isDone}}" class="pd-session-done"> ✓</text></button>
+  </view>
 
-  <view class="safe-card session-card" wx:if="{{selectedSession}}">
-    <text class="session-title">{{selectedSession.title}}</text>
-    <text class="session-objective">{{selectedSession.objective}}</text>
-    <text class="session-meta">预计 {{selectedSession.duration_minutes}} 分钟</text>
-    <text wx:if="{{selectedSession.intro}}" class="session-intro">{{selectedSession.intro}}</text>
+  <view wx:if="{{selectedSession}}" class="pd-card">
+    <view class="pd-session-head">
+      <text class="p3-item-title">{{selectedSession.title}}</text>
+      <text class="pd-body pd-body--muted">{{selectedSession.objective}}</text>
+      <text class="pd-accent">预计 {{selectedSession.duration_minutes}} 分钟</text>
+    </view>
+    <text wx:if="{{selectedSession.intro}}" class="pd-body">{{selectedSession.intro}}</text>
 
-    <view wx:if="{{!previewMode}}" class="checkin-block">
-      <text class="protocol-label">开始前，现在的不适程度：{{distressBefore}} / 10</text>
-      <text class="checkin-hint">0 表示一点也不难受，10 表示非常难受。</text>
-      <slider min="0" max="10" step="1" value="{{distressBefore}}" bindchange="onDistressBeforeChange" activeColor="#23666e" aria-label="开始前的不适程度" />
+    <view wx:if="{{!previewMode}}" class="pd-slider">
+      <text class="pd-slider__label">开始前，现在的不适程度：{{distressBefore}} / 10</text>
+      <p3-intensity-slider value="{{distressBefore}}" aria-label="开始前的不适程度" bind:change="onDistressBeforeChange" />
+      <text class="p3-meta">0 表示一点也不难受，10 表示非常难受。</text>
     </view>
 
-    <view class="section-block">
-      <text class="section-title">练习步骤</text>
-      <view wx:for="{{selectedSession.steps}}" wx:key="*this" class="step-row">
-        <text class="step-index">{{index + 1}}</text>
-        <text class="step-text">{{item}}</text>
+    <view class="pd-block">
+      <p3-section-header title="练习步骤" />
+      <view wx:for="{{selectedSession.steps}}" wx:key="*this" class="pd-step">
+        <text class="pd-step__index" aria-hidden="true">{{index + 1}}</text>
+        <text class="pd-step__text">{{item}}</text>
       </view>
     </view>
 
-    <view wx:if="{{selectedSession.example}}" class="section-block example-block">
-      <text class="section-title">示例</text>
-      <text class="example-hint">可以参考，不必照写。</text>
-      <text class="example-text">{{selectedSession.example}}</text>
+    <view wx:if="{{selectedSession.example}}" class="pd-block">
+      <p3-section-header title="示例" subtitle="可以参考，不必照写。" />
+      <view class="pd-paper">
+        <text class="pd-paper__text">{{selectedSession.example}}</text>
+      </view>
     </view>
 
-    <view wx:if="{{selectedSession.writing_prompt}}" class="section-block">
-      <text class="section-title">书写提示</text>
-      <text class="prompt-box">{{selectedSession.writing_prompt}}</text>
-      <textarea wx:if="{{!previewMode}}" class="draft-input" maxlength="2000" aria-label="本节书写内容，草稿只保存在本机" placeholder-class="field-placeholder" value="{{draftText}}" placeholder="可以先写在这里。保存草稿只留在本机；点击提交后才会上传。" bindinput="onDraftInput" />
-      <button wx:if="{{!previewMode}}" class="safe-outline-button" bindtap="saveDraft">保存本机草稿</button>
+    <view wx:if="{{selectedSession.writing_prompt}}" class="pd-block">
+      <p3-section-header title="书写提示" />
+      <view class="pd-paper">
+        <text class="p3-quote pd-prompt">{{selectedSession.writing_prompt}}</text>
+      </view>
+      <view wx:if="{{!previewMode}}" class="p3-field">
+        <text class="p3-field__label">我的书写</text>
+        <textarea class="draft-input" maxlength="2000" aria-label="本节书写内容，草稿只保存在本机" placeholder-class="p3-field__placeholder" value="{{draftText}}" placeholder="可以先写在这里。保存草稿只留在本机；点击正式提交后才会上传。" bindinput="onDraftInput" />
+      </view>
+      <button wx:if="{{!previewMode}}" class="p3-btn p3-btn--secondary" bindtap="saveDraft">保存本机草稿</button>
     </view>
 
-    <view class="section-block">
-      <text class="section-title">反思问题</text>
-      <view wx:for="{{selectedSession.reflection_questions}}" wx:key="*this" class="reflection-field">
-        <text class="question-row">{{index + 1}}. {{item}}</text>
+    <view class="pd-block">
+      <p3-section-header title="反思问题" />
+      <view wx:for="{{selectedSession.reflection_questions}}" wx:key="*this" class="p3-field">
+        <text class="p3-field__label">{{index + 1}}. {{item}}</text>
         <textarea
           wx:if="{{!previewMode}}"
-          class="reflection-input" maxlength="500" aria-label="反思问题：{{item}}" placeholder-class="field-placeholder"
+          class="p3-field__input p3-field__input--auto"
+          auto-height
+          maxlength="500"
+          aria-label="反思问题：{{item}}"
+          placeholder-class="p3-field__placeholder"
           value="{{reflectionAnswers[index]}}"
           data-index="{{index}}"
           placeholder="可以写一句真实感受，也可以先留空，稍后再补。"
@@ -127,86 +149,92 @@
       </view>
     </view>
 
-    <view wx:if="{{selectedSession.closing}}" class="closing-block">
-      <text class="closing-text">{{selectedSession.closing}}</text>
-    </view>
+    <text wx:if="{{selectedSession.closing}}" class="pd-closing">{{selectedSession.closing}}</text>
 
-    <view class="session-disclaimer">{{selectedSession.disclaimer}}</view>
-    <view class="session-disclaimer">完成标准：{{selectedSession.completion_criteria}}</view>
-    <view class="session-disclaimer">停止提示：{{selectedSession.stop_rule}}</view>
+    <view class="pd-notes">
+      <text>{{selectedSession.disclaimer}}</text>
+      <text>完成标准：{{selectedSession.completion_criteria}}</text>
+      <text>停止提示：{{selectedSession.stop_rule}}</text>
+    </view>
 
     <view wx:if="{{!previewMode}}" class="submit-block">
-      <text class="protocol-label">这一次的状态</text>
-      <radio-group class="status-options" bindchange="onParticipationChange">
-        <label wx:for="{{participationOptions}}" wx:key="value" class="consent-row">
-          <radio value="{{item.value}}" checked="{{participationStatus === item.value}}" color="#23666e" />
-          <text>{{item.label}}</text>
-        </label>
-      </radio-group>
-      <textarea wx:if="{{participationStatus !== 'completed'}}" class="reflection-input" maxlength="300" aria-label="跳过或暂停的原因，可不填" placeholder-class="field-placeholder" value="{{statusNote}}" placeholder="想说明一下原因吗？可以不填。" bindinput="onStatusNoteInput" />
-      <text class="protocol-label">写完后，现在的不适程度：{{distressAfter}} / 10</text>
-      <slider min="0" max="10" step="1" value="{{distressAfter}}" bindchange="onDistressAfterChange" activeColor="#23666e" aria-label="写完后的不适程度" />
-      <view wx:if="{{distressNotice}}" class="care-notice" role="alert">
-        <text class="care-notice-text">{{distressNotice}}</text>
-        <button class="safe-outline-button" bindtap="openHelpResources">查看求助资源</button>
+      <view class="p3-field">
+        <text class="p3-field__label">这一次的状态</text>
+        <view class="pd-chips" role="radiogroup" aria-label="这一次的状态">
+          <button
+            wx:for="{{participationOptions}}"
+            wx:key="value"
+            class="p3-chip {{participationStatus === item.value ? 'p3-chip--selected' : ''}}"
+            role="radio"
+            aria-checked="{{participationStatus === item.value}}"
+            data-value="{{item.value}}"
+            bindtap="pickParticipation"
+          >{{item.label}}</button>
+        </view>
+        <textarea wx:if="{{participationStatus !== 'completed'}}" class="p3-field__input p3-field__input--auto" auto-height maxlength="300" aria-label="跳过或暂停的原因，可不填" placeholder-class="p3-field__placeholder" value="{{statusNote}}" placeholder="想说明一下原因吗？可以不填。" bindinput="onStatusNoteInput" />
       </view>
-      <checkbox-group bindchange="onAdverseResponseChange">
-        <label class="consent-row">
-          <checkbox value="yes" checked="{{adverseResponse}}" color="#23666e" />
-          <text>这次练习出现了明显不适或负面体验，需要后续关注。</text>
-        </label>
-      </checkbox-group>
-      <checkbox-group bindchange="onAnalysisConsentChange">
-        <label class="consent-row">
-          <checkbox value="yes" checked="{{analysisConsent}}" color="#23666e" />
-          <text>允许将本次内容用于脱敏聚合分析，不默认展示原文。</text>
-        </label>
-      </checkbox-group>
-      <view wx:if="{{safetyMessage}}" class="care-notice" role="alert">
-        <text class="care-notice-text">{{safetyMessage}}</text>
-        <button class="safe-outline-button" bindtap="openHelpResources">查看求助资源</button>
+      <view class="pd-slider">
+        <text class="pd-slider__label">写完后，现在的不适程度：{{distressAfter}} / 10</text>
+        <p3-intensity-slider value="{{distressAfter}}" aria-label="写完后的不适程度" bind:change="onDistressAfterChange" />
       </view>
-      <view wx:if="{{successMessage}}" class="status success">{{successMessage}}</view>
-      <view wx:if="{{errorMessage}}" class="status error">{{errorMessage}}</view>
-      <button class="safe-primary-button" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submitEntry">登录后正式提交</button>
+      <view wx:if="{{distressNotice}}" class="p3-notice p3-notice--warm" role="alert">
+        <text class="p3-notice__body">{{distressNotice}}</text>
+        <button class="p3-btn p3-btn--secondary pd-notice-action" bindtap="openHelpResources">查看求助资源</button>
+      </view>
+      <checkbox-group class="p3-agreement" bindchange="onAdverseResponseChange">
+        <label class="p3-agreement__box {{adverseResponse ? 'p3-agreement__box--checked' : ''}}">
+          <checkbox class="p3-agreement__native" value="yes" checked="{{adverseResponse}}" aria-label="这次练习出现了明显不适或负面体验，需要后续关注" />
+          <image wx:if="{{adverseResponse}}" class="p3-agreement__tick" src="/assets/icons/p3/tick-14-white.svg" aria-hidden="true" />
+        </label>
+        <text class="p3-agreement__text" bindtap="flipAdverseResponse">这次练习出现了明显不适或负面体验，需要后续关注。</text>
+      </checkbox-group>
+      <checkbox-group class="p3-agreement" bindchange="onAnalysisConsentChange">
+        <label class="p3-agreement__box {{analysisConsent ? 'p3-agreement__box--checked' : ''}}">
+          <checkbox class="p3-agreement__native" value="yes" checked="{{analysisConsent}}" aria-label="允许将本次内容用于脱敏聚合分析，不默认展示原文" />
+          <image wx:if="{{analysisConsent}}" class="p3-agreement__tick" src="/assets/icons/p3/tick-14-white.svg" aria-hidden="true" />
+        </label>
+        <text class="p3-agreement__text" bindtap="flipAnalysisConsent">允许将本次内容用于脱敏聚合分析，不默认展示原文。</text>
+      </checkbox-group>
+      <view wx:if="{{safetyMessage}}" class="p3-notice p3-notice--warm" role="alert">
+        <text class="p3-notice__body">{{safetyMessage}}</text>
+        <button class="p3-btn p3-btn--secondary pd-notice-action" bindtap="openHelpResources">查看求助资源</button>
+      </view>
+      <text wx:if="{{successMessage}}" class="p3-form-message p3-form-message--success" role="status">{{successMessage}}</text>
+      <text wx:if="{{errorMessage}}" class="p3-form-message p3-form-message--error" role="alert">{{errorMessage}}</text>
+      <button class="p3-btn p3-btn--primary" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submitEntry">正式提交</button>
     </view>
   </view>
 
-  <view wx:if="{{!previewMode && submittedEntries.length}}" class="safe-card history-card">
-    <text class="safe-h3">我已提交的项目记录</text>
-    <text class="program-help">提交内容会保留在本人记录中，并按授权范围供研究者只读查看。</text>
-    <view wx:for="{{submittedEntries}}" wx:key="id" class="history-row">
-      <view class="history-copy">
-        <text class="history-title">{{item.sessionText}} · {{item.createdAtText}}</text>
-        <text class="history-text">{{item.reflection || '已完成本节填写'}}</text>
+  <view wx:if="{{!previewMode && submittedEntries.length}}" class="pd-card">
+    <view class="pd-titles">
+      <text class="p3-item-title">我已提交的项目记录</text>
+      <text class="p3-meta">提交内容会保留在本人记录中，并按授权范围供研究者只读查看。</text>
+    </view>
+    <view wx:for="{{submittedEntries}}" wx:key="id" class="pd-history">
+      <view class="pd-history__copy">
+        <text class="pd-history__title">{{item.sessionText}} · {{item.createdAtText}}</text>
+        <text class="p3-meta pd-history__text">{{item.reflection || '已完成本节填写'}}</text>
       </view>
-      <text class="history-status">{{item.statusText}}</text>
+      <status-pill label="{{item.statusText}}" tone="{{item.participation_status === 'completed' || !item.participation_status ? 'success' : 'neutral'}}" />
     </view>
   </view>
 
-  <view wx:if="{{program.evidence.length}}" class="safe-card evidence-card">
-    <text class="safe-h3">练习依据</text>
-    <text class="program-help">这些练习参考了下面的研究和文件。它们说明这种练习方式有依据，不代表对每个人都有效，也不能代替专业帮助。</text>
-    <view wx:for="{{program.evidence}}" wx:key="citation" class="evidence-row">
-      <text class="evidence-practice">{{item.practice}}</text>
-      <text class="evidence-finding">{{item.finding}}</text>
-      <text class="evidence-citation" user-select="true">{{item.citation}}</text>
+  <view wx:if="{{program.evidence.length}}" class="pd-card">
+    <view class="pd-titles">
+      <text class="p3-item-title">练习依据</text>
+      <text class="p3-meta">这些练习参考了下面的研究和文件。它们说明这种练习方式有依据，不代表对每个人都有效，也不能代替专业帮助。</text>
+    </view>
+    <view wx:for="{{program.evidence}}" wx:key="citation" class="pd-evidence">
+      <text class="pd-evidence__practice">{{item.practice}}</text>
+      <text class="pd-evidence__finding">{{item.finding}}</text>
+      <text class="pd-evidence__citation" user-select="true">{{item.citation}}</text>
     </view>
   </view>
 </view>
 
-<view class="safe-page ui2-page program-detail-page" wx:else>
-  <view class="safe-card" wx:if="{{loading}}">
-    <text class="safe-body">正在读取项目内容...</text>
-  </view>
-  <view class="safe-card" wx:elif="{{errorMessage}}">
-    <text class="safe-h3">暂时没能读取</text>
-    <text class="safe-body">{{errorMessage}}</text>
-    <button class="safe-primary-button" bindtap="retryLoad">重试</button>
-  </view>
-  <view class="safe-card" wx:else>
-    <text class="safe-body">没有找到对应项目内容。</text>
-  </view>
+<view wx:else class="p3-page pd-page" role="main" aria-label="项目详情">
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取项目内容" />
+  <page-state wx:elif="{{errorMessage}}" kind="error" title="暂时没能读取" description="{{errorMessage}}" action-label="重试" bind:action="retryLoad" />
+  <page-state wx:else kind="empty" title="没有找到对应项目内容" />
 </view>
-
 </block>

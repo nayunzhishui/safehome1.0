@@ -1,3 +1,7 @@
 {
-  "navigationBarTitleText": "回看信"
+  "navigationBarTitleText": "回看信",
+  "usingComponents": {
+    "p3-icon": "/components/p3-icon/index",
+    "p3-stage-header": "/components/p3-stage-header/index"
+  }
 }

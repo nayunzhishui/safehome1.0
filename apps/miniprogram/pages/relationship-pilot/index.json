@@ -1,6 +1,9 @@
 {
   "navigationBarTitleText": "关系探索试点",
   "usingComponents": {
-    "journey-action-card": "/components/journey-action-card/index"
+    "journey-action-card": "/components/journey-action-card/index",
+    "p3-group-row": "/components/p3-group-row/index",
+    "p3-section-header": "/components/p3-section-header/index",
+    "p3-timeline-item": "/components/p3-timeline-item/index"
   }
 }

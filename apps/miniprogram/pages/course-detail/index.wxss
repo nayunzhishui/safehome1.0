@@ -1,259 +1,173 @@
+/* 课程内容（Figma 655:1890）：衬线标题 + 竹简 → 要点 → 小节时间线 → 误区 → 示例/反例 → 理解检查 → 练一次 → 关联训练卡 → 记录学习。 */
 .course-detail-page {
-  padding-bottom: 72rpx;
-}
-
-.detail-hero {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
-  padding: 26rpx 0 10rpx;
-  text-align: center;
+  gap: var(--p3-section);
+  padding-top: 16rpx;
+  padding-bottom: calc(72rpx + env(safe-area-inset-bottom));
 }
 
-.hero-title,
-.hero-meta,
-.section-title,
-.section-body,
-.relation-title,
-.relation-text {
-  display: block;
-}
-
-.hero-title {
-  color: var(--safe-title);
-  font-size: 44rpx;
-  font-weight: 900;
-  line-height: 1.28;
-}
-
-.hero-meta {
-  color: var(--safe-muted);
-  font-size: 24rpx;
-  line-height: 1.6;
-  font-weight: 800;
-}
-
-.section-list {
-  display: flex;
-  flex-direction: column;
-  gap: 18rpx;
-  margin-top: 20rpx;
-}
-
-.section-card {
-  display: flex;
-  gap: 18rpx;
-  padding: 24rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-card);
-  box-shadow: var(--safe-shadow-card);
-}
-
-.section-index {
-  flex: 0 0 auto;
-  width: 54rpx;
-  height: 54rpx;
+.course-head {
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--safe-primary-soft);
-  color: var(--safe-primary-deep);
-  font-size: 24rpx;
-  font-weight: 900;
+  gap: var(--p3-stack);
 }
 
-.section-copy {
+.course-head__text {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 8rpx;
   min-width: 0;
-  flex: 1;
 }
 
-.section-title {
-  color: var(--safe-title);
-  font-size: 28rpx;
-  font-weight: 850;
-  line-height: 1.35;
+.course-head__art {
+  flex: 0 0 auto;
+  width: 144rpx;
+  height: 144rpx;
 }
 
-.section-body {
-  margin-top: 10rpx;
-  color: var(--safe-text);
-  font-size: 24rpx;
-  line-height: 1.65;
-}
-
-.relation-card,
-.state-card,
-.boundary-note {
-  padding: 24rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-card);
-  color: var(--safe-text);
-  font-size: 24rpx;
-  line-height: 1.6;
-  box-shadow: var(--safe-shadow-card);
-}
-
-.relation-card {
+.course-section {
   display: flex;
   flex-direction: column;
-  gap: 14rpx;
+  gap: var(--p3-stack);
 }
 
-.relation-title {
-  color: var(--safe-title);
+/* 浅底说明块：要点、完整示例（青瓷浅底）；常见反例（暖底） */
+.course-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  padding: 32rpx 36rpx;
+  border-radius: var(--p3-radius-group);
+}
+
+.course-panel--soft {
+  background: var(--p3-soft);
+}
+
+.course-panel--warm {
+  background: var(--p3-warm-soft);
+}
+
+.course-panel__label {
+  color: var(--p3-primary);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.course-panel__label--warm {
+  color: var(--p3-warm-ink);
+}
+
+.course-panel__line {
+  color: var(--p3-ink);
   font-size: 28rpx;
-  font-weight: 850;
+  line-height: 44rpx;
 }
 
-.relation-text {
-  color: var(--safe-text);
+.course-timeline {
+  display: flex;
+  flex-direction: column;
 }
 
-.boundary-note {
-  margin-top: 24rpx;
-  background: var(--safe-primary-pale);
+.course-myth {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  padding: 28rpx 0;
 }
 
-.state-card.error {
-  border-color: #efb4b4;
-  background: #fff1f1;
-  color: #8a2f2f;
+.course-myth--divided {
+  border-bottom: 2rpx solid var(--p3-hairline);
 }
 
-.outline-button {
-  display: inline-flex;
+.course-myth__label {
+  color: var(--p3-primary);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.course-myth__label--warm {
+  color: var(--p3-warm-ink);
+}
+
+.course-myth__text {
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
+}
+
+/* 理解检查选项（Figma OptionRow 623:101）：描边计入布局，选中青瓷浅底 + 1.5 描边 */
+.course-check {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+}
+
+.course-check__options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+}
+
+.course-option {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  min-height: 58rpx;
-  margin-top: 16rpx;
-  padding: 0 22rpx;
-  border: 1rpx solid var(--safe-border-strong);
-  border-radius: var(--safe-radius-pill);
-  color: var(--safe-primary-deep);
-  font-size: 24rpx;
-  font-weight: 800;
+  gap: var(--p3-stack);
+  box-sizing: border-box;
+  min-height: 112rpx;
+  padding: 30rpx 34rpx;
+  border-radius: 28rpx;
+  background: var(--p3-surface);
+  box-shadow: inset 0 0 0 2rpx var(--p3-hairline);
 }
 
-.learning-panel,
-.practice-band {
+.course-option--active {
+  min-height: 114rpx;
+  padding: 31rpx 35rpx;
+  background: var(--p3-soft);
+  box-shadow: inset 0 0 0 3rpx var(--p3-primary);
+}
+
+.course-option__radio {
+  flex: 0 0 auto;
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.course-option__label {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
+}
+
+.course-check__feedback {
+  color: var(--p3-primary);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.course-reflect {
   display: flex;
   flex-direction: column;
-  gap: 14rpx;
-  margin-top: 18rpx;
-  padding: 24rpx;
-  position: relative;
-  border: 1rpx solid var(--safe-border);
-  border-radius: 16rpx;
-  background: var(--safe-card);
+  gap: 8rpx;
 }
 
-.learning-panel::before,
-.practice-band::before {
-  content: "";
-  width: 52rpx;
-  height: 8rpx;
-  border-radius: 999rpx;
-  background: var(--safe-primary-deep);
-}
-
-.core-concept,
-.check-prompt {
+.course-row-button {
   display: block;
-  color: var(--safe-title);
-  font-size: 28rpx;
-  font-weight: 850;
-  line-height: 1.55;
-}
-
-.learning-line,
-.check-feedback,
-.booster-line,
-.example-label {
-  display: block;
-  color: var(--safe-text);
-  font-size: 24rpx;
-  line-height: 1.65;
-}
-
-.example-label {
-  color: var(--safe-primary-deep);
-  font-weight: 850;
-}
-
-.correction-label {
-  margin-top: 10rpx;
-}
-
-.counter-panel {
-  border-color: rgba(182, 106, 74, 0.36);
-}
-
-.counter-panel::before {
-  background: #b66a4a;
-}
-
-.answer-button {
   width: 100%;
-  min-height: 88rpx;
-  margin: 0;
-  padding: 14rpx 20rpx;
-  border: 1rpx solid var(--safe-border-strong);
-  border-radius: var(--safe-radius-sm);
-  background: var(--safe-card);
-  color: var(--safe-text);
-  font-size: 24rpx;
-  line-height: 1.45;
+  min-height: 0;
   text-align: left;
 }
 
-.answer-button.selected {
-  border-color: var(--safe-primary);
-  background: var(--safe-primary-soft);
+.course-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  padding: 32rpx 36rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-surface);
 }
-
-.check-feedback,
-.booster-line {
-  padding: 16rpx;
-  background: var(--safe-primary-pale);
-}
-
-.progress-band {
-  border-top: 1rpx solid var(--safe-border);
-  padding-top: 24rpx;
-}
-.ui2-page.course-detail-page { background:var(--ui2-canvas); padding-top:48rpx; gap:40rpx; }
-.ui2-page .detail-hero { padding:0 0 40rpx; text-align:center; border-bottom:1rpx solid var(--ui2-line); }
-.ui2-page .detail-hero .hero-title { font-size:44rpx; font-weight:700; line-height:1.6; overflow-wrap:anywhere; }
-.ui2-page .hero-meta,.ui2-page .learning-line,.ui2-page .section-body,.ui2-page .boundary-note { font-size:30rpx; line-height:1.6; color:var(--ui2-ink); }
-.ui2-page .safe-section { padding:0 0 40rpx; border-bottom:1rpx solid var(--ui2-line); }
-.ui2-page .learning-panel,.ui2-page .section-card,.ui2-page .relation-card,.ui2-page .practice-band,.ui2-page .progress-band { border:0; border-radius:0; background:transparent; padding:24rpx 0; }
-.ui2-page .section-list { display:grid; gap:24rpx; }
-.ui2-page .section-card { border-top:1rpx solid var(--ui2-line); }
-.ui2-page .section-index { color:var(--ui2-primary); font-size:30rpx; font-weight:700; }
-.ui2-page .safe-primary-button { min-height:96rpx; border-radius:24rpx; }
-
-.ui2-page.course-detail-page { padding-bottom:calc(64rpx + env(safe-area-inset-bottom)); }
-.ui2-page .learning-panel::before,.ui2-page .practice-band::before { display:none; }
-.ui2-page .section-card,.ui2-page .relation-card,.ui2-page .boundary-note,.ui2-page .state-card { box-shadow:none; }
-.ui2-page .core-concept,.ui2-page .check-prompt,.ui2-page .relation-title { font-size:32rpx; line-height:1.6; font-weight:700; }
-.ui2-page .section-title { font-size:32rpx; line-height:1.6; }
-.ui2-page .section-index { border-radius:8rpx; height:48rpx; width:48rpx; background:transparent; }
-.ui2-page .example-grid { display:grid; gap:20rpx; }
-.ui2-page .example-grid .learning-panel { padding:32rpx; border-radius:24rpx; background:var(--ui2-soft); }
-.ui2-page .example-grid .counter-panel { background:var(--ui2-warm); }
-.ui2-page .example-label,.ui2-page .check-feedback,.ui2-page .booster-line,.ui2-page .relation-text { font-size:30rpx; line-height:1.7; }
-.ui2-page .answer-button { min-height:96rpx; padding:24rpx; border:2rpx solid var(--ui2-control-border); border-radius:24rpx; font-size:30rpx; line-height:1.6; transition:background-color 160ms ease-out; }
-.ui2-page .answer-button.selected { background:var(--ui2-soft); border-color:var(--ui2-primary); font-weight:700; }
-.ui2-page .answer-button.selected::before { content:''; display:inline-block; width:10rpx; height:18rpx; margin-right:14rpx; border:solid var(--ui2-primary); border-width:0 3rpx 3rpx 0; transform:rotate(45deg); vertical-align:3rpx; }
-.ui2-page .safe-primary-button,.ui2-page .safe-secondary-button,.ui2-page .outline-button { min-height:96rpx; font-size:30rpx; padding:22rpx 24rpx; line-height:1.6; border-radius:24rpx; }
-.ui2-page .safe-secondary-button { background:transparent; border:2rpx solid var(--ui2-control-border); color:var(--ui2-primary); }
-.ui2-page .state-card { font-size:30rpx; }
-.ui2-page .boundary-note { padding:24rpx 0; border:0; background:transparent; }
-@media (prefers-reduced-motion: reduce) { .ui2-page .answer-button { transition:none; } }
-
-.ui2-page { --ui2-section-accent-display:none; }
-
-.ui2-page .progress-band .safe-primary-button { width:100%; box-shadow:none; }

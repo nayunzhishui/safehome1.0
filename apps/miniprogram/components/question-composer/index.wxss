@@ -1,5 +1,17 @@
-:host{display:block}.composer{margin-top:32rpx;padding:var(--ui2-composer-padding,32rpx);border:var(--ui2-composer-border,1rpx) solid var(--safe-border);border-radius:24rpx;background:var(--ui2-composer-bg,var(--safe-card))}.composer-head{display:flex;align-items:center;justify-content:space-between;gap:20rpx}.composer-label,.composer-counter,.inline-error{display:block}.composer-label{color:var(--safe-title);font-size:30rpx;font-weight:700;line-height:44rpx}.composer-counter{color:var(--safe-muted);font-size:var(--ui2-caption,24rpx);line-height:36rpx}.question-input{box-sizing:border-box;width:100%;min-height:260rpx;margin-top:24rpx;padding:24rpx;border:var(--ui2-control-border-weight,1rpx) solid var(--ui2-control-border,var(--safe-border));border-radius:20rpx;background:var(--safe-card);color:var(--safe-title);font-size:var(--ui2-body,28rpx);line-height:44rpx}.send-button{min-height:var(--safe-touch,88rpx);margin-top:24rpx;border:0;border-radius:20rpx;background:var(--safe-primary);color:#fff;font-size:var(--ui2-body,28rpx);font-weight:700;box-sizing:border-box;padding:var(--ui2-button-padding,0);line-height:var(--ui2-button-line-height,88rpx)}.send-button[disabled]{background:var(--safe-bg-soft);color:var(--safe-muted)}.send-button::after{border:0}.inline-error{margin-top:16rpx;color:var(--experience-danger);font-size:var(--ui2-caption,24rpx);line-height:36rpx}
+/* 提问卡（Figma 671:3162）：纸白卡里一个多行字段 + 字数 + 唯一实心按钮。 */
+:host {
+  display: block;
+}
 
-.question-placeholder{color:var(--safe-muted);opacity:1}
-.composer-guidance{display:block;margin-top:16rpx;color:var(--safe-muted);font-size:var(--ui2-body,28rpx);line-height:1.6}
-.composer-head{flex-wrap:wrap}
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+  padding: var(--p3-card);
+  border-radius: var(--p3-radius-card);
+  background: var(--p3-surface);
+}
+
+.button-pressed {
+  opacity: 0.92;
+}

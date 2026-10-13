@@ -1,5 +1,8 @@
 {
-  "navigationBarTitleText": "研究者移动工作台",
+  "navigationBarTitleText": "研究者工作台",
   "enablePullDownRefresh": true,
-  "backgroundTextStyle": "dark"
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "p3-icon": "/components/p3-icon/index"
+  }
 }

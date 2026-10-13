@@ -1,8 +1,30 @@
 const { createSafeHomeApi } = require("../../services/api");
-const { formatTime, hitTestPoint, prepareLinePoints } = require("../../utils/chart");
+const { formatTime } = require("../../utils/chart");
+const { curveLayout } = require("../../utils/thermometer-curve");
 const { requireLogin } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
+
+// 曲线盒子与页面同宽（左右各留 40rpx 页边距）。
+function curveBoxWidth() {
+  let windowWidth = 375;
+  try {
+    const info = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
+    windowWidth = Number(info.windowWidth) || windowWidth;
+  } catch (error) {
+    // 读不到窗口宽度时按 375 计算。
+  }
+  return windowWidth - (80 * windowWidth) / 750;
+}
+
+function recordMeta(item) {
+  const parts = [];
+  if (item.emotion_label) parts.push(item.emotion_label);
+  if (item.valence_level) parts.push(`愉悦 ${item.valence_level}`);
+  if (item.arousal_level) parts.push(`唤起 ${item.arousal_level}`);
+  if (item.control_level) parts.push(`可控 ${item.control_level}`);
+  return parts.join(" · ");
+}
 
 function todayKey() {
   const now = new Date();
@@ -23,28 +45,30 @@ Page({
     emotionLabel: "",
     briefText: "",
     records: [],
+    recentRecords: [],
+    curve: null,
     summary: { count: 0, min: null, max: null, avg: null },
     selectedPoint: null,
     loading: false,
     saving: false,
     errorMessage: "",
+    saveError: "",
     receipt: null,
     boundaryNotice: "情绪温度计只用于自我观察和练习提示，不构成诊断或筛查。",
   },
 
-  onLoad() {
+  onLoad(options = {}) {
+    // 首页点刻度会带上初始强度；只作为默认值，确认“记录一次”后才保存。
+    const initial = Number(options.intensity);
+    const startLevel = initial >= 1 && initial <= 10 ? initial : this.data.intensityLevel;
     if (!requireLogin({
-      redirectUrl: "/pages/thermometer/index",
+      redirectUrl: initial >= 1 && initial <= 10 ? `/pages/thermometer/index?intensity=${Math.round(initial)}` : "/pages/thermometer/index",
       message: "请先登录后再记录情绪温度。",
     })) {
       return;
     }
-    this.syncIntensityVisual(this.data.intensityLevel);
+    this.syncIntensityVisual(startLevel);
     this.loadDay();
-  },
-
-  onReady() {
-    this.drawCurve();
   },
 
   clampIntensity(value) {
@@ -96,15 +120,16 @@ Page({
     api
       .getEmotionThermometerDay({ date: this.data.date })
       .then((data) => {
-        this.setData(
-          {
-            records: (data.items || []).map((item) => ({ ...item, timeLabel: formatTime(item.created_at) })),
-            summary: data.summary || { count: 0, min: null, max: null, avg: null },
-            boundaryNotice: data.boundary_notice || this.data.boundaryNotice,
-            loading: false,
-          },
-          () => this.drawCurve(),
-        );
+        const records = (data.items || []).map((item) => ({ ...item, timeLabel: formatTime(item.created_at), metaText: recordMeta(item) }));
+        this.setData({
+          records,
+          recentRecords: records.slice().reverse(),
+          curve: curveLayout(records, curveBoxWidth()),
+          selectedPoint: null,
+          summary: data.summary || { count: 0, min: null, max: null, avg: null },
+          boundaryNotice: data.boundary_notice || this.data.boundaryNotice,
+          loading: false,
+        });
       })
       .catch((error) => {
         this.setData({
@@ -119,7 +144,7 @@ Page({
     if (this.data.saving) {
       return;
     }
-    this.setData({ saving: true });
+    this.setData({ saving: true, saveError: "" });
     api
       .createEmotionThermometer({
         intensity_level: this.data.intensityLevel,
@@ -142,7 +167,7 @@ Page({
       .catch((error) => {
         this.setData({
           saving: false,
-          errorMessage: error.message || "这次记录暂时没能保存，请检查网络后再试一次。",
+          saveError: error.message || "这次记录暂时没能保存，请检查网络后再试一次。",
         });
         wx.showToast({ title: error.message || "保存失败", icon: "none" });
       });
@@ -156,99 +181,9 @@ Page({
     this.setData({ receipt: null });
   },
 
-  handleCanvasTap(event) {
-    const touch = event.touches && event.touches[0];
-    if (!touch || !this._chartPoints) {
-      return;
-    }
-    const hit = hitTestPoint(this._chartPoints, touch.x, touch.y);
-    if (hit) {
-      this.setData({ selectedPoint: hit });
-    }
-  },
-
-  drawCurve() {
-    const records = this.data.records || [];
-    wx.createSelectorQuery()
-      .in(this)
-      .select("#moodCurve")
-      .fields({ node: true, size: true })
-      .exec((res) => {
-        const canvasInfo = res && res[0];
-        if (canvasInfo && canvasInfo.node) {
-          this.drawWithNodeCanvas(canvasInfo.node, canvasInfo.width || 320, canvasInfo.height || 180, records);
-          return;
-        }
-        this.drawWithLegacyCanvas(records);
-      });
-  },
-
-  drawWithNodeCanvas(canvas, width, height, records) {
-    const dpr = wx.getSystemInfoSync().pixelRatio || 1;
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    const ctx = canvas.getContext("2d");
-    ctx.scale(dpr, dpr);
-    this.drawChartContext(ctx, width, height, records);
-  },
-
-  drawWithLegacyCanvas(records) {
-    const ctx = wx.createCanvasContext("moodCurve", this);
-    this.drawChartContext(ctx, 320, 180, records);
-    ctx.draw();
-  },
-
-  drawChartContext(ctx, width, height, records) {
-    const chart = prepareLinePoints(records, width, height, 26);
-    this._chartPoints = chart.points;
-    ctx.clearRect(0, 0, width, height);
-    ctx.setFillStyle ? ctx.setFillStyle("#ffffff") : (ctx.fillStyle = "#ffffff");
-    ctx.fillRect(0, 0, width, height);
-
-    const stroke = ctx.setStrokeStyle ? ctx.setStrokeStyle.bind(ctx) : (value) => (ctx.strokeStyle = value);
-    const fill = ctx.setFillStyle ? ctx.setFillStyle.bind(ctx) : (value) => (ctx.fillStyle = value);
-    const lineWidth = ctx.setLineWidth ? ctx.setLineWidth.bind(ctx) : (value) => (ctx.lineWidth = value);
-
-    stroke("#dfe5dc");
-    lineWidth(1);
-    chart.yTicks.forEach((tick) => {
-      const y = chart.padding + (chart.height - chart.padding * 2) - ((tick - 1) / 9) * (chart.height - chart.padding * 2);
-      ctx.beginPath();
-      ctx.moveTo(chart.padding, y);
-      ctx.lineTo(chart.width - chart.padding, y);
-      ctx.stroke();
-      fill("#536e73");
-      ctx.setFontSize ? ctx.setFontSize(13) : (ctx.font = "13px sans-serif");
-      ctx.fillText(String(tick), 6, y + 3);
-    });
-
-    if (!chart.points.length) {
-      fill("#536e73");
-      ctx.setFontSize ? ctx.setFontSize(13) : (ctx.font = "13px sans-serif");
-      ctx.fillText("今天还没有温度记录", chart.padding, height / 2);
-      return;
-    }
-
-    stroke("#23666e");
-    lineWidth(2);
-    ctx.beginPath();
-    chart.points.forEach((point, index) => {
-      if (index === 0) {
-        ctx.moveTo(point.x, point.y);
-      } else {
-        ctx.lineTo(point.x, point.y);
-      }
-    });
-    ctx.stroke();
-
-    chart.points.forEach((point) => {
-      fill("#23666e");
-      ctx.beginPath();
-      ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
-      ctx.fill();
-      fill("#536e73");
-      ctx.setFontSize ? ctx.setFontSize(13) : (ctx.font = "13px sans-serif");
-      ctx.fillText(point.label || "", point.x - 14, height - 8);
-    });
+  selectPoint(event) {
+    const index = Number(event.currentTarget.dataset.index);
+    const point = this.data.curve && this.data.curve.points[index];
+    if (point) this.setData({ selectedPoint: point });
   },
 });

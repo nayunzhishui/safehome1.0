@@ -8,7 +8,7 @@ Page({
   onShow() {
     this._hidden = false;
     if (this._readSession && !isCurrentAuthSession(this._readSession)) {
-      this.setData({ feedback: null, trainingRecommendation: null, recommendedTrainings: [], patternCards: [], emotionOverview: null, riskSupportText: "", labelsText: "", nextAction: null, feedbackEvaluation: "", feedbackEvaluationSaving: false, isHighRisk: false, canShowTraining: false });
+      this.setData({ feedback: null, trainingRecommendation: null, recommendedTrainings: [], alternativeTrainings: [], patternCards: [], emotionOverview: null, riskSupportText: "", labelsText: "", nextAction: null, feedbackEvaluation: "", feedbackEvaluationSaving: false, isHighRisk: false, canShowTraining: false });
       this.loadFeedback(this.data.diaryId);
     } else if (this.data.loading && this._readSession) { this.loadFeedback(this.data.diaryId); }
   },
@@ -28,6 +28,7 @@ Page({
     emotionOverview: null,
     trainingRecommendation: null,
     recommendedTrainings: [],
+    alternativeTrainings: [],
     riskSupportText: "",
     feedbackEvaluation: "",
     feedbackEvaluationSaving: false,
@@ -81,6 +82,7 @@ Page({
         nextAction: this.buildNextAction(feedback, isHighRisk),
         trainingRecommendation,
         recommendedTrainings,
+        alternativeTrainings: recommendedTrainings.slice(1, 3).map((item) => ({ ...item, rowSubtitle: `${item.stage} · 约 ${item.duration}` })),
         riskSupportText:
           (feedback.risk && feedback.risk.safe_response) ||
           "如果这次记录涉及现实安全风险，请先联系现实中的可信成年人、学校老师、专业机构或当地紧急服务。本系统不能替代危机干预。",
@@ -143,6 +145,7 @@ Page({
     return {
       mainEmotion: overview.primary_emotion || "这次记录中的感受",
       intensity: overview.intensity_text || "未记录",
+      scene: overview.scene || "",
       trigger: feedback.trigger_summary || "这次记录发生在“" + (overview.scene || "具体互动") + "”场景。",
     };
   },

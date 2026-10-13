@@ -1,48 +1,38 @@
-<view class="safe-page ui2-page history-page" role="main" aria-label="训练记录">
-  <view class="history-head">
-    <view>
-      <text class="page-title">训练记录</text>
+<view class="p3-page history-page" role="main" aria-label="训练记录">
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取训练记录" />
+
+  <view wx:elif="{{errorMessage && !items.length}}" class="history-error">
+    <page-state kind="error" title="记录暂时没有加载成功" description="{{errorMessage}}" action-label="重新加载" bind:action="retry" />
+    <text class="p3-footnote">请求编号：{{errorDiagnostic.requestId || '未返回'}} · 服务版本：{{errorDiagnostic.serviceVersion || '未知'}}</text>
+    <button class="p3-link" bindtap="copyDiagnostic">复制诊断信息</button>
+  </view>
+
+  <block wx:elif="{{items.length}}">
+    <view class="history-total">
+      <text class="p3-greeting">{{total}}</text>
+      <text class="p3-meta history-total__label">次练习记录</text>
     </view>
-    <view wx:if="{{!loading && (!errorMessage || items.length)}}" class="total-badge">
-      <text class="total-value">{{total}}</text>
-      <text class="total-label">次记录</text>
-    </view>
-  </view>
 
-  <view wx:if="{{loading}}" class="state-card">
-    <text class="state-title">正在读取训练记录</text>
-  </view>
-
-  <view wx:elif="{{errorMessage && !items.length}}" class="state-card state-card--error">
-    <text class="state-title">记录暂时没有加载成功</text>
-    <text class="state-text">{{errorMessage}}</text>
-    <text class="diagnostic-copy">请求编号：{{errorDiagnostic.requestId || '未返回'}} · 服务版本：{{errorDiagnostic.serviceVersion || '未知'}}</text>
-    <button class="safe-outline-button state-action" bindtap="retry">重新加载</button>
-    <button class="diagnostic-action" bindtap="copyDiagnostic">复制诊断信息</button>
-  </view>
-
-  <view wx:elif="{{items.length}}" class="record-list">
-    <view wx:for="{{items}}" wx:key="id" class="record-card">
-      <view class="record-head">
-        <text class="record-status">{{item.statusText}}</text>
-        <text class="record-time">{{item.createdAtText}}</text>
+    <view class="history-list">
+      <view wx:for="{{items}}" wx:key="id" class="history-record">
+        <view class="history-record__head">
+          <status-pill label="{{item.statusText}}" tone="success" />
+          <text class="p3-meta history-record__time">{{item.createdAtText}}</text>
+        </view>
+        <text class="p3-item-title">{{item.cardTitle}}</text>
+        <text class="history-record__change">{{item.changeText}}</text>
+        <text wx:if="{{item.quoteText}}" class="p3-body-compact">“{{item.quoteText}}”</text>
+        <button class="history-record__repeat" data-card-id="{{item.card_id}}" aria-label="再次练习：{{item.cardTitle}}" bindtap="openCard">再次练习 ›</button>
       </view>
-      <text class="record-title">{{item.cardTitle}}</text>
-      <text class="record-change">{{item.changeText}}</text>
-      <text wx:if="{{item.helpfulnessText}}" class="record-meta">{{item.helpfulnessText}}</text>
-      <text wx:if="{{item.reflection}}" class="record-reflection">“{{item.reflection}}”</text>
-      <button class="repeat-action" data-card-id="{{item.card_id}}" bindtap="openCard">再次练习</button>
     </view>
-    <view class="load-more-area">
-      <button wx:if="{{hasMore}}" class="safe-outline-button load-more" loading="{{loadingMore}}" disabled="{{loadingMore}}" bindtap="loadMore">{{loadingMore ? '加载中' : '加载更多'}}</button>
-      <text wx:else class="list-end">已显示全部 {{total}} 次记录</text>
-      <text wx:if="{{errorMessage}}" class="load-error">{{errorMessage}}</text>
-      <button wx:if="{{errorMessage && errorDiagnostic}}" class="diagnostic-action" bindtap="copyDiagnostic">复制诊断信息</button>
-    </view>
-  </view>
 
-  <view wx:else class="state-card">
-    <text class="state-title">还没有训练记录</text>
-    <button class="safe-primary-button state-action" bindtap="goTraining">去训练中心</button>
-  </view>
+    <view class="history-more">
+      <button wx:if="{{hasMore}}" class="p3-btn p3-btn--secondary" loading="{{loadingMore}}" disabled="{{loadingMore}}" bindtap="loadMore">{{loadingMore ? '加载中' : '加载更多'}}</button>
+      <text wx:else class="p3-meta">已显示全部 {{total}} 次记录</text>
+      <text wx:if="{{errorMessage}}" class="p3-form-message p3-form-message--error" role="alert">{{errorMessage}}</text>
+      <button wx:if="{{errorMessage && errorDiagnostic}}" class="p3-link" bindtap="copyDiagnostic">复制诊断信息</button>
+    </view>
+  </block>
+
+  <page-state wx:else kind="empty" title="还没有训练记录" description="完成一次练习后，前后感受和一句观察会记在这里。" action-label="去训练中心" bind:action="goTraining" />
 </view>

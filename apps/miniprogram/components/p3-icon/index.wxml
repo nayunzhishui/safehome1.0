@@ -1,0 +1,3 @@
+<view class="p3-icon" style="width: {{size * 2}}rpx; height: {{size * 2}}rpx;" aria-hidden="true">
+  <image wx:if="{{src}}" class="p3-icon__group" src="{{src}}" style="{{box}}" />
+</view>

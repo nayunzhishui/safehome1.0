@@ -1,14 +1,23 @@
+/* 单行起步、随内容增高的输入（Figma P3/Field Single，最小 48）。 */
+:host {
+  display: block;
+  width: 100%;
+}
+
 .compact-textarea {
   box-sizing: border-box;
   width: 100%;
-  min-height: 164rpx;
-  padding: 26rpx 30rpx;
-  border: 2rpx solid var(--ui2-control-border,var(--safe-border));
-  border-radius: 24rpx;
-  background: var(--safe-card);
-  color: var(--safe-title);
-  font-size: var(--ui2-body,28rpx);
-  line-height: var(--ui2-textarea-line-height,44rpx);
+  min-height: 96rpx;
+  padding: 22rpx 28rpx;
+  border-radius: 28rpx;
+  background: var(--p3-surface);
+  box-shadow: inset 0 0 0 2rpx var(--p3-control);
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
 }
 
-.compact-placeholder { color: var(--ui2-muted,var(--safe-muted)); }
+.compact-placeholder {
+  color: var(--p3-muted);
+  opacity: 1;
+}

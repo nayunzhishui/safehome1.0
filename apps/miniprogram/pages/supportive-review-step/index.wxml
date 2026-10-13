@@ -1,12 +1,16 @@
-<view class="safe-page ui2-page sr-page" role="main" aria-label="{{stepTitle}}">
+<view class="p3-page sr-page" role="main" aria-label="{{stepTitle}}">
   <view wx:if="{{step !== 'followup'}}" class="sr-progress" aria-label="第 {{stepNumber}} 步，共 {{stepTotal}} 步">
+    <text class="sr-progress__text">第 {{stepNumber}} 步 / 共 {{stepTotal}} 步</text>
     <view class="sr-progress__track" aria-hidden="true">
       <view wx:for="{{progress}}" wx:key="id" class="sr-progress__node sr-progress__node--{{item.state}}"></view>
     </view>
-    <text class="sr-meta">第 {{stepNumber}} 步 / 共 {{stepTotal}} 步</text>
   </view>
 
-  <text class="sr-title">{{stepTitle}}</text>
+  <view class="sr-head">
+    <text class="p3-serif-title" role="heading" aria-level="1">{{stepTitle}}</text>
+    <text wx:if="{{prompt}}" class="sr-prompt">{{prompt}}</text>
+    <text wx:if="{{note}}" class="p3-meta">{{note}}</text>
+  </view>
 
   <page-state wx:if="{{loading}}" kind="loading" title="正在读取" />
   <page-state
@@ -20,23 +24,18 @@
   />
 
   <block wx:else>
-    <view wx:if="{{risk && risk.show_emergency_resources}}" class="sr-risk sr-risk--{{risk.level}}" role="alert">
-      <text class="sr-risk__text">{{risk.message}}</text>
-      <button class="sr-risk__action" bindtap="openEmergencyResources">查看紧急求助资源</button>
-    </view>
-
-    <view class="sr-lead">
-      <text class="sr-prompt">{{prompt}}</text>
-      <text wx:if="{{note}}" class="sr-note">{{note}}</text>
+    <view wx:if="{{risk && risk.show_emergency_resources}}" class="p3-notice {{risk.level === 'high' ? 'p3-notice--risk' : 'p3-notice--warm'}}" role="alert">
+      <text class="p3-notice__body">{{risk.message}}</text>
+      <button class="p3-btn {{risk.level === 'high' ? 'p3-btn--risk' : 'p3-btn--secondary'}} sr-risk-action" bindtap="openEmergencyResources">查看紧急求助资源</button>
     </view>
 
     <view wx:if="{{step === 'question'}}" class="sr-group">
-      <text class="sr-label">这个问题更接近哪一类？（可不选）</text>
+      <text class="p3-meta">先选一个最接近的主题</text>
       <view class="sr-chips" role="radiogroup" aria-label="问题主题">
         <button
           wx:for="{{topics}}"
           wx:key="id"
-          class="sr-chip {{topicId === item.id ? 'sr-chip--selected' : ''}}"
+          class="p3-chip {{topicId === item.id ? 'p3-chip--selected' : ''}}"
           role="radio"
           aria-checked="{{topicId === item.id}}"
           aria-label="{{item.title}}：{{item.hint}}"
@@ -45,35 +44,44 @@
         >{{item.title}}</button>
       </view>
       <view wx:if="{{topicExamples.length}}" class="sr-examples">
-        <text class="sr-meta">点一下，用这个问题开头</text>
+        <text class="p3-meta">点一下，用这个问题开头</text>
         <button wx:for="{{topicExamples}}" wx:key="*this" class="sr-example" data-text="{{item}}" bindtap="useExample">{{item}}</button>
       </view>
     </view>
 
-    <view wx:for="{{fields}}" wx:key="key" class="sr-field">
-      <text class="sr-label">{{item.label}}<text wx:if="{{!item.required}}" class="sr-optional">　可不填</text></text>
+    <text wx:if="{{step === 'question' && starters.length}}" class="sr-starters">试试这样开头：{{startersText}}</text>
+
+    <view wx:for="{{fields}}" wx:key="key" class="p3-field">
+      <text class="p3-field__label">{{item.label}}</text>
       <textarea
-        class="sr-textarea"
-        auto-height
+        wx:if="{{index === 0}}"
+        class="p3-field__input p3-field__input--multi"
         maxlength="{{item.maxLength}}"
         value="{{values[item.key]}}"
         placeholder="{{item.placeholder}}"
-        placeholder-class="sr-placeholder"
+        placeholder-class="p3-field__placeholder"
         data-key="{{item.key}}"
         aria-label="{{item.label}}"
         bindinput="onFieldInput"
       />
+      <textarea
+        wx:else
+        class="p3-field__input p3-field__input--auto"
+        auto-height
+        maxlength="{{item.maxLength}}"
+        value="{{values[item.key]}}"
+        placeholder="{{item.placeholder}}"
+        placeholder-class="p3-field__placeholder"
+        data-key="{{item.key}}"
+        aria-label="{{item.label}}"
+        bindinput="onFieldInput"
+      />
+      <text wx:if="{{index === 0}}" class="p3-field__hint">{{values[item.key].length || 0}} / {{item.maxLength}}</text>
     </view>
 
     <view wx:if="{{step === 'question'}}" class="sr-disclosure">
-      <button class="sr-disclosure__toggle" aria-expanded="{{rewritesOpen}}" bindtap="toggleRewrites">
-        <text>怎样写成一个好问题</text>
-        <text class="sr-chevron {{rewritesOpen ? 'sr-chevron--open' : ''}}" aria-hidden="true">›</text>
-      </button>
-      <view wx:if="{{rewritesOpen}}" class="sr-disclosure__body">
-        <view class="sr-starters">
-          <text wx:for="{{starters}}" wx:key="*this" class="sr-starter">{{item}}</text>
-        </view>
+      <button class="p3-btn p3-btn--quiet" aria-expanded="{{rewritesOpen}}" bindtap="toggleRewrites">{{rewritesOpen ? '收起问法示例 ⌃' : '怎样把问题问得更好 ⌄'}}</button>
+      <view wx:if="{{rewritesOpen}}" class="sr-rewrites">
         <view wx:for="{{rewrites}}" wx:key="from" class="sr-rewrite">
           <text class="sr-rewrite__from">{{item.from}}</text>
           <text class="sr-rewrite__to">{{item.to}}</text>
@@ -81,8 +89,8 @@
       </view>
     </view>
 
-    <view wx:if="{{step === 'episode'}}" class="sr-field">
-      <text class="sr-label">当时有多难受<text class="sr-optional">　可不选</text></text>
+    <view wx:if="{{step === 'episode'}}" class="p3-field">
+      <text class="p3-field__label">当时有多难受</text>
       <view class="sr-scale" role="radiogroup" aria-label="当时有多难受，0 到 10">
         <button
           wx:for="{{intensityItems}}"
@@ -102,18 +110,18 @@
     </view>
 
     <view wx:if="{{step === 'scales'}}" class="sr-group">
-      <view wx:if="{{scaleEmpty}}" class="sr-empty">
-        <text class="sr-body">暂时没有可以填写的问卷。可以先跳过这一步，回看信会根据你写下的内容整理。</text>
+      <view wx:if="{{scaleEmpty}}" class="p3-notice">
+        <text class="p3-notice__body">暂时没有可以填写的问卷。可以先跳过这一步，回看信会根据你写下的内容整理。</text>
       </view>
-      <view wx:else class="sr-list" role="list">
-        <view wx:for="{{scaleRows}}" wx:key="worksheetId" class="sr-scale-row" role="listitem">
+      <view wx:else class="p3-group" role="list">
+        <view wx:for="{{scaleRows}}" wx:key="worksheetId" class="sr-scale-row {{index < scaleRows.length - 1 ? 'sr-scale-row--divided' : ''}}" role="listitem">
           <view class="sr-scale-row__copy">
-            <text class="sr-scale-row__title">{{item.title}}</text>
-            <text class="sr-meta">{{item.resultId ? item.resultDay + ' 完成' : item.questionCount + ' 题'}}</text>
+            <text class="p3-item-title">{{item.title}}</text>
+            <text class="p3-meta">{{item.resultId ? item.resultDay + ' 完成' : item.questionCount + ' 题'}}</text>
           </view>
           <button
             wx:if="{{item.resultId}}"
-            class="sr-check {{item.selected ? 'sr-check--selected' : ''}}"
+            class="p3-chip {{item.selected ? 'p3-chip--selected' : ''}}"
             role="checkbox"
             aria-checked="{{item.selected}}"
             data-index="{{index}}"
@@ -121,35 +129,35 @@
           >{{item.selected ? '已加入' : '加入'}}</button>
           <button
             wx:elif="{{item.available}}"
-            class="sr-link"
+            class="p3-link"
             data-id="{{item.worksheetId}}"
             bindtap="openAssessment"
-          >去填写</button>
+          >去填写 ›</button>
         </view>
       </view>
-      <text wx:if="{{!scaleEmpty}}" class="sr-meta">已加入 {{selectedResultIds.length}} / {{maxResults}} 份。做完问卷后回到这里即可看到结果。</text>
+      <text wx:if="{{!scaleEmpty}}" class="p3-meta">已加入 {{selectedResultIds.length}} / {{maxResults}} 份。做完问卷后回到这里即可看到结果。</text>
     </view>
 
     <view wx:if="{{step === 'inquiry'}}" class="sr-group">
       <view wx:for="{{inquiryRows}}" wx:key="resultId" class="sr-inquiry">
         <view class="sr-inquiry__head">
-          <text class="sr-section-title">{{item.title}}</text>
-          <text class="sr-meta">{{item.day}}</text>
+          <text class="p3-item-title sr-inquiry__title">{{item.title}}</text>
+          <text class="p3-meta">{{item.day}}</text>
         </view>
-        <view class="sr-field">
-          <text class="sr-label">哪一两道题让你停下来想了想？为什么？</text>
-          <textarea class="sr-textarea" auto-height maxlength="300" value="{{item.stood_out}}" placeholder="可以写题目的大意" placeholder-class="sr-placeholder" data-index="{{index}}" data-key="stood_out" aria-label="{{item.title}}：让你停下来的题目" bindinput="onInquiryInput" />
+        <view class="p3-field">
+          <text class="p3-field__label">哪一两道题让你停下来想了想？为什么？</text>
+          <textarea class="p3-field__input p3-field__input--auto" auto-height maxlength="300" value="{{item.stood_out}}" placeholder="可以写题目的大意" placeholder-class="p3-field__placeholder" data-index="{{index}}" data-key="stood_out" aria-label="{{item.title}}：让你停下来的题目" bindinput="onInquiryInput" />
         </view>
-        <view class="sr-field">
-          <text class="sr-label">结果里哪一点像你，哪一点不像？</text>
-          <textarea class="sr-textarea" auto-height maxlength="300" value="{{item.fit}}" placeholder="例如：说我容易担心很像，说我很少放松不太像" placeholder-class="sr-placeholder" data-index="{{index}}" data-key="fit" aria-label="{{item.title}}：像与不像" bindinput="onInquiryInput" />
+        <view class="p3-field">
+          <text class="p3-field__label">结果里哪一点像你，哪一点不像？</text>
+          <textarea class="p3-field__input p3-field__input--auto" auto-height maxlength="300" value="{{item.fit}}" placeholder="例如：说我容易担心很像，说我很少放松不太像" placeholder-class="p3-field__placeholder" data-index="{{index}}" data-key="fit" aria-label="{{item.title}}：像与不像" bindinput="onInquiryInput" />
         </view>
       </view>
     </view>
 
     <view wx:if="{{step === 'experiment'}}" class="sr-group">
-      <view wx:if="{{cardOptions.length}}" class="sr-field">
-        <text class="sr-label">也可以配一个现成练习<text class="sr-optional">　可不选</text></text>
+      <view wx:if="{{cardOptions.length}}" class="p3-field">
+        <text class="p3-field__label">也可以配一个现成练习</text>
         <view class="sr-options" role="radiogroup" aria-label="现成练习">
           <button
             wx:for="{{cardOptions}}"
@@ -160,52 +168,60 @@
             data-id="{{item.id}}"
             bindtap="onCardTap"
           >
-            <text class="sr-option__title">{{item.title}}</text>
-            <text wx:if="{{item.durationText}}" class="sr-meta">{{item.durationText}}</text>
+            <image class="sr-option__radio" src="{{cardId === item.id ? '/assets/icons/p3/radio-20-selected.svg' : '/assets/icons/p3/radio-20-default.svg'}}" aria-hidden="true" />
+            <view class="sr-option__copy">
+              <text class="sr-option__title">{{item.title}}</text>
+              <text wx:if="{{item.durationText}}" class="p3-meta">{{item.durationText}}</text>
+            </view>
           </button>
         </view>
       </view>
-      <view class="sr-field">
-        <text class="sr-label">打算哪天开始<text class="sr-optional">　可不选</text></text>
+      <view class="p3-field">
+        <text class="p3-field__label">打算哪天开始</text>
         <view class="sr-date">
-          <picker mode="date" start="{{todayDate}}" value="{{plannedDate || todayDate}}" bindchange="onDateChange">
-            <view class="sr-date__value" role="button" aria-label="选择开始日期">{{plannedDate || '选择日期'}}</view>
+          <picker class="sr-date__picker" mode="date" start="{{todayDate}}" value="{{plannedDate || todayDate}}" bindchange="onDateChange">
+            <view class="sr-select" role="button" aria-label="选择开始日期">
+              <text class="sr-select__value {{plannedDate ? '' : 'sr-select__value--empty'}}">{{plannedDate || '选择日期'}}</text>
+              <p3-icon name="calendar" size="24" tone="field" />
+            </view>
           </picker>
-          <button wx:if="{{plannedDate}}" class="sr-link" bindtap="clearDate">清除</button>
+          <button wx:if="{{plannedDate}}" class="p3-link" bindtap="clearDate">清除</button>
         </view>
       </view>
     </view>
 
     <view wx:if="{{step === 'followup'}}" class="sr-group">
-      <view class="sr-field">
-        <text class="sr-label">现在再看你的问题</text>
+      <view class="p3-field">
+        <text class="p3-field__label">现在再看你的问题</text>
         <view class="sr-options" role="radiogroup" aria-label="现在再看你的问题">
           <button wx:for="{{questionNowOptions}}" wx:key="value" class="sr-option {{questionNow === item.value ? 'sr-option--selected' : ''}}" role="radio" aria-checked="{{questionNow === item.value}}" data-group="questionNow" data-value="{{item.value}}" bindtap="onChoiceTap">
-            <text class="sr-option__title">{{item.label}}</text>
+            <image class="sr-option__radio" src="{{questionNow === item.value ? '/assets/icons/p3/radio-20-selected.svg' : '/assets/icons/p3/radio-20-default.svg'}}" aria-hidden="true" />
+            <view class="sr-option__copy"><text class="sr-option__title">{{item.label}}</text></view>
           </button>
         </view>
       </view>
-      <view class="sr-field">
-        <text class="sr-label">接下来</text>
+      <view class="p3-field">
+        <text class="p3-field__label">接下来</text>
         <view class="sr-options" role="radiogroup" aria-label="接下来的打算">
           <button wx:for="{{nextOptions}}" wx:key="value" class="sr-option {{nextChoice === item.value ? 'sr-option--selected' : ''}}" role="radio" aria-checked="{{nextChoice === item.value}}" data-group="nextChoice" data-value="{{item.value}}" bindtap="onChoiceTap">
-            <text class="sr-option__title">{{item.label}}</text>
+            <image class="sr-option__radio" src="{{nextChoice === item.value ? '/assets/icons/p3/radio-20-selected.svg' : '/assets/icons/p3/radio-20-default.svg'}}" aria-hidden="true" />
+            <view class="sr-option__copy"><text class="sr-option__title">{{item.label}}</text></view>
           </button>
         </view>
-        <view wx:if="{{nextChoice === 'human_support'}}" class="sr-inline-note">
-          <text class="sr-body">可以先看看线下专业资源的说明，再决定找谁聊。</text>
-          <button class="sr-link" bindtap="openEmergencyResources">查看专业资源说明</button>
+        <view wx:if="{{nextChoice === 'human_support'}}" class="p3-notice">
+          <text class="p3-notice__body">可以先看看线下专业资源的说明，再决定找谁聊。</text>
+          <button class="p3-link" bindtap="openEmergencyResources">查看专业资源说明 ›</button>
         </view>
       </view>
     </view>
 
-    <text wx:if="{{errorMessage}}" class="sr-error" role="alert">{{errorMessage}}</text>
+    <text wx:if="{{errorMessage}}" class="p3-form-message p3-form-message--error" role="alert">{{errorMessage}}</text>
 
     <view class="sr-actions">
-      <button class="sr-primary" loading="{{saving}}" disabled="{{saving}}" bindtap="onSave">{{primaryLabel}}</button>
-      <button wx:if="{{canSkip}}" class="sr-text-button" disabled="{{saving}}" bindtap="onSkip">这一步先跳过</button>
-      <button wx:elif="{{stepDone || step === 'experiment'}}" class="sr-text-button" disabled="{{saving}}" bindtap="goHub">回到目录</button>
-      <text wx:if="{{saveStatus}}" class="sr-meta sr-save-status" role="status">{{saveStatus}}</text>
+      <text wx:if="{{saveStatus}}" class="p3-meta" role="status">{{saveStatus}}</text>
+      <button class="p3-btn p3-btn--primary" loading="{{saving}}" disabled="{{saving}}" bindtap="onSave">{{primaryLabel}}</button>
+      <button wx:if="{{canSkip}}" class="p3-btn p3-btn--quiet" disabled="{{saving}}" bindtap="onSkip">这一步先跳过</button>
+      <button wx:elif="{{stepDone || step === 'experiment' || step === 'question'}}" class="p3-btn p3-btn--quiet" disabled="{{saving}}" bindtap="goHub">回到目录</button>
     </view>
   </block>
 </view>

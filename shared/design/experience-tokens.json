@@ -1,5 +1,5 @@
 {
-  "version": "2026.07-task33-v1",
+  "version": "2026.10-uiproduct3-v1",
   "color": {
     "canvas": "#f7f8f5",
     "surface": "#ffffff",
@@ -12,6 +12,19 @@
     "line": "#dfe5dc",
     "focus": "#1f6f54"
   },
+  "miniprogram_color": {
+    "canvas": "#f6f4ef",
+    "surface": "#fffdf9",
+    "ink": "#173c43",
+    "muted": "#536e73",
+    "primary": "#23666e",
+    "primary_deep": "#195159",
+    "warning": "#7a4a14",
+    "danger": "#8a2f2a",
+    "line": "#e7e1d6",
+    "focus": "#23666e"
+  },
+  "miniprogram_color_note": "小程序自 2026-10 起使用 UIproduct3 青瓷米纸色板（Figma 8vocq2yUvjQavYpaxGotPs）；网页端仍用 color。",
   "touch_target": {
     "web_px": 44,
     "miniprogram_rpx": 88
@@ -19,15 +32,15 @@
   "type": {
     "caption": {
       "web_px": 12,
-      "miniprogram_rpx": 24
+      "miniprogram_rpx": 26
     },
     "body": {
       "web_px": 16,
-      "miniprogram_rpx": 28
+      "miniprogram_rpx": 30
     },
     "title": {
       "web_px": 20,
-      "miniprogram_rpx": 40
+      "miniprogram_rpx": 44
     }
   },
   "radius": {

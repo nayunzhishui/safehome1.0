@@ -1,5 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
-const { entryUrl, formatDay, statusText, stepUrl } = require("../../utils/supportiveReview");
+const { FLOW_STEPS, STEP_TITLES, entryUrl, formatDay, statusText, stepUrl } = require("../../utils/supportiveReview");
 
 const api = createSafeHomeApi();
 
@@ -23,6 +23,22 @@ const WORKFLOW_LABELS = {
   archived: "已归档",
   withdrawn: "已撤回",
 };
+
+// 列表短状态（Figma 657:1963）：进行中 / 该回看了 / 小实验中 / 已完成。
+function shortStatus(item) {
+  if (item.status === "completed") return "已完成";
+  if (item.status === "followup_due") return "该回看了";
+  if (item.next_step === "followup" || item.next_step === "done") return "小实验中";
+  return "进行中";
+}
+
+// 进行中卡片的小标题（Figma 657:1949）：“进行中 · 第 3 步：一次具体经历”。
+function kickerText(item) {
+  if (item.status === "followup_due") return `该回看了 · ${STEP_TITLES.followup}`;
+  const index = FLOW_STEPS.indexOf(item.next_step);
+  if (index < 0) return statusText(item);
+  return `进行中 · 第 ${index + 1} 步：${STEP_TITLES[item.next_step]}`;
+}
 
 Page({
   data: {
@@ -70,6 +86,8 @@ Page({
       const reviews = (result.items || []).map((item) => ({
         ...item,
         statusText: statusText(item),
+        shortStatus: shortStatus(item),
+        kickerText: kickerText(item),
         dayText: formatDay(item.updated_on),
       }));
       const due = reviews.find((item) => item.status === "followup_due");

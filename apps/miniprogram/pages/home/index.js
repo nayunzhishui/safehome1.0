@@ -1,5 +1,7 @@
 const { createSafeHomeApi } = require("../../services/api");
 const { captureAuthSession, isCurrentAuthSession, isLoggedIn } = require("../../utils/authGuard");
+const { buildGreeting } = require("../../utils/greeting");
+const { navMetrics } = require("../../utils/nav-metrics");
 
 const api = createSafeHomeApi();
 const PRIVACY_NOTICE_VERSION = "2026.10-privacy-notice-v1";
@@ -12,12 +14,34 @@ const HOME_TOUR_VERSION = "2026.10-home-tour-v1";
 const HOME_TOUR_KEY = "safehome_home_tour_seen";
 const HOME_TOUR_STEPS = [
   { selector: "#guide-today", title: "每天先看这里", text: "“今天的一小步”会根据你的记录和练习节奏，提示今天可以做的一件事。还没登录时，它会先带你登录。" },
-  { selector: "#guide-capture", title: "两种开始方式，选一个就行", text: "想先了解自己，点“测一测”，大约 5 分钟；想处理刚发生的事，点“情绪日记”记一件小事，大约 3 分钟，只有“发生了什么”必须写。没时间写的话，点一下“情绪温度计”记下此刻的感受也可以。第一次提交前会先说明数据用途，请你单独确认。" },
-  { selector: "#guide-start", title: "想了解完整用法", text: "这里有三步说明：记一件小事、看一条支持性反馈、做一个小练习。" },
-  { selector: "#guide-training", title: "选一个小练习", text: "训练卡和三个分节书写的练习项目都在训练中心。按自己的节奏选一个，做完记下感受。" },
+  { selector: "#guide-capture", title: "两种开始方式，选一个就行", text: "想先了解自己，点“测一测”，大约 5 分钟；想处理刚发生的事，点“写日记”记一件小事，大约 3 分钟，只有“发生了什么”必须写。没时间写的话，在上方“情绪温度计”点一个刻度记下此刻的感受也可以。第一次提交前会先说明数据用途，请你单独确认。" },
+  { selector: "#guide-start", title: "想了解完整用法", text: "页面底部的“三步开始”有完整说明：记一件小事、看一条支持性反馈、做一个小练习。" },
+  { tabBarIndex: 1, title: "选一个小练习", text: "训练卡和三个分节书写的练习项目都在底部的“训练”里。按自己的节奏选一个，做完记下感受。" },
   { selector: "#guide-support", title: "需要时，找人帮忙", text: "这里可以提交人工支持请求。它不是实时聊天，也不是紧急救助；遇到紧急情况，请先联系身边可信任的人或当地紧急服务。" },
   { selector: "#guide-replay", title: "随时可以重看", text: "点“重看使用教程”可以再走一遍。教程只介绍入口，不会替你填写、提交或同意任何用途。" },
 ];
+const TAB_COUNT = 4;
+// 常用入口与页尾链接是页面配置（Figma 643:553、643:607），模板只循环渲染。
+const QUICK_ACTIONS = [
+  { key: "diary", icon: "diary", badge: "warm", title: "写日记", subtitle: "得到支持性反馈" },
+  { key: "assessment", icon: "check", badge: "soft", title: "测一测", subtitle: "了解此刻状态" },
+  { key: "weekly", icon: "calendar", badge: "soft", title: "本周复盘", subtitle: "看看这一周" },
+];
+
+function heroLayout() {
+  const nav = navMetrics();
+  return {
+    offset: Math.max(0, Math.round(nav.offset)),
+    greetingTop: Math.round(nav.navBottom + 12),
+    bellTop: Math.round(nav.capsuleCenter - 18),
+  };
+}
+
+function thermometerCountText(loginRequired, ready, count) {
+  if (loginRequired) return "登录后记录";
+  if (!ready) return "记录次数待更新";
+  return `今天已记 ${count} 次`;
+}
 const PROTECTION_URL = "/pages/settings-detail/index?type=protection";
 
 function trackJourneyEvent(eventName, journey, status, extra = {}) {
@@ -37,42 +61,6 @@ function formatLocalDate(date) {
   const month = `${date.getMonth() + 1}`.padStart(2, "0");
   const day = `${date.getDate()}`.padStart(2, "0");
   return `${year}-${month}-${day}`;
-}
-
-function formatProgressSummary(summary) {
-  if (!summary) {
-    return null;
-  }
-  const statusTextMap = {
-    insufficient: "记录还不够",
-    fluctuating: "仍在观察",
-    converging: "开始形成线索",
-    stable: "较稳定",
-    low_confidence: "暂不归纳",
-  };
-  const scenes = summary.diaries && Array.isArray(summary.diaries.frequent_scenes)
-    ? summary.diaries.frequent_scenes
-    : [];
-  const emotions = summary.diaries && Array.isArray(summary.diaries.frequent_emotions)
-    ? summary.diaries.frequent_emotions
-    : [];
-  const assessmentCount = summary.assessment ? summary.assessment.count || 0 : 0;
-  const checkinCount = summary.checkins ? summary.checkins.completed_count || 0 : 0;
-  const thermometerCount = summary.thermometer ? summary.thermometer.count || 0 : 0;
-  return {
-    status: summary.stability_status,
-    statusText: statusTextMap[summary.stability_status] || "阶段复盘",
-    summaryText: summary.summary_text || "记录还不够，先继续完成测评和练习。",
-    periodText: `${summary.start_date || ""} 至 ${summary.end_date || ""}`,
-    assessmentCount,
-    checkinCount,
-    thermometerCount,
-    totalSignalCount: assessmentCount + checkinCount + thermometerCount,
-    topScene: scenes.length ? scenes[0][0] : "待观察",
-    topEmotion: emotions.length ? emotions[0][0] : "待观察",
-    nextAction: summary.next_action || "先完成一次测一测或一张训练卡。",
-    boundaryNotice: summary.boundary_notice || "阶段性反馈只用于整理近期记录和练习线索，不构成诊断。",
-  };
 }
 
 const JOURNEY_STATE_LABELS = {
@@ -177,6 +165,9 @@ function findLocalDraftAction() {
 
 Page({
   data: {
+    ...buildGreeting(new Date()),
+    hero: { offset: 0, greetingTop: 100, bellTop: 48 },
+    quickActions: QUICK_ACTIONS,
     homeLoginRequired: false,
     privacyNoticeVisible: true,
     tourVisible: false,
@@ -189,43 +180,31 @@ Page({
     todayRecordCountReady: false,
     thermometerRecordCount: 0,
     thermometerRecordReady: false,
+    thermometerLatest: 0,
+    thermometerCountText: "记录次数待更新",
     unreadMessageCount: 0,
     homeOverviewError: "",
     latestRecord: null,
     latestRecordReady: false,
     latestRecordError: "",
-    progressSummary: null,
-    progressSummaryReady: false,
-    progressSummaryError: "",
     todayJourney: null,
     todayJourneyLoading: true,
     todayJourneyError: "",
-    hotTopics: [
-      { id: "exam-setback", title: "孩子考试失利后，家长第一句话怎么说？", tag: "考试压力", readTime: "4分钟阅读" },
-      { id: "emotion-outburst", title: "孩子发脾气时，为什么讲道理没用？", tag: "情绪爆发", readTime: "4分钟阅读" },
-      { id: "repair-after-conflict", title: "亲子冲突后，如何重新连接？", tag: "关系修复", readTime: "5分钟阅读" },
-    ],
-    startSteps: [
-      { key: "diary", title: "第一步", text: "记录一次具体事件", detail: "写下发生了什么、我的情绪和当时回应。", actionText: "去记录" },
-      { key: "feedback", title: "第二步", text: "查看支持性反馈", detail: "看看这次记录中的互动线索和可调整位置。", actionText: "了解反馈" },
-      { key: "training", title: "第三步", text: "选择一个小练习并打卡", detail: "从推荐训练卡里选一个动作，记录一次尝试。", actionText: "去练习" },
-    ],
-    coreEntries: [
-      { key: "assessment", title: "测一测", subtitle: "先了解自己", iconText: "测", accentColor: "#6A86B4", accentBg: "#E9F0FA" },
-      { key: "diary", title: "情绪日记", subtitle: "记录一次", iconText: "记", accentColor: "#4E7C6B", accentBg: "#E7F0E2" },
-      { key: "training", title: "训练中心", subtitle: "选择练习", iconText: "练", accentColor: "#4E7C6B", accentBg: "#EEF4E8" },
-      { key: "feedback", title: "支持性反馈", subtitle: "记录后查看", iconText: "馈", accentColor: "#8069A8", accentBg: "#F1ECF8" },
-    ],
+  },
+
+  onLoad() {
+    this.setData({ hero: heroLayout() });
   },
 
   onShow() {
     this._homeHidden = false;
+    this.setData(buildGreeting(new Date()));
     if (!this._homeSession || !isCurrentAuthSession(this._homeSession)) {
       this.setData({
         todayRecordCount: 0, todayRecordCountReady: false,
-        thermometerRecordCount: 0, thermometerRecordReady: false, unreadMessageCount: 0,
+        thermometerRecordCount: 0, thermometerRecordReady: false, thermometerLatest: 0,
+        thermometerCountText: thermometerCountText(false, false, 0), unreadMessageCount: 0,
         homeOverviewError: "", latestRecord: null, latestRecordReady: false, latestRecordError: "",
-        progressSummary: null, progressSummaryReady: false, progressSummaryError: "",
         todayJourney: null, todayJourneyLoading: false, todayJourneyError: "",
       });
     }
@@ -254,7 +233,6 @@ Page({
 
   startGuide() {
     this.setData({ tourVisible: true });
-    if (wx.hideTabBar) wx.hideTabBar({ animation: false });
     this.positionGuide(0);
   },
 
@@ -263,6 +241,21 @@ Page({
     if (!step) return;
     this.setData({ tourStep: step, tourIndex: index, tourTotal: HOME_TOUR_STEPS.length, tourRect: null, tourPosition: { top: 80 } });
     const current = () => !this._homeHidden && this.data.tourVisible && this.data.tourIndex === index;
+    if (step.tabBarIndex !== undefined) {
+      // 训练入口在原生底部标签栏：这一步把标签栏露出来，提示框贴底并指向对应标签。
+      if (wx.showTabBar) wx.showTabBar({ animation: false });
+      const info = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
+      const width = info.windowWidth;
+      this.setData({
+        tourPosition: {
+          top: Math.max(16, info.windowHeight - 330),
+          arrow: "down",
+          arrowLeft: Math.round((width / TAB_COUNT) * (step.tabBarIndex + 0.5) - 24),
+        },
+      });
+      return;
+    }
+    if (wx.hideTabBar) wx.hideTabBar({ animation: false });
     const measure = () => {
       if (!current() || !wx.createSelectorQuery) return;
       wx.createSelectorQuery().select(step.selector).boundingClientRect((rect) => {
@@ -303,9 +296,9 @@ Page({
     this.setData({
       homeLoginRequired: true,
       todayRecordCount: 0, todayRecordCountReady: false,
-      thermometerRecordCount: 0, thermometerRecordReady: false, unreadMessageCount: 0,
+      thermometerRecordCount: 0, thermometerRecordReady: false, thermometerLatest: 0,
+      thermometerCountText: thermometerCountText(true, false, 0), unreadMessageCount: 0,
       homeOverviewError: "", latestRecord: null, latestRecordReady: true, latestRecordError: "",
-      progressSummary: null, progressSummaryReady: true, progressSummaryError: "",
       todayJourney: formatTodayJourney({
         state: "not_due",
         primary_action: {
@@ -336,12 +329,11 @@ Page({
     this.loadTodayJourney();
     try {
       const todayKey = formatLocalDate(new Date());
-      const [todayResult, latestResult, stats, thermometerDay, progressSummary] = await Promise.all([
+      const [todayResult, latestResult, stats, thermometerDay] = await Promise.all([
         api.listDiaries({ date: todayKey, limit: 100 }).catch((error) => ({ __error: error })),
         api.listDiaries({ limit: 1 }).catch((error) => ({ items: [], __error: error })),
         api.getProfileStats().catch((error) => ({ __error: error })),
         api.getEmotionThermometerDay({ date: todayKey }).catch((error) => ({ __error: error })),
-        api.getProgressSummary({ range: "7d" }).catch((error) => ({ __error: error })),
       ]);
       if (!current()) return;
       const todayError = todayResult && todayResult.__error ? todayResult.__error : null;
@@ -352,20 +344,20 @@ Page({
       const latestItems = latestResult && Array.isArray(latestResult.items) ? latestResult.items : [];
       const latestError = latestResult && latestResult.__error ? latestResult.__error : null;
       const thermometerRecordCount = !thermometerError && thermometerDay && thermometerDay.summary ? thermometerDay.summary.count || 0 : 0;
+      const thermometerItems = !thermometerError && thermometerDay && Array.isArray(thermometerDay.items) ? thermometerDay.items : [];
+      const lastReading = thermometerItems.length ? Number(thermometerItems[thermometerItems.length - 1].intensity_level) || 0 : 0;
       const latest = latestItems[0] || null;
-      const progressError = progressSummary && progressSummary.__error ? progressSummary.__error : null;
       this.setData({
         todayRecordCount: todayItems.length,
         todayRecordCountReady: !todayError,
         thermometerRecordCount,
         thermometerRecordReady: !thermometerError,
+        thermometerLatest: Math.max(0, Math.min(10, lastReading)),
+        thermometerCountText: thermometerCountText(false, !thermometerError, thermometerRecordCount),
         unreadMessageCount: !statsError && stats ? stats.unread_message_count || 0 : 0,
         homeOverviewError: overviewErrors.length ? "首页摘要暂时没有加载成功，请重新加载。" : "",
         latestRecordReady: !latestError,
         latestRecordError: latestError ? latestError.message || "暂时无法读取最近记录。" : "",
-        progressSummary: progressError ? null : formatProgressSummary(progressSummary),
-        progressSummaryReady: !progressError,
-        progressSummaryError: progressError ? progressError.message || "登录后可以查看阶段性反馈。" : "",
         latestRecord: latest
           ? {
               mood: latest.parent_emotion || "一次记录",
@@ -382,10 +374,9 @@ Page({
         todayRecordCountReady: false,
         thermometerRecordCount: 0,
         thermometerRecordReady: false,
+        thermometerLatest: 0,
+        thermometerCountText: thermometerCountText(false, false, 0),
         homeOverviewError: "首页摘要暂时没有加载成功，请重新加载。",
-        progressSummary: null,
-        progressSummaryReady: false,
-        progressSummaryError: "联网后可以查看阶段性反馈。",
         latestRecord: null,
         latestRecordReady: false,
         latestRecordError: "联网后可以查看最近记录。",
@@ -397,6 +388,14 @@ Page({
   startDiary() { wx.navigateTo({ url: "/pages/diary-form/index" }); },
   openDiaryHistory() { wx.navigateTo({ url: "/pages/diary-history/index" }); },
   openThermometer() { wx.navigateTo({ url: "/pages/thermometer/index" }); },
+  pickThermometer(event) {
+    const value = Number(event.detail && event.detail.value);
+    const intensity = value >= 1 && value <= 10 ? Math.round(value) : 0;
+    // 只带入初始强度；温度计页确认“记录一次”后才保存。
+    wx.navigateTo({ url: intensity ? `/pages/thermometer/index?intensity=${intensity}` : "/pages/thermometer/index" });
+  },
+  openLogin() { wx.navigateTo({ url: "/pages/login/index" }); },
+  openEmergencyGuide() { wx.navigateTo({ url: "/pages/emergency-guide/index" }); },
   openWeeklyReport() { wx.navigateTo({ url: "/pages/weekly-report/index" }); },
   retryHomeData() { this.refreshHomeData(); },
 
@@ -472,13 +471,6 @@ Page({
   openIntegrationTest() { wx.navigateTo({ url: "/pages/integration-test/index" }); },
   openGettingStarted() { wx.navigateTo({ url: "/pages/getting-started/index" }); },
 
-  openStartStep(event) {
-    const key = (event.detail && event.detail.key) || event.currentTarget.dataset.key;
-    if (key === "diary") { this.startDiary(); return; }
-    if (key === "training") { wx.switchTab({ url: "/pages/training/index" }); return; }
-    wx.navigateTo({ url: "/pages/getting-started/index" });
-  },
-
   openCoreEntry(event) {
     const key = (event.detail && event.detail.key) || event.currentTarget.dataset.key;
     if (key === "diary") { this.startDiary(); return; }
@@ -489,16 +481,8 @@ Page({
       return;
     }
     if (key === "supervision") { wx.navigateTo({ url: "/pages/supervision/index" }); return; }
+    if (key === "weekly") { this.openWeeklyReport(); return; }
     if (key === "assessment") wx.navigateTo({ url: "/pages/assessment/index" });
   },
 
-  openRecommendedTraining() {
-    wx.navigateTo({ url: `/pages/training-card/index?tags=${encodeURIComponent("high_demand_language,emotional_behavior")}` });
-  },
-  openHotTopics() { wx.navigateTo({ url: "/pages/hot-topics/index" }); },
-  openHotTopic(event) {
-    const id = event.currentTarget.dataset.id || "";
-    wx.navigateTo({ url: `/pages/hot-topics/index?id=${encodeURIComponent(id)}` });
-  },
-  showComingSoon(title) { wx.showToast({ title, icon: "none" }); },
 });

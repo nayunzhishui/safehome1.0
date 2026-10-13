@@ -1,219 +1,71 @@
+/* 训练记录（Figma 652:1704）：衬线合计数 → 每次练习一张纸白卡 → 列表结束说明。 */
 .history-page {
-  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
-  overflow-x: hidden;
-}
-
-.history-head {
-  padding: 24rpx 0 34rpx;
-  border-bottom: 1rpx solid var(--safe-border);
-  text-align: center;
-}
-
-.page-kicker,
-.page-title,
-.page-summary,
-.total-value,
-.total-label,
-.state-title,
-.state-text,
-.diagnostic-copy,
-.record-status,
-.record-time,
-.record-title,
-.record-change,
-.record-meta,
-.record-reflection,
-.list-end,
-.load-error {
-  display: block;
-}
-
-.page-kicker {
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  font-weight: 800;
-  line-height: 1.4;
-}
-
-.page-title {
-  margin-top: 10rpx;
-  color: var(--safe-title);
-  font-size: 44rpx;
-  font-weight: 900;
-  line-height: 1.25;
-  text-align: center;
-}
-
-.page-summary {
-  margin-top: 18rpx;
-  color: var(--safe-muted);
-  font-size: 30rpx;
-  line-height: 1.65;
-}
-
-.total-badge {
   display: flex;
-  align-items: baseline;
-  gap: 8rpx;
-  margin-top: 22rpx;
-  justify-content: center;
+  flex-direction: column;
+  gap: var(--p3-section);
+  padding-top: 16rpx;
+  padding-bottom: calc(72rpx + env(safe-area-inset-bottom));
 }
 
-.total-value,
-.total-label {
-  color: var(--safe-primary-deep);
-  font-size: 30rpx;
-  font-weight: 850;
+.history-error,
+.history-more {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
 }
 
-.state-card {
-  margin-top: 28rpx;
-  padding: 28rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-sm);
-  background: var(--safe-primary-pale);
-}
-
-.state-card--error {
-  border-color: #edd7d4;
-  background: #fff7f5;
-}
-
-.state-title {
-  color: var(--safe-title);
-  font-size: 32rpx;
-  font-weight: 850;
-  line-height: 1.4;
-}
-
-.state-text,
-.diagnostic-copy {
-  margin-top: 12rpx;
-  color: var(--safe-text);
-  font-size: 30rpx;
-  line-height: 1.6;
-}
-
-.diagnostic-copy {
-  color: var(--safe-muted);
-  font-size: 26rpx;
-  overflow-wrap: anywhere;
-}
-
-.state-action,
-.load-more {
-  width: 100%;
-  min-height: 88rpx;
-  margin: 22rpx 0 0;
-  border-radius: var(--safe-radius-sm);
-}
-
-.diagnostic-action,
-.repeat-action {
-  min-height: 88rpx;
-  margin: 12rpx 0 0;
-  padding: 0 24rpx;
-  border: 0;
-  background: transparent;
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  font-weight: 800;
-}
-
-.diagnostic-action::after,
-.repeat-action::after {
-  border: 0;
-}
-
-.record-list {
-  margin-top: 10rpx;
-}
-
-.record-card {
-  position: relative;
-  padding: 30rpx 0;
-  border-bottom: 1rpx solid var(--safe-border);
-}
-
-.record-head {
+.history-total {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20rpx;
+  gap: var(--p3-tight);
 }
 
-.record-status,
-.record-time {
-  color: var(--safe-primary-deep);
+.history-total__label {
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+}
+
+.history-record {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+  padding: 32rpx 36rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-surface);
+}
+
+.history-record__head {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-tight);
+}
+
+.history-record__time {
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+.history-record__change {
+  color: var(--p3-primary);
   font-size: 26rpx;
-  font-weight: 800;
-  line-height: 1.4;
+  line-height: 40rpx;
 }
 
-.record-time {
-  color: var(--safe-muted);
-  font-weight: 500;
-}
-
-.record-title {
-  margin-top: 14rpx;
-  color: var(--safe-title);
-  font-size: 34rpx;
-  font-weight: 900;
-  line-height: 1.35;
-}
-
-.record-change,
-.record-meta,
-.record-reflection {
-  margin-top: 10rpx;
-  color: var(--safe-text);
-  font-size: 30rpx;
-  line-height: 1.6;
-}
-
-.record-meta {
-  color: var(--safe-primary-deep);
-}
-
-.record-reflection {
-  color: var(--safe-muted);
-}
-
-.repeat-action {
-  min-width: 168rpx;
-  margin-top: 18rpx;
-  border: 2rpx solid var(--safe-primary);
-  border-radius: var(--safe-radius-sm);
-}
-
-.load-more-area {
-  padding: 28rpx 0 0;
-  text-align: center;
-}
-
-.list-end,
-.load-error {
-  color: var(--safe-muted);
+/* “再次练习 ›”：文字链大小（13/20），上下各补 12rpx 触控区，不改变排版位置 */
+.history-record__repeat {
+  align-self: flex-start;
+  width: auto;
+  min-height: 0;
+  margin: -12rpx 0;
+  padding: 12rpx 0;
+  color: var(--p3-primary);
   font-size: 26rpx;
-  line-height: 1.5;
+  line-height: 40rpx;
+  text-align: left;
 }
-
-.load-error {
-  margin-top: 12rpx;
-  color: var(--safe-danger);
-}
-
-@media (max-width: 360px) {
-  .record-head {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 6rpx;
-  }
-}
-
-.history-page { box-sizing:border-box; padding-left:48rpx; padding-right:48rpx; }
-.record-card { border:0; border-bottom:1rpx solid var(--safe-border); border-radius:0; background:transparent; box-shadow:none; }
-.record-reflection { padding:20rpx 24rpx; border-radius:16rpx; background:var(--ui2-soft); color:var(--safe-title); }
-.repeat-action { min-height:96rpx; padding:20rpx 24rpx; line-height:1.5; }
-@media(max-width:340px){.history-page{padding-left:32rpx;padding-right:32rpx}}

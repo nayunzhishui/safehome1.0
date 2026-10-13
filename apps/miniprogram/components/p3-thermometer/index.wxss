@@ -1,0 +1,111 @@
+/* Thermometer（Figma 631:463）：高 66，管左 26、上 14、高 16；液泡 36；刻度中心 x = 40 + (N−1)(W−54)/9。 */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.thermo {
+  position: relative;
+  width: 100%;
+  height: 132rpx;
+}
+
+.thermo__tube {
+  position: absolute;
+  left: 52rpx;
+  right: 0;
+  top: 28rpx;
+  height: 32rpx;
+  box-sizing: border-box;
+  border-radius: 16rpx;
+  background: var(--p3-mist);
+  box-shadow: inset 0 0 0 2rpx var(--p3-hairline);
+}
+
+.thermo__mercury {
+  position: absolute;
+  left: 52rpx;
+  top: 34rpx;
+  height: 20rpx;
+  border-radius: 10rpx;
+}
+
+.thermo__mercury--1 { background: var(--p3-intensity-1); }
+.thermo__mercury--2 { background: linear-gradient(90deg, var(--p3-intensity-1), var(--p3-intensity-2)); }
+.thermo__mercury--3 { background: linear-gradient(90deg, var(--p3-intensity-1), var(--p3-intensity-3)); }
+.thermo__mercury--4 { background: linear-gradient(90deg, var(--p3-intensity-1), var(--p3-intensity-4)); }
+.thermo__mercury--5 { background: linear-gradient(90deg, var(--p3-intensity-1), var(--p3-intensity-5)); }
+.thermo__mercury--6 { background: linear-gradient(90deg, var(--p3-intensity-1), var(--p3-intensity-6)); }
+.thermo__mercury--7 { background: linear-gradient(90deg, var(--p3-intensity-1), var(--p3-intensity-7)); }
+.thermo__mercury--8 { background: linear-gradient(90deg, var(--p3-intensity-1), var(--p3-intensity-8)); }
+.thermo__mercury--9 { background: linear-gradient(90deg, var(--p3-intensity-1), var(--p3-intensity-9)); }
+.thermo__mercury--10 { background: linear-gradient(90deg, var(--p3-intensity-1), var(--p3-intensity-10)); }
+
+.thermo__bulb {
+  position: absolute;
+  left: 0;
+  top: 8rpx;
+  width: 72rpx;
+  height: 72rpx;
+}
+
+.thermo__shine {
+  position: absolute;
+  left: 18rpx;
+  top: 24rpx;
+  width: 18rpx;
+  height: 18rpx;
+}
+
+.thermo__tick {
+  position: absolute;
+  top: 66rpx;
+  width: 3rpx;
+  height: 12rpx;
+  margin-left: -1.5rpx;
+  border-radius: 2rpx;
+  background: var(--p3-muted);
+}
+
+.thermo__label {
+  position: absolute;
+  top: 80rpx;
+  width: 48rpx;
+  margin-left: -24rpx;
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+  text-align: center;
+}
+
+.thermo__label--current {
+  color: var(--p3-ink);
+}
+
+.thermo__hit {
+  position: absolute;
+  top: 0;
+  width: 56rpx;
+  height: 132rpx;
+  margin-left: -28rpx;
+}
+
+.thermo__marker {
+  position: absolute;
+  top: 22rpx;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 8rpx #ffffff, 0 4rpx 12rpx rgba(23, 61, 66, 0.18);
+}
+
+.thermo__marker--1 { background: var(--p3-intensity-1); }
+.thermo__marker--2 { background: var(--p3-intensity-2); }
+.thermo__marker--3 { background: var(--p3-intensity-3); }
+.thermo__marker--4 { background: var(--p3-intensity-4); }
+.thermo__marker--5 { background: var(--p3-intensity-5); }
+.thermo__marker--6 { background: var(--p3-intensity-6); }
+.thermo__marker--7 { background: var(--p3-intensity-7); }
+.thermo__marker--8 { background: var(--p3-intensity-8); }
+.thermo__marker--9 { background: var(--p3-intensity-9); }
+.thermo__marker--10 { background: var(--p3-intensity-10); }

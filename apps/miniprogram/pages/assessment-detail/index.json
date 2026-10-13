@@ -1,9 +1,7 @@
 {
   "navigationBarTitleText": "填写测评",
   "usingComponents": {
-    "section-title": "/components/section-title/index",
-    "alert-card": "/components/alert-card/index",
-    "bottom-tip-card": "/components/bottom-tip-card/index",
+    "page-state": "/components/page-state/index",
     "service-consent": "/components/service-consent/index"
   }
 }

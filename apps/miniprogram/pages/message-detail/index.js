@@ -2,6 +2,14 @@ const { createSafeHomeApi } = require("../../services/api");
 
 const api = createSafeHomeApi();
 
+// 来源行用“10月9日 20:15”；不是今年的消息保留年份。
+function messageTimeText(value) {
+  const matched = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2})/);
+  if (!matched) return String(value || "").slice(0, 16).replace("T", " ");
+  const sameYear = Number(matched[1]) === new Date().getFullYear();
+  return `${sameYear ? "" : `${matched[1]}年`}${Number(matched[2])}月${Number(matched[3])}日 ${matched[4]}:${matched[5]}`;
+}
+
 Page({
   data: {
     id: "",
@@ -9,6 +17,7 @@ Page({
     errorMessage: "",
     message: null,
     messageTime: "",
+    bodyParagraphs: [],
     canOpenSource: false,
     sourceButtonLabel: "",
     canEvaluate: false,
@@ -33,7 +42,9 @@ Page({
       this.setData({
         loading: false,
         message,
-        messageTime: String(message.created_at || "").slice(0, 16).replace("T", " "),
+        messageTime: messageTimeText(message.created_at),
+        // 正文按换行分段显示（Figma 670:3177 两段之间留 12 的间距）。
+        bodyParagraphs: String(message.body || "暂无更多内容。").split(/\n+/).map((line) => line.trim()).filter(Boolean),
         canOpenSource: ["relationship_screening_report", "relationship_narrative"].includes(message.source_type) && !!message.source_id,
         sourceButtonLabel: message.source_type === "relationship_screening_report" ? "查看关系探索报告" : "查看已确认探索手记",
         canEvaluate: ["researcher_message", "relationship_stage_feedback", "supervision_feedback", "relationship_report"].includes(message.message_type),

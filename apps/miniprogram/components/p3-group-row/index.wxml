@@ -1,0 +1,15 @@
+<view class="p3-group-row p3-group-row--{{tone}}">
+  <view class="p3-group-row__main">
+    <view class="p3-group-row__badge" aria-hidden="true">
+      <p3-icon wx:if="{{icon}}" name="{{icon}}" size="20" tone="{{tone === 'warm' ? 'warm' : iconTone}}" />
+    </view>
+    <view class="p3-group-row__text">
+      <text class="p3-group-row__title">{{title}}</text>
+      <text wx:if="{{subtitle}}" class="p3-group-row__subtitle">{{subtitle}}</text>
+    </view>
+    <view class="p3-group-row__chevron" aria-hidden="true">
+      <p3-icon name="chevron-right" size="18" tone="{{tone === 'warm' ? 'warm' : 'muted'}}" />
+    </view>
+  </view>
+  <view wx:if="{{showDivider}}" class="p3-group-row__divider"></view>
+</view>

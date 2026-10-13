@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Art/EmptySprout &#230;&#150;&#176;&#231;&#171;&#185;" clip-path="url(#clip0_0_251)">
+<path id="Vector" d="M32 64C49.6731 64 64 49.6731 64 32C64 14.3269 49.6731 0 32 0C14.3269 0 0 14.3269 0 32C0 49.6731 14.3269 64 32 64Z" fill="#E9F2EE"/>
+<path id="Vector_2" d="M22 48H42" stroke="#D9C9AE" stroke-width="3" stroke-linecap="round"/>
+<path id="Vector_3" d="M32 47V25" stroke="#5E9A8E" stroke-width="3" stroke-linecap="round"/>
+<path id="Vector_4" d="M29.5 37H34.5" stroke="#4C8A7D" stroke-width="2" stroke-linecap="round"/>
+<path id="Vector_5" d="M32 30C28 22 21 19 15 20C17 27 24 31 32 30Z" fill="#9CC5BA"/>
+<path id="Vector_6" d="M32 25C35 17 42 14 49 15C47 22 40 26 32 25Z" fill="#B6D6CD"/>
+</g>
+<defs>
+<clipPath id="clip0_0_251">
+<rect width="64" height="64" fill="white"/>
+</clipPath>
+</defs>
+</svg>

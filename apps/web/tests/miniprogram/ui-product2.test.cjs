@@ -354,7 +354,7 @@ test('日记历史区分强度0与未填写，不改变原记录', () => {
   for (const value of [0, '0', 5, 10]) {
     context.sample = { id: 'synthetic', parent_emotion_intensity: value };
     const formatted = vm.runInNewContext('formatRecord(sample)', context);
-    assert.equal(formatted.intensityText, `强度 ${Number(value)}/10`);
+    assert.equal(formatted.intensityText, `强度 ${Number(value)} / 10`);
     assert.equal(formatted.intensityMarks.filter((item) => item.active).length, Number(value));
     assert.equal(context.sample.parent_emotion_intensity, value);
   }
@@ -438,7 +438,7 @@ test('结果页保留来源与高风险入口条件；空表登录恢复可达',
 test('高风险即时反馈先展示现实支持，不展示普通互动练习位置', () => {
   const markup = read('pages/feedback-result/index.wxml');
   assert.ok(markup.indexOf('wx:if="{{isHighRisk}}"') < markup.indexOf('<feedback-rating'));
-  assert.match(markup, /<view wx:if="{{!isHighRisk}}" class="safe-section">\s*<section-title title="互动线索"/);
+  assert.match(markup, /<view wx:if="{{!isHighRisk}}" class="feedback-section">\s*<p3-section-header title="互动线索"/);
   assert.ok(markup.includes('wx:if="{{canShowTraining}}"'));
 });
 
@@ -738,7 +738,7 @@ function switchAccount(h, id) {
 function homeApi(overrides = {}) {
   return {
     listDiaries: async () => ({ items: [] }), getProfileStats: async () => ({}),
-    getEmotionThermometerDay: async () => ({}), getProgressSummary: async () => null,
+    getEmotionThermometerDay: async () => ({}),
     getTodayJourney: async () => ({ state: 'ready', primary_action: { type: 'practice_due', title: '合成服务端行动', url: '/pages/training/index' } }),
     trackProductEvent: async () => ({}), ...overrides,
   };
@@ -772,10 +772,9 @@ test('首页登录态：未登录不显示摘要错误或读取个人数据，�
   assert.equal(h.requests.length, 0);
   assert.equal(h.page.data.homeOverviewError, '');
   assert.equal(h.page.data.latestRecordError, '');
-  assert.equal(h.page.data.progressSummaryError, '');
   assert.equal(h.page.data.homeLoginRequired, true);
   assert.equal(h.page.data.latestRecordReady, true);
-  assert.equal(h.page.data.progressSummaryReady, true);
+  assert.equal(h.page.data.thermometerCountText, '登录后记录');
   h.page.openTodayAction();
   assert.equal(h.navigation[0].url, '/pages/login/index');
   assert.equal(h.requests.length, 0);
@@ -785,16 +784,16 @@ test('首页登录态：当前会话401后清旧摘要、结束等待并显示�
   const h = homeWithRealApi(); switchAccount(h, 'A');
   h.storage.set('safehome:programDraft:own-program:1:user:A', { draftText: 'synthetic-draft' });
   h.page.data.latestRecord = { mood: 'old-private' };
-  h.page.data.progressSummary = { summaryText: 'old-private' };
+  h.page.data.thermometerLatest = 7;
   const run = h.page.refreshHomeData();
-  assert.equal(h.requests.length, 6);
+  assert.equal(h.requests.length, 5);
   for (const request of h.requests) {
     request.success({ statusCode: 401, data: { error: { code: 'unauthorized' } } });
   }
   await run; await new Promise(setImmediate);
   assert.equal(h.storage.has('auth_token'), false);
   assert.equal(h.page.data.latestRecord, null);
-  assert.equal(h.page.data.progressSummary, null);
+  assert.equal(h.page.data.thermometerLatest, 0);
   assert.equal(h.page.data.todayJourneyLoading, false);
   assert.equal(h.page.data.homeLoginRequired, true);
   assert.equal(h.page.data.todayJourney.type, 'login_required');
@@ -807,7 +806,7 @@ test('首页登录态：登录后恢复个人读取，普通网络错误仍允�
   await h.page.refreshHomeData();
   switchAccount(h, 'A');
   const run = h.page.refreshHomeData();
-  assert.equal(h.requests.length, 6);
+  assert.equal(h.requests.length, 5);
   for (const request of h.requests) {
     request.fail({ errMsg: 'synthetic network failure' });
   }
@@ -816,30 +815,32 @@ test('首页登录态：登录后恢复个人读取，普通网络错误仍允�
   assert.equal(h.storage.get('auth_token'), 'synthetic-A');
   assert.ok(h.page.data.homeOverviewError);
   assert.ok(h.page.data.latestRecordError);
-  assert.ok(h.page.data.progressSummaryError);
   assert.ok(h.page.data.todayJourneyError);
+  assert.equal(h.page.data.thermometerCountText, '记录次数待更新');
   const requestCount = h.requests.length;
   h.page.retryHomeData();
-  assert.equal(h.requests.length, requestCount + 6);
+  assert.equal(h.requests.length, requestCount + 5);
   for (const request of h.requests.slice(requestCount)) {
     request.success({ statusCode: 200, data: { ok: true, data: { items: [] } } });
   }
   await new Promise(setImmediate);
   assert.equal(h.page.data.homeOverviewError, '');
   assert.equal(h.page.data.latestRecordError, '');
-  assert.equal(h.page.data.progressSummaryError, '');
 });
 
-test('首页登录态：最近记录和阶段反馈未登录分支先于读取、错误和空记录', () => {
+test('首页登录态：最近记录未登录分支先于读取、错误、记录和空记录', () => {
   const template = read('pages/home/index.wxml');
-  for (const [heading, loginTitle] of [
-    ['最近记录', '登录后查看最近记录'], ['阶段性反馈', '登录后查看阶段性反馈'],
-  ]) {
-    const section = template.split(`<section-heading title="${heading}" />`)[1].split('</view>')[0];
-    assert.match(section, new RegExp(`wx:if="\\{\\{homeLoginRequired\\}\\}" kind="empty" title="${loginTitle}"`));
-    assert.ok(section.indexOf('homeLoginRequired') < section.indexOf('kind="loading"'));
-    assert.match(section, /wx:elif="\{\{![a-zA-Z]+Ready/);
-  }
+  const section = template.split('<p3-section-header title="最近" />')[1].split('<view class="home-footer">')[0];
+  const order = [
+    'wx:if="{{homeLoginRequired}}"',
+    'wx:elif="{{!latestRecordReady && !latestRecordError}}"',
+    'wx:elif="{{latestRecordError}}"',
+    'wx:elif="{{latestRecord}}"',
+    'wx:else',
+  ].map((marker) => section.indexOf(marker));
+  assert.ok(order.every((index) => index >= 0), order.join(','));
+  assert.deepEqual([...order].sort((a, b) => a - b), order);
+  assert.ok(section.indexOf('登录后查看最近记录') < order[1]);
 });
 
 test('首页不展示其他账号或无归属草稿的继续入口', async () => {
@@ -867,7 +868,7 @@ test('首页并行摘要等待中切换账号不回填旧日记', async () => {
   const waiting = deferred();
   const h = pageHarness('home', homeApi({
     listDiaries: async () => ({ items: [{ parent_emotion: 'old-owner', scene: 'old-scene' }] }),
-    getProgressSummary: () => waiting.promise,
+    getProfileStats: () => waiting.promise,
   })); switchAccount(h, 'A');
   const running = h.page.refreshHomeData(); await Promise.resolve();
   switchAccount(h, 'B'); waiting.resolve(null); await running;
@@ -1288,4 +1289,67 @@ test('项目详情只对研究角色显示研究信息，书写框不受默认14
   assert.match(wxml, /class="draft-input" maxlength="2000"/);
   assert.match(wxml, /wx:if="\{\{showResearchInfo && program.measurementPlan\}\}"/);
   assert.match(wxml, /练习依据/);
+});
+
+test('训练库按阶段归组开放清单里的卡：每张只出现一次，空类别不显示，新类型归到更多练习', () => {
+  const { groupTrainingLibrary } = require(path.join(MINI, 'utils/training-library.js'));
+  const content = JSON.parse(fs.readFileSync(path.join(ROOT, 'content/training_cards.json'), 'utf8'));
+  const cards = content.cards.filter((card) => card.enabled !== false);
+  const stages = groupTrainingLibrary(cards);
+  const grouped = stages.flatMap((stage) => stage.categories.flatMap((category) => category.cardIds));
+  assert.equal(grouped.length, cards.length);
+  assert.equal(new Set(grouped).size, cards.length);
+  assert.deepEqual(stages.map((stage) => stage.level), [1, 2, 3]);
+  assert.ok(stages.every((stage) => stage.categories.every((category) => category.label !== '更多练习')));
+  const partial = groupTrainingLibrary([{ id: 'synthetic-a', type: 'body_awareness' }, { id: 'synthetic-b', type: 'synthetic_new_type' }]);
+  assert.deepEqual(partial.map((stage) => [stage.level, stage.categories.map((category) => category.label)]), [[1, ['身体调节']], [3, ['更多练习']]]);
+});
+
+test('训练页：今天推荐与3天时间线只用开放的卡，已练过标为完成，训练库类别按自己选打开', async () => {
+  const cards = [
+    { id: 'card-a', type: 'emotion_expression', title: '合成卡A', purpose: '合成用途', duration_minutes: 5 },
+    { id: 'card-b', type: 'body_awareness', title: '合成卡B' },
+    { id: 'card-c', type: 'social_support', title: '合成卡C' },
+  ];
+  const h = pageHarness('training', {
+    listCards: async () => ({ items: cards }),
+    getShowcaseAccess: async () => ({ enabled: false }),
+    getTrainingPlan: async () => ({ recently_completed_card_ids: ['card-a'] }),
+  });
+  h.storage.set('auth_token', 'synthetic-token');
+  h.storage.set('auth_user', { id: 'synthetic-user', role: 'parent' });
+  h.storage.set('safehome:latestTrainingRecommendation', { sourceTitle: '测一测结果推荐', reason: '合成理由', cardIds: ['card-a', 'closed-card', 'card-b'] });
+  h.storage.set('safehome:threeDayLightPlan', { sourceType: 'assessment', days: [
+    { day: 1, title: '第 1 天', role: '今日练习', cardId: 'card-a', suggestion: '合成建议一' },
+    { day: 2, title: '第 2 天', role: '备用练习', cardId: 'card-b', suggestion: '合成建议二' },
+    { day: 3, title: '第 3 天', role: '长期练习', cardId: 'closed-card', suggestion: '合成建议三' },
+  ] });
+  await h.page.onShow();
+  await new Promise(setImmediate);
+  const plain = (value) => JSON.parse(JSON.stringify(value));
+  const recommendation = plain(h.page.data.latestRecommendation);
+  assert.deepEqual(recommendation.cardIds, ['card-b', 'card-a']);
+  assert.equal(recommendation.primaryCard.id, 'card-b');
+  assert.equal(recommendation.metaText, '今天只做第一步');
+  assert.deepEqual(recommendation.reasonRows, [{ label: '推荐理由', text: '合成理由' }]);
+  assert.deepEqual(plain(h.page.data.threeDayPlan.days).map((day) => [day.kicker, day.state]), [['第 1 天 · 今日练习', 'done'], ['第 2 天 · 备用练习', 'current']]);
+  assert.deepEqual(plain(h.page.data.libraryStages).map((stage) => stage.categories.map((category) => category.label)), [['身体调节', '情绪表达', '自我支持']]);
+  h.page.openLibraryCategory({ currentTarget: { dataset: { ids: 'card-b', label: '身体调节' } } });
+  assert.equal(h.navigation.at(-1).url, `/pages/training-card/index?card_ids=card-b&source=library&topic=${encodeURIComponent('身体调节')}`);
+  const wxml = read('pages/training/index.wxml');
+  assert.equal((wxml.match(/p3-btn--primary/g) || []).length, 1);
+  assert.match(wxml, /<p3-tab-hero title="训练" subtitle="由浅入深，每天一小步" \/>/);
+});
+
+test('训练卡页：从训练库类别打开时记为自己选择，不写成测评推荐', async () => {
+  const h = pageHarness('training-card', { listCards: async () => ({ items: [{ id: 'card-b', title: '合成卡B', steps: ['合成步骤'] }] }) });
+  h.page.onLoad({ card_ids: 'card-b', source: 'library', topic: encodeURIComponent('身体调节') });
+  await new Promise(setImmediate);
+  assert.match(h.page.data.tagsText, /^训练库 · 身体调节/);
+  assert.equal(h.page.data.cards[0].recommendationSource, 'library');
+  assert.equal(h.page.data.cards[0].sourceRecommendationId, 'library:card-b');
+  const assessment = pageHarness('training-card', { listCards: async () => ({ items: [{ id: 'card-b', title: '合成卡B' }] }) });
+  assessment.page.onLoad({ card_ids: 'card-b' });
+  await new Promise(setImmediate);
+  assert.equal(assessment.page.data.cards[0].recommendationSource, 'assessment_rule');
 });

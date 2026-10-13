@@ -1,30 +1,25 @@
-<view class="safe-page ui2-page messages-page" role="main" aria-label="消息">
-  <view class="messages-header">
-    <text class="page-title">消息</text>
-  </view>
+<view class="p3-page messages-page" role="main" aria-label="消息">
+  <page-state wx:if="{{loading}}" kind="loading" title="正在加载消息" />
 
-  <view class="messages-content">
-    <page-state wx:if="{{loading}}" kind="loading" title="正在加载消息" />
-
-    <block wx:elif="{{errorMessage}}">
-      <page-state kind="error" title="消息暂时没有读取成功" description="{{errorMessage}}" action-label="{{needsLogin ? '去登录' : '重新加载'}}" action-aria-label="{{needsLogin ? '登录后查看消息' : '重新加载消息'}}" bind:action="handleStateAction" />
-      <view wx:if="{{errorDiagnostic}}" class="diagnostic-card">
-        <text class="diagnostic-copy">请求编号：{{errorDiagnostic.requestId || '未返回'}} · 服务版本：{{errorDiagnostic.serviceVersion || '未知'}}</text>
-        <button class="diagnostic-action" aria-label="复制本次错误的诊断信息" bindtap="copyDiagnostic">复制诊断信息</button>
-      </view>
-    </block>
-
-    <view wx:elif="{{messages.length}}" class="message-list">
-      <message-row
-        wx:for="{{messages}}"
-        wx:key="id"
-        message="{{item}}"
-        bind:open="openMessage"
-      />
+  <block wx:elif="{{errorMessage}}">
+    <page-state kind="error" title="消息暂时没有读取成功" description="{{errorMessage}}" action-label="{{needsLogin ? '去登录' : '重新加载'}}" action-aria-label="{{needsLogin ? '登录后查看消息' : '重新加载消息'}}" bind:action="handleStateAction" />
+    <view wx:if="{{errorDiagnostic}}" class="messages-diagnostic">
+      <text class="p3-meta">请求编号：{{errorDiagnostic.requestId || '未返回'}} · 服务版本：{{errorDiagnostic.serviceVersion || '未知'}}</text>
+      <button class="p3-btn p3-btn--quiet" aria-label="复制本次错误的诊断信息" bindtap="copyDiagnostic">复制诊断信息</button>
     </view>
+  </block>
 
-    <page-state wx:else kind="empty" title="暂时没有新消息" />
+  <view wx:elif="{{messages.length}}" class="messages-list">
+    <message-row
+      wx:for="{{messages}}"
+      wx:key="id"
+      message="{{item}}"
+      show-divider="{{index < messages.length - 1}}"
+      bind:open="openMessage"
+    />
   </view>
 
-  <bottom-tip-card text="消息用于补充说明和支持提醒，不替代紧急帮助。" />
+  <page-state wx:else kind="empty" title="暂时没有新消息" />
+
+  <text class="p3-footnote messages-foot">消息用于补充说明和支持提醒，不替代紧急帮助。</text>
 </view>

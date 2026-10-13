@@ -1,9 +1,4 @@
-<view class="safe-page ui2-page diary-history-page" role="main" aria-label="情绪记录">
-  <view class="history-header">
-    <text class="history-title">情绪记录</text>
-    <text class="history-count">{{loading ? '正在读取' : (errorMessage ? (errorKind === 'network' ? '网络不可用' : '读取失败') : '当前显示 ' + records.length + ' 条')}}</text>
-  </view>
-
+<view class="history-page" role="main" aria-label="情绪记录">
   <page-state
     wx:if="{{loading}}"
     kind="loading"
@@ -20,44 +15,49 @@
     bind:action="retry"
   />
 
-  <view wx:elif="{{records.length}}" class="record-list" role="list" aria-label="已保存的情绪记录">
-    <view wx:for="{{records}}" wx:key="id" class="record-row" role="listitem">
-      <view class="record-time">
-        <text class="record-date">{{item.dateText}}</text>
-        <text class="record-clock">{{item.timeText}}</text>
-      </view>
-      <view class="record-axis" aria-hidden="true">
-        <bamboo-timeline-node />
-      </view>
-      <view class="record-content">
-        <text class="record-scene">{{item.sceneText}}</text>
-        <text class="record-description">{{item.descriptionText}}</text>
-        <view class="record-meta">
-          <text class="record-emotion">{{item.emotionText}}</text>
-          <text class="record-intensity-label">{{item.intensityText}}</text>
+  <block wx:elif="{{records.length}}">
+    <text class="history-count">共 {{records.length}} 条 · 按时间倒序</text>
+    <view class="history-list" role="list" aria-label="已保存的情绪记录">
+      <view wx:for="{{records}}" wx:key="id" class="history-row" role="listitem">
+        <view class="history-row__time">
+          <text class="history-row__date">{{item.dateText}}</text>
+          <text class="history-row__clock">{{item.timeText}}</text>
         </view>
-        <view class="intensity-scale" aria-label="{{item.intensityText}}">
-          <view
-            wx:for="{{item.intensityMarks}}"
-            wx:for-item="mark"
-            wx:key="key"
-            class="intensity-tick {{mark.active ? 'intensity-tick--active' : ''}}"
-          ></view>
+        <view class="history-row__rail" aria-hidden="true">
+          <view class="history-row__joint"></view>
+          <view wx:if="{{index < records.length - 1}}" class="history-row__line"></view>
+        </view>
+        <view class="history-row__content {{index < records.length - 1 ? 'history-row__content--spaced' : ''}}">
+          <text class="history-row__scene">{{item.sceneText}}</text>
+          <text class="history-row__description">{{item.descriptionText}}</text>
+          <view class="history-row__meta">
+            <text class="history-row__emotion">{{item.emotionText}}</text>
+            <text class="history-row__level">{{item.intensityText}}</text>
+          </view>
+          <view class="intensity-scale" aria-label="{{item.intensityText}}">
+            <view
+              wx:for="{{item.intensityMarks}}"
+              wx:for-item="mark"
+              wx:key="key"
+              class="intensity-tick"
+              style="{{mark.active ? 'background: var(--p3-intensity-' + mark.level + ');' : ''}}"
+            ></view>
+          </view>
         </view>
       </view>
     </view>
-
-    <button class="record-action" bindtap="startDiary">记录一件事</button>
-  </view>
+    <button class="p3-btn p3-btn--primary" bindtap="startDiary">记录一件事</button>
+  </block>
 
   <page-state
     wx:else
     kind="empty"
     title="还没有保存的记录"
+    description="写下一件刚发生的小事，就会出现在这里。"
     action-label="记录一件事"
     action-aria-label="新建一条情绪事件记录"
     bind:action="startDiary"
   />
 
-  <text class="history-boundary">这里只展示已经保存的记录，用于支持性观察，不替代专业诊断。</text>
+  <text class="p3-footnote">这里只展示已经保存的记录，用于支持性观察，不替代专业诊断。</text>
 </view>

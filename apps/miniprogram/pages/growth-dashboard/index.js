@@ -11,8 +11,16 @@ const SECTION_META = {
   researcher_feedback: { label: "研究者反馈", hint: "共同核对" },
 };
 
+// “10月10日”；读不到日期时保留原文前 10 位。
 function formatDate(value) {
-  return value ? String(value).slice(0, 10) : "";
+  const text = value ? String(value) : "";
+  const matched = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return matched ? `${Number(matched[2])}月${Number(matched[3])}日` : text.slice(0, 10);
+}
+
+function timelineKicker(item) {
+  const label = item.type_label || item.typeLabel || "";
+  return [item.dateText, label].filter(Boolean).join(" · ");
 }
 
 function sectionCount(key, section = {}) {
@@ -65,7 +73,10 @@ Page({
     try {
       const growth = await api.getGrowthOverview();
       const sections = growth.sections || {};
-      const timeline = (growth.timeline || []).map((item) => ({ ...item, dateText: formatDate(item.created_at) }));
+      const timeline = (growth.timeline || []).map((item) => {
+        const dated = { ...item, dateText: formatDate(item.created_at) };
+        return { ...dated, kicker: timelineKicker(dated) };
+      });
       const activityTypes = new Set(["diary", "checkin", "program", "report"]);
       const relationshipTypes = new Set(["relationship_task", "relationship_record", "relationship_report"]);
       this.setData({
@@ -75,6 +86,7 @@ Page({
         thermometer: (growth.thermometer || []).map((item) => ({
           ...item,
           dateText: formatDate(item.created_at),
+          level: Math.max(1, Math.min(10, Math.round(Number(item.intensity_level) || 1))),
           width: `${Math.max(10, Number(item.intensity_level || 0) * 10)}%`,
         })),
         emotionInsights: buildEmotionInsightsView(growth.emotion_insights),

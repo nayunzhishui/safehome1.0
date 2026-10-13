@@ -1,0 +1,60 @@
+/* CourseRow（Figma 639:441）：上下 16、文字间距 4；16/24 标题 · 14/22 场景 · 13/20 青瓷元信息；箭头 18 透明度 .6。 */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.p3-course-row {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.p3-course-row__main {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-stack);
+  padding: 32rpx 0;
+}
+
+.p3-course-row__text {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  overflow-wrap: anywhere;
+}
+
+.p3-course-row__title {
+  display: block;
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+.p3-course-row__scene {
+  display: block;
+  color: var(--p3-muted);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.p3-course-row__meta {
+  display: block;
+  color: var(--p3-primary);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.p3-course-row__chevron {
+  display: flex;
+  flex: 0 0 auto;
+  opacity: 0.6;
+}
+
+.p3-course-row__divider {
+  height: 2rpx;
+  background: var(--p3-hairline);
+}

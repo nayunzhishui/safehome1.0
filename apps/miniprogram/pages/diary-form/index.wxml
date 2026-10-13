@@ -1,188 +1,131 @@
-<view wx:if="{{!serviceReady}}" class="safe-page ui2-page" role="main" aria-label="功能知情说明">
+<view wx:if="{{!serviceReady}}" class="diary-page" role="main" aria-label="功能知情说明">
   <page-state kind="error" title="使用前请阅读本功能说明" description="{{errorMessage || '确认数据用途后，再填写和保存；暂不同意可以返回。'}}" action-label="重新确认" bind:action="retryServiceEntry" />
-  <button class="safe-primary-button" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
+  <button class="p3-btn p3-btn--primary" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
 </view>
 <block wx:if="{{serviceReady}}">
-<view class="safe-page ui2-page diary-page" role="main" aria-label="情绪事件记录">
-  <view class="diary-hero">
-    <view class="hero-copy">
-      <text class="hero-title">记录情绪事件</text>
-      <text wx:if="{{goalId}}" class="goal-hint">已关联本周小目标</text>
+<view class="diary-page" role="main" aria-label="情绪事件记录">
+  <status-pill wx:if="{{goalId}}" class="diary-goal" label="已关联本周小目标" tone="success" />
+  <view class="p3-notice p3-notice--warm">
+    <text class="p3-notice__body">请不要填写姓名、学校、电话等可识别身份的信息。</text>
+  </view>
+
+  <view class="diary-section">
+    <p3-section-header title="发生了什么" />
+    <view class="diary-chips" role="radiogroup" aria-label="场景">
+      <button
+        wx:for="{{sceneOptions}}"
+        wx:key="*this"
+        class="p3-chip {{selectedScene === item ? 'p3-chip--selected' : ''}}"
+        role="radio"
+        aria-checked="{{selectedScene === item}}"
+        data-value="{{item}}"
+        bindtap="selectScene"
+      >{{item}}</button>
+    </view>
+    <view class="p3-field">
+      <text class="p3-field__label">其他场景</text>
+      <input class="p3-field__input" aria-label="其他场景" placeholder-class="p3-field__placeholder" value="{{customScene}}" placeholder="如果上面没有合适场景，可以写在这里" bindinput="onTextInput" data-key="customScene" />
+    </view>
+    <view class="p3-field">
+      <text class="p3-field__label">具体经过</text>
+      <textarea class="p3-field__input p3-field__input--multi" aria-label="具体经过" placeholder-class="p3-field__placeholder" value="{{eventDescription}}" placeholder="刚才发生了什么？写一个片段就可以，例如：孩子一直没开始写作业，我提醒了几次，声音慢慢变大。" bindinput="onTextInput" data-key="eventDescription" />
     </view>
   </view>
-  <text class="privacy-note">请不要填写姓名、学校、电话等可识别身份的信息。</text>
-  <view class="diary-form">
-    <view class="diary-section">
-      <view class="section-head">
-        <view class="section-copy">
-          <text class="section-title">发生了什么</text>
-        </view>
-      </view>
-      <view class="tag-grid">
-        <button
-          wx:for="{{sceneOptions}}"
-          wx:key="*this"
-          class="tag {{selectedScene === item ? 'active' : ''}}"
-          data-value="{{item}}"
-          bindtap="selectScene"
-        >
-          {{item}}
-        </button>
-      </view>
-      <view class="field-group">
-        <text class="field-label">其他场景</text>
-        <input aria-label="其他场景" placeholder-class="ui2-placeholder" class="input" value="{{customScene}}" placeholder="如果上面没有合适场景，可以写在这里" bindinput="onTextInput" data-key="customScene" />
-      </view>
-      <view class="field-group">
-        <text class="field-label">具体经过</text>
-        <textarea aria-label="具体经过" placeholder-class="ui2-placeholder"
-          class="textarea textarea--large"
-          value="{{eventDescription}}"
-          placeholder="刚才发生了什么？写一个片段就可以，例如：孩子一直没开始写作业，我提醒了几次，声音慢慢变大。"
-          bindinput="onTextInput"
-          data-key="eventDescription"
-        />
-      </view>
+
+  <view class="diary-section">
+    <p3-section-header title="我和孩子当时的感受" />
+    <text class="diary-label">我当时的主要情绪</text>
+    <view class="diary-chips" role="radiogroup" aria-label="我当时的主要情绪">
+      <button
+        wx:for="{{parentEmotionOptions}}"
+        wx:key="*this"
+        class="p3-chip {{parentEmotion === item ? 'p3-chip--selected' : ''}}"
+        role="radio"
+        aria-checked="{{parentEmotion === item}}"
+        data-value="{{item}}"
+        bindtap="selectParentEmotion"
+      >{{item}}</button>
     </view>
-    <view class="diary-section">
-      <view class="section-head">
-        <view class="section-copy">
-          <text class="section-title">我和孩子当时的感受</text>
-        </view>
-      </view>
-      <view class="field-group">
-        <text class="field-label">家长当时的主要情绪</text>
-        <view class="tag-grid">
-          <button
-            wx:for="{{parentEmotionOptions}}"
-            wx:key="*this"
-            class="tag {{parentEmotion === item ? 'active' : ''}}"
-            data-value="{{item}}"
-            bindtap="selectParentEmotion"
-          >
-            {{item}}
-          </button>
-        </view>
-        <view class="slider-row">
-          <text class="slider-label">强度 {{parentEmotionIntensity}} / 10</text>
-          <slider min="0" max="10" step="1" value="{{parentEmotionIntensity}}" activeColor="#23666E" block-color="#23666E" bindchange="onParentIntensityChange" />
-        </view>
-      </view>
-      <view class="field-group">
-        <text class="field-label">孩子当时看起来的情绪</text>
-        <view class="tag-grid">
-          <button
-            wx:for="{{childEmotionOptions}}"
-            wx:key="*this"
-            class="tag tag--child {{childEmotion === item ? 'active' : ''}}"
-            data-value="{{item}}"
-            bindtap="selectChildEmotion"
-          >
-            {{item}}
-          </button>
-        </view>
-        <view class="slider-row slider-row--child">
-          <text class="slider-label">强度 {{childEmotionIntensity}} / 10</text>
-          <slider min="0" max="10" step="1" value="{{childEmotionIntensity}}" activeColor="#94602C" block-color="#94602C" bindchange="onChildIntensityChange" />
-        </view>
-      </view>
+    <view class="diary-slider">
+      <text class="diary-slider__label">强度 {{parentEmotionIntensity}} / 10</text>
+      <p3-intensity-slider min="0" max="10" value="{{parentEmotionIntensity}}" aria-label="我的情绪强度" bind:change="onParentIntensityChange" />
     </view>
-    <button class="more-toggle" aria-expanded="{{showMoreFields}}" bindtap="toggleMoreFields">
-      {{showMoreFields ? '收起可选内容' : '还有什么想记录的？（可选）'}}
+    <text class="diary-label">孩子当时看起来的情绪</text>
+    <view class="diary-chips" role="radiogroup" aria-label="孩子当时看起来的情绪">
+      <button
+        wx:for="{{childEmotionOptions}}"
+        wx:key="*this"
+        class="p3-chip {{childEmotion === item ? 'p3-chip--selected' : ''}}"
+        role="radio"
+        aria-checked="{{childEmotion === item}}"
+        data-value="{{item}}"
+        bindtap="selectChildEmotion"
+      >{{item}}</button>
+    </view>
+    <view class="diary-slider">
+      <text class="diary-slider__label">强度 {{childEmotionIntensity}} / 10</text>
+      <p3-intensity-slider min="0" max="10" value="{{childEmotionIntensity}}" aria-label="孩子的情绪强度" bind:change="onChildIntensityChange" />
+    </view>
+  </view>
+
+  <view class="diary-more">
+    <button class="diary-more__toggle" aria-expanded="{{showMoreFields}}" bindtap="toggleMoreFields">
+      <view class="diary-more__text">
+        <text class="diary-more__title">{{showMoreFields ? '收起可选内容' : '还有什么想记录的？（可选）'}}</text>
+        <text class="diary-more__subtitle">想法与做法 · 身体感觉 · 孩子后来的反应 · 当下结果</text>
+      </view>
+      <view class="diary-more__chevron {{showMoreFields ? 'diary-more__chevron--open' : ''}}" aria-hidden="true">
+        <p3-icon name="chevron-down" size="20" tone="muted" />
+      </view>
     </button>
-    <view wx:if="{{showMoreFields}}" class="diary-section more-section">
-      <view class="section-head">
-        <view class="section-copy">
-          <text class="section-title">想法与做法（可选）</text>
-        </view>
+    <view wx:if="{{showMoreFields}}" class="diary-more__body">
+      <p3-section-header title="想法与做法（可选）" />
+      <view class="p3-field">
+        <text class="p3-field__label">当时心里的第一反应</text>
+        <textarea class="p3-field__input p3-field__input--multi" aria-label="当时心里的第一反应" placeholder-class="p3-field__placeholder" value="{{automaticThought}}" placeholder="例如：再这样下去会不会更难收拾。" bindinput="onTextInput" data-key="automaticThought" />
       </view>
-      <view class="field-group">
-        <text class="field-label">当时心里的第一反应</text>
-        <textarea aria-label="当时心里的第一反应" placeholder-class="ui2-placeholder"
-          class="textarea"
-          value="{{automaticThought}}"
-          placeholder="例如：再这样下去会不会更难收拾。"
-          bindinput="onTextInput"
-          data-key="automaticThought"
-        />
+      <view class="p3-field">
+        <text class="p3-field__label">我当时的做法</text>
+        <textarea class="p3-field__input p3-field__input--multi" aria-label="我当时的做法" placeholder-class="p3-field__placeholder" value="{{behavior}}" placeholder="例如：我提醒了几次，后来声音提高了一些。" bindinput="onTextInput" data-key="behavior" />
       </view>
-      <view class="field-group">
-        <text class="field-label">我当时的做法</text>
-        <textarea aria-label="我当时的做法" placeholder-class="ui2-placeholder"
-          class="textarea"
-          value="{{behavior}}"
-          placeholder="例如：我提醒了几次，后来声音提高了一些。"
-          bindinput="onTextInput"
-          data-key="behavior"
-        />
+
+      <p3-section-header title="身体与后续（可选）" />
+      <text class="diary-label">身体感觉</text>
+      <view class="diary-chips" role="radiogroup" aria-label="身体感觉">
+        <button
+          wx:for="{{bodySensationOptions}}"
+          wx:key="*this"
+          class="p3-chip {{bodySensation === item ? 'p3-chip--selected' : ''}}"
+          role="radio"
+          aria-checked="{{bodySensation === item}}"
+          data-value="{{item}}"
+          bindtap="selectBodySensation"
+        >{{item}}</button>
       </view>
-    </view>
-    <view wx:if="{{showMoreFields}}" class="diary-section more-section">
-      <view class="section-head">
-        <view class="section-copy">
-          <text class="section-title">身体与后续（可选）</text>
-        </view>
+      <input class="p3-field__input" aria-label="补充身体感觉" placeholder-class="p3-field__placeholder" value="{{bodySensationNote}}" placeholder="也可以补充一句身体感觉，可不填" bindinput="onTextInput" data-key="bodySensationNote" />
+      <view class="p3-field">
+        <text class="p3-field__label">孩子后来的反应</text>
+        <textarea class="p3-field__input p3-field__input--multi" aria-label="孩子后来的反应" placeholder-class="p3-field__placeholder" value="{{childReaction}}" placeholder="孩子后来有什么反应？例如：沉默、争辩、哭了，或暂时离开。" bindinput="onTextInput" data-key="childReaction" />
       </view>
-      <view class="field-group">
-        <text class="field-label">身体感觉</text>
-        <view class="tag-grid">
-          <button
-            wx:for="{{bodySensationOptions}}"
-            wx:key="*this"
-            class="tag {{bodySensation === item ? 'active' : ''}}"
-            data-value="{{item}}"
-            bindtap="selectBodySensation"
-          >
-            {{item}}
-          </button>
-        </view>
-        <input aria-label="补充身体感觉" placeholder-class="ui2-placeholder" class="input" value="{{bodySensationNote}}" placeholder="也可以补充一句身体感觉，可不填" bindinput="onTextInput" data-key="bodySensationNote" />
+      <view class="p3-field">
+        <text class="p3-field__label">当下结果</text>
+        <textarea class="p3-field__input p3-field__input--multi" aria-label="当下结果" placeholder-class="p3-field__placeholder" value="{{shortTermResult}}" placeholder="短期结果：当下有没有暂时停下来，或情绪有没有更强？" bindinput="onTextInput" data-key="shortTermResult" />
       </view>
-      <view class="field-group">
-        <text class="field-label">孩子后来的反应</text>
-        <textarea aria-label="孩子后来的反应" placeholder-class="ui2-placeholder"
-          class="textarea"
-          value="{{childReaction}}"
-          placeholder="孩子后来有什么反应？例如：沉默、争辩、哭了，或暂时离开。"
-          bindinput="onTextInput"
-          data-key="childReaction"
-        />
-      </view>
-      <view class="field-group">
-        <text class="field-label">当下结果</text>
-        <textarea aria-label="当下结果" placeholder-class="ui2-placeholder"
-          class="textarea"
-          value="{{shortTermResult}}"
-          placeholder="短期结果：当下有没有暂时停下来，或情绪有没有更强？"
-          bindinput="onTextInput"
-          data-key="shortTermResult"
-        />
-      </view>
-      <view class="field-group">
-        <text class="field-label">我担心的长期影响</text>
-        <textarea aria-label="我担心的长期影响" placeholder-class="ui2-placeholder"
-          class="textarea"
-          value="{{longTermImpact}}"
-          placeholder="如果类似方式经常出现，你担心它可能带来什么影响？"
-          bindinput="onTextInput"
-          data-key="longTermImpact"
-        />
+      <view class="p3-field">
+        <text class="p3-field__label">我担心的长期影响</text>
+        <textarea class="p3-field__input p3-field__input--multi" aria-label="我担心的长期影响" placeholder-class="p3-field__placeholder" value="{{longTermImpact}}" placeholder="如果类似方式经常出现，你担心它可能带来什么影响？" bindinput="onTextInput" data-key="longTermImpact" />
       </view>
     </view>
-    <view wx:if="{{errorMessage}}" class="error-box">
-      <text>{{errorMessage}}</text>
+  </view>
+
+  <view class="diary-save">
+    <text wx:if="{{errorMessage}}" class="p3-form-message p3-form-message--error" role="alert">{{errorMessage}}</text>
+    <view class="diary-save__note">
+      <text aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
+      <text> · 保存后进入支持性反馈和训练卡推荐，只用于观察和练习，不做诊断。</text>
     </view>
-    <view class="submit-area">
-      <text class="draft-status" aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
-      <text wx:if="{{slowSubmitting}}" class="draft-status draft-status--slow">网络响应较慢，请保持页面打开；草稿仍在本机，不需要重复填写。</text>
-      <view class="submit-note">
-        <text>保存后会进入支持性反馈和训练卡推荐。反馈只用于观察和练习，不做诊断。</text>
-      </view>
-      <button class="primary-button safe-primary-button" bindtap="submitDiary" disabled="{{submitting}}">
-        {{submitting ? '提交中...' : '保存并查看反馈'}}
-      </button>
-    </view>
+    <text wx:if="{{slowSubmitting}}" class="p3-form-message">网络响应较慢，请保持页面打开；草稿仍在本机，不需要重复填写。</text>
+    <button class="p3-btn p3-btn--primary" bindtap="submitDiary" disabled="{{submitting}}">{{submitting ? '提交中...' : '保存并查看反馈'}}</button>
   </view>
 </view>
-
 </block>

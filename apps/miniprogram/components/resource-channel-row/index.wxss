@@ -1,1 +1,49 @@
-:host{display:block}.resource-row{display:flex;align-items:flex-start;gap:28rpx;padding:30rpx 0;border-bottom:1rpx solid var(--experience-line)}.bamboo-corner{display:var(--ui2-resource-marker-display,block);position:relative;width:8rpx;height:68rpx;flex:0 0 8rpx;border-radius:6rpx;background:linear-gradient(to bottom,var(--experience-primary) 0 42%,transparent 42% 50%,var(--experience-primary) 50% 100%)}.bamboo-joint{position:absolute;top:42%;left:-3rpx;width:14rpx;height:8rpx;border-radius:6rpx;background:var(--experience-primary)}.resource-copy{min-width:0;flex:1}.resource-title,.resource-text{display:block}.resource-title{color:var(--experience-ink);font-size:32rpx;font-weight:700;line-height:44rpx}.resource-text{margin-top:12rpx;color:var(--experience-muted);font-size:var(--experience-font-body);line-height:44rpx;overflow-wrap:anywhere}
+/* 竹节步骤行（Figma StepRow·Joint 670:3094）：一小段青瓷竹节 + 标题与说明，底部细线可关。 */
+:host {
+  display: block;
+}
+
+.channel-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 28rpx;
+  padding: 28rpx 0;
+}
+
+.channel-row--divided {
+  border-bottom: 2rpx solid var(--p3-hairline);
+}
+
+.channel-row__joint {
+  flex: 0 0 auto;
+  width: 56rpx;
+  padding-top: 22rpx;
+}
+
+.channel-row__bar {
+  width: 24rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+  background: var(--p3-primary);
+}
+
+.channel-row__copy {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 4rpx;
+  min-width: 0;
+}
+
+.channel-row__title {
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+.channel-row__text {
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
+}

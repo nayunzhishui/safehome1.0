@@ -1,15 +1,14 @@
 <view class="page-state page-state--{{kind}}" role="status" aria-live="polite">
-  <view wx:if="{{kind === 'loading'}}" class="page-state__loader" aria-hidden="true">
-    <text></text><text></text><text></text>
+  <image wx:if="{{kind === 'loading'}}" class="page-state__dots" src="/assets/art/loading-dots.svg" aria-hidden="true" />
+  <view wx:elif="{{kind === 'error'}}" class="page-state__badge" aria-hidden="true">
+    <p3-icon name="alert" size="24" tone="risk" />
   </view>
-  <view wx:else class="page-state__mark" aria-hidden="true">{{kind === 'error' ? '!' : '·'}}</view>
-  <view class="page-state__copy">
-    <text class="page-state__title">{{title}}</text>
-    <text wx:if="{{description}}" class="page-state__description">{{description}}</text>
-  </view>
+  <image wx:else class="page-state__sprout" src="/assets/art/empty-sprout.svg" aria-hidden="true" />
+  <text class="page-state__title">{{title}}</text>
+  <text wx:if="{{description}}" class="page-state__description">{{description}}</text>
   <button
     wx:if="{{actionLabel}}"
-    class="page-state__action"
+    class="p3-btn p3-btn--secondary page-state__action"
     aria-label="{{actionAriaLabel || actionLabel}}"
     bindtap="handleAction"
   >{{actionLabel}}</button>

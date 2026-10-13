@@ -1,92 +1,86 @@
+/* 反馈核对（Figma 647:1333）：一句提问 + 四个选择块；“让我不舒服”用暖色字，选中后青瓷描边。 */
+:host {
+  display: block;
+  width: 100%;
+}
+
 .feedback-rating {
-  padding: 20rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
-  background: var(--ui2-feedback-bg,var(--safe-card));
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
 }
 
-.feedback-rating--compact { padding: 16rpx; }
+.feedback-rating--compact {
+  gap: var(--p3-tight);
+}
 
+/* 核对卡（Figma 675:3511 阶段性报告、消息详情）：纸白卡、四个选项两两一行，已记录提示用辅助色 */
 .feedback-rating--editorial {
-  padding: var(--ui2-feedback-padding,40rpx);
-  border-radius: var(--ui2-button-radius,32rpx);
-}
-
-.feedback-rating--editorial .feedback-rating-prompt {
-  font-size: var(--ui2-body,28rpx);
-  line-height: 1.43;
-}
-
-.feedback-rating--editorial .feedback-rating-options {
-  gap: 16rpx;
-  margin-top: 28rpx;
+  padding: var(--p3-card);
+  border-radius: var(--p3-radius-card);
+  background: var(--p3-surface);
 }
 
 .feedback-rating--editorial .feedback-rating-option {
-  box-sizing: border-box;
-  flex: var(--ui2-feedback-option-flex, 0 1 auto);
-  min-height: var(--safe-touch,88rpx);
-  padding: 10rpx 20rpx;
-  font-size: var(--ui2-body,24rpx);
+  flex: 1 1 calc(50% - 8rpx);
+  min-width: 0;
+}
+
+.feedback-rating--editorial .feedback-rating-option--care {
+  color: var(--p3-ink);
+}
+
+.feedback-rating--editorial .feedback-rating-option--care.p3-chip--selected {
+  color: var(--p3-warm-ink);
 }
 
 .feedback-rating--editorial .feedback-rating-note {
-  margin-top: 20rpx;
-  font-size: var(--ui2-body,24rpx);
-  line-height: 1.5;
+  color: var(--p3-muted);
+}
+
+.feedback-rating--editorial .feedback-rating-note--care {
+  color: var(--p3-warm-ink);
 }
 
 .feedback-rating-prompt {
   display: block;
-  color: var(--safe-title);
-  font-size: var(--ui2-body,24rpx);
-  font-weight: 800;
-  line-height: 1.45;
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+/* 紧凑版（训练卡 Figma 652:1663）：提问用 13/20 辅助色，紧跟在主按钮下方 */
+.feedback-rating--compact .feedback-rating-prompt {
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+  font-weight: 400;
 }
 
 .feedback-rating-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 10rpx;
-  margin-top: 14rpx;
+  gap: var(--p3-tight);
 }
 
-.feedback-rating-option {
-  min-height: var(--safe-touch,88rpx);
-  margin: 0;
-  padding: 10rpx 18rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--ui2-button-radius,999rpx);
-  background: var(--safe-bg-soft);
-  color: var(--safe-text);
-  font-size: var(--ui2-body,22rpx);
-  font-weight: 700;
-  line-height: 1.3;
+.feedback-rating-option--care {
+  color: var(--p3-warm-ink);
 }
 
-.feedback-rating-option::after { border: 0; }
-.feedback-rating-option:focus-visible { outline: 4rpx solid var(--safe-blue); outline-offset: 3rpx; }
-.feedback-rating-option--active {
-  border-color: var(--safe-primary);
-  background: var(--safe-primary-soft);
-  color: var(--safe-primary-deep);
-}
-
-.feedback-rating-option--care.feedback-rating-option--active {
-  border-color: #c77954;
-  background: #fff4ed;
-  color: #7b452e;
+.feedback-rating-option--care.p3-chip--selected {
+  background: var(--p3-warm-soft);
+  box-shadow: inset 0 0 0 3rpx var(--p3-warm-ink);
+  color: var(--p3-warm-ink);
 }
 
 .feedback-rating-note {
   display: block;
-  margin-top: 12rpx;
-  color: var(--safe-muted);
-  font-size: var(--ui2-caption,20rpx);
-  line-height: 1.5;
+  color: var(--p3-primary);
+  font-size: 26rpx;
+  line-height: 40rpx;
 }
 
-.feedback-rating-note--care { color: #7b452e; }
+.feedback-rating-note--care {
+  color: var(--p3-warm-ink);
+}

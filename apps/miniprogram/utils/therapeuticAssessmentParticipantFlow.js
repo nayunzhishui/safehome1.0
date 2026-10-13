@@ -145,6 +145,7 @@ function registerTherapeuticAssessmentStepPage(stepId) {
       stateTitle: "",
       stateDescription: "",
       saveStatus: "尚未填写",
+      prefillNotice: "",
       remoteVersion: 0,
       canContinue: true,
     },
@@ -279,9 +280,11 @@ function registerTherapeuticAssessmentStepPage(stepId) {
         const result = await api.listSupportiveReviews();
         const latest = (result.items || [])[0];
         if (!latest || !latest.question) return;
+        // 带入说明单独显示为提示条（Figma 659:2200），状态行留给之后的保存进度。
         this.setData({
           value: latest.question,
-          saveStatus: "已带入你在自助整理里写的问题。提交后复核人员会看到这段文字，可以先修改或删掉。",
+          prefillNotice: "已带入你在自助整理里写的问题。提交后复核人员会看到这段文字，可以先修改或删掉。",
+          saveStatus: "",
         });
       } catch (error) {
         // 自助整理读取失败不影响真人复核流程。

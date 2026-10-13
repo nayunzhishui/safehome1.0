@@ -1,28 +1,14 @@
-/* UIproduct2 only: pages opt in after their Figma layout is complete. */
+/* UIproduct3 青瓷米纸（Figma 8vocq2yUvjQavYpaxGotPs · 619:6）。1 Figma px = 2rpx。
+   旧页面仍引用的 --ui2-* / --safe-* 变量统一映射到新色板。 */
 .ui2-page {
-  --ui2-canvas: #f4f8f8;
-  --ui2-surface: #ffffff;
-  --ui2-ink: #173c43;
-  --ui2-muted: #536e73;
-  --ui2-primary: #23666e;
-  --ui2-soft: #e2f0ed;
-  --ui2-warm: #f7e8d4;
-  --ui2-line: #d5e3e3;
-  --safe-bg: var(--ui2-canvas);
-  --safe-bg-soft: #edf4f4;
-  --safe-card: var(--ui2-surface);
-  --safe-title: var(--ui2-ink);
-  --safe-text: var(--ui2-muted);
-  --safe-muted: var(--ui2-muted);
-  --safe-primary: var(--ui2-primary);
-  --safe-primary-deep: #195159;
-  --safe-primary-soft: var(--ui2-soft);
-  --safe-primary-pale: #edf6f3;
-  --safe-border: var(--ui2-line);
-  --safe-border-strong: #6d9294;
-  --safe-touch: 96rpx;
-  --safe-radius-md: 24rpx;
-  --safe-radius-lg: 32rpx;
+  --ui2-canvas: var(--p3-paper);
+  --ui2-surface: var(--p3-surface);
+  --ui2-ink: var(--p3-ink);
+  --ui2-muted: var(--p3-muted);
+  --ui2-primary: var(--p3-primary);
+  --ui2-soft: var(--p3-soft);
+  --ui2-warm: var(--p3-warm-soft);
+  --ui2-line: var(--p3-hairline);
   --ui2-caption: 26rpx;
   --ui2-body: 30rpx;
   --ui2-title: 44rpx;
@@ -36,89 +22,122 @@
   --ui2-section-border: 0;
   --ui2-journey-padding: 40rpx;
   --ui2-journey-gap: 24rpx;
-  --ui2-button-radius: 24rpx;
+  --ui2-button-radius: 52rpx;
   --ui2-button-line-height: 1.5;
   --ui2-button-padding: 22rpx 24rpx;
   --ui2-entry-card-size: border-box;
   --ui2-entry-card-width: 100%;
   --ui2-control-border-weight: 2rpx;
-  --ui2-control-border: #6d9294;
-  --experience-canvas: var(--ui2-canvas);
-  --experience-surface: var(--ui2-surface);
-  --experience-ink: var(--ui2-ink);
-  --experience-muted: var(--ui2-muted);
-  --experience-primary: var(--ui2-primary);
-  --experience-primary-deep: #195159;
-  --experience-line: var(--ui2-line);
-  --experience-font-caption: 26rpx;
-  --experience-font-body: 30rpx;
-  --experience-font-title: 32rpx;
-  --experience-touch: 96rpx;
+  --ui2-control-border: var(--p3-control);
   font-size: var(--ui2-body);
   line-height: 1.6;
 }
 
 page {
   /* AUTO-GEN:experience-tokens — checked by scripts/check_design_tokens.py */
-  --experience-canvas: #f7f8f5;
-  --experience-surface: #ffffff;
-  --experience-ink: #202622;
-  --experience-muted: #68736d;
-  --experience-primary: #4f7c6b;
-  --experience-primary-deep: #2f5b4d;
-  --experience-warning: #b86a24;
-  --experience-danger: #a5453f;
-  --experience-line: #dfe5dc;
-  --experience-focus: #1f6f54;
+  --experience-canvas: #f6f4ef;
+  --experience-surface: #fffdf9;
+  --experience-ink: #173c43;
+  --experience-muted: #536e73;
+  --experience-primary: #23666e;
+  --experience-primary-deep: #195159;
+  --experience-warning: #7a4a14;
+  --experience-danger: #8a2f2a;
+  --experience-line: #e7e1d6;
+  --experience-focus: #23666e;
   --experience-touch: 88rpx;
-  --experience-font-caption: 24rpx;
-  --experience-font-body: 28rpx;
-  --experience-font-title: 40rpx;
-  --safe-primary: #4f7c6b;
-  --safe-primary-soft: #e8f0ea;
-  --safe-primary-pale: #f4f8f5;
-  --safe-primary-deep: #2f5b4d;
-  --safe-orange: #d98243;
-  --safe-orange-soft: #fbf0e6;
+  --experience-font-caption: 26rpx;
+  --experience-font-body: 30rpx;
+  --experience-font-title: 44rpx;
+
+  --p3-paper: #f6f4ef;
+  --p3-surface: #fffdf9;
+  --p3-hairline: #e7e1d6;
+  --p3-ink: #173c43;
+  --p3-muted: #536e73;
+  --p3-primary: #23666e;
+  --p3-soft: #e2f0ed;
+  --p3-warm-soft: #f7e8d4;
+  --p3-control: #6d9294;
+  --p3-on-primary: #ffffff;
+  --p3-risk-soft: #fbedea;
+  --p3-risk-ink: #8a2f2a;
+  --p3-warm-ink: #7a4a14;
+  --p3-mist: #edf4f1;
+  --p3-warm-line: #dcc7a8;
+  --p3-intensity-1: #a5cec3;
+  --p3-intensity-2: #b4d3c3;
+  --p3-intensity-3: #c3d7c2;
+  --p3-intensity-4: #d2dbc0;
+  --p3-intensity-5: #ded9bc;
+  --p3-intensity-6: #e6d2b4;
+  --p3-intensity-7: #eacaae;
+  --p3-intensity-8: #ecc1a8;
+  --p3-intensity-9: #ecb8a3;
+  --p3-intensity-10: #eaae9e;
+  --p3-page-x: 40rpx;
+  --p3-section: 56rpx;
+  --p3-card: 40rpx;
+  --p3-stack: 24rpx;
+  --p3-tight: 16rpx;
+  --p3-row-y: 26rpx;
+  --p3-radius-card: 48rpx;
+  --p3-radius-tile: 44rpx;
+  --p3-radius-group: 40rpx;
+  --p3-radius-pill: 52rpx;
+  --p3-button: 104rpx;
+  --p3-shadow-float: 0 20rpx 56rpx rgba(23, 61, 66, 0.07);
+  --p3-font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans SC", "MiSans", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+  /* 衬线子集只覆盖固定文字；用户自己写的内容用 --p3-font-serif-open，避免一行混用两种字形。 */
+  --p3-font-serif: "SafeSerif", "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
+  --p3-font-serif-text: "SafeSerifText", "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
+  --p3-font-serif-open: "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
+
+  --safe-primary: var(--p3-primary);
+  --safe-primary-soft: var(--p3-soft);
+  --safe-primary-pale: var(--p3-mist);
+  --safe-primary-deep: #195159;
+  --safe-orange: var(--p3-warm-ink);
+  --safe-orange-soft: var(--p3-warm-soft);
   --safe-yellow: #d9b85d;
-  --safe-peach: #f7e5d8;
-  --safe-blue: #627f9f;
-  --safe-blue-soft: #eef3f7;
-  --safe-purple: #746390;
-  --safe-purple-soft: #f1eef6;
+  --safe-peach: var(--p3-warm-soft);
+  --safe-blue: var(--p3-primary);
+  --safe-blue-soft: var(--p3-mist);
+  --safe-purple: var(--p3-primary);
+  --safe-purple-soft: var(--p3-mist);
   --safe-cyan: #a8c8c4;
-  --safe-bg: #f7f8f5;
-  --safe-bg-soft: #f2f4f0;
-  --safe-bg-leaf: #f7faf5;
-  --safe-card: #ffffff;
-  --safe-card-strong: #ffffff;
-  --safe-title: #202622;
-  --safe-text: #535f58;
-  --safe-muted: #68736d;
-  --safe-border: #dfe5dc;
-  --safe-border-strong: #cbd5ca;
-  --safe-success: #578b5f;
-  --safe-warning: #e79a42;
-  --safe-danger: #d76f67;
-  --safe-info: #6f8fb8;
+  --safe-bg: var(--p3-paper);
+  --safe-bg-soft: var(--p3-paper);
+  --safe-bg-leaf: var(--p3-mist);
+  --safe-card: var(--p3-surface);
+  --safe-card-strong: var(--p3-surface);
+  --safe-title: var(--p3-ink);
+  --safe-text: var(--p3-muted);
+  --safe-muted: var(--p3-muted);
+  --safe-border: var(--p3-hairline);
+  --safe-border-strong: var(--p3-control);
+  --safe-success: var(--p3-primary);
+  --safe-warning: var(--p3-warm-ink);
+  --safe-danger: var(--p3-risk-ink);
+  --safe-info: var(--p3-primary);
   --safe-shadow-card: none;
-  --safe-shadow-float: 0 4rpx 10rpx rgba(37, 55, 44, 0.07);
+  --safe-shadow-float: var(--p3-shadow-float);
   --safe-radius-xs: 8rpx;
   --safe-radius-sm: 16rpx;
-  --safe-radius-md: 16rpx;
-  --safe-radius-lg: 20rpx;
+  --safe-radius-md: 40rpx;
+  --safe-radius-lg: 48rpx;
   --safe-radius-pill: 999rpx;
   --safe-page-x: 40rpx;
-  --safe-section-gap: 40rpx;
-  --safe-card-pad: 28rpx;
+  --safe-section-gap: 56rpx;
+  --safe-card-pad: 40rpx;
   --safe-touch: 88rpx;
-  --safe-focus: #1f6f54;
+  --safe-focus: var(--p3-primary);
   min-height: 100vh;
-  background: var(--safe-bg);
-  color: var(--safe-title);
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--p3-paper);
+  color: var(--p3-ink);
+  font-family: var(--p3-font-sans);
   line-height: 1.7;
-  font-size: 28rpx;
+  font-size: 30rpx;
 }
 
 button {
@@ -519,4 +538,494 @@ input {
   background: #fff7e8;
   border-radius: var(--safe-radius-sm);
   padding: 14rpx 18rpx;
+}
+/* ---------- UIproduct3 通用类（与 Figma 组件页 620:6 一一对应） ---------- */
+.p3-page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 0 var(--p3-page-x) calc(48rpx + env(safe-area-inset-bottom));
+  background: var(--p3-paper);
+  color: var(--p3-ink);
+  overflow-x: hidden;
+}
+
+.p3-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-section);
+}
+
+.p3-stack--tight {
+  gap: var(--p3-stack);
+}
+
+/* 文字 */
+.p3-greeting {
+  display: block;
+  font-family: var(--p3-font-serif);
+  font-weight: 500;
+  font-size: 60rpx;
+  line-height: 80rpx;
+  letter-spacing: 2rpx;
+  color: var(--p3-ink);
+}
+
+.p3-display-name,
+.p3-serif-title {
+  display: block;
+  font-family: var(--p3-font-serif);
+  font-weight: 500;
+  font-size: 48rpx;
+  line-height: 64rpx;
+  letter-spacing: 1rpx;
+  color: var(--p3-ink);
+}
+
+.p3-serif-number {
+  font-family: var(--p3-font-serif);
+  font-weight: 500;
+  font-size: 48rpx;
+  line-height: 64rpx;
+  color: var(--p3-ink);
+}
+
+.p3-quote {
+  display: block;
+  font-family: var(--p3-font-serif-text);
+  font-weight: 400;
+  font-size: 34rpx;
+  line-height: 56rpx;
+  letter-spacing: 0.6rpx;
+  color: var(--p3-ink);
+}
+
+.p3-quote--open,
+.p3-serif-title--open {
+  font-family: var(--p3-font-serif-open);
+}
+
+.p3-page-title {
+  display: block;
+  font-size: 44rpx;
+  line-height: 60rpx;
+  letter-spacing: 1rpx;
+  font-weight: 500;
+  color: var(--p3-ink);
+}
+
+.p3-action-title {
+  display: block;
+  font-size: 40rpx;
+  line-height: 56rpx;
+  font-weight: 500;
+  color: var(--p3-ink);
+}
+
+.p3-item-title {
+  display: block;
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+  color: var(--p3-ink);
+}
+
+.p3-section-label {
+  font-size: 28rpx;
+  line-height: 40rpx;
+  letter-spacing: 2rpx;
+  font-weight: 500;
+  color: var(--p3-ink);
+}
+
+.p3-body {
+  display: block;
+  font-size: 30rpx;
+  line-height: 52rpx;
+  color: var(--p3-ink);
+}
+
+.p3-body-compact {
+  display: block;
+  font-size: 28rpx;
+  line-height: 44rpx;
+  color: var(--p3-muted);
+}
+
+.p3-meta {
+  display: block;
+  font-size: 26rpx;
+  line-height: 40rpx;
+  color: var(--p3-muted);
+}
+
+.p3-text-ink { color: var(--p3-ink); }
+.p3-text-muted { color: var(--p3-muted); }
+.p3-text-primary { color: var(--p3-primary); }
+.p3-text-warm { color: var(--p3-warm-ink); }
+.p3-text-risk { color: var(--p3-risk-ink); }
+
+/* 容器：只保留“行动卡”“分组”“提示”三种 */
+.p3-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--p3-card);
+  border-radius: var(--p3-radius-card);
+  background: var(--p3-surface);
+  box-shadow: var(--p3-shadow-float);
+}
+
+.p3-group {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 4rpx 32rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-surface);
+}
+
+.p3-group--warm {
+  background: var(--p3-warm-soft);
+}
+
+/* 课程行列表（Figma CourseRow 外框）：上下 4、左右 18 */
+.p3-group--course {
+  padding: 8rpx 36rpx;
+}
+
+/* 按钮：每屏一个 Primary；其余 Secondary 或文字链接 */
+.p3-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--p3-button);
+  min-height: var(--p3-button);
+  margin: 0;
+  padding: 0 32rpx;
+  border-radius: var(--p3-radius-pill);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.p3-btn--primary {
+  background: var(--p3-primary);
+  color: var(--p3-on-primary);
+}
+
+.p3-btn--secondary {
+  background: transparent;
+  box-shadow: inset 0 0 0 2rpx var(--p3-control);
+  color: var(--p3-primary);
+}
+
+.p3-btn--risk {
+  background: var(--p3-risk-ink);
+  color: var(--p3-on-primary);
+}
+
+.p3-btn[disabled] {
+  opacity: 0.45;
+}
+
+.p3-link {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  min-height: 88rpx;
+  margin: 0;
+  padding: 0;
+  font-size: 26rpx;
+  line-height: 40rpx;
+  color: var(--p3-primary);
+  background: transparent;
+}
+
+/* 可选标签：未选纸白+细线；选中青瓷浅底+1.5 描边+青瓷字 */
+.p3-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: auto;
+  min-height: 84rpx;
+  margin: 0;
+  /* Figma P3/Chip 的描边计入布局：9/16 内边距 + 1px 描边（选中 1.5px） */
+  padding: 20rpx 34rpx;
+  border-radius: 999rpx;
+  background: var(--p3-surface);
+  box-shadow: inset 0 0 0 2rpx var(--p3-hairline);
+  font-size: 28rpx;
+  line-height: 44rpx;
+  color: var(--p3-ink);
+  white-space: nowrap;
+}
+
+.p3-chip--selected {
+  min-height: 86rpx;
+  padding: 21rpx 35rpx;
+  background: var(--p3-soft);
+  box-shadow: inset 0 0 0 3rpx var(--p3-primary);
+  color: var(--p3-primary);
+}
+
+/* 分段切换：纸白、细线、radius/tile 容器，各段等宽 */
+.p3-segment {
+  display: flex;
+  gap: 8rpx;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8rpx;
+  border-radius: var(--p3-radius-tile);
+  background: var(--p3-surface);
+  box-shadow: inset 0 0 0 2rpx var(--p3-hairline);
+}
+
+.p3-segment__item {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 84rpx;
+  margin: 0;
+  padding: 18rpx 8rpx;
+  border-radius: 999rpx;
+  background: transparent;
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+  color: var(--p3-muted);
+  white-space: nowrap;
+}
+
+.p3-segment__item--active {
+  background: var(--p3-soft);
+  color: var(--p3-primary);
+}
+
+/* 米纸胶囊分段（Figma 回看信“像不像”、行动回看）：米纸底 + 细线 + 全圆角 */
+.p3-segment--paper {
+  gap: 0;
+  border-radius: 999rpx;
+  background: var(--p3-paper);
+}
+
+.p3-divider {
+  height: 2rpx;
+  background: var(--p3-hairline);
+}
+
+.p3-footnote {
+  display: block;
+  font-size: 26rpx;
+  line-height: 40rpx;
+  color: var(--p3-muted);
+}
+
+/* 安静按钮：高 44、青瓷字，用于“注册新账号”“已有账号，去登录”等次要跳转 */
+.p3-btn--quiet {
+  height: 88rpx;
+  min-height: 88rpx;
+  border-radius: 28rpx;
+  background: transparent;
+  color: var(--p3-primary);
+}
+
+/* 暂不可用：保留原位置说明不可用，不当作可点的按钮 */
+.p3-btn--unavailable {
+  background: var(--p3-paper);
+  box-shadow: inset 0 0 0 2rpx var(--p3-hairline);
+  color: var(--p3-muted);
+}
+
+/* 表单字段（Figma 623:89）：标签 16/24；输入框纸白底、1px 控件线、圆角 14、最小高 48；说明 13/20 */
+.p3-field {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  width: 100%;
+}
+
+.p3-field__label {
+  display: block;
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+.p3-field__input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 96rpx;
+  padding: 0 28rpx;
+  border: 2rpx solid var(--p3-control);
+  border-radius: 28rpx;
+  background: var(--p3-surface);
+  color: var(--p3-ink);
+  font-size: 30rpx;
+}
+
+/* 多行文本框：高 128 */
+.p3-field__input--multi {
+  height: 256rpx;
+  padding: 24rpx 28rpx;
+  line-height: 52rpx;
+}
+
+/* 单行起步、随内容增高（textarea auto-height）：最小 48，文字垂直居中 */
+.p3-field__input--auto {
+  height: auto;
+  min-height: 96rpx;
+  padding: 20rpx 28rpx;
+  line-height: 52rpx;
+}
+
+.p3-field__placeholder {
+  color: var(--p3-muted);
+  opacity: 1;
+}
+
+.p3-field__hint {
+  display: block;
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+/* 同意勾选（Figma 623:120）：20 方框圆角 6；勾选后青瓷实底+白勾。原生 checkbox 透明覆盖在方框上，保留点按与读屏。 */
+.p3-agreement {
+  display: flex;
+  align-items: flex-start;
+  gap: 20rpx;
+  padding: 20rpx 0;
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.p3-agreement__text {
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+.p3-agreement__box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 40rpx;
+  height: 40rpx;
+  margin-top: 2rpx;
+  flex: 0 0 auto;
+  border: 3rpx solid var(--p3-control);
+  border-radius: 12rpx;
+  background: var(--p3-surface);
+}
+
+.p3-agreement__box--checked {
+  border-color: var(--p3-primary);
+  background: var(--p3-primary);
+}
+
+.p3-agreement__native {
+  position: absolute;
+  left: -12rpx;
+  top: -12rpx;
+  width: 64rpx;
+  height: 64rpx;
+  opacity: 0;
+}
+
+.p3-agreement__tick {
+  width: 28rpx;
+  height: 28rpx;
+}
+
+.p3-agreement__link {
+  color: var(--p3-primary);
+}
+
+/* 页尾边界脚注（Figma BoundaryNote 670:3103）：青瓷短线 + 小标题 + 说明；代替彩色提示框，不打断阅读 */
+.p3-boundary {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.p3-boundary__rule {
+  width: 48rpx;
+  height: 4rpx;
+  border-radius: 2rpx;
+  background: var(--p3-primary);
+  opacity: 0.5;
+}
+
+.p3-boundary__title {
+  display: block;
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 40rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
+}
+
+/* 提示条（Figma 623:111）：Info 青瓷浅底；Warm 暖底；Risk 浅红。一页一次的重要提示。 */
+.p3-notice {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 28rpx 32rpx;
+  border-radius: 32rpx;
+  background: var(--p3-soft);
+  color: var(--p3-ink);
+}
+
+.p3-notice--warm {
+  background: var(--p3-warm-soft);
+  color: var(--p3-warm-ink);
+}
+
+.p3-notice--risk {
+  background: var(--p3-risk-soft);
+  color: var(--p3-risk-ink);
+}
+
+.p3-notice__title {
+  display: block;
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+.p3-notice__body {
+  display: block;
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+/* 表单提交后的提示，紧贴在按钮上方 */
+.p3-form-message {
+  display: block;
+  color: var(--p3-muted);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.p3-form-message--error {
+  color: var(--p3-risk-ink);
+}
+
+.p3-form-message--success {
+  color: var(--p3-primary);
 }

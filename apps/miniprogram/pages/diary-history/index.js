@@ -24,6 +24,13 @@ function normalizeIntensity(value) {
   return Math.min(10, Math.max(0, Math.round(numeric)));
 }
 
+// “我：着急 · 孩子：烦躁”；孩子情绪没填时只显示自己的。
+function emotionText(item) {
+  const parent = item.parent_emotion ? `我：${item.parent_emotion}` : "";
+  const child = item.child_emotion ? `孩子：${item.child_emotion}` : "";
+  return [parent, child].filter(Boolean).join(" · ") || "情绪待补充";
+}
+
 function formatRecord(item) {
   const timestamp = item.event_time || item.created_at || "";
   const { dateText, timeText } = formatDateTime(timestamp);
@@ -34,10 +41,11 @@ function formatRecord(item) {
     timeText,
     sceneText: item.scene || "未填写场景",
     descriptionText: item.event_description || item.raw_text || "这次记录暂未填写事件描述。",
-    emotionText: item.parent_emotion || "情绪待补充",
-    intensityText: intensity !== null ? `强度 ${intensity}/10` : "强度待补充",
+    emotionText: emotionText(item),
+    intensityText: intensity !== null ? `强度 ${intensity} / 10` : "强度待补充",
     intensityMarks: Array.from({ length: 10 }, (_, index) => ({
       key: index,
+      level: index + 1,
       active: intensity !== null ? index < intensity : false,
     })),
   };

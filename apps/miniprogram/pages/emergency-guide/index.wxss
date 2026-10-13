@@ -1,141 +1,42 @@
+/* 紧急安全指引（Figma 671:3171）：宋体大标题 + 风险提示、两组编号步骤、重要边界；底部行动区固定。 */
 .emergency-page {
-  box-sizing: border-box;
-  padding: 48rpx 48rpx calc(320rpx + env(safe-area-inset-bottom));
-}
-
-.page-kicker,
-.page-title,
-.page-summary,
-.section-heading,
-.section-note,
-.action-number,
-.step-text,
-.boundary-title,
-.boundary-text {
-  display: block;
-}
-
-.emergency-header {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
-  align-items: center;
-  text-align: center;
+  gap: var(--p3-section);
+  padding-top: 16rpx;
+  /* 给固定的底部行动区留出空间：两个按钮 + 间距 + 上下内边距 */
+  padding-bottom: calc(320rpx + env(safe-area-inset-bottom));
 }
 
-.page-kicker {
-  color: var(--experience-danger);
-  font-size: 30rpx;
-  font-weight: 700;
-  line-height: 40rpx;
+.emergency-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
 }
 
-.page-title {
-  color: var(--experience-ink);
-  font-size: 44rpx;
-  font-weight: 700;
-  line-height: 60rpx;
-  text-align: center;
-}
-
-.page-summary {
-  color: var(--experience-muted);
-  font-size: var(--experience-font-body);
-  line-height: 44rpx;
-}
-
-.safety-rule {
-  width: 112rpx;
-  height: 4rpx;
-  background: var(--experience-danger);
-}
-
-.safety-intro {
-  margin-top: 32rpx;
-  padding: 24rpx 0;
-  border-top: 1rpx solid var(--safe-border);
-  border-bottom: 1rpx solid var(--safe-border);
-  color: var(--experience-ink);
-  font-size: 30rpx;
-  line-height: 1.65;
+/* UIproduct3/Greeting：宋体 30/40，字距 1 */
+.emergency-title {
+  color: var(--p3-ink);
+  font-family: var(--p3-font-serif);
+  font-size: 60rpx;
+  line-height: 80rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
 }
 
 .emergency-section {
-  margin-top: 48rpx;
-}
-
-.section-heading {
-  color: var(--experience-ink);
-  font-size: var(--experience-font-title);
-  font-weight: 700;
-  line-height: 56rpx;
-}
-
-.section-note {
-  margin-top: 16rpx;
-  color: var(--experience-muted);
-  font-size: var(--experience-font-caption);
-  line-height: 36rpx;
-}
-
-.action-list {
   display: flex;
   flex-direction: column;
-  margin-top: 16rpx;
 }
 
-.action-row {
-  min-height: 160rpx;
+.emergency-section__head {
   display: flex;
-  gap: 32rpx;
-  align-items: flex-start;
-  padding: 32rpx 8rpx;
-  border-bottom: 1rpx solid var(--experience-line);
+  flex-direction: column;
+  gap: 4rpx;
+  padding-bottom: 8rpx;
 }
 
-.action-number {
-  width: 100rpx;
-  flex: 0 0 100rpx;
-  color: var(--experience-primary-deep);
-  font-size: 44rpx;
-  font-weight: 700;
-  line-height: 60rpx;
-}
-
-.step-text {
-  min-width: 0;
-  flex: 1;
-  color: var(--experience-ink);
-  font-size: var(--experience-font-body);
-  line-height: 44rpx;
-  overflow-wrap: anywhere;
-}
-
-.boundary-note {
-  margin-top: 48rpx;
-  padding-top: 32rpx;
-}
-
-.boundary-rule {
-  height: 1rpx;
-  margin-bottom: 16rpx;
-  background: var(--experience-line);
-}
-
-.boundary-title {
-  color: var(--experience-ink);
-  font-size: 32rpx;
-  font-weight: 700;
-  line-height: 44rpx;
-}
-
-.boundary-text {
-  margin-top: 16rpx;
-  color: var(--experience-muted);
-  font-size: var(--experience-font-caption);
-  line-height: 36rpx;
-}
-
+/* 底部行动区：米纸底、上方细线，固定在屏幕底部 */
 .safety-action-dock {
   position: fixed;
   right: 0;
@@ -144,25 +45,9 @@
   z-index: 8;
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
-  padding: 32rpx 48rpx calc(40rpx + env(safe-area-inset-bottom));
-  border-top: 1rpx solid var(--experience-line);
-  background: var(--experience-surface);
+  gap: var(--p3-tight);
+  box-sizing: border-box;
+  padding: 32rpx 40rpx calc(32rpx + env(safe-area-inset-bottom));
+  border-top: 2rpx solid var(--p3-hairline);
+  background: var(--p3-paper);
 }
-
-.safety-action {
-  width: 100%;
-  border-radius: 24rpx;
-}
-
-@media (max-width: 340px) {
-  .action-number {
-    width: 84rpx;
-    flex-basis: 84rpx;
-  }
-}
-
-.safety-intro { padding: 28rpx; border: 0; border-radius: 24rpx; background: var(--ui2-warm); }
-.boundary-text { font-size:30rpx; line-height:48rpx; }
-.safety-action-dock { box-sizing:border-box; padding-top:24rpx; padding-bottom:calc(24rpx + env(safe-area-inset-bottom)); gap:12rpx; }
-@media(max-width:340px){.emergency-page{padding-left:32rpx;padding-right:32rpx}.safety-action-dock{padding-left:32rpx;padding-right:32rpx}}

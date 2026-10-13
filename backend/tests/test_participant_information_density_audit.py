@@ -27,7 +27,10 @@ def test_function_baseline_protects_required_home_features():
     baseline = audit.function_baseline("pages/home/index", audit.HOME_FEATURES, audit.HOME_BUTTONS)
     required = {"情绪天气", "测一测", "情绪日记", "今天的一小步", "三步开始", "支持性反馈", "训练中心", "人工支持", "最近记录", "阶段性反馈"}
     assert required.issubset(set(baseline["features"]))
-    assert {"listDiaries", "getTodayJourney", "getProgressSummary"}.issubset(set(baseline["api_calls"]))
+    assert {"listDiaries", "getTodayJourney"}.issubset(set(baseline["api_calls"]))
+    # 阶段性反馈随 UIproduct3 设计移到“本周复盘”，首页保留入口，功能不丢失。
+    weekly = (audit.MINI / "pages/weekly-report/index.js").read_text(encoding="utf-8")
+    assert "getProgressSummary" in weekly
     assert "/pages/weekly-report/index" in baseline["navigation_targets"]
     assert {"openTodayAction", "retryTodayJourney", "openGettingStarted"}.issubset({item["handler"] for item in baseline["links"]})
 

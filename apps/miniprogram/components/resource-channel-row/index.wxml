@@ -1,1 +1,7 @@
-<view class="resource-row"><view class="bamboo-corner" aria-hidden="true"><view class="bamboo-joint"></view></view><view class="resource-copy"><text class="resource-title">{{title}}</text><text class="resource-text">{{text}}</text></view></view>
+<view class="channel-row {{showDivider ? 'channel-row--divided' : ''}}">
+  <view class="channel-row__joint" aria-hidden="true"><view class="channel-row__bar"></view></view>
+  <view class="channel-row__copy">
+    <text class="channel-row__title">{{title}}</text>
+    <text class="channel-row__text">{{text}}</text>
+  </view>
+</view>

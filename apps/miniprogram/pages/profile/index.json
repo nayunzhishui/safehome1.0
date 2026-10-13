@@ -1,9 +1,10 @@
 {
   "navigationBarTitleText": "我的",
+  "navigationStyle": "custom",
   "usingComponents": {
-    "section-title": "/components/section-title/index",
-    "function-entry-card": "/components/function-entry-card/index",
-    "bottom-tip-card": "/components/bottom-tip-card/index",
-    "alert-card": "/components/alert-card/index"
+    "status-pill": "/components/status-pill/index",
+    "p3-icon": "/components/p3-icon/index",
+    "p3-section-header": "/components/p3-section-header/index",
+    "p3-group-row": "/components/p3-group-row/index"
   }
 }

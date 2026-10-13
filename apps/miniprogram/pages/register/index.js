@@ -53,8 +53,8 @@ Page({
     redirectUrl: "",
     roleIndex: 0,
     roleOptions: [
-      { value: "parent", label: "家长" },
-      { value: "student", label: "学生" },
+      { value: "parent", label: "家长", segmentLabel: "我是家长" },
+      { value: "student", label: "学生", segmentLabel: "我是学生" },
     ],
     agreed: false,
     loading: false,
@@ -69,6 +69,10 @@ Page({
   onAgreementChange(event) {
     const values = (event.detail && event.detail.value) || [];
     this.setData({ agreed: values.indexOf("agreed") !== -1 });
+  },
+
+  toggleAgreement() {
+    this.setData({ agreed: !this.data.agreed });
   },
 
   openAgreement() {
@@ -93,6 +97,10 @@ Page({
 
   onRoleChange(event) {
     this.setData({ roleIndex: Number(event.detail.value || 0) });
+  },
+
+  selectRole(event) {
+    this.setData({ roleIndex: Number(event.currentTarget.dataset.index || 0) });
   },
 
   submitRegister() {

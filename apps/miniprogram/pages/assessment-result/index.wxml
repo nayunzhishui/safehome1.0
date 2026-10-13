@@ -1,222 +1,223 @@
-<view class="safe-page ui2-page assessment-result-page" role="main" aria-label="支持性测评结果">
-  <view wx:if="{{loading}}" class="state-box">
-    <text>正在读取结果...</text>
-  </view>
+<view class="result-page" role="main" aria-label="支持性测评结果">
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取结果" />
 
-  <view wx:elif="{{result}}">
+  <block wx:elif="{{result}}">
     <view class="result-head">
-      <text class="result-title">{{result.worksheet_title}}</text>
+      <text class="p3-serif-title result-title" role="heading" aria-level="1">{{result.worksheet_title}}</text>
+      <text wx:if="{{resultMetaText}}" class="result-meta">{{resultMetaText}}</text>
     </view>
 
-    <view wx:if="{{riskSummary}}" class="risk-strip {{riskSummary.riskLevel === 'high' ? 'high' : ''}}">
-      <text class="risk-title">{{riskSummary.title}}</text>
-      <text class="risk-text">{{riskSummary.text}}</text>
-      <button class="safe-outline-button risk-action" bindtap="openEmergencyResources">查看紧急求助资源</button>
+    <view wx:if="{{riskSummary}}" class="p3-notice {{riskSummary.riskLevel === 'high' ? 'p3-notice--risk' : 'p3-notice--warm'}} risk-strip" role="alert">
+      <text class="p3-notice__title">{{riskSummary.title}}</text>
+      <text class="p3-notice__body">{{riskSummary.text}}</text>
+      <button class="p3-btn {{riskSummary.riskLevel === 'high' ? 'p3-btn--primary' : 'p3-btn--secondary'}} risk-action" bindtap="openEmergencyResources">查看紧急求助资源</button>
     </view>
 
-    <view wx:if="{{profilePosition}}" class="safe-section">
-      <view class="profile-card">
+    <view wx:if="{{profilePosition}}" class="result-card">
+      <view class="profile-card__head">
+        <text class="profile-card__kicker">画像位置</text>
         <text class="profile-display-name">{{profilePosition.profileName}}</text>
-        <text class="profile-confidence">匹配清晰度：{{profilePosition.confidenceText}}</text>
-        <text wx:if="{{!profilePosition.canUseInterpretation}}" class="profile-warning">{{profilePosition.reliabilityText}}</text>
-        <text wx:if="{{profilePosition.nCasesText}}" class="profile-meta">参照 {{profilePosition.nCasesText}}</text>
-        <text wx:if="{{profilePosition.featureText}}" class="profile-meta">{{profilePosition.featureText}}</text>
-        <visualization-state wx:if="{{profilePosition.visualizationState !== 'data'}}" state="{{profilePosition.visualizationState}}" message="{{profilePosition.reliabilityText}}"></visualization-state>
-        <canvas wx:if="{{profilePosition.userPoint}}" canvas-id="profilePlotCanvas" class="position-canvas" aria-label="本次画像在参考样本中的相对位置图，具体数值见下方文字说明"></canvas>
-        <view wx:if="{{profilePosition.userPoint && profilePosition.clusterPoints.length}}" class="chart-legend cluster-legend">
-          <view wx:for="{{profilePosition.clusterPoints}}" wx:key="cluster_id" class="legend-row">
-            <text class="legend-index">{{item.axisLabel}}</text>
-            <text class="legend-label">{{item.label}}</text>
-          </view>
-          <view class="legend-row current-row">
-            <text class="legend-current-dot"></text>
-            <text class="legend-label">当前位置</text>
-          </view>
-        </view>
-        <text wx:if="{{profilePosition.userPoint}}" class="profile-meta">浅色圆点是各画像组的中心，深色点是你这次的位置；离哪一组越近，题目作答组合越相似。</text>
-        <canvas wx:if="{{profilePosition.radarFeatures.length >= 3}}" canvas-id="profileRadarCanvas" class="radar-canvas" aria-label="本次画像维度轮廓图，具体维度见下方文字说明"></canvas>
-        <view wx:if="{{profilePosition.radarFeatures.length >= 3}}" class="chart-legend radar-legend">
-          <view wx:for="{{profilePosition.radarFeatures}}" wx:key="id" class="legend-row">
-            <text class="legend-index">{{item.axisLabel}}</text>
-            <text class="legend-label">{{item.label}}</text>
-          </view>
-        </view>
-        <text wx:if="{{profilePosition.radarFeatures.length >= 3 && profilePosition.radarCaption}}" class="profile-meta">{{profilePosition.radarCaption}}</text>
-        <visualization-state wx:if="{{profilePosition.radarFeatures.length < 3}}" state="insufficient" message="当前维度不足，暂不绘制雷达图。"></visualization-state>
-        <text wx:if="{{profilePosition.explanation}}" class="profile-explanation">{{profilePosition.explanation}}</text>
-        <view wx:if="{{profilePosition.strengthNote || profilePosition.smallStep}}" class="profile-steps">
-          <view wx:if="{{profilePosition.strengthNote}}" class="profile-step">
-            <text class="step-label">优势提示</text>
-            <text class="step-text">{{profilePosition.strengthNote}}</text>
-          </view>
-          <view wx:if="{{profilePosition.smallStep}}" class="profile-step">
-            <text class="step-label">可以先做</text>
-            <text class="step-text">{{profilePosition.smallStep}}</text>
-          </view>
-        </view>
-        <view wx:if="{{profilePosition.suggestedQuestions.length}}" class="profile-questions">
-          <text class="step-label">可以带去讨论的问题</text>
-          <text wx:for="{{profilePosition.suggestedQuestions}}" wx:key="*this" class="profile-question">{{index + 1}}. {{item}}</text>
-        </view>
-        <view wx:if="{{profilePosition.projectTasks.length}}" class="profile-questions">
-          <text class="step-label">后续项目任务线索</text>
-          <text wx:for="{{profilePosition.projectTasks}}" wx:key="*this" class="profile-question">• {{item}}</text>
-        </view>
-        <text class="profile-boundary">{{profilePosition.boundaryNotice}}</text>
+        <text class="profile-card__meta">匹配清晰度：{{profilePosition.confidenceText}}{{profilePosition.nCasesText ? ' · 参照 ' + profilePosition.nCasesText : ''}}{{profilePosition.featureText ? ' · ' + profilePosition.featureText : ''}}</text>
       </view>
+      <text wx:if="{{!profilePosition.canUseInterpretation}}" class="profile-warning">{{profilePosition.reliabilityText}}</text>
+      <visualization-state wx:if="{{profilePosition.visualizationState !== 'data'}}" state="{{profilePosition.visualizationState}}" message="{{profilePosition.reliabilityText}}"></visualization-state>
+      <view wx:if="{{profilePosition.userPoint}}" class="position-frame">
+        <canvas canvas-id="profilePlotCanvas" class="position-canvas" aria-label="本次画像在参考样本中的相对位置图，具体数值见下方文字说明"></canvas>
+      </view>
+      <view wx:if="{{profilePosition.userPoint && profilePosition.clusterPoints.length}}" class="chart-legend cluster-legend">
+        <view wx:for="{{profilePosition.clusterPoints}}" wx:key="cluster_id" class="legend-row">
+          <view class="legend-mark" aria-hidden="true">
+            <image class="legend-mark__image" src="/assets/icons/p3/legend-mark-cluster.svg" />
+            <text class="legend-mark__index">{{item.axisLabel}}</text>
+          </view>
+          <text class="legend-label">{{item.label}}</text>
+        </view>
+        <view class="legend-row current-row">
+          <view class="legend-mark" aria-hidden="true">
+            <image class="legend-mark__image" src="/assets/icons/p3/legend-mark-current.svg" />
+          </view>
+          <text class="legend-label">当前位置</text>
+        </view>
+      </view>
+      <text wx:if="{{profilePosition.userPoint}}" class="profile-meta">浅色圆点是各画像组的中心，深色点是你这次的位置；离哪一组越近，题目作答组合越相似。</text>
+      <block wx:if="{{profilePosition.radarFeatures.length >= 3}}">
+        <view class="profile-divider" aria-hidden="true"></view>
+        <text class="profile-card__label">画像维度轮廓</text>
+        <canvas canvas-id="profileRadarCanvas" class="radar-canvas" aria-label="本次画像维度轮廓图，具体维度见下方文字说明"></canvas>
+        <view class="chart-legend radar-legend">
+          <view wx:for="{{profilePosition.radarLegendColumns}}" wx:for-item="column" wx:for-index="columnIndex" wx:key="columnIndex" class="radar-legend__column">
+            <view wx:for="{{column}}" wx:key="id" class="legend-row radar-legend__row">
+              <text class="legend-index">{{item.axisLabel}}</text>
+              <text class="legend-label">{{item.label}}</text>
+            </view>
+          </view>
+        </view>
+        <text wx:if="{{profilePosition.radarCaption}}" class="profile-meta">{{profilePosition.radarCaption}}</text>
+      </block>
+      <visualization-state wx:if="{{profilePosition.radarFeatures.length < 3}}" state="insufficient" message="当前维度不足，暂不绘制雷达图。"></visualization-state>
+      <text wx:if="{{profilePosition.explanation}}" class="profile-explanation">{{profilePosition.explanation}}</text>
+      <view wx:if="{{profilePosition.strengthNote || profilePosition.smallStep}}" class="profile-steps">
+        <view wx:if="{{profilePosition.strengthNote}}" class="profile-step">
+          <text class="step-label">优势提示</text>
+          <text class="step-text">{{profilePosition.strengthNote}}</text>
+        </view>
+        <view wx:if="{{profilePosition.smallStep}}" class="profile-step">
+          <text class="step-label">可以先做</text>
+          <text class="step-text">{{profilePosition.smallStep}}</text>
+        </view>
+      </view>
+      <view wx:if="{{profilePosition.suggestedQuestions.length}}" class="profile-steps">
+        <text class="step-label">可以带去讨论的问题</text>
+        <text wx:for="{{profilePosition.suggestedQuestions}}" wx:key="*this" class="step-text">{{index + 1}}. {{item}}</text>
+      </view>
+      <view wx:if="{{profilePosition.projectTasks.length}}" class="profile-steps">
+        <text class="step-label">后续项目任务线索</text>
+        <text wx:for="{{profilePosition.projectTasks}}" wx:key="*this" class="step-text">• {{item}}</text>
+      </view>
+      <text class="profile-boundary">{{profilePosition.boundaryNotice}}</text>
     </view>
 
-    <view wx:if="{{profileSummary}}" class="safe-section">
-      <view class="profile-card {{profileSummary.riskLevel === 'high' ? 'high-risk' : ''}}">
+    <view wx:if="{{profileSummary}}" class="result-card {{profileSummary.riskLevel === 'high' ? 'profile-card--risk' : ''}}">
+      <view class="profile-card__head">
+        <text class="profile-card__kicker">阶段性画像</text>
         <text class="profile-display-name">{{profileSummary.profileName}}</text>
-        <text class="profile-confidence">匹配清晰度：{{profileSummary.confidenceText}}</text>
-        <text wx:if="{{profileSummary.riskLevel === 'high' || profileSummary.requiresReview}}" class="profile-warning">{{profileSummary.riskLevelText}}</text>
-        <text wx:if="{{profileSummary.supportiveExplanation}}" class="profile-explanation">{{profileSummary.supportiveExplanation}}</text>
-        <view wx:if="{{profileSummary.strengthNote || profileSummary.smallStep}}" class="profile-steps">
-          <view wx:if="{{profileSummary.strengthNote}}" class="profile-step">
-            <text class="step-label">优势提示</text>
-            <text class="step-text">{{profileSummary.strengthNote}}</text>
-          </view>
-          <view wx:if="{{profileSummary.smallStep}}" class="profile-step">
-            <text class="step-label">可以先做</text>
-            <text class="step-text">{{profileSummary.smallStep}}</text>
-          </view>
+        <text class="profile-card__meta">匹配清晰度：{{profileSummary.confidenceText}}</text>
+      </view>
+      <text wx:if="{{profileSummary.riskLevel === 'high' || profileSummary.requiresReview}}" class="profile-warning">{{profileSummary.riskLevelText}}</text>
+      <text wx:if="{{profileSummary.supportiveExplanation}}" class="profile-explanation">{{profileSummary.supportiveExplanation}}</text>
+      <view wx:if="{{profileSummary.strengthNote || profileSummary.smallStep}}" class="profile-steps">
+        <view wx:if="{{profileSummary.strengthNote}}" class="profile-step">
+          <text class="step-label">优势提示</text>
+          <text class="step-text">{{profileSummary.strengthNote}}</text>
+        </view>
+        <view wx:if="{{profileSummary.smallStep}}" class="profile-step">
+          <text class="step-label">可以先做</text>
+          <text class="step-text">{{profileSummary.smallStep}}</text>
         </view>
       </view>
     </view>
 
-    <view wx:if="{{!profileSummary && !scaleDimensions.length && resultSummaryText}}" class="safe-section">
-      <section-title title="结果说明" />
+    <view wx:if="{{!profileSummary && !scaleDimensions.length && resultSummaryText}}" class="result-section">
+      <p3-section-header title="结果说明" />
       <text class="result-summary-text">{{resultSummaryText}}</text>
     </view>
 
-    <view wx:if="{{!profileSummary && scaleDimensions.length}}" class="safe-section">
-      <section-title title="维度位置" subtitle="各维度按自身量尺展示，不相加、不比高低" />
+    <view wx:if="{{!profileSummary && scaleDimensions.length}}" class="result-section">
+      <p3-section-header title="维度位置" subtitle="各维度按自身量尺展示，不相加、不比高低" />
       <text wx:if="{{resultSummaryText}}" class="result-summary-text">{{resultSummaryText}}</text>
-      <view wx:for="{{scaleVisualization.composites}}" wx:key="key" class="dimension-row dimension-row--composite">
-        <view class="dimension-row-head">
-          <text class="dimension-label">{{item.label}}</text>
-          <text class="dimension-score">{{item.score}} 分</text>
-        </view>
-        <text wx:if="{{item.definition}}" class="dimension-definition">看的是：{{item.definition}}</text>
-        <view wx:if="{{item.hint}}" class="dimension-hint">
-          <text wx:if="{{item.bandLabel}}" class="dimension-hint-label">{{item.bandLabel}}</text>
-          <text class="dimension-hint-text">{{item.hint}}</text>
+      <view wx:if="{{scaleVisualization.composites.length}}" class="dimension-group">
+        <view wx:for="{{scaleVisualization.composites}}" wx:key="key" class="dimension-row dimension-row--composite {{index < scaleVisualization.composites.length - 1 ? 'dimension-row--divided' : ''}}">
+          <view class="dimension-row-head">
+            <text class="dimension-label">{{item.label}}</text>
+            <text class="dimension-score">{{item.scoreText}}</text>
+            <text wx:if="{{item.maxText}}" class="dimension-max">{{item.maxText}}</text>
+          </view>
+          <text wx:if="{{item.definition}}" class="dimension-definition">看的是：{{item.definition}}</text>
+          <view wx:if="{{item.hint}}" class="dimension-hint {{item.plainHint ? 'dimension-hint--plain' : ''}}">
+            <text wx:if="{{!item.plainHint}}" class="dimension-hint-label">{{item.bandLabel}}</text>
+            <text class="dimension-hint-text">{{item.hint}}</text>
+          </view>
         </view>
       </view>
       <view wx:if="{{scaleVisualization.showRadar}}" class="dimension-chart-card">
         <canvas canvas-id="dimensionRadarCanvas" class="dimension-radar-canvas" aria-label="本次填写与各维度量尺中点的雷达图，具体分数和范围见下方维度卡片"></canvas>
         <view class="dimension-chart-legend" aria-label="图例">
           <view class="dimension-legend-item">
-            <text class="dimension-legend-swatch current"></text>
+            <image class="dimension-legend-swatch" src="/assets/icons/p3/legend-swatch-current.svg" aria-hidden="true" />
             <text>{{scaleVisualization.currentLabel}}</text>
           </view>
           <view class="dimension-legend-item">
-            <text class="dimension-legend-swatch midpoint"></text>
+            <image class="dimension-legend-swatch" src="/assets/icons/p3/legend-swatch-midpoint.svg" aria-hidden="true" />
             <text>{{scaleVisualization.referenceLabel}}</text>
           </view>
         </view>
       </view>
-      <view class="dimension-chart-note">
-        <text>{{scaleVisualization.chartNote}}</text>
-      </view>
-      <view class="dimension-list">
-        <view wx:for="{{scaleVisualization.dimensions}}" wx:key="key" class="dimension-row">
+      <view class="dimension-group">
+        <view wx:for="{{scaleVisualization.dimensions}}" wx:key="key" class="dimension-row {{index < scaleVisualization.dimensions.length - 1 ? 'dimension-row--divided' : ''}}">
           <view class="dimension-row-head">
             <text class="dimension-label">{{item.label}}</text>
-            <text class="dimension-score">{{item.score}} 分</text>
+            <text class="dimension-score">{{item.scoreText}}</text>
+            <text wx:if="{{item.maxText}}" class="dimension-max">{{item.maxText}}</text>
           </view>
           <text wx:if="{{item.definition}}" class="dimension-definition">看的是：{{item.definition}}</text>
           <view wx:if="{{item.hasComparableRange}}" class="dimension-progress" aria-label="{{item.label}} {{item.positionText}}">
-            <view class="dimension-progress-midpoint"></view>
             <view class="dimension-progress-value" style="{{item.progressStyle}}"></view>
+            <view class="dimension-progress-midpoint"></view>
           </view>
           <view class="dimension-meta-row">
-            <text>{{item.rangeText}}</text>
-            <text>{{item.positionText}}</text>
+            <text class="dimension-meta-row__range">{{item.metaText}}</text>
+            <text class="dimension-meta-row__position">{{item.positionShort}}</text>
           </view>
-          <text class="dimension-summary">{{item.summary}}</text>
-          <view wx:if="{{item.hint}}" class="dimension-hint">
-            <text wx:if="{{item.bandLabel}}" class="dimension-hint-label">{{item.bandLabel}}</text>
+          <view wx:if="{{item.hint}}" class="dimension-hint {{item.plainHint ? 'dimension-hint--plain' : ''}}">
+            <text wx:if="{{!item.plainHint}}" class="dimension-hint-label">{{item.bandLabel}}</text>
             <text class="dimension-hint-text">{{item.hint}}</text>
           </view>
         </view>
       </view>
+      <text class="dimension-chart-note">{{scaleVisualization.chartNote}}</text>
       <text wx:if="{{dimensionGuideBoundary}}" class="dimension-guide-boundary">{{dimensionGuideBoundary}}</text>
     </view>
 
-    <view wx:if="{{exploratoryAnalysis}}" class="safe-section">
-      <section-title title="近期情绪与互动线索" subtitle="来自你自己的结构化记录" />
-      <view class="exploratory-card {{exploratoryAnalysis.availability}}">
-        <view class="exploratory-head">
-          <text class="exploratory-status">{{exploratoryAnalysis.statusText}}</text>
-          <text class="exploratory-count">{{exploratoryAnalysis.record_count}} 条记录</text>
+    <view wx:if="{{exploratoryAnalysis}}" class="result-section">
+      <p3-section-header title="近期情绪与互动线索" subtitle="来自你自己的结构化记录" />
+      <view class="exploratory-card exploratory-card--{{exploratoryAnalysis.availability}}">
+        <view class="exploratory-row exploratory-row--status">
+          <text class="exploratory-status">{{exploratoryAnalysis.statusText}} · {{exploratoryAnalysis.record_count}} 条记录</text>
+          <text wx:if="{{!exploratoryAnalysis.available}}" class="exploratory-reason">{{exploratoryAnalysis.reason}}</text>
         </view>
-        <text wx:if="{{!exploratoryAnalysis.available}}" class="exploratory-reason">{{exploratoryAnalysis.reason}}</text>
-        <view wx:if="{{exploratoryAnalysis.available}}" class="exploratory-content">
-          <view class="exploratory-group">
+        <block wx:if="{{exploratoryAnalysis.available}}">
+          <view class="exploratory-row">
             <text class="exploratory-label">情绪记录分布</text>
-            <view wx:for="{{exploratoryAnalysis.affectItems}}" wx:key="label" class="exploratory-row">
-              <text class="exploratory-row-title">{{item.label}}</text>
-              <text class="exploratory-row-meta">{{item.summary}}</text>
+            <view wx:for="{{exploratoryAnalysis.affectItems}}" wx:key="label" class="exploratory-pair">
+              <text class="exploratory-pair__title">{{item.label}}</text>
+              <text class="exploratory-pair__meta">{{item.summary}}</text>
             </view>
           </view>
-          <view class="exploratory-group">
+          <view class="exploratory-row">
             <text class="exploratory-label">场景—情绪共现</text>
-            <view wx:if="{{exploratoryAnalysis.interactionEdges.length}}">
+            <block wx:if="{{exploratoryAnalysis.interactionEdges.length}}">
               <text wx:for="{{exploratoryAnalysis.interactionEdges}}" wx:key="key" class="exploratory-link">{{item.summary}}</text>
-            </view>
+            </block>
             <text wx:else class="exploratory-empty">暂时没有重复至少 2 次的稳定线索。</text>
           </view>
-          <view wx:if="{{exploratoryAnalysis.trendText}}" class="exploratory-group">
+          <view wx:if="{{exploratoryAnalysis.trendText}}" class="exploratory-row">
             <text class="exploratory-label">强度前后对比</text>
             <text class="exploratory-link">{{exploratoryAnalysis.trendText}}</text>
             <text class="exploratory-empty">{{exploratoryAnalysis.trendNote}}</text>
           </view>
-          <view wx:if="{{exploratoryAnalysis.parentChildSummary}}" class="exploratory-group">
+          <view wx:if="{{exploratoryAnalysis.parentChildSummary}}" class="exploratory-row">
             <text class="exploratory-label">你的情绪与孩子的情绪</text>
             <text class="exploratory-link">{{exploratoryAnalysis.parentChildSummary}}</text>
             <text wx:for="{{exploratoryAnalysis.parentChildPairs}}" wx:key="key" class="exploratory-link">{{item.summary}}</text>
             <text class="exploratory-empty">{{exploratoryAnalysis.parentChildNote}}</text>
           </view>
-        </view>
-        <text class="exploratory-boundary">{{exploratoryAnalysis.boundary_notice}}</text>
+        </block>
       </view>
+      <text wx:if="{{exploratoryAnalysis.boundary_notice}}" class="p3-footnote">{{exploratoryAnalysis.boundary_notice}}</text>
     </view>
 
-    <view wx:if="{{trainingRecommendation}}" class="safe-section">
-      <section-title title="推荐训练卡" subtitle="先选今天能做的一张" />
-      <view class="recommendation-block">
-        <text wx:if="{{trainingRecommendation.todaySuggestion}}" class="rec-suggestion">{{trainingRecommendation.todaySuggestion}}</text>
-        <view class="rec-card-list">
-          <view wx:for="{{trainingRecommendation.recommendedCards}}" wx:key="id" class="rec-card-row">
-            <text class="rec-role">{{item.role}}</text>
-            <view class="rec-card-copy">
-              <text class="rec-card-title">{{item.title}}</text>
-              <text wx:if="{{item.purpose}}" class="rec-card-purpose">{{item.purpose}}</text>
-            </view>
-          </view>
+    <view wx:if="{{trainingRecommendation}}" class="p3-card result-recommend" aria-label="推荐训练卡">
+      <text class="result-recommend__kicker">推荐训练卡 · 先选今天能做的一张</text>
+      <text wx:if="{{trainingRecommendation.todaySuggestion}}" class="result-recommend__today">{{trainingRecommendation.todaySuggestion}}</text>
+      <view class="result-recommend__cards">
+        <view wx:for="{{trainingRecommendation.recommendedCards}}" wx:key="id" class="result-recommend__row">
+          <status-pill class="result-recommend__role" label="{{item.role}}" tone="success" />
+          <text class="result-recommend__title">{{item.title}}</text>
         </view>
       </view>
+      <button wx:if="{{(!riskSummary || riskSummary.riskLevel !== 'high') && (!profileSummary || profileSummary.canOpenRecommendedCards)}}" class="p3-btn p3-btn--primary" bindtap="openRecommendedCards">查看可练习任务</button>
     </view>
 
-    <view wx:if="{{sourceNotice}}" class="source-notice">
-      <text class="source-title">{{sourceNotice.title}}</text>
-      <text class="source-copy">{{sourceNotice.content}}</text>
-      <text wx:if="{{sourceNotice.reviewNote}}" class="source-copy">{{sourceNotice.reviewNote}}</text>
+    <view class="result-footer">
+      <text wx:if="{{sourceNotice}}" class="result-footer__text">{{sourceNotice.title}} · {{sourceNotice.content}}</text>
+      <text wx:if="{{sourceNotice && sourceNotice.reviewNote}}" class="result-footer__text">{{sourceNotice.reviewNote}}</text>
+      <button wx:if="{{!trainingRecommendation && (!riskSummary || riskSummary.riskLevel !== 'high') && (!profileSummary || profileSummary.canOpenRecommendedCards)}}" class="p3-btn p3-btn--secondary" bindtap="openRecommendedCards">查看可练习任务</button>
+      <button class="p3-btn p3-btn--quiet" bindtap="backToAssessment">返回测一测</button>
+      <text class="result-footer__text">这份结果只是一次观察记录，可以过一段时间再看有没有变化。</text>
     </view>
+  </block>
 
-    <view class="result-actions">
-      <button wx:if="{{(!riskSummary || riskSummary.riskLevel !== 'high') && (!profileSummary || profileSummary.canOpenRecommendedCards)}}" class="safe-primary-button action-button" bindtap="openRecommendedCards">查看可练习任务</button>
-      <button class="safe-outline-button action-button" bindtap="backToAssessment">返回测一测</button>
-    </view>
-
-    <view class="safe-section">
-      <bottom-tip-card text="这份结果只是一次观察记录，可以过一段时间再看有没有变化。" />
-    </view>
-  </view>
-
-  <view wx:else class="state-box error">
-    <text>{{errorMessage || '没有找到结果。'}}</text>
+  <view wx:else class="result-missing">
+    <page-state kind="error" title="没有读取到这份结果" description="{{errorMessage || '没有找到结果。'}}" />
   </view>
 </view>

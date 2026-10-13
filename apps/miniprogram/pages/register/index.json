@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "注册"
+  "navigationBarTitleText": "注册",
+  "usingComponents": {
+    "p3-section-header": "/components/p3-section-header/index"
+  }
 }

@@ -1,83 +1,87 @@
-<view wx:if="{{!serviceReady}}" class="safe-page ui2-page" role="main" aria-label="功能知情说明">
+<view wx:if="{{!serviceReady}}" class="detail-page" role="main" aria-label="功能知情说明">
   <page-state kind="error" title="使用前请阅读本功能说明" description="{{errorMessage || '确认数据用途后，再填写和保存；暂不同意可以返回。'}}" action-label="重新确认" bind:action="retryServiceEntry" />
-  <button class="safe-primary-button" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
+  <button class="p3-btn p3-btn--primary" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
 </view>
 <block wx:if="{{serviceReady}}">
-<view class="safe-page ui2-page assessment-detail-page" role="main" aria-label="支持性测评填写">
-  <view wx:if="{{loading}}" class="state-box">
-    <text>正在读取测一测内容...</text>
-  </view>
+<view class="detail-page" role="main" aria-label="支持性测评填写">
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取测一测内容" />
 
-  <view wx:elif="{{worksheet}}">
-    <view class="assessment-detail-head">
-      <text class="page-title">{{worksheet.display_title}}</text>
-    </view>
-
-    <view class="instruction-block">
-      <text>{{worksheet.instructions}}</text>
-    </view>
-
-    <view wx:if="{{worksheet.sensitive_category && worksheet.sensitive_category !== 'none'}}" class="sensitive-strip">
-      <text>注意：本内容含敏感语义，结果只作为自我观察线索，不作为诊断建议。</text>
-    </view>
-
-    <view class="question-list">
-      <view class="question-card" wx:for="{{worksheet.questions}}" wx:key="id" wx:for-index="qi">
-        <view class="question-head">
-          <text class="question-num">{{qi + 1}}</text>
-          <text class="question-title">{{item.prompt}}<text wx:if="{{item.required}}" class="required"> *</text></text>
-        </view>
-
-        <view wx:if="{{item.type === 'scale'}}" class="option-row {{item.options.length === 9 ? 'option-row--nine' : ''}}">
-          <view
-            wx:for="{{item.options}}"
-            wx:for-item="opt"
-            wx:key="value"
-            class="option-button {{item.answerValue === opt.value ? 'active' : ''}}"
-            data-index="{{qi}}"
-            data-value="{{opt.value}}"
-            data-score="{{opt.score}}"
-            role="button"
-            aria-label="选择 {{opt.displayLabel}}" aria-pressed="{{item.answerValue === opt.value}}"
-            bindtap="selectOption"
-          >
-            <text class="option-value">{{opt.value}}</text>
-            <text class="option-label">{{opt.displayLabel}}</text>
-          </view>
-        </view>
-
-        <textarea
-          wx:else
-          class="answer-textarea" aria-label="{{item.prompt}}" placeholder-class="ui2-placeholder"
-          value="{{item.answerValue}}"
-          placeholder="写下你观察到的情况，简短一点也可以"
-          data-index="{{qi}}"
-          bindinput="onTextInput"
-        />
+  <block wx:elif="{{worksheet}}">
+    <view class="detail-head">
+      <text class="p3-serif-title detail-title" role="heading" aria-level="1">{{worksheet.display_title}}</text>
+      <view class="detail-progress-text">
+        <text class="detail-progress-text__count">{{worksheet.questions.length}} 题 · 已答 {{answeredCount}} 题</text>
+        <text class="detail-progress-text__draft" aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
+      </view>
+      <view class="detail-progress" aria-label="已答 {{answeredCount}} 题，共 {{worksheet.questions.length}} 题">
+        <view wx:for="{{worksheet.questions}}" wx:key="id" class="detail-progress__joint {{item.answerValue ? 'detail-progress__joint--done' : ''}}"></view>
       </view>
     </view>
 
-    <view wx:if="{{errorMessage}}" class="error-box">
-      <text>{{errorMessage}}</text>
-      <button wx:if="{{needsLogin}}" class="safe-primary-button login-button" bindtap="goLogin">去登录后继续</button>
+    <view wx:if="{{worksheet.instructions}}" class="p3-notice">
+      <text class="p3-notice__body">{{worksheet.instructions}}</text>
     </view>
 
-    <text class="draft-status" aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
-    <text wx:if="{{slowSubmitting}}" class="draft-status draft-status--slow">网络响应较慢；草稿仍在本机，请不要重复点击。</text>
-
-    <button class="safe-primary-button submit-button" bindtap="submitWorksheet" disabled="{{submitting}}">
-      {{submitting ? '保存中...' : (worksheet.isStudentProfile ? '生成阶段性画像' : '保存观察记录')}}
-    </button>
-
-    <view class="boundary-footer">
-      <text>{{worksheet.boundary_notice}}</text>
+    <view wx:if="{{worksheet.sensitive_category && worksheet.sensitive_category !== 'none'}}" class="p3-notice p3-notice--warm">
+      <text class="p3-notice__body">注意：本内容含敏感语义，结果只作为自我观察线索，不作为诊断建议。</text>
     </view>
-  </view>
+
+    <view wx:for="{{worksheet.questions}}" wx:key="id" wx:for-index="qi" class="detail-question">
+      <view class="detail-question__head">
+        <text class="detail-question__num" aria-hidden="true">{{qi + 1}}</text>
+        <text class="detail-question__prompt">{{item.prompt}}<text wx:if="{{!item.required}}" class="detail-question__optional">（选填）</text></text>
+      </view>
+
+      <view wx:if="{{item.type === 'scale'}}" class="option-row {{item.options.length === 9 ? 'option-row--nine' : ''}}" role="radiogroup" aria-label="第 {{qi + 1}} 题">
+        <view
+          wx:for="{{item.options}}"
+          wx:for-item="opt"
+          wx:key="value"
+          class="option-button {{item.answerValue === opt.value ? 'option-button--active' : ''}}"
+          data-index="{{qi}}"
+          data-value="{{opt.value}}"
+          data-score="{{opt.score}}"
+          role="radio"
+          aria-label="选择 {{opt.displayLabel}}"
+          aria-checked="{{item.answerValue === opt.value}}"
+          bindtap="selectOption"
+        >
+          <image wx:if="{{item.options.length !== 9}}" class="option-button__radio" src="{{item.answerValue === opt.value ? '/assets/icons/p3/radio-20-selected.svg' : '/assets/icons/p3/radio-20-default.svg'}}" aria-hidden="true" />
+          <block wx:if="{{item.options.length === 9}}">
+            <text class="option-button__value">{{opt.value}}</text>
+            <text class="option-button__label">{{opt.displayLabel}}</text>
+          </block>
+          <text wx:else class="option-button__label">{{opt.value}} {{opt.displayLabel}}</text>
+        </view>
+      </view>
+
+      <textarea
+        wx:else
+        class="p3-field__input p3-field__input--multi"
+        aria-label="{{item.prompt}}"
+        placeholder-class="p3-field__placeholder"
+        value="{{item.answerValue}}"
+        placeholder="写下你观察到的情况，简短一点也可以"
+        data-index="{{qi}}"
+        bindinput="onTextInput"
+      />
+    </view>
+
+    <view class="detail-submit">
+      <text wx:if="{{remainingCount > 0}}" class="detail-remaining">还有 {{remainingCount}} 题</text>
+      <view wx:if="{{errorMessage}}" class="detail-error">
+        <text class="p3-form-message p3-form-message--error" role="alert">{{errorMessage}}</text>
+        <button wx:if="{{needsLogin}}" class="p3-btn p3-btn--secondary" bindtap="goLogin">去登录后继续</button>
+      </view>
+      <text wx:if="{{slowSubmitting}}" class="p3-form-message">网络响应较慢；草稿仍在本机，请不要重复点击。</text>
+      <button class="p3-btn p3-btn--primary" bindtap="submitWorksheet" disabled="{{submitting}}">{{submitting ? '保存中...' : (worksheet.isStudentProfile ? '生成阶段性画像' : '保存观察记录')}}</button>
+      <text wx:if="{{worksheet.boundary_notice}}" class="p3-footnote">{{worksheet.boundary_notice}}</text>
+    </view>
+  </block>
 
   <view wx:else class="state-box error">
-    <text>{{errorMessage || '没有找到工作表内容。'}}</text>
-    <button wx:if="{{needsLogin}}" class="safe-primary-button" bindtap="goLogin">去登录后继续</button>
+    <page-state kind="error" title="内容暂时没有读取成功" description="{{errorMessage || '没有找到工作表内容。'}}" />
+    <button wx:if="{{needsLogin}}" class="p3-btn p3-btn--primary" bindtap="goLogin">去登录后继续</button>
   </view>
 </view>
-
 </block>

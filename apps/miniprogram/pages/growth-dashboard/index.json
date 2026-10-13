@@ -3,7 +3,7 @@
   "usingComponents": {
     "page-state": "/components/page-state/index",
     "status-pill": "/components/status-pill/index",
-    "timeline-record": "/components/timeline-record/index",
-    "growth-segment": "/components/growth-segment/index"
+    "p3-section-header": "/components/p3-section-header/index",
+    "p3-timeline-item": "/components/p3-timeline-item/index"
   }
 }

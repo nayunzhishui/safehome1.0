@@ -1,24 +1,49 @@
 const { createSafeHomeApi } = require("../../services/api");
 const { getAuthUser, isLoggedIn, logout, requireLogin, captureAuthSession, isCurrentAuthSession } = require("../../utils/authGuard");
+const { navMetrics, FIGMA_NAV_BOTTOM } = require("../../utils/nav-metrics");
 
 const api = createSafeHomeApi();
+
+// 入口分组来自页面配置（Figma 643:932 GroupRow）；说明文字在“专业支持”和紧急分组里显示，其余只作读屏补充。
+const RECORD_ENTRIES = [
+  { title: "本周复盘", subtitle: "查看本周变化", icon: "calendar", iconTone: "ink", url: "/pages/weekly-report/index", private: true },
+  { title: "历次反馈", subtitle: "查看消息和补充反馈", icon: "message", url: "/pages/messages/index", private: true },
+  { title: "训练记录", subtitle: "查看已完成的训练卡记录", icon: "leaf", url: "/pages/training-history/index", private: true },
+  { title: "测评记录", subtitle: "查看全部支持性测评记录", icon: "check", url: "/pages/assessment-history/index", private: true },
+  { title: "我的成长仪表盘", subtitle: "分开查看记录、测评、关系探索与人工反馈", icon: "chart", url: "/pages/growth-dashboard/index", private: true },
+];
+
+const SAFETY_ENTRIES = [
+  { title: "紧急安全指引", subtitle: "出现安全风险时先找现实帮助", icon: "alert", url: "/pages/emergency-guide/index" },
+  { title: "紧急帮助说明", subtitle: "可用的现实资源", icon: "phone", url: "/pages/emergency-resources/index" },
+];
+
+const SETTINGS_ENTRIES = [
+  { title: "参与者保护", subtitle: "年龄确认、家长绑定与未满14周岁保护", icon: "shield", url: "/pages/settings-detail/index?type=protection", private: true },
+  { title: "知情与边界", subtitle: "了解本工具能做什么", icon: "info", url: "/pages/settings-detail/index?type=consent" },
+  { title: "隐私说明", subtitle: "了解记录和研究数据如何使用", icon: "lock", url: "/pages/settings-detail/index?type=privacy" },
+  { title: "工具边界", subtitle: "不做诊断、不替代紧急帮助", icon: "slash", url: "/pages/settings-detail/index?type=boundary" },
+];
 
 const BASE_SUPPORT_ENTRIES = [
   {
     title: "支持性评估",
-    subtitle: "自助整理一个想弄清楚的问题，不生成诊断结论",
+    subtitle: "自助整理一个想弄清楚的问题",
+    icon: "compass",
     url: "/pages/therapeutic-assessment/index",
     private: true,
   },
   {
     title: "人工支持",
     subtitle: "提交补充理解请求",
+    icon: "person",
     url: "/pages/supervision/index",
     private: true,
   },
   {
     title: "专业资源说明",
-    subtitle: "了解线下支持边界",
+    subtitle: "",
+    icon: "book",
     url: "/pages/emergency-resources/index",
   },
 ];
@@ -34,12 +59,14 @@ function buildSupportEntries(participantEntryVisible, capability = null) {
       subtitle: simulated
         ? "仅用于本地合成数据演示，不代表真实供应商回答"
         : "根据已审核内容整理一个可暂停的小步骤",
+      icon: "message",
       url: "/pages/support-assistant/index?focus=ai",
       private: true,
     },
     {
       title: simulated ? "合成知识检索演示" : "知识库问答",
       subtitle: "从已审核项目内容检索并显示参考来源",
+      icon: "info",
       url: "/pages/support-assistant/index?focus=rag",
       private: true,
     },
@@ -47,84 +74,44 @@ function buildSupportEntries(participantEntryVisible, capability = null) {
   ];
 }
 
+function buildEntryGroups(supportEntries) {
+  return [
+    { key: "recordEntries", title: "我的记录", entries: RECORD_ENTRIES },
+    { key: "supportEntries", title: "专业支持", entries: supportEntries, showSubtitles: true },
+    {
+      key: "safetyEntries",
+      title: "紧急时先找现实帮助",
+      subtitle: "本小程序不能提供实时危机干预，请先联系身边可信赖的人或当地紧急支持。",
+      entries: SAFETY_ENTRIES,
+      tone: "warm",
+      showSubtitles: true,
+    },
+    { key: "settingsEntries", title: "设置与说明", entries: SETTINGS_ENTRIES },
+  ];
+}
+
+// 自定义导航：头像距导航底 8px，整块高 196px（Figma 导航底 88）。
+function heroLayout() {
+  const nav = navMetrics();
+  return {
+    offset: Math.max(0, Math.round(nav.offset)),
+    top: Math.round(nav.navBottom + 8),
+    height: Math.round(nav.navBottom + 196 - FIGMA_NAV_BOTTOM),
+  };
+}
+
+const DEFAULT_USER = {
+  nickname: "温暖的家长",
+  metaText: "试点体验 · 连续记录 0 天",
+  growthLevel: "本周待记录",
+};
+
 Page({
   data: {
-    user: {
-      nickname: "温暖的家长",
-      loginState: "当前为试点体验模式",
-      streakText: "连续记录 0 天",
-      growthLevel: "本周待记录",
-      roleText: "",
-    },
+    hero: { offset: 0, top: 96, height: 196 },
+    user: DEFAULT_USER,
     loggedIn: false,
-    recordEntries: [
-      {
-        title: "周报入口",
-        subtitle: "查看本周变化",
-        url: "/pages/weekly-report/index",
-        private: true,
-      },
-      {
-        title: "历次反馈",
-        subtitle: "查看消息和补充反馈",
-        url: "/pages/messages/index",
-        private: true,
-      },
-      {
-        title: "训练记录",
-        subtitle: "查看已完成的训练卡记录",
-        url: "/pages/training-history/index",
-        private: true,
-      },
-      {
-        title: "测评记录",
-        subtitle: "查看全部支持性测评记录",
-        url: "/pages/assessment-history/index",
-        private: true,
-      },
-      {
-        title: "我的成长仪表盘",
-        subtitle: "分开查看记录、测评、关系探索与人工反馈",
-        url: "/pages/growth-dashboard/index",
-        private: true,
-      },
-    ],
-    supportEntries: buildSupportEntries(false),
-    safetyEntries: [
-      {
-        title: "紧急安全指引",
-        subtitle: "出现安全风险时先找现实帮助",
-        url: "/pages/emergency-guide/index",
-      },
-      {
-        title: "紧急帮助说明",
-        subtitle: "了解可用现实资源",
-        url: "/pages/emergency-resources/index",
-      },
-    ],
-    settingsEntries: [
-      {
-        title: "参与者保护",
-        subtitle: "年龄确认、家长绑定与未满14周岁保护",
-        url: "/pages/settings-detail/index?type=protection",
-        private: true,
-      },
-      {
-        title: "知情与边界",
-        subtitle: "了解本工具能做什么",
-        url: "/pages/settings-detail/index?type=consent",
-      },
-      {
-        title: "隐私说明",
-        subtitle: "了解记录和研究数据如何使用",
-        url: "/pages/settings-detail/index?type=privacy",
-      },
-      {
-        title: "工具边界",
-        subtitle: "不做诊断、不替代紧急帮助",
-        url: "/pages/settings-detail/index?type=boundary",
-      },
-    ],
+    entryGroups: buildEntryGroups(buildSupportEntries(false)),
     stats: null,
     isResearcher: false,
     showcaseAccess: false,
@@ -135,9 +122,13 @@ Page({
     logoutBusy: false,
   },
 
+  onLoad() {
+    this.setData({ hero: heroLayout() });
+  },
+
   onShow() {
     this._hidden = false;
-    if (this._readSession && !isCurrentAuthSession(this._readSession)) this.setData({ stats: null, dataClaim: null, identityStatus: null, user: {}, loggedIn: false, logoutBusy: false });
+    if (this._readSession && !isCurrentAuthSession(this._readSession)) this.setData({ stats: null, dataClaim: null, identityStatus: null, user: DEFAULT_USER, loggedIn: false, logoutBusy: false });
     this.loadProfile();
   },
 
@@ -170,35 +161,34 @@ Page({
     try {
       const stats = await api.getProfileStats();
       if (!isCurrent()) return;
+      const roleText = storedUser && storedUser.role ? this.formatRole(storedUser.role) : "";
       this.setData({
         stats,
         loggedIn,
         user: {
-          nickname: storedUser && storedUser.nickname ? storedUser.nickname : "温暖的家长",
-          loginState: storedUser ? "已登录，可同步记录" : "当前为试点体验模式",
-          streakText: `连续记录 ${stats.streak_days || 0} 天`,
+          nickname: storedUser && storedUser.nickname ? storedUser.nickname : DEFAULT_USER.nickname,
+          metaText: `${roleText || "试点体验"} · 连续记录 ${stats.streak_days || 0} 天`,
           growthLevel: stats.weekly_record_count > 0 ? "本周有记录" : "本周待记录",
-          roleText: storedUser && storedUser.role ? this.formatRole(storedUser.role) : "",
         },
         isResearcher: !!showcase.enabled || !!(storedUser && ["researcher", "admin", "supervisor"].includes(storedUser.role)),
         showcaseAccess: !!showcase.enabled,
         dataClaim,
         identityStatus,
-        supportEntries,
+        entryGroups: buildEntryGroups(supportEntries),
       });
     } catch (error) {
       if (!isCurrent()) return;
+      const roleText = storedUser && storedUser.role ? this.formatRole(storedUser.role) : "";
       this.setData({
         loggedIn,
         user: {
           ...this.data.user,
-          nickname: storedUser && storedUser.nickname ? storedUser.nickname : "温暖的家长",
-          loginState: storedUser ? "已登录，本次暂时离线" : "未登录，先登录后查看记录",
-          roleText: storedUser && storedUser.role ? this.formatRole(storedUser.role) : "",
+          nickname: storedUser && storedUser.nickname ? storedUser.nickname : DEFAULT_USER.nickname,
+          metaText: storedUser ? `${roleText || "已登录"} · 本次暂时离线` : "试点体验 · 登录后查看记录",
         },
         dataClaim,
         identityStatus,
-        supportEntries,
+        entryGroups: buildEntryGroups(supportEntries),
       });
     }
   },
@@ -215,10 +205,10 @@ Page({
   },
 
   openEntry(event) {
-    const group = event.currentTarget.dataset.group || "recordEntries";
+    const key = event.currentTarget.dataset.group || "recordEntries";
     const index = event.currentTarget.dataset.index;
-    const list = this.data[group] || [];
-    const entry = list[index];
+    const group = this.data.entryGroups.find((item) => item.key === key);
+    const entry = group ? group.entries[index] : null;
     if (!entry) return;
     if (entry.private && !requireLogin({
       redirectUrl: entry.tab ? "/pages/profile/index" : entry.url,

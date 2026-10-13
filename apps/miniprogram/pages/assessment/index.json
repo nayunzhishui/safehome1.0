@@ -1,10 +1,10 @@
 {
-  "navigationBarTitleText": "家庭关系测一测",
+  "navigationBarTitleText": "测一测",
   "usingComponents": {
-    "section-title": "/components/section-title/index",
-    "assessment-worksheet-card": "/components/assessment-worksheet-card/index",
-    "function-entry-card": "/components/function-entry-card/index",
-    "alert-card": "/components/alert-card/index",
-    "bottom-tip-card": "/components/bottom-tip-card/index"
+    "page-state": "/components/page-state/index",
+    "p3-icon": "/components/p3-icon/index",
+    "p3-section-header": "/components/p3-section-header/index",
+    "p3-course-row": "/components/p3-course-row/index",
+    "p3-group-row": "/components/p3-group-row/index"
   }
 }

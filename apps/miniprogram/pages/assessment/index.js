@@ -1,5 +1,6 @@
 const { createSafeHomeApi } = require("../../services/api");
 const { isLoggedIn, requireLogin } = require("../../utils/authGuard");
+const { assessmentScene } = require("../../utils/assessment-scenes");
 
 const api = createSafeHomeApi();
 
@@ -10,20 +11,27 @@ const AUDIENCE_TABS = [
   { key: "adult", label: "成人自助", description: "情绪、觉察和自我支持" },
 ];
 
-const NODE_LABELS = {
-  integrated_profile: "阶段性画像",
-  awareness: "觉察",
-  reaction: "反应",
-  acceptance: "接纳",
-  fusion: "融合",
-  transformation: "转化",
-  behavior: "行为",
-  resource: "资源",
-  outcome: "结果",
-  reflection: "理解",
-  motivation: "动机",
-  relationship_support: "关系探索",
+// 情绪反射弧位置：分组标题、一行说明，按链条顺序排列（状态与特点在前，结果与理解在后）。
+const NODE_META = {
+  state_observation: { label: "状态观察", subtitle: "先看看最近的整体状态" },
+  trait_observation: { label: "特点观察", subtitle: "了解自己比较稳定的倾向" },
+  integrated_profile: { label: "阶段性画像", subtitle: "把几方面的作答放在一起看" },
+  appraisal: { label: "想法与评估", subtitle: "看看自己怎样解释发生的事" },
+  reaction: { label: "反应", subtitle: "情绪上来时，身体和行为的反应" },
+  awareness: { label: "觉察", subtitle: "看见当下的体验" },
+  emotion_skill: { label: "情绪能力", subtitle: "识别和表达情绪的方式" },
+  acceptance: { label: "接纳", subtitle: "和难受的感受相处" },
+  fusion: { label: "融合", subtitle: "是否容易被想法卷进去" },
+  transformation: { label: "转化", subtitle: "换个角度、调整情绪的方式" },
+  behavior: { label: "行为", subtitle: "可以练习的应对行为" },
+  motivation: { label: "动机", subtitle: "做事的出发点和目标感" },
+  resource: { label: "资源", subtitle: "找到可以依靠的支持" },
+  relationship_support: { label: "关系探索", subtitle: "关系里的感受和需要" },
+  outcome: { label: "结果", subtitle: "阶段性的适应与发展" },
+  reflection: { label: "理解", subtitle: "理解孩子和亲子互动" },
 };
+const NODE_ORDER = Object.keys(NODE_META);
+const NODE_LABELS = Object.fromEntries(NODE_ORDER.map((key) => [key, NODE_META[key].label]));
 
 function cleanDisplayText(value) {
   return String(value || "")
@@ -88,6 +96,14 @@ function normalizeAssessment(item) {
   };
 }
 
+// 问卷行（Figma 651:1365）：标题、一句话场景、“位置 · 题数”。
+function withRowText(item) {
+  const parts = [item.topic_label];
+  if (item.question_count) parts.push(`${item.question_count} 项`);
+  if (!item.is_enabled_for_user) parts.push("暂不开放");
+  return { ...item, row_meta: parts.join(" · "), row_scene: assessmentScene(item) };
+}
+
 function matchesQuery(item, query) {
   if (!query) return true;
   const text = [
@@ -98,6 +114,7 @@ function matchesQuery(item, query) {
     item.topic_label,
     item.source_label,
     item.review_label,
+    item.row_scene,
     (item.search_keywords || []).join(" "),
   ]
     .join(" ")
@@ -120,6 +137,7 @@ function buildAssessmentSections(items, activeAudience, query) {
   }
   const filtered = (items || [])
     .map(normalizeAssessment)
+    .map(withRowText)
     .filter((item) => activeAudience === "all" || item.audience_class === activeAudience)
     .filter((item) => matchesQuery(item, query));
 
@@ -130,7 +148,7 @@ function buildAssessmentSections(items, activeAudience, query) {
       nodeMap[key] = {
         key,
         title: NODE_LABELS[key] || "综合支持",
-        subtitle: "按量表功能节点分组",
+        subtitle: NODE_META[key] ? NODE_META[key].subtitle : "",
         emptyText: "",
         items: [],
       };
@@ -138,7 +156,8 @@ function buildAssessmentSections(items, activeAudience, query) {
     nodeMap[key].items.push(item);
   });
 
-  const sections = Object.values(nodeMap);
+  const rank = (key) => (NODE_ORDER.indexOf(key) === -1 ? NODE_ORDER.length : NODE_ORDER.indexOf(key));
+  const sections = Object.values(nodeMap).sort((a, b) => rank(a.key) - rank(b.key));
   if (!sections.length) {
     return [
       {
@@ -153,6 +172,11 @@ function buildAssessmentSections(items, activeAudience, query) {
   return sections;
 }
 
+function shortDate(value) {
+  const matched = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return matched ? `${Number(matched[2])}月${Number(matched[3])}日` : "时间待补充";
+}
+
 function formatRecentResult(item) {
   const isProfile = item && (item.worksheet_id === "student_profile_v1" || item.category === "学生画像");
   return {
@@ -162,6 +186,7 @@ function formatRecentResult(item) {
     createdAtText: item.created_at ? String(item.created_at).slice(0, 16).replace("T", " ") : "时间待补充",
     worksheet_title: cleanDisplayTitle(item.worksheet_title || "测一测记录"),
     result_summary: cleanDisplayText(item.result_summary || "已保存本次填写。"),
+    row_subtitle: `${shortDate(item.created_at)}${item.result_summary ? " · " + cleanDisplayText(item.result_summary) : ""}`,
   };
 }
 
@@ -175,6 +200,7 @@ Page({
     searchKeyword: "",
     allAssessments: [],
     categories: [],
+    visibleCount: 0,
     recentResults: [],
     recentLoginTip: "",
     infoItems: [
@@ -198,8 +224,10 @@ Page({
   },
 
   refreshVisibleAssessments() {
+    const categories = buildAssessmentSections(this.data.allAssessments, this.data.activeAudience, this.data.searchKeyword);
     this.setData({
-      categories: buildAssessmentSections(this.data.allAssessments, this.data.activeAudience, this.data.searchKeyword),
+      categories,
+      visibleCount: categories.reduce((total, section) => total + section.items.length, 0),
     });
   },
 

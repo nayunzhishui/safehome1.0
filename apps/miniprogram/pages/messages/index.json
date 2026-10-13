@@ -2,7 +2,6 @@
   "navigationBarTitleText": "消息",
   "usingComponents": {
     "page-state": "/components/page-state/index",
-    "bottom-tip-card": "/components/bottom-tip-card/index",
     "message-row": "/components/message-row/index"
   }
 }

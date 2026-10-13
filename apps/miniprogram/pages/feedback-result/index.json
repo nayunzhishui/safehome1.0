@@ -1,10 +1,9 @@
 {
   "navigationBarTitleText": "本次反馈",
   "usingComponents": {
-    "section-title": "/components/section-title/index",
-    "training-task-card": "/components/training-task-card/index",
-    "bottom-tip-card": "/components/bottom-tip-card/index",
     "feedback-rating": "/components/feedback-rating/index",
-    "page-state": "/components/page-state/index"
+    "page-state": "/components/page-state/index",
+    "p3-section-header": "/components/p3-section-header/index",
+    "p3-group-row": "/components/p3-group-row/index"
   }
 }

@@ -2,6 +2,7 @@
   "navigationBarTitleText": "人工支持",
   "usingComponents": {
     "service-consent": "/components/service-consent/index",
-    "page-state": "/components/page-state/index"
+    "page-state": "/components/page-state/index",
+    "therapeutic-choice-option": "/components/therapeutic-choice-option/index"
   }
 }

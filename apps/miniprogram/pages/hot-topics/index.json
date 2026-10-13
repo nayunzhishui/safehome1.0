@@ -1,8 +1,7 @@
 {
-  "navigationBarTitleText": "亲子沟通主题",
+  "navigationBarTitleText": "陪伴案例",
   "usingComponents": {
-    "section-title": "/components/section-title/index",
-    "bottom-tip-card": "/components/bottom-tip-card/index",
-    "training-task-card": "/components/training-task-card/index"
+    "p3-course-row": "/components/p3-course-row/index",
+    "p3-section-header": "/components/p3-section-header/index"
   }
 }

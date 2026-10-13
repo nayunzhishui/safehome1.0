@@ -1,8 +1,10 @@
 {
   "navigationBarTitleText": "课程",
+  "navigationStyle": "custom",
   "usingComponents": {
-    "section-title": "/components/section-title/index",
-    "course-card": "/components/course-card/index",
-    "bottom-tip-card": "/components/bottom-tip-card/index"
+    "page-state": "/components/page-state/index",
+    "p3-tab-hero": "/components/p3-tab-hero/index",
+    "p3-section-header": "/components/p3-section-header/index",
+    "p3-course-row": "/components/p3-course-row/index"
   }
 }

@@ -1,0 +1,20 @@
+<view class="thermo" aria-label="{{ariaLabel}}">
+  <view class="thermo__tube" aria-hidden="true"></view>
+  <view wx:if="{{value > 0}}" class="thermo__mercury thermo__mercury--{{value}}" style="width: {{mercuryWidth}};" aria-hidden="true"></view>
+  <image class="thermo__bulb" src="/assets/art/thermo-bulb.svg" aria-hidden="true" />
+  <image class="thermo__shine" src="/assets/art/thermo-shine.svg" aria-hidden="true" />
+  <block wx:for="{{ticks}}" wx:key="value">
+    <view class="thermo__tick" style="left: {{item.position}};" aria-hidden="true"></view>
+    <text class="thermo__label {{item.value === value ? 'thermo__label--current' : ''}}" style="left: {{item.position}};" aria-hidden="true">{{item.value}}</text>
+    <view
+      wx:if="{{interactive}}"
+      class="thermo__hit"
+      style="left: {{item.position}};"
+      role="button"
+      aria-label="记录强度 {{item.value}}"
+      data-value="{{item.value}}"
+      bindtap="pick"
+    ></view>
+  </block>
+  <view wx:if="{{value > 0}}" class="thermo__marker thermo__marker--{{value}}" style="left: {{markerLeft}};" aria-hidden="true"></view>
+</view>

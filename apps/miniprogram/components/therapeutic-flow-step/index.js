@@ -1,7 +1,29 @@
+// 8 步竹节进度（Figma 656:2010）：已完成半透明青瓷、当前实心、未到淡色。
+function progressJoints(stepNumber, stepTotal) {
+  const total = Math.max(1, Number(stepTotal) || 1);
+  const current = Math.max(1, Math.min(total, Number(stepNumber) || 1));
+  return Array.from({ length: total }, (_item, index) => (index + 1 < current ? "done" : index + 1 === current ? "current" : "upcoming"));
+}
+
+function dateText(value) {
+  const matched = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return matched ? `${Number(matched[2])}月${Number(matched[3])}日` : "";
+}
+
 Component({
   options: { styleIsolation: "apply-shared" },
   data: {
     reminderOptions: ["不提醒", "仅站内提醒", "微信订阅提醒"],
+    joints: progressJoints(1, 8),
+    plannedDateText: "",
+  },
+  observers: {
+    "stepNumber, stepTotal"(stepNumber, stepTotal) {
+      this.setData({ joints: progressJoints(stepNumber, stepTotal) });
+    },
+    "actionPlan.plannedDate"(plannedDate) {
+      this.setData({ plannedDateText: dateText(plannedDate) });
+    },
   },
   properties: {
     ui2: { type: Boolean, value: false },
@@ -31,6 +53,7 @@ Component({
     stateTitle: { type: String, value: "" },
     stateDescription: { type: String, value: "" },
     canContinue: { type: Boolean, value: true },
+    notice: { type: String, value: "" },
   },
   methods: {
     handleInput(event) {

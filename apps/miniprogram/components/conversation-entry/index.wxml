@@ -1,1 +1,17 @@
-<view class="message message--{{message.role}}"><text class="message-label">{{message.role === 'user' ? '你' : '支持性整理'}}</text><text class="message-content">{{message.content}}</text><view wx:if="{{message.citations && message.citations.length}}" class="citations"><text class="citation-title">参考来源</text><text wx:for="{{message.citations}}" wx:key="version_id" class="citation-item">{{index + 1}}. {{item.title}}</text></view></view>
+<view class="entry entry--{{message.role}}">
+  <block wx:if="{{message.role === 'user'}}">
+    <text class="entry__label">你</text>
+    <view class="entry__quote">
+      <text class="entry__mark" aria-hidden="true">“</text>
+      <text class="p3-quote p3-quote--open entry__quote-text">{{message.content}}</text>
+    </view>
+  </block>
+  <block wx:else>
+    <text class="entry__label entry__label--answer">支持性整理</text>
+    <text wx:for="{{paragraphs}}" wx:key="*this" class="entry__text">{{item}}</text>
+    <view wx:if="{{message.citations && message.citations.length}}" class="entry__citations">
+      <text class="entry__citations-title">参考来源</text>
+      <text wx:for="{{message.citations}}" wx:key="version_id" class="entry__citation">{{index + 1}}. {{item.title}}</text>
+    </view>
+  </block>
+</view>

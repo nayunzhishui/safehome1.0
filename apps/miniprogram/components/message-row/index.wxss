@@ -1,94 +1,90 @@
+/* 消息行（Figma MessageRow 670:3086）：未读带青瓷小圆点与“未读”；已撤回标题变灰、摘要固定为撤回说明。 */
+:host {
+  display: block;
+}
+
 .message-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
   box-sizing: border-box;
   width: 100%;
-  min-height: 176rpx;
-  display: flex;
-  align-items: flex-start;
-  gap: 24rpx;
-  padding: var(--ui2-message-padding, 40rpx);
-  border-bottom: 1rpx solid var(--safe-border);
+  min-height: 0;
+  margin: 0;
+  padding: 28rpx 0;
   border-radius: 0;
-  background: var(--ui2-message-bg, var(--safe-card));
+  background: transparent;
   text-align: left;
 }
 
-.message-row::after { border: 0; }
-.message-row--withdrawn { background: var(--safe-bg-soft); }
-
-.unread-marker {
-  display: var(--ui2-unread-marker, block);
-  width: 8rpx;
-  height: 128rpx;
-  flex: 0 0 auto;
-  border-radius: 4rpx;
-  background: var(--safe-primary-deep);
+.message-row::after {
+  border: 0;
 }
 
-.message-copy {
-  min-width: 0;
+.message-row--divided {
+  border-bottom: 2rpx solid var(--p3-hairline);
+}
+
+.message-row__title-row {
   display: flex;
-  flex: 1;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 16rpx;
+  align-items: center;
+  gap: var(--p3-tight);
 }
 
-.message-title, .message-body, .message-time, .message-status { display: block; }
+.message-row__dot {
+  flex: 0 0 auto;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: var(--p3-primary);
+}
 
-.message-title {
-  width: 100%;
-  color: var(--safe-title);
+.message-row__title {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-ink);
   font-size: 32rpx;
-  font-weight: 600;
-  line-height: 46rpx;
-  overflow-wrap: anywhere;
+  line-height: 48rpx;
+  font-weight: 500;
 }
 
-.message-row--unread .message-title { font-weight: 700; }
-.message-row--withdrawn .message-title { color: var(--safe-muted); }
+.message-row--withdrawn .message-row__title {
+  color: var(--p3-muted);
+}
 
-.message-body {
-  width: 100%;
-  color: var(--safe-muted);
-  font-size: var(--ui2-body, 28rpx);
+.message-row__body {
+  display: block;
+  overflow: hidden;
+  color: var(--p3-muted);
+  font-size: 28rpx;
   line-height: 44rpx;
-  overflow-wrap: anywhere;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.message-meta {
-  width: 100%;
+.message-row__meta {
   display: flex;
-  align-items: center;
-  gap: 16rpx;
+  align-items: flex-start;
+  gap: var(--p3-tight);
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
 }
 
-.message-time {
+.message-row__time {
+  flex: 1 0 0;
   min-width: 0;
-  flex: 1;
-  color: var(--safe-muted);
-  font-size: var(--ui2-caption, 24rpx);
-  line-height: 36rpx;
-  overflow-wrap: anywhere;
 }
 
-.message-status {
-  min-height: 44rpx;
-  display: inline-flex;
-  align-items: center;
+.message-row__status {
   flex: 0 0 auto;
-  padding: 2rpx 16rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-pill);
-  background: var(--safe-bg-soft);
-  color: var(--safe-muted);
-  font-size: var(--ui2-caption, 24rpx);
-  font-weight: 600;
-  line-height: 36rpx;
+  white-space: nowrap;
 }
 
-.message-status--unread { color: var(--safe-primary-deep); }
+.message-row--unread .message-row__status {
+  color: var(--p3-primary);
+}
 
-@media (max-width: 340px) {
-  .message-row { padding: var(--ui2-message-padding, 32rpx); }
-  .message-meta { align-items: flex-start; flex-direction: column; gap: 8rpx; }
+.message-row--withdrawn .message-row__status {
+  color: var(--p3-muted);
 }

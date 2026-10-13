@@ -1,1 +1,63 @@
-.consent-shade{position:fixed;inset:0;z-index:1200;background:rgba(20,39,35,.55);display:flex;align-items:center;justify-content:center;padding:32rpx;box-sizing:border-box}.consent-dialog{width:100%;max-width:650rpx;background:#fffdf9;border-radius:28rpx;padding:36rpx;box-sizing:border-box;max-height:90vh;display:flex;flex-direction:column;gap:24rpx;color:#20332e}.consent-title{font-size:36rpx;font-weight:600;text-align:center}.consent-content{min-height:0;max-height:42vh;font-size:28rpx;line-height:1.7}.consent-content text{display:block}.consent-boundary{margin-top:24rpx}.consent-check{display:flex;align-items:flex-start;gap:12rpx;font-size:28rpx;line-height:1.6;padding:8rpx 0}.consent-dialog button{width:100%;min-height:88rpx;font-size:28rpx;line-height:1.5;padding:22rpx 20rpx;border-radius:16rpx}.consent-primary{background:#2f6a60;color:white}.consent-primary[disabled]{background:#e0e6e2;color:#66736c}.consent-secondary,.consent-link{background:transparent;color:#2f6a60}.consent-link{margin-top:16rpx;text-decoration:underline}
+/* 功能知情说明（P3 弹层）：深青半透明遮罩；纸白卡片圆角 24；说明可滚动；勾选后主按钮可用。 */
+.consent-shade {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 40rpx;
+  background: rgba(23, 60, 67, 0.62);
+}
+
+.consent-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 670rpx;
+  max-height: 90vh;
+  padding: 48rpx 40rpx 32rpx;
+  border-radius: var(--p3-radius-card);
+  background: var(--p3-surface);
+  box-shadow: var(--p3-shadow-float);
+  color: var(--p3-ink);
+}
+
+.consent-title {
+  display: block;
+  font-size: 40rpx;
+  line-height: 56rpx;
+  font-weight: 500;
+  text-align: center;
+}
+
+.consent-content {
+  min-height: 0;
+  max-height: 42vh;
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.consent-content text {
+  display: block;
+}
+
+.consent-boundary {
+  margin-top: 24rpx;
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.consent-link {
+  margin-top: 8rpx;
+}
+
+.consent-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+}

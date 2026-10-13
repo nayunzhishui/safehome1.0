@@ -1,0 +1,54 @@
+/* IntensitySlider（Figma 646:973）：轨道高 7、圆角 4、米白底细线；液柱高 8；圆点直径 22、2px 青瓷描边、柔和投影。 */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.p3-slider {
+  position: relative;
+  height: 48rpx;
+}
+
+.p3-slider__track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 17rpx;
+  height: 14rpx;
+  border-radius: 8rpx;
+  background: var(--p3-mist);
+  box-shadow: inset 0 0 0 2rpx var(--p3-hairline);
+}
+
+.p3-slider__fill {
+  position: absolute;
+  left: 0;
+  top: -1rpx;
+  height: 16rpx;
+  border-radius: 8rpx;
+}
+
+.p3-slider__knob {
+  position: absolute;
+  top: 2rpx;
+  box-sizing: border-box;
+  width: 44rpx;
+  height: 44rpx;
+  margin-left: -22rpx;
+  border: 4rpx solid var(--p3-primary);
+  border-radius: 50%;
+  background: var(--p3-surface);
+  box-shadow: 0 4rpx 12rpx rgba(23, 61, 66, 0.16);
+  pointer-events: none;
+}
+
+/* 原生 slider 去掉默认外边距，与可见轨道等宽，透明但仍可拖动和读屏。 */
+.p3-slider__native {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: 0;
+  opacity: 0;
+}

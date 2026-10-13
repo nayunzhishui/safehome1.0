@@ -5,9 +5,17 @@ const { buildErrorDiagnostic, copyErrorDiagnostic } = require("../../utils/error
 const api = createSafeHomeApi();
 const PAGE_SIZE = 50;
 
+const HELPFULNESS_LABELS = {
+  helpful: "有帮助",
+  neutral: "一般",
+  not_helpful_yet: "暂时没有帮助",
+};
+
+// “10月9日 21:30”（Figma 652:1729）
 function formatDate(value) {
-  if (!value) return "时间待补充";
-  return String(value).slice(0, 16).replace("T", " ");
+  const matched = String(value || "").match(/^\d{4}-(\d{2})-(\d{2})[T ](\d{2}:\d{2})/);
+  if (!matched) return value ? String(value).slice(0, 16).replace("T", " ") : "时间待补充";
+  return `${Number(matched[1])}月${Number(matched[2])}日 ${matched[3]}`;
 }
 
 function formatCheckin(item) {
@@ -16,13 +24,16 @@ function formatCheckin(item) {
   const before = hasBefore ? Number(item.emotion_before) : null;
   const after = hasAfter ? Number(item.emotion_after) : null;
   const hasChange = hasBefore && hasAfter && Number.isFinite(before) && Number.isFinite(after);
+  const helpfulnessText = HELPFULNESS_LABELS[item.helpfulness_rating] || "";
+  const changeText = hasChange ? `练习前 ${before} → 练习后 ${after}` : "本次未记录前后强度";
   return {
     ...item,
     cardTitle: item.card_title || item.card_id || "训练卡",
     createdAtText: formatDate(item.created_at),
-    statusText: item.completed ? "已完成" : "已记录",
-    changeText: hasChange ? `练习前 ${before} · 练习后 ${after}` : "本次未记录前后强度",
-    helpfulnessText: item.helpfulness_rating ? `帮助程度 ${item.helpfulness_rating}` : "",
+    statusText: item.skip_reason ? "先暂停" : item.completed ? "已完成" : "已记录",
+    changeText: helpfulnessText ? `${changeText} · ${helpfulnessText}` : changeText,
+    helpfulnessText,
+    quoteText: item.reflection || item.skip_reason || "",
   };
 }
 

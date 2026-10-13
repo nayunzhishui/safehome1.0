@@ -1,270 +1,210 @@
-.assessment-detail-page {
-  padding-bottom: 72rpx;
+/* 填写测评（Figma 651:1593）：衬线标题；每题一节的竹节进度；说明提示；整行可点的选项（≥52）；九点量尺横向数字格。 */
+page {
+  background: var(--p3-paper);
 }
 
-.assessment-detail-head {
-  padding: 10rpx 0 8rpx;
-  text-align: center;
-}
-
-.page-title,
-.page-subtitle,
-.state-box,
-.error-box {
-  display: block;
-}
-
-.page-title {
-  color: var(--safe-title);
-  font-size: 42rpx;
-  font-weight: 800;
-  line-height: 1.35;
-}
-
-.page-subtitle {
-  margin-top: 10rpx;
-  color: var(--safe-muted);
-  font-size: 23rpx;
-  line-height: 1.6;
-}
-
-.instruction-block {
-  margin-top: 18rpx;
-  padding: 18rpx 0;
-  border-top: 1rpx solid var(--safe-border);
-  border-bottom: 1rpx solid var(--safe-border);
-  color: var(--safe-text);
-  font-size: 25rpx;
-  line-height: 1.7;
-}
-
-.sensitive-strip {
-  margin-top: 16rpx;
-  padding: 14rpx 18rpx;
-  border: 1rpx solid rgba(192, 131, 59, 0.28);
-  border-radius: var(--safe-radius-sm);
-  background: var(--safe-orange-soft);
-  color: #7a4e1d;
-  font-size: 24rpx;
-  line-height: 1.6;
-}
-
-.question-list {
-  margin-top: 12rpx;
-}
-
-.question-card {
-  position: relative;
-  margin-top: 20rpx;
-  padding: 22rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-card);
-  box-shadow: var(--safe-shadow-card);
-}
-
-.question-card::before {
-  content: "";
-  display: block;
-  width: 42rpx;
-  height: 6rpx;
-  margin-bottom: 14rpx;
-  border-radius: 999rpx;
-  background: var(--safe-primary);
-}
-
-.question-head {
+.detail-page {
   display: flex;
-  gap: 14rpx;
+  flex-direction: column;
+  gap: var(--p3-section);
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 16rpx var(--p3-page-x) calc(72rpx + env(safe-area-inset-bottom));
+  background: var(--p3-paper);
+  overflow-x: hidden;
+}
+
+.detail-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+}
+
+.detail-title {
+  overflow-wrap: anywhere;
+}
+
+.detail-progress-text {
+  display: flex;
   align-items: flex-start;
+  gap: var(--p3-tight);
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
 }
 
-.question-num {
+.detail-progress-text__count {
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+.detail-progress-text__draft {
   flex: 0 0 auto;
-  width: 36rpx;
-  height: 36rpx;
+  white-space: nowrap;
+}
+
+.detail-progress {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--safe-primary-soft);
-  color: var(--safe-primary-deep);
-  font-size: 24rpx;
-  font-weight: 900;
-  line-height: 1;
-  margin-top: 2rpx;
+  gap: 6rpx;
 }
 
-.question-title {
-  display: block;
-  flex: 1;
-  color: var(--safe-title);
-  font-size: 27rpx;
-  font-weight: 800;
-  line-height: 1.55;
+.detail-progress__joint {
+  flex: 1 0 0;
+  min-width: 0;
+  height: 12rpx;
+  border-radius: 999rpx;
+  background: rgba(35, 102, 110, 0.16);
 }
 
-.required {
-  color: var(--safe-danger);
+.detail-progress__joint--done {
+  background: var(--p3-primary);
 }
 
+.detail-question {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+  min-width: 0;
+}
+
+.detail-question__head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--p3-stack);
+}
+
+.detail-question__num {
+  flex: 0 0 auto;
+  color: var(--p3-primary);
+  font-family: var(--p3-font-serif);
+  font-size: 48rpx;
+  line-height: 64rpx;
+  font-weight: 500;
+  letter-spacing: 1rpx;
+}
+
+.detail-question__prompt {
+  flex: 1 0 0;
+  min-width: 0;
+  padding-top: 8rpx;
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+/* 全部题目默认必答，不再逐题标星；只有少数选填题在题干后轻声注明。 */
+.detail-question__optional {
+  color: var(--p3-muted);
+  font-weight: 400;
+}
+
+/* 选项行（Figma 623:101）：整行可点；选中为青瓷浅底 + 1.5 青瓷描边 + 粗边圆点。
+   描边计入布局：14/16 内边距 + 1px 描边（选中 1.5px），行高 56。 */
 .option-row {
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
-  margin-top: 18rpx;
-}
-
-.option-row--nine {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.option-row--nine .option-button {
-  min-width: 0;
-  min-height: 112rpx;
-  flex-direction: column;
-  justify-content: center;
-  gap: 8rpx;
-  padding: 12rpx 8rpx;
-}
-
-.option-row--nine .option-label {
-  flex: 0 1 auto;
-  font-size: 24rpx;
-  line-height: 1.35;
-  text-align: center;
+  gap: 16rpx;
 }
 
 .option-button {
-  width: 100%;
-  min-height: 76rpx;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  gap: var(--p3-stack);
   box-sizing: border-box;
-  padding: 16rpx 20rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-sm);
-  background: var(--safe-bg);
+  min-height: 112rpx;
+  padding: 30rpx 34rpx;
+  border-radius: 28rpx;
+  background: var(--p3-surface);
+  box-shadow: inset 0 0 0 2rpx var(--p3-hairline);
 }
 
-.option-value {
-  flex: 0 0 48rpx;
-  width: 48rpx;
-  height: 48rpx;
-  display: flex;
-  align-items: center;
+.option-button--active {
+  min-height: 114rpx;
+  padding: 31rpx 35rpx;
+  background: var(--p3-soft);
+  box-shadow: inset 0 0 0 3rpx var(--p3-primary);
+}
+
+.option-button__radio {
+  width: 40rpx;
+  height: 40rpx;
+  flex: 0 0 auto;
+}
+
+.option-button__value {
+  flex: 0 0 auto;
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
+}
+
+.option-button__label {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
+  overflow-wrap: anywhere;
+}
+
+/* 九点量尺：三列数字格，数字在上、说明在下。 */
+.option-row--nine {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16rpx;
+}
+
+.option-row--nine .option-button {
+  flex-direction: column;
   justify-content: center;
-  border-radius: 50%;
-  background: #fff;
-  color: var(--safe-text);
-  font-size: 24rpx;
-  font-weight: 800;
-  line-height: 1;
+  gap: 4rpx;
+  min-height: 112rpx;
+  padding: 16rpx 12rpx;
   text-align: center;
 }
 
-.option-label {
-  flex: 1;
-  min-width: 0;
+.option-row--nine .option-button__value {
+  font-family: var(--p3-font-serif);
+  font-size: 40rpx;
+  line-height: 52rpx;
+  font-weight: 500;
+}
+
+.option-row--nine .option-button__label {
+  flex: 0 0 auto;
+  color: var(--p3-muted);
+  font-size: 24rpx;
+  line-height: 34rpx;
+}
+
+.option-row--nine .option-button--active .option-button__value,
+.option-row--nine .option-button--active .option-button__label {
+  color: var(--p3-primary);
+}
+
+.detail-submit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+}
+
+.detail-remaining {
   display: block;
-  color: var(--safe-text);
-  font-size: 24rpx;
-  line-height: 1.55;
-  text-align: left;
-  white-space: normal;
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
-
-.option-button.active {
-  border-color: var(--safe-primary);
-  background: var(--safe-primary-soft);
-  color: var(--safe-primary-deep);
-  font-weight: 800;
-}
-
-.option-button.active .option-value {
-  background: #fff;
-  color: var(--safe-primary-deep);
-}
-
-.answer-textarea {
-  box-sizing: border-box;
-  width: 100%;
-  min-height: 160rpx;
-  margin-top: 16rpx;
-  padding: 18rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-bg);
-  color: var(--safe-title);
+  color: var(--p3-muted);
   font-size: 26rpx;
-  line-height: 1.65;
+  line-height: 40rpx;
 }
 
-.submit-button {
-  margin-top: 32rpx;
-}
-
-.login-button {
-  margin-top: 18rpx;
-}
-
-.boundary-footer {
-  margin-top: 28rpx;
-  padding-top: 20rpx;
-  border-top: 1rpx solid var(--safe-border);
-  color: var(--safe-muted);
-  font-size: 24rpx;
-  line-height: 1.6;
-}
-
-.state-box,
-.error-box {
-  margin-top: 24rpx;
-  padding: 24rpx;
-  border-radius: var(--safe-radius-md);
-  font-size: 26rpx;
-  line-height: 1.7;
+.detail-error {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
 }
 
 .state-box {
-  color: var(--safe-text);
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
 }
-
-.state-box.error,
-.error-box {
-  border: 1rpx solid #efb4b4;
-  background: #fff1f1;
-  color: #8a2f2f;
-}
-
-/* UIproduct2: task-scoped visual refinement, no business behavior. */
-.ui2-page { --ui2-section-accent-display:none; --safe-shadow-card:none; --safe-shadow-float:none; box-sizing:border-box; background:var(--ui2-canvas); padding:48rpx 40rpx calc(64rpx + env(safe-area-inset-bottom)); }
-.ui2-page .page-title,.ui2-page .hero-title,.ui2-page .history-title,.ui2-page .result-title { font-size:44rpx; line-height:1.6; font-weight:700; text-align:center; color:var(--ui2-ink); }
-.ui2-page .safe-primary-button,.ui2-page .safe-outline-button { min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; box-shadow:none; }
-.ui2-page .ui2-placeholder { color:var(--ui2-muted); }
-.ui2-page .assessment-detail-head { padding:0 0 24rpx; }
-.ui2-page .instruction-block { font-size:30rpx; line-height:1.7; border:0; padding:24rpx 0; }
-.ui2-page .sensitive-strip { font-size:28rpx; line-height:1.7; background:var(--ui2-warm); color:#765323; }
-.ui2-page .question-card { margin:24rpx 0 40rpx; padding:24rpx 0 32rpx; border:0; border-bottom:1rpx solid var(--ui2-line); border-radius:0; background:transparent; }
-.ui2-page .question-card::before { display:none; }
-.ui2-page .question-title { font-size:32rpx; line-height:1.7; }
-.ui2-page .question-num { min-width:40rpx; height:52rpx; border-radius:0; background:transparent; font-size:26rpx; }
-.ui2-page .option-button { min-height:96rpx; padding:20rpx; border:2rpx solid var(--ui2-control-border); border-radius:24rpx; background:var(--ui2-surface); gap:16rpx; }
-.ui2-page .option-button.active { border-color:var(--ui2-primary); background:var(--ui2-soft); }
-.ui2-page .option-label { font-size:30rpx; line-height:1.6; }
-.ui2-page .option-value { background:transparent; color:var(--ui2-muted); font-size:26rpx; }
-.ui2-page .option-button.active .option-value { background:var(--ui2-primary); color:white; }
-.ui2-page .option-button.active::after { content:''; display:block; flex:0 0 10rpx; width:10rpx; height:18rpx; border:solid var(--ui2-primary); border-width:0 3rpx 3rpx 0; transform:rotate(45deg); margin-right:8rpx; }
-.ui2-page .option-row--nine { grid-template-columns:repeat(3,minmax(0,1fr)); gap:12rpx; }
-.ui2-page .option-row--nine .option-button { min-height:144rpx; padding:16rpx 8rpx; }
-.ui2-page .option-row--nine .option-label { font-size:28rpx; line-height:1.6; }
-.ui2-page .option-row--nine .option-button.active::after { flex:0 0 auto; }
-.ui2-page .answer-textarea { min-height:240rpx; border:2rpx solid var(--ui2-control-border); border-radius:24rpx; background:var(--ui2-surface); padding:24rpx; font-size:30rpx; line-height:1.7; }
-.ui2-page .error-box,.ui2-page .state-box,.ui2-page .boundary-footer { font-size:30rpx; line-height:1.7; }
-.ui2-page .submit-button { width:100%; }
-.ui2-page .draft-status { font-size:26rpx; }
-.ui2-page .draft-status--slow { font-size:28rpx; }

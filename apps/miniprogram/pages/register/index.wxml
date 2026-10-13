@@ -1,61 +1,52 @@
-<view class="safe-page ui2-page auth-page" role="main" aria-label="注册">
-  <view class="auth-shell">
-    <view class="auth-header">
-      <text class="auth-title">创建账号</text>
+<view class="register-page" role="main" aria-label="注册">
+  <text class="p3-serif-title" role="heading" aria-level="1">创建账号</text>
+
+  <view class="register-section">
+    <p3-section-header title="账号信息" />
+    <view class="p3-field">
+      <text class="p3-field__label">用户名</text>
+      <input class="p3-field__input" value="{{username}}" aria-label="用户名，至少3个字符" placeholder-class="p3-field__placeholder" placeholder="请输入用户名" bindinput="onUsernameInput" />
+      <text class="p3-field__hint">至少 3 个字符</text>
     </view>
-
-    <view class="auth-form">
-      <view class="auth-section-title">账号信息</view>
-
-      <view class="field field-first">
-        <text class="field-label">用户名</text>
-        <input value="{{username}}" aria-label="用户名" placeholder-class="field-placeholder" placeholder="请输入用户名" bindinput="onUsernameInput" />
-        <text class="field-helper">至少 3 个字符</text>
-      </view>
-
-      <view class="field">
-        <text class="field-label">密码</text>
-        <input value="{{password}}" aria-label="密码" placeholder-class="field-placeholder" password placeholder="请输入密码" bindinput="onPasswordInput" />
-        <text class="field-helper">至少 8 个字符</text>
-      </view>
-
-      <view class="auth-section-title identity-heading">使用身份</view>
-      <view class="field">
-        <text class="field-label">角色</text>
-        <picker
-          range="{{roleOptions}}"
-          range-key="label"
-          value="{{roleIndex}}"
-          bindchange="onRoleChange"
-          aria-label="选择角色，当前为{{roleOptions[roleIndex].label}}"
-        >
-          <view class="picker-value">
-            <text>{{roleOptions[roleIndex].label}}</text>
-            <image class="picker-chevron" src="/assets/icons/chevron-down.svg" mode="aspectFit" aria-hidden="true" />
-          </view>
-        </picker>
-      </view>
-
-      <view class="field">
-        <text class="field-label">昵称（可选）</text>
-        <input value="{{nickname}}" aria-label="昵称，可选" placeholder-class="field-placeholder" placeholder="选填" bindinput="onNicknameInput" />
-      </view>
-
-      <view class="auth-agreement" aria-label="协议确认">
-        <checkbox-group bindchange="onAgreementChange">
-          <label class="auth-agreement-label">
-            <checkbox value="agreed" checked="{{agreed}}" aria-label="我已阅读并同意用户服务协议和隐私政策" />
-            <text class="auth-agreement-text">我已阅读并同意</text>
-          </label>
-        </checkbox-group>
-        <text class="auth-agreement-link" bindtap="openAgreement">《用户服务协议》</text>
-        <text class="auth-agreement-text">和</text>
-        <text class="auth-agreement-link" bindtap="openPrivacy">《隐私政策》</text>
-      </view>
-
-      <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>
-      <button class="primary-action" loading="{{loading}}" disabled="{{loading}}" bindtap="submitRegister">注册</button>
-      <button class="ghost-action" bindtap="goLogin">已有账号，去登录</button>
+    <view class="p3-field">
+      <text class="p3-field__label">密码</text>
+      <input class="p3-field__input" value="{{password}}" aria-label="密码，至少8个字符" placeholder-class="p3-field__placeholder" password placeholder="请输入密码" bindinput="onPasswordInput" />
+      <text class="p3-field__hint">至少 8 个字符</text>
     </view>
+  </view>
+
+  <view class="register-section">
+    <p3-section-header title="使用身份" subtitle="学生注册后会先完成未成年人保护确认" />
+    <view class="p3-segment" role="radiogroup" aria-label="使用身份">
+      <button
+        wx:for="{{roleOptions}}"
+        wx:key="value"
+        class="p3-segment__item {{roleIndex === index ? 'p3-segment__item--active' : ''}}"
+        role="radio"
+        aria-checked="{{roleIndex === index}}"
+        data-index="{{index}}"
+        bindtap="selectRole"
+      >{{item.segmentLabel}}</button>
+    </view>
+    <view class="p3-field">
+      <text class="p3-field__label">昵称（可选）</text>
+      <input class="p3-field__input" value="{{nickname}}" aria-label="昵称，可选" placeholder-class="p3-field__placeholder" placeholder="选填" bindinput="onNicknameInput" />
+    </view>
+  </view>
+
+  <checkbox-group class="p3-agreement" aria-label="协议确认" bindchange="onAgreementChange">
+    <label class="p3-agreement__box {{agreed ? 'p3-agreement__box--checked' : ''}}">
+      <checkbox class="p3-agreement__native" value="agreed" checked="{{agreed}}" aria-label="我已阅读并同意用户服务协议和隐私政策" />
+      <image wx:if="{{agreed}}" class="p3-agreement__tick" src="/assets/icons/p3/tick-14-white.svg" aria-hidden="true" />
+    </label>
+    <view class="p3-agreement__text">
+      <text bindtap="toggleAgreement">我已阅读并同意</text><text class="p3-agreement__link" bindtap="openAgreement">《用户服务协议》</text><text bindtap="toggleAgreement">和</text><text class="p3-agreement__link" bindtap="openPrivacy">《隐私政策》</text>
+    </view>
+  </checkbox-group>
+
+  <view class="register-actions">
+    <text wx:if="{{message}}" class="p3-form-message p3-form-message--{{status}}" aria-live="polite">{{message}}</text>
+    <button class="p3-btn p3-btn--primary" loading="{{loading}}" disabled="{{loading || !agreed}}" aria-label="{{agreed ? '注册' : '注册，需先勾选同意协议'}}" bindtap="submitRegister">注册</button>
+    <button class="p3-btn p3-btn--quiet" bindtap="goLogin">已有账号，去登录</button>
   </view>
 </view>

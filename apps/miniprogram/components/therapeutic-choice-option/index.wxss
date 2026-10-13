@@ -1,37 +1,52 @@
+/* 带说明的单选项（Figma 656:2021 P3/ChoiceOption）：整块可点；描边计入布局，选中为浅青瓷底 + 1.5 青瓷描边 + 粗边圆点。 */
+:host {
+  display: block;
+  width: 100%;
+}
+
 .choice-option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--p3-stack);
   box-sizing: border-box;
   width: 100%;
-  min-height: var(--ui2-choice-height,180rpx);
-  display: flex;
-  align-items: center;
-  gap: var(--ui2-choice-gap,28rpx);
-  padding: var(--ui2-choice-padding,30rpx 32rpx);
-  border: 2rpx solid var(--ui2-control-border,var(--safe-border));
-  border-radius: var(--ui2-button-radius,32rpx);
-  background: var(--safe-card);
+  min-height: 0;
+  padding: 30rpx 34rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-surface);
+  box-shadow: inset 0 0 0 2rpx var(--p3-hairline);
   text-align: left;
 }
 
 .choice-option--selected {
-  border-color: var(--safe-primary);
-  background: var(--safe-bg-soft);
+  padding: 31rpx 35rpx;
+  background: var(--p3-soft);
+  box-shadow: inset 0 0 0 3rpx var(--p3-primary);
 }
 
-.choice-option__mark {
-  width: var(--ui2-choice-mark,68rpx);
-  height: var(--ui2-choice-mark,68rpx);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.choice-option__radio {
   flex: 0 0 auto;
-  border: var(--ui2-control-border-weight,4rpx) solid var(--safe-primary);
-  border-radius: 50%;
-  color: var(--safe-card);
-  font-size: 32rpx;
-  font-weight: 700;
+  width: 40rpx;
+  height: 40rpx;
 }
 
-.choice-option--selected .choice-option__mark { background: var(--safe-primary); }
-.choice-option__copy { min-width: 0; display: grid; gap: 8rpx; }
-.choice-option__title { color: var(--safe-title); font-size: 30rpx; font-weight: 500; line-height: 44rpx; }
-.choice-option__description { color: var(--safe-muted); font-size: var(--ui2-body,26rpx); line-height: var(--ui2-choice-line-height,38rpx); }
+.choice-option__copy {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 4rpx;
+  min-width: 0;
+}
+
+.choice-option__title {
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+.choice-option__description {
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}

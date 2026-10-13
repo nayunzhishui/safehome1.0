@@ -60,6 +60,11 @@ function withAnswerState(worksheet) {
   };
 }
 
+// 已答题数：竹节进度与“还有 N 题”共用。
+function answeredCountOf(worksheet) {
+  return ((worksheet && worksheet.questions) || []).filter((question) => String(question.answerValue || "").trim()).length;
+}
+
 Page({
   retryServiceEntry() { return this.onLoad(this._entryOptions || {}); },
   returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
@@ -74,6 +79,8 @@ Page({
     saveStatus: "尚未填写",
     draftRestored: false,
     slowSubmitting: false,
+    answeredCount: 0,
+    remainingCount: 0,
   },
 
   onLoad(options = {}) { return beginServiceEntry(this, api, "assessment", options, "/pages/assessment-detail/index"); },
@@ -145,8 +152,11 @@ Page({
           return answer ? { ...question, answerValue: answer.value || "", answerScore: answer.score } : question;
         });
       }
+      const answeredCount = answeredCountOf(hydrated);
       this.setData({
         worksheet: hydrated,
+        answeredCount,
+        remainingCount: hydrated.questions.length - answeredCount,
         loading: false,
         needsLogin: false,
         saveStatus: this.pendingDraft ? this.pendingDraft.saveStatus : "尚未填写",
@@ -169,7 +179,10 @@ Page({
 
   onTextInput(event) {
     const index = Number(event.currentTarget.dataset.index);
-    this.setData({ [`worksheet.questions[${index}].answerValue`]: event.detail.value, errorMessage: "" }, () => this.scheduleDraftSave());
+    this.setData({ [`worksheet.questions[${index}].answerValue`]: event.detail.value, errorMessage: "" }, () => {
+      this.refreshAnsweredCount();
+      this.scheduleDraftSave();
+    });
   },
 
   selectOption(event) {
@@ -181,7 +194,17 @@ Page({
       [`worksheet.questions[${index}].answerValue`]: value,
       [`worksheet.questions[${index}].answerScore`]: Number.isNaN(score) ? undefined : score,
       errorMessage: "",
-    }, () => this.scheduleDraftSave());
+    }, () => {
+      this.refreshAnsweredCount();
+      this.scheduleDraftSave();
+    });
+  },
+
+  refreshAnsweredCount() {
+    const worksheet = this.data.worksheet;
+    if (!worksheet) return;
+    const answeredCount = answeredCountOf(worksheet);
+    this.setData({ answeredCount, remainingCount: worksheet.questions.length - answeredCount });
   },
 
   scheduleDraftSave() {

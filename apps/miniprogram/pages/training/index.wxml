@@ -1,128 +1,88 @@
-<view class="safe-page safe-page--with-tabbar ui2-page training-page" role="main" aria-label="训练中心">
-  <view class="training-hero">
-    <view class="hero-copy">
-      <text class="hero-title">训练中心</text>
-    </view>
-  </view>
+<view class="training-page" role="main" aria-label="训练">
+  <p3-tab-hero title="训练" subtitle="由浅入深，每天一小步" />
 
-  <view class="training-entry-panel">
-    <view class="entry-grid">
-      <view class="entry-item entry-item--active" aria-current="page">
-        <text class="entry-title">通用训练</text>
-        <text class="entry-desc">浏览当前可用训练卡</text>
-      </view>
-      <button class="entry-item" bindtap="openPersonalizedPlan">
-        <text class="entry-title">个性化方案</text>
-        <text class="entry-desc">根据测评推荐练习</text>
-      </button>
-      <button class="entry-item" bindtap="openProgramList">
-        <text class="entry-title">项目测试</text>
-        <text class="entry-desc">试点练习包</text>
-      </button>
+  <view class="training-content">
+    <view class="p3-segment" role="tablist" aria-label="训练栏目">
+      <view class="p3-segment__item p3-segment__item--active" role="tab" aria-selected="true">通用训练</view>
+      <button class="p3-segment__item" role="tab" aria-selected="false" bindtap="openPersonalizedPlan">个性化方案</button>
+      <button class="p3-segment__item" role="tab" aria-selected="false" bindtap="openProgramList">项目测试</button>
     </view>
-  </view>
 
-  <view wx:if="{{latestRecommendation}}" class="recommendation-card">
-    <view class="recommendation-head">
-      <view class="recommendation-copy">
-        <text class="recommendation-kicker">{{latestRecommendation.sourceLabel}}</text>
-        <text class="recommendation-title">今天可以先练这个方向</text>
+    <view wx:if="{{latestRecommendation && latestRecommendation.primaryCard}}" class="p3-card training-today" aria-label="今天推荐">
+      <text class="training-today__kicker">今天推荐 · {{latestRecommendation.sourceLabel}}</text>
+      <view class="training-today__title-row">
+        <text class="training-today__title">{{latestRecommendation.primaryCard.title}}</text>
+        <status-pill class="training-today__pill" label="优先" tone="success" />
       </view>
-    </view>
-    <text wx:if="{{latestRecommendation.reason}}" class="recommendation-label">推荐理由</text>
-    <text wx:if="{{latestRecommendation.reason}}" class="recommendation-text">{{latestRecommendation.reason}}</text>
-    <text wx:if="{{latestRecommendation.todaySuggestion}}" class="recommendation-label">今日建议</text>
-    <text wx:if="{{latestRecommendation.todaySuggestion}}" class="recommendation-text">{{latestRecommendation.todaySuggestion}}</text>
-    <view wx:if="{{latestRecommendation.primaryCard}}" class="recommendation-list">
-      <view class="recommendation-item recommendation-item--primary">
-        <text class="recommendation-role">优先</text>
-        <view class="recommendation-item-copy">
-          <text class="recommendation-card-title">{{latestRecommendation.primaryCard.title}}</text>
-          <text wx:if="{{latestRecommendation.primaryCard.purpose}}" class="recommendation-purpose">{{latestRecommendation.primaryCard.purpose}}</text>
-          <text wx:if="{{latestRecommendation.primaryCard.recentlyCompleted}}" class="repeat-hint">近期练过，需要巩固时可以再练。</text>
+      <text wx:if="{{latestRecommendation.primaryCard.purpose}}" class="training-today__body">{{latestRecommendation.primaryCard.purpose}}</text>
+      <text wx:if="{{latestRecommendation.primaryCard.recentlyCompleted}}" class="training-today__body">近期练过，需要巩固时可以再练。</text>
+      <view class="training-today__meta">
+        <text class="training-today__meta-text">{{latestRecommendation.metaText}}</text>
+        <button wx:if="{{latestRecommendation.reasonRows.length}}" class="training-today__why" aria-expanded="{{recommendationReasonOpen}}" bindtap="toggleRecommendationReason">{{recommendationReasonOpen ? '收起理由 ⌃' : '为什么推荐 ⌄'}}</button>
+      </view>
+      <view wx:if="{{recommendationReasonOpen}}" class="training-today__reason">
+        <view wx:for="{{latestRecommendation.reasonRows}}" wx:key="label" class="training-today__reason-row">
+          <text class="training-today__reason-label">{{item.label}}</text>
+          <text class="training-today__reason-text">{{item.text}}</text>
         </view>
+        <text wx:if="{{latestRecommendation.boundaryNotice}}" class="training-today__boundary">{{latestRecommendation.boundaryNotice}}</text>
       </view>
+      <button class="p3-btn p3-btn--primary" bindtap="openLatestRecommendation">查看练习</button>
     </view>
-    <text wx:if="{{latestRecommendation.boundaryNotice}}" class="recommendation-boundary">{{latestRecommendation.boundaryNotice}}</text>
-    <button class="safe-primary-button recommendation-action" bindtap="openLatestRecommendation">查看练习</button>
-  </view>
+    <view wx:elif="{{!cardsLoading && !cardsError}}" class="p3-card training-today" aria-label="今天推荐">
+      <text class="training-today__kicker">今天推荐</text>
+      <text class="training-today__title">先做一次测一测</text>
+      <text class="training-today__body">做完测一测，这里会推荐一张最容易开始的练习卡；也可以直接在下面的训练库里挑一张。</text>
+      <button class="p3-btn p3-btn--secondary" bindtap="openAssessment">去测一测</button>
+    </view>
 
-  <view wx:if="{{relationshipPilotAvailable}}" class="relationship-pilot-entry">
-    <text class="entry-kicker">项目试点 · 大学生关系探索</text>
-    <text class="entry-title">从测一测到评估问题与微行动</text>
-    <text class="entry-desc">聚合阶段性画像、初筛报告、关系绘画、句子补全和连续复盘。它不是治疗或诊断服务。</text>
-    <button class="safe-outline-button relationship-action" bindtap="openRelationshipPilot">进入关系探索试点</button>
-  </view>
+    <view wx:if="{{relationshipPilotAvailable}}" class="training-pilot">
+      <text class="training-pilot__kicker">项目试点 · 大学生关系探索</text>
+      <text class="training-pilot__title">从测一测到评估问题与微行动</text>
+      <text class="training-pilot__desc">聚合阶段性画像、初筛报告、关系绘画、句子补全和连续复盘。它不是治疗或诊断服务。</text>
+      <button class="p3-btn p3-btn--secondary" bindtap="openRelationshipPilot">进入关系探索试点</button>
+    </view>
 
-  <view wx:if="{{threeDayPlan}}" class="plan-card">
-    <view class="plan-head">
-      <text class="plan-kicker">{{threeDayPlan.sourceTitle}}</text>
-      <text class="plan-title">3 天轻量练习</text>
-      <text class="plan-summary">{{threeDayPlan.longTermSuggestion}}</text>
+    <view wx:if="{{threeDayPlan}}" class="training-section">
+      <p3-section-header title="3 天轻量练习" subtitle="隔天练一次，不合适就换一张" />
+      <view class="training-timeline">
+        <button
+          wx:for="{{threeDayPlan.days}}"
+          wx:key="day"
+          class="training-timeline__item"
+          aria-label="{{item.kicker}}：{{item.cardTitle}}{{item.state === 'done' ? '，近期已练过' : ''}}"
+          data-card-id="{{item.cardId}}"
+          bindtap="openPlanDay"
+        >
+          <p3-timeline-item state="{{item.state}}" kicker="{{item.kicker}}" title="{{item.cardTitle}}" body="{{item.suggestion}}" show-line="{{index < threeDayPlan.days.length - 1}}" />
+        </button>
+      </view>
     </view>
-    <button class="plan-toggle" aria-expanded="{{lightPlanExpanded}}" bindtap="toggleLightPlan">{{lightPlanExpanded ? '收起 3 天安排' : '展开 3 天安排'}}</button>
-    <view wx:if="{{lightPlanExpanded}}" class="plan-days">
-      <button
-        wx:for="{{threeDayPlan.days}}"
-        wx:key="day"
-        class="plan-day"
-        data-card-id="{{item.cardId}}"
-        bindtap="openPlanDay"
-      >
-        <text class="plan-day-index">{{item.title}}</text>
-        <text class="plan-day-role">{{item.role}}</text>
-        <text class="plan-day-card">{{item.cardTitle}}</text>
-        <text class="plan-day-suggestion">{{item.suggestion}}</text>
-      </button>
-    </view>
-    <text class="plan-boundary">{{threeDayPlan.boundaryNotice}}</text>
-  </view>
 
-  <view class="starter-card">
-    <view class="starter-head">
-      <view class="starter-copy">
-        <text class="starter-title">不知道从哪里开始？</text>
-        <text class="starter-text">先按“觉察—稳定—回应”的顺序选一张；不需要一次完成全部阶段。</text>
-      </view>
+    <view class="training-section">
+      <p3-section-header title="训练库" subtitle="按阶段由浅入深，不必一次做完" />
+      <page-state wx:if="{{cardsLoading}}" kind="loading" title="正在读取可用练习" />
+      <page-state wx:elif="{{cardsError}}" kind="error" title="可用练习未加载成功" description="{{cardsError}}" action-label="重新读取" bind:action="loadAvailableCards" />
+      <page-state wx:elif="{{!libraryStages.length}}" kind="empty" title="当前没有可用练习" description="临时开放内容需要登录；已登录时可能尚未开放，请稍后重试。" action-label="重新读取" bind:action="loadAvailableCards" />
+      <block wx:else>
+        <view wx:for="{{libraryStages}}" wx:key="level" class="training-stage">
+          <p3-stage-header level="{{item.level}}" title="{{item.title}}" subtitle="{{item.subtitle}}" />
+          <view class="training-stage__chips">
+            <button
+              wx:for="{{item.categories}}"
+              wx:for-item="category"
+              wx:key="key"
+              class="p3-chip training-stage__chip"
+              aria-label="{{category.label}}，{{category.count}} 张练习卡"
+              data-label="{{category.label}}"
+              data-ids="{{category.cardIdsText}}"
+              bindtap="openLibraryCategory"
+            >{{category.label}}</button>
+          </view>
+        </view>
+      </block>
     </view>
-    <view class="starter-steps">
-      <view class="starter-step">
-        <text class="step-name">情绪觉察</text>
-        <text class="step-desc">先看见自己</text>
-      </view>
-      <view class="starter-step">
-        <text class="step-name">身体调节</text>
-        <text class="step-desc">让反应慢下来</text>
-      </view>
-      <view class="starter-step">
-        <text class="step-name">暂停训练</text>
-        <text class="step-desc">再回应孩子</text>
-      </view>
-    </view>
-    <button class="library-toggle" aria-expanded="{{libraryExpanded}}" bindtap="toggleLibrary">{{libraryExpanded ? '收起全部训练' : '浏览全部训练'}}</button>
-  </view>
 
-  <page-state wx:if="{{libraryExpanded && cardsLoading}}" kind="loading" title="正在读取可用练习" />
-  <page-state wx:elif="{{libraryExpanded && cardsError}}" kind="error" title="可用练习未加载成功" description="{{cardsError}}" action-label="重新读取" bind:action="loadAvailableCards" />
-  <page-state wx:elif="{{libraryExpanded && !trainingStages.length}}" kind="empty" title="当前没有可用练习" description="临时开放内容需要登录；已登录时可能尚未开放，请稍后重试。" action-label="重新读取" bind:action="loadAvailableCards" />
-  <view wx:if="{{libraryExpanded}}" wx:for="{{trainingStages}}" wx:key="title" class="safe-section stage-section">
-    <section-title title="{{item.title}}" subtitle="{{item.subtitle}}" />
-    <view class="task-list">
-      <view wx:for="{{item.tasks}}" wx:for-item="task" wx:key="id">
-        <training-task-card
-          data-id="{{task.id}}"
-          data-tags="{{task.tagsText}}"
-          title="{{task.title}}"
-          subtitle="{{task.subtitle}}"
-          stage="{{task.stage}}"
-          duration="{{task.duration}}"
-          scenario="{{task.scenario}}"
-          tag="{{task.tag}}"
-          item-id="{{task.id}}"
-          bind:tapcard="openTrainingCard"
-        />
-      </view>
-    </view>
+    <text class="p3-footnote">练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。</text>
   </view>
-
 </view>

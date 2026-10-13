@@ -1,75 +1,93 @@
-<view class="safe-page ui2-page" wx:if="{{!task}}">
+<view wx:if="{{!task}}" class="p3-page task-page task-page--state">
   <page-state kind="{{loading ? 'loading' : 'error'}}" title="{{loading ? '正在读取可用练习' : '暂时无法打开这张训练卡'}}" description="{{errorMessage}}" action-label="{{loading ? '' : '重新读取'}}" bind:action="loadTask" />
-  <button bindtap="goBack">返回选择练习</button>
+  <button class="p3-btn p3-btn--quiet" bindtap="goBack">返回选择练习</button>
 </view>
-<view class="safe-page ui2-page task-detail-page" wx:else role="main" aria-label="训练任务详情">
-  <view class="detail-nav">
-    <button class="back-button" aria-label="返回上一页" bindtap="goBack">返回</button>
+<view wx:else class="p3-page task-page" role="main" aria-label="训练任务详情">
+  <view class="p3-card task-overview">
+    <text class="p3-action-title" role="heading" aria-level="1">{{task.title}}</text>
+    <text wx:if="{{task.subtitle}}" class="p3-body-compact">{{task.subtitle}}</text>
+    <view class="task-facts">
+      <view class="task-fact">
+        <text class="p3-meta">适用情境</text>
+        <text class="p3-item-title">{{task.scenario}}</text>
+      </view>
+      <view class="task-fact">
+        <text class="p3-meta">预计用时</text>
+        <text class="p3-item-title">{{task.duration}}</text>
+      </view>
+    </view>
+    <view wx:if="{{task.goal}}" class="task-goal">
+      <text class="task-goal__label">今天的小目标</text>
+      <text class="task-goal__text">{{task.goal}}</text>
+    </view>
   </view>
 
-  <view class="overview-card safe-card safe-card--hero">
-    <text class="task-title">{{task.title}}</text>
-    <text class="task-subtitle">{{task.subtitle}}</text>
-    <view class="overview-grid">
-      <view class="overview-item">
-        <text class="overview-label">适用情境</text>
-        <text class="overview-value">{{task.scenario}}</text>
-      </view>
-      <view class="overview-item">
-        <text class="overview-label">预计用时</text>
-        <text class="overview-value">{{task.duration}}</text>
-      </view>
-      <view class="overview-item overview-item--full">
-        <text class="overview-label">今天的小目标</text>
-        <text class="overview-value">{{task.goal}}</text>
+  <view class="task-section">
+    <p3-section-header title="练习步骤" />
+    <view class="task-steps">
+      <view wx:for="{{task.steps}}" wx:key="*this" class="task-step {{index < task.steps.length - 1 ? 'task-step--linked' : ''}}">
+        <view class="task-step__rail" aria-hidden="true">
+          <text class="task-step__number {{index === 0 ? 'task-step__number--first' : ''}}">{{index + 1}}</text>
+          <view wx:if="{{index < task.steps.length - 1}}" class="task-step__line"></view>
+        </view>
+        <text class="task-step__text">{{item}}</text>
       </view>
     </view>
   </view>
 
-  <view class="safe-section">
-    <section-title title="练习步骤" />
-    <view class="step-list">
-      <view wx:for="{{task.steps}}" wx:key="*this" class="step-card">
-        <text class="step-index">{{index + 1}}</text>
-        <text class="step-text">{{item}}</text>
-      </view>
+  <view wx:if="{{task.scripts.length}}" class="task-section">
+    <p3-section-header title="示例话术" />
+    <view wx:for="{{task.scripts}}" wx:key="*this" class="task-quote">
+      <text class="p3-quote">“{{item}}”</text>
     </view>
   </view>
 
-  <view class="safe-section" wx:if="{{task.scripts.length}}">
-    <section-title title="示例话术" />
-    <view class="script-list">
-      <view wx:for="{{task.scripts}}" wx:key="*this" class="script-card">
-        <text>“{{item}}”</text>
+  <view class="task-section">
+    <p3-section-header title="练习后记录" />
+    <block wx:if="{{serviceReady}}">
+      <view class="p3-field">
+        <label for="task-reflection" class="p3-field__label">今日感受</label>
+        <textarea
+          id="task-reflection"
+          class="p3-field__input p3-field__input--multi"
+          aria-label="今日感受，仅保留在本页"
+          placeholder-class="p3-field__placeholder"
+          value="{{reflection}}"
+          placeholder="例如：我先停了一下，说话比刚才慢了一点。"
+          bindinput="onReflectionInput"
+        />
+        <text class="p3-field__hint">仅保留在本页，打卡页需要另行填写</text>
       </view>
+      <view class="task-intensity">
+        <text class="task-intensity__label">当前情绪强度 {{emotionLevel}} / 10</text>
+        <p3-intensity-slider min="0" max="10" value="{{emotionLevel}}" aria-label="调整当前情绪强度" bind:change="onEmotionLevelChange" />
+      </view>
+    </block>
+    <view wx:else class="task-consent">
+      <text class="p3-field__label">今日感受</text>
+      <button class="p3-btn p3-btn--secondary" bindtap="beginReflection">阅读知情说明后记录感受</button>
+      <text class="p3-field__hint">感受仅保留在本页，打卡页需要另行填写</text>
     </view>
-  </view>
-
-  <view class="safe-section">
-    <section-title title="练习后记录" />
-    <view class="record-card" wx:if="{{serviceReady}}">
-      <text class="field-label">今日感受</text>
-      <text class="local-note">感受仅保留在当前页，打卡页需要另行填写。</text>
-      <textarea class="reflection-input" aria-label="今日感受，仅保留在本页" placeholder-class="ui2-placeholder" value="{{reflection}}" placeholder="例如：我先停了一下，说话比刚才慢了一点。" bindinput="onReflectionInput" />
-      <text class="field-label">当前情绪强度：{{emotionLevel}} / 10</text>
-      <slider min="0" max="10" step="1" value="{{emotionLevel}}" activeColor="#23666E" block-color="#23666E" bindchange="onEmotionLevelChange" />
-    </view>
-    <button wx:else bindtap="beginReflection">阅读知情说明后记录感受</button>
     <page-state wx:if="{{serviceEntryError}}" kind="error" title="{{serviceEntryError}}" action-label="返回首页阅读隐私说明" bind:action="returnToPrivacyHome" />
   </view>
 
-  <view class="safe-section">
-    <alert-card type="info" title="练习说明" content="{{task.boundaryNotice}}" />
-    <alert-card wx:if="{{task.stopText}}" type="info" title="何时暂停" content="{{task.stopText}}" />
-  </view>
-
-  <view class="action-bar">
-    <button class="safe-primary-button action-button" bindtap="finishPractice">去填写打卡</button>
-    <view class="secondary-actions">
-      <button class="soft-action-button" bindtap="startPractice">练习提示</button>
-      <button wx:if="{{serviceReady}}" class="soft-action-button" bindtap="recordFeeling">查看填写状态</button>
+  <view class="task-section">
+    <view class="p3-notice">
+      <text class="p3-notice__title">练习说明</text>
+      <text class="p3-notice__body">{{task.boundaryNotice}}</text>
+    </view>
+    <view wx:if="{{task.stopText}}" class="p3-notice p3-notice--warm">
+      <text class="p3-notice__title">何时暂停</text>
+      <text class="p3-notice__body">{{task.stopText}}</text>
     </view>
   </view>
 
+  <view class="task-actions">
+    <button class="p3-btn p3-btn--primary" bindtap="finishPractice">去填写打卡</button>
+    <view class="task-actions__row">
+      <button class="p3-btn p3-btn--quiet task-actions__quiet" bindtap="startPractice">练习提示</button>
+      <button class="p3-btn p3-btn--quiet task-actions__quiet" bindtap="recordFeeling">查看填写状态</button>
+    </view>
+  </view>
 </view>
 <service-consent notice="{{serviceConsent}}" bind:decision="onServiceConsent" />

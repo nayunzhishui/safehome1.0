@@ -10,12 +10,17 @@ def _read(relative_path: str) -> str:
 
 def test_today_step_and_core_entries_follow_current_home_order():
     wxml = _read("apps/miniprogram/pages/home/index.wxml")
+    source = _read("apps/miniprogram/pages/home/index.js")
+    thermometer_index = wxml.index('id="guide-thermometer"')
     core_index = wxml.index('class="home-capture"')
     today_index = wxml.index("<journey-action-card")
-    three_step_index = wxml.index('title="如何开始"')
-    assert today_index < core_index < three_step_index
-    for required_text in ["情绪温度计", "测一测", "情绪日记", "更多", "最近记录", "阶段性反馈"]:
+    recent_index = wxml.index('<p3-section-header title="最近" />')
+    footer_index = wxml.index('class="home-footer"')
+    assert thermometer_index < today_index < core_index < recent_index < footer_index
+    for required_text in ["情绪温度计", "最近", "三步开始", "人工支持", "紧急求助"]:
         assert required_text in wxml
+    for required_text in ["写日记", "测一测", "本周复盘"]:
+        assert required_text in source
 
 
 def test_home_keeps_journey_failure_distinct_from_empty_state():
@@ -49,14 +54,11 @@ def test_today_step_card_has_accessible_action_and_all_states():
         assert state in source or state in wxml or state in component_wxml or state in wxss
 
 
-def test_home_progress_fallback_actions_do_not_clip_button_labels():
-    wxml = _read("apps/miniprogram/pages/home/index.wxml")
-    component_wxml = _read("apps/miniprogram/components/journey-action-card/index.wxml")
-    component_wxss = _read("apps/miniprogram/components/journey-action-card/index.wxss")
-
-    assert 'action-label="查看说明" expanded wrap-title bind:action="openWeeklyReport"' in wxml
-    component = _read("apps/miniprogram/components/entry-row/index.wxss")
-    block = component.split(".entry-title--wrap {", 1)[1].split("}", 1)[0]
-    assert "white-space: normal" in block
-    assert "overflow-wrap: anywhere" in block
-    assert "min-width: 0" in component
+def test_home_recent_and_quick_labels_do_not_clip():
+    wxss = _read("apps/miniprogram/pages/home/index.wxss")
+    for selector in [".home-recent__title {", ".home-recent__subtitle {"]:
+        block = wxss.split(selector, 1)[1].split("}", 1)[0]
+        assert "white-space: normal" in block
+        assert "overflow-wrap: anywhere" in block
+    assert "min-width: 0" in wxss.split(".home-recent__text {", 1)[1].split("}", 1)[0]
+    assert "min-width: 0" in wxss.split(".home-quick {", 1)[1].split("}", 1)[0]

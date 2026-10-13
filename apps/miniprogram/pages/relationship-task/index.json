@@ -2,6 +2,8 @@
   "navigationBarTitleText": "关系探索任务",
   "usingComponents": {
     "service-consent": "/components/service-consent/index",
-    "page-state": "/components/page-state/index"
+    "page-state": "/components/page-state/index",
+    "p3-icon": "/components/p3-icon/index",
+    "status-pill": "/components/status-pill/index"
   }
 }

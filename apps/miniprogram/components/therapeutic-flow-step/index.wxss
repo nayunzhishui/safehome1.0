@@ -1,50 +1,190 @@
-.taf-page { min-height: 100vh; display: grid; align-content: start; gap: 24rpx; padding: 32rpx 40rpx calc(36rpx + env(safe-area-inset-bottom)); background: var(--safe-bg); }
-.taf-progress { display: grid; grid-template-columns: auto 1fr; gap: 24rpx; align-items: center; color: var(--safe-primary-deep); font-size: 25rpx; font-weight: 650; }
-.taf-progress text { order: 1; min-width: 72rpx; }
-.taf-progress__bar { order: 2; height: 6rpx; overflow: hidden; border-radius: 999rpx; background: var(--safe-border); }
-.taf-progress__value { height: 100%; border-radius: 999rpx; background: var(--safe-primary); }
-.taf-hero { display: grid; gap: 10rpx; padding-bottom: 8rpx; text-align: center; }
-.taf-hero .safe-h1, .taf-hero .safe-eyebrow { display: block; text-align: center; }
-.taf-card { display: grid; gap: 24rpx; padding: 28rpx 0; border-top: 1rpx solid var(--safe-border); border-bottom: 1rpx solid var(--safe-border); border-radius: 0; background: transparent; box-shadow: none; }
-.taf-options { display: grid; gap: 16rpx; }
-.taf-action-form, .taf-action-section, .taf-field { display: grid; gap: 12rpx; }
-.taf-action-form { gap: 32rpx; }
-.taf-action-section { gap: 22rpx; }
-.taf-action-section__heading { display: grid; grid-template-columns: auto minmax(80rpx, 1fr); gap: 20rpx; align-items: center; color: var(--safe-primary-deep); font-size: 30rpx; font-weight: 750; }
-.taf-action-section__rule { position: relative; height: 20rpx; border-top: 1rpx solid var(--safe-border); transform: translateY(9rpx); }
-.taf-action-section__rule view { position: absolute; top: -8rpx; width: 4rpx; height: 16rpx; border-radius: 999rpx; background: var(--safe-primary); }
-.taf-action-section__rule view:first-child { left: 0; }
-.taf-action-section__rule view:last-child { left: 12rpx; }
-.taf-action-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18rpx; }
-.taf-field__label { color: var(--safe-title); font-size: 26rpx; font-weight: 750; }
-.taf-input { box-sizing: border-box; min-height: 88rpx; padding: 22rpx 24rpx; border: 2rpx solid var(--safe-border-strong); border-radius: 20rpx; background: var(--safe-card); color: var(--safe-title); font-size: 28rpx; }
-.taf-confirmation { box-sizing: border-box; min-height: 96rpx; display: flex; align-items: center; gap: 16rpx; padding: 20rpx; border: 2rpx solid var(--safe-border); border-radius: var(--safe-radius-md); background: var(--safe-card); color: var(--safe-title); font-size: 25rpx; line-height: 1.55; text-align: left; }
-.taf-confirmation--selected { border-color: var(--safe-primary); background: var(--safe-primary-pale); }
-.taf-confirmation__mark { width: 40rpx; height: 40rpx; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; border: 2rpx solid var(--safe-primary); border-radius: 10rpx; color: var(--safe-primary-deep); font-weight: 900; }
-.taf-actions { position: sticky; bottom: 0; z-index: 2; display: grid; grid-template-columns: minmax(160rpx, .45fr) 1fr; gap: 14rpx; padding: 14rpx 0 calc(8rpx + env(safe-area-inset-bottom)); background: rgba(250, 248, 244, .97); }
-.taf-actions button { min-height: 88rpx; }
-.taf-offline { padding: 20rpx 22rpx; border: 1rpx solid var(--safe-warning); border-radius: 18rpx; background: #fff7e8; color: #744818; font-size: 24rpx; line-height: 1.6; }
-.taf-boundary { display: block; color: var(--safe-muted); font-size: 23rpx; line-height: 1.65; text-align: left; }
+/* 真人支持性复核步骤（Figma 659:2120 等 8 帧）：竹节进度 → 衬线标题 → 纸白步骤卡 → 上一步/继续 → 边界说明。 */
+:host {
+  display: block;
+}
 
-/* Opt-in after each route's UIproduct2 Figma design. */
-.taf-page.ui2-page { --ui2-choice-height: 160rpx; --ui2-choice-padding: 24rpx; --ui2-choice-gap: 24rpx; --ui2-choice-mark: 48rpx; --ui2-choice-line-height: 48rpx; --ui2-textarea-padding: 32rpx; --ui2-textarea-line-height: 48rpx; --ui2-comparison-columns: minmax(0, 1fr); --ui2-feedback-title: 34rpx; gap: 48rpx; padding-top: 40rpx; padding-bottom: calc(64rpx + env(safe-area-inset-bottom)); }
-.ui2-page .taf-progress { display: flex; flex-direction: column; align-items: stretch; gap: 16rpx; font-size: 26rpx; color: var(--ui2-muted); }
-.ui2-page .taf-progress__bar { order: 2; }
-.ui2-page .taf-hero .safe-h1 { font-size: 44rpx; line-height: 1.6; font-weight: 700; }
-.ui2-page .taf-card { margin: 0; gap: 40rpx; padding: 0; border: 0; }
-.taf-description { display: block; color: var(--ui2-muted); font-size: 30rpx; line-height: 1.6; }
-.ui2-page .taf-card .safe-h3 { margin: 0; font-size: 32rpx; line-height: 1.6; }
-.ui2-page .taf-options { gap: 24rpx; }
-.ui2-page .draft-status { color: var(--ui2-muted); font-size: 26rpx; line-height: 1.6; }
-.ui2-page .taf-actions { position: static; grid-template-columns: 192rpx minmax(0, 1fr); gap: 16rpx; padding: 0; background: transparent; }
-.ui2-page .taf-actions button { min-height: 96rpx; padding: 20rpx 16rpx; font-size: 30rpx; line-height: 1.5; border-radius: 24rpx; }
-.ui2-page .taf-actions .safe-ghost-button { border: 2rpx solid var(--ui2-control-border); background: var(--ui2-surface); color: var(--ui2-primary); }
-.ui2-page .taf-boundary, .ui2-page .taf-offline { font-size: 30rpx; line-height: 1.6; }
-.ui2-page .taf-action-section__rule { display: none; }
-.ui2-page .taf-action-section__heading { display: block; font-size: 32rpx; }
-.ui2-page .taf-action-section, .ui2-page .taf-action-form { gap: 40rpx; }
-.ui2-page .taf-field { gap: 16rpx; }
-.ui2-page .taf-field__label { font-size: 30rpx; line-height: 1.6; }
-.ui2-page .taf-action-grid { grid-template-columns: minmax(0, 1fr); gap: 40rpx; }
-.ui2-page .taf-input { min-height: 96rpx; font-size: 30rpx; border-color: var(--ui2-control-border); border-radius: 24rpx; }
-.ui2-page .taf-confirmation { font-size: 30rpx; line-height: 1.6; border-color: var(--ui2-control-border); }
+.taf-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-section);
+  padding-top: 16rpx;
+  padding-bottom: calc(72rpx + env(safe-area-inset-bottom));
+}
+
+.taf-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+}
+
+.taf-progress__text {
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.taf-progress__joints {
+  display: flex;
+  gap: 8rpx;
+}
+
+.taf-progress__joint {
+  flex: 1 0 0;
+  min-width: 0;
+  height: 12rpx;
+  border-radius: 999rpx;
+  background: var(--p3-primary);
+  opacity: 0.14;
+}
+
+.taf-progress__joint--done {
+  opacity: 0.55;
+}
+
+.taf-progress__joint--current {
+  opacity: 1;
+}
+
+.taf-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+  padding: var(--p3-card);
+  border-radius: var(--p3-radius-card);
+  background: var(--p3-surface);
+}
+
+.taf-description {
+  color: var(--p3-muted);
+  font-size: 30rpx;
+  line-height: 52rpx;
+}
+
+.taf-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+}
+
+.taf-status {
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+/* 小行动表单：三段“想做什么 / 怎样安排 / 何时停下”，后两段上方细线 */
+.taf-action-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+}
+
+.taf-action-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+  padding-top: 8rpx;
+}
+
+.taf-action-section--divided {
+  padding-top: 32rpx;
+  border-top: 2rpx solid var(--p3-hairline);
+}
+
+.taf-action-grid {
+  display: flex;
+  gap: var(--p3-tight);
+}
+
+.taf-action-grid__item {
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+/* 选择器字段（Figma P3/Field Select）：右侧日历或下拉图标 */
+.taf-select {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-tight);
+  box-sizing: border-box;
+  min-height: 96rpx;
+  padding: 22rpx 28rpx;
+  border-radius: 28rpx;
+  background: var(--p3-surface);
+  box-shadow: inset 0 0 0 2rpx var(--p3-control);
+}
+
+.taf-select__value {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
+}
+
+.taf-select__value--empty {
+  color: var(--p3-muted);
+}
+
+.taf-select__icon {
+  flex: 0 0 auto;
+}
+
+/* 自愿确认（Figma P3/Agreement）：20px 方框，勾选后青瓷实心 + 白勾 */
+.taf-confirmation {
+  display: flex;
+  align-items: flex-start;
+  gap: 20rpx;
+  width: 100%;
+  min-height: 88rpx;
+  padding: 20rpx 0;
+  text-align: left;
+}
+
+.taf-confirmation__box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  width: 40rpx;
+  height: 40rpx;
+  margin-top: 2rpx;
+  border-radius: 12rpx;
+  background: var(--p3-surface);
+  box-shadow: inset 0 0 0 3rpx var(--p3-control);
+}
+
+.taf-confirmation__box--checked {
+  background: var(--p3-primary);
+  box-shadow: inset 0 0 0 3rpx var(--p3-primary);
+}
+
+.taf-confirmation__tick {
+  width: 28rpx;
+  height: 28rpx;
+}
+
+.taf-confirmation__text {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.taf-actions {
+  display: flex;
+  gap: var(--p3-tight);
+}
+
+.taf-actions__back {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 0 56rpx;
+}
+
+.taf-actions__next {
+  flex: 1 0 0;
+  min-width: 0;
+}

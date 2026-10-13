@@ -1,81 +1,76 @@
-<view class="safe-page ui2-page assessment-page" role="main" aria-label="支持性测评">
-  <view class="assessment-head">
-    <text class="page-title">支持性测评</text>
+<view class="assessment-page" role="main" aria-label="测一测">
+  <view class="assessment-filters">
+    <view class="assessment-search">
+      <p3-icon name="search" size="20" tone="muted" />
+      <input class="assessment-search__input" aria-label="搜索测评内容" placeholder-class="assessment-search__placeholder" value="{{searchKeyword}}" placeholder="搜索量表、主题或关键词" bindinput="onSearchInput" />
+      <button wx:if="{{searchKeyword}}" class="assessment-search__clear" bindtap="clearSearch">清除</button>
+    </view>
+    <view class="assessment-chips" role="radiogroup" aria-label="适用人群">
+      <button
+        wx:for="{{tabs}}"
+        wx:key="key"
+        class="p3-chip {{activeAudience === item.key ? 'p3-chip--selected' : ''}}"
+        role="radio"
+        aria-checked="{{activeAudience === item.key}}"
+        data-key="{{item.key}}"
+        bindtap="switchAudience"
+      >{{item.label}}</button>
+    </view>
+    <text wx:if="{{!loading && !errorMessage && visibleCount}}" class="assessment-count">{{visibleCount}} 份问卷 · 按情绪反射弧的位置分组</text>
   </view>
 
-  <view class="safe-section">
-    <view class="assessment-controls">
-      <view class="audience-tabs">
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取测一测内容" />
+  <view wx:elif="{{errorMessage}}" class="assessment-error">
+    <page-state kind="error" title="测一测内容暂时没有加载成功" description="{{errorMessage}}" />
+    <button class="p3-btn p3-btn--secondary error-action" bindtap="loadAssessments">重新加载</button>
+  </view>
+  <block wx:else>
+    <view wx:for="{{categories}}" wx:key="key" class="assessment-section">
+      <p3-section-header title="{{item.title}}" subtitle="{{item.subtitle}}" />
+      <view wx:if="{{!item.items.length && item.emptyText}}" class="p3-notice empty-section-card">
+        <text class="p3-notice__body">{{item.emptyText}}</text>
+      </view>
+      <view wx:if="{{item.items.length}}" class="assessment-group">
         <button
-          wx:for="{{tabs}}"
-          wx:key="key"
-          class="audience-tab {{activeAudience === item.key ? 'active' : ''}}"
-          data-key="{{item.key}}"
-          bindtap="switchAudience" aria-pressed="{{activeAudience === item.key}}"
-        >{{item.label}}</button>
+          wx:for="{{item.items}}"
+          wx:for-item="worksheet"
+          wx:for-index="rowIndex"
+          wx:key="id"
+          class="assessment-row {{worksheet.is_enabled_for_user ? '' : 'assessment-row--disabled'}}"
+          aria-label="打开测评：{{worksheet.display_title}}"
+          data-id="{{worksheet.id}}"
+          data-enabled="{{worksheet.is_enabled_for_user}}"
+          bindtap="openAssessmentEntry"
+        >
+          <p3-course-row title="{{worksheet.display_title}}" scene="{{worksheet.row_scene}}" meta="{{worksheet.row_meta}}" show-divider="{{rowIndex < item.items.length - 1}}" />
+        </button>
       </view>
-      <view class="search-row">
-        <input class="search-input" aria-label="搜索测评内容" placeholder-class="ui2-placeholder" value="{{searchKeyword}}" placeholder="搜索量表、主题或关键词" bindinput="onSearchInput" />
-        <button wx:if="{{searchKeyword}}" class="search-clear" bindtap="clearSearch">清除</button>
-      </view>
     </view>
-  </view>
+  </block>
 
-  <view wx:if="{{errorMessage}}" class="error-box">
-    <text>{{errorMessage}}</text>
-    <button class="error-action" bindtap="loadAssessments">重新加载</button>
-  </view>
-
-  <view wx:if="{{loading}}" class="loading-box">
-    <text>正在读取测一测内容...</text>
-  </view>
-
-  <view wx:for="{{categories}}" wx:key="key" class="safe-section">
-    <section-title title="{{item.title}}" />
-    <view wx:if="{{!item.items.length && item.emptyText}}" class="empty-section-card">
-      <text>{{item.emptyText}}</text>
-    </view>
-    <view class="worksheet-list">
-      <assessment-worksheet-card
-        wx:for="{{item.items}}"
-        wx:for-item="worksheet"
-        wx:key="id"
-        item="{{worksheet}}"
-        bind:open="openAssessmentEntry"
-      />
-    </view>
-  </view>
-
-  <view wx:if="{{recentResults.length}}" class="safe-section">
-    <section-title title="最近记录" />
-    <view class="recent-list">
-      <view
+  <view wx:if="{{recentResults.length}}" class="assessment-section">
+    <p3-section-header title="最近记录" />
+    <view class="p3-group">
+      <button
         wx:for="{{recentResults}}"
         wx:key="id"
-        class="recent-card clickable {{item.is_profile ? 'recent-card--profile' : ''}}"
+        class="assessment-recent"
+        aria-label="查看测评记录：{{item.worksheet_title}}"
         data-id="{{item.id}}"
         data-worksheet-id="{{item.worksheet_id}}"
-        role="button"
-        aria-label="查看测评记录：{{item.worksheet_title}}"
         bindtap="openRecentResult"
       >
-        <view class="recent-head">
-          <text class="recent-badge">{{item.badge_text}}</text>
-          <text class="recent-action">查看</text>
-        </view>
-        <text class="recent-title">{{item.worksheet_title}}</text>
-        <text class="recent-meta">{{item.createdAtText}}</text>
-        <text class="recent-summary">{{item.result_summary}}</text>
-      </view>
+        <p3-group-row icon="check" title="{{item.worksheet_title}}" subtitle="{{item.row_subtitle}}" show-divider="{{index < recentResults.length - 1}}" />
+      </button>
+    </view>
+  </view>
+  <view wx:elif="{{recentLoginTip}}" class="assessment-section">
+    <p3-section-header title="最近记录" />
+    <view class="p3-group assessment-login">
+      <text class="assessment-login__text">{{recentLoginTip}}</text>
+      <button class="p3-link" bindtap="goLogin">去登录 ›</button>
     </view>
   </view>
 
-  <view wx:elif="{{recentLoginTip}}" class="safe-section">
-    <section-title title="最近记录" />
-    <view class="recent-login-card">
-      <text>{{recentLoginTip}}</text>
-      <button class="login-link-button" bindtap="goLogin">去登录</button>
-    </view>
-  </view>
-
+  <text wx:if="{{boundaryNotice}}" class="p3-footnote">{{boundaryNotice}}</text>
 </view>

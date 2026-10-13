@@ -1,162 +1,107 @@
+/* 课程（Figma 643:802）：TabHero；“从这一节开始”焦点卡（全页唯一实心按钮，竹简插画）；按主题看；其余课程行。 */
+page {
+  background: var(--p3-paper);
+}
+
 .course-page {
-  padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--p3-paper);
+  overflow-x: hidden;
 }
 
-.course-hero {
-  padding: 24rpx 0 8rpx;
-  text-align: center;
+.course-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-section);
+  padding: 8rpx var(--p3-page-x) 56rpx;
 }
 
-.hero-title,
-.progress-number,
-.progress-text {
+.course-focus__head {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-stack);
+}
+
+.course-focus__copy {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.course-focus__kicker {
   display: block;
+  color: var(--p3-primary);
+  font-size: 26rpx;
+  line-height: 40rpx;
 }
 
-.hero-title {
-  color: var(--safe-title);
-  font-size: 46rpx;
-  font-weight: 900;
-  line-height: 1.28;
-  letter-spacing: 0;
+.course-focus__title {
+  display: block;
+  color: var(--p3-ink);
+  font-size: 40rpx;
+  line-height: 56rpx;
+  font-weight: 500;
+  overflow-wrap: anywhere;
 }
 
-.progress-card {
-  position: relative;
-  min-height: 142rpx;
-  overflow: hidden;
-  padding: 28rpx;
-  border: 1rpx solid rgba(87, 139, 95, 0.18);
-  border-radius: 20rpx;
-  background: var(--safe-card);
-  box-shadow: var(--safe-shadow-card);
+.course-focus__art {
+  width: 144rpx;
+  height: 144rpx;
+  flex: 0 0 auto;
 }
 
-.progress-number,
-.progress-text {
-  position: relative;
-  z-index: 1;
+.course-focus__scene {
+  display: block;
+  color: var(--p3-muted);
+  font-size: 28rpx;
+  line-height: 44rpx;
 }
 
-.progress-number {
-  color: var(--safe-title);
-  font-size: 32rpx;
-  font-weight: 850;
-  line-height: 1.35;
+.course-focus__meta {
+  display: block;
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
 }
 
-.progress-text {
-  max-width: 500rpx;
-  margin-top: 12rpx;
-  color: var(--safe-text);
-  font-size: 24rpx;
-  line-height: 1.6;
+.course-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
 }
 
-.progress-mark {
-  position: absolute;
-  right: 28rpx;
-  top: 50%;
-  width: 86rpx;
-  height: 10rpx;
-  margin-top: -5rpx;
-  border-radius: 999rpx;
-  background: var(--safe-primary-deep);
-}
-
-.category-scroll {
-  width: 100%;
-  margin-top: 20rpx;
+/* 主题横向滑动：贴到屏幕边缘，左右留页面边距。 */
+.course-themes {
+  width: calc(100% + 2 * var(--p3-page-x));
+  margin: 0 calc(-1 * var(--p3-page-x));
   white-space: nowrap;
 }
 
-.category-list {
+.course-themes__list {
   display: inline-flex;
-  gap: 14rpx;
-  padding-right: 24rpx;
+  gap: var(--p3-tight);
+  padding: 0 var(--p3-page-x);
 }
 
-.category-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 68rpx;
-  padding: 0 18rpx;
-  border: 0;
-  border-bottom: 4rpx solid transparent;
-  border-radius: 0;
-  background: transparent;
-  color: var(--safe-text);
-  font-size: 24rpx;
-  font-weight: 700;
-}
-
-.category-chip::after {
-  border: 0;
-}
-
-.category-chip.active {
-  border-bottom-color: var(--safe-primary-deep);
-  background: transparent;
-  color: var(--safe-primary-deep);
-  font-weight: 900;
+.course-themes__chip {
+  width: auto;
+  flex: 0 0 auto;
 }
 
 .course-list {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
-  margin-top: 20rpx;
+  padding: 8rpx 36rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-surface);
 }
 
-.course-state-card,
-.boundary-card {
-  padding: 24rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-card);
-  color: var(--safe-text);
-  font-size: 24rpx;
-  line-height: 1.6;
-  box-shadow: var(--safe-shadow-card);
+.course-list__item {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  text-align: left;
 }
-
-.retry-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 58rpx;
-  margin-top: 16rpx;
-  padding: 0 22rpx;
-  border: 1rpx solid var(--safe-border-strong);
-  border-radius: var(--safe-radius-pill);
-  color: var(--safe-primary-deep);
-  font-size: 24rpx;
-  font-weight: 800;
-}
-.ui2-page.course-page { background:var(--ui2-canvas); padding-top:48rpx; gap:40rpx; }
-.ui2-page .course-hero { padding:0 0 32rpx; text-align:center; border-bottom:1rpx solid var(--ui2-line); }
-.ui2-page .hero-title { font-size:44rpx; font-weight:700; line-height:1.6; }
-.ui2-page .progress-card { padding:32rpx; border:0; border-radius:24rpx; background:var(--ui2-soft); }
-.ui2-page .progress-number { font-size:32rpx; font-weight:700; line-height:1.6; }
-.ui2-page .progress-text,.ui2-page .course-state-card,.ui2-page .boundary-card { font-size:30rpx; line-height:1.6; color:var(--ui2-muted); }
-.ui2-page .category-chip { min-height:96rpx; padding:20rpx 24rpx; border:2rpx solid var(--ui2-control-border); border-radius:24rpx; background:transparent; color:var(--ui2-primary); font-size:30rpx; }
-.ui2-page .category-chip.active { background:var(--ui2-soft); border-color:var(--ui2-primary); font-weight:700; }
-.ui2-page .safe-section { padding:0; }
-.ui2-page.course-page { --ui2-course-shadow:none; }
-.ui2-page .progress-card { min-height:0; box-shadow:none; }
-.ui2-page .progress-text { max-width:none; }
-.ui2-page .category-chip { margin:0; flex-shrink:0; line-height:1.6; }
-.ui2-page .category-chip.active { border-bottom-width:5rpx; }
-.ui2-page .course-state-card,.ui2-page .boundary-card { border:0; box-shadow:none; background:transparent; padding:20rpx 0; }
-.ui2-page .retry-button { min-height:96rpx; font-size:30rpx; }
-
-/* Quiet page ending; not a progress indicator or interaction target. */
-.ui2-page .quiet-arc-footer { position:relative; height:96rpx; margin-top:40rpx; overflow:hidden; pointer-events:none; }
-.ui2-page .quiet-arc-footer::before,.ui2-page .quiet-arc-footer::after { content:''; position:absolute; width:78%; height:160rpx; border:2rpx solid var(--ui2-line); border-radius:50%; }
-.ui2-page .quiet-arc-footer::before { left:8%; top:60rpx; }
-.ui2-page .quiet-arc-footer::after { left:28%; top:36rpx; }
-
-.ui2-page.course-page { --ui2-reading-line:1.6; }
-
-.ui2-page { --ui2-section-accent-display:none; }

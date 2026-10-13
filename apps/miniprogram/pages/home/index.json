@@ -1,10 +1,11 @@
 {
   "navigationBarTitleText": "安心陪伴",
+  "navigationStyle": "custom",
   "usingComponents": {
     "journey-action-card": "/components/journey-action-card/index",
-    "entry-row": "/components/entry-row/index",
-    "dual-entry": "/components/dual-entry/index",
-    "section-heading": "/components/section-heading/index",
-    "onboarding-guide": "/components/onboarding-guide/index"
+    "onboarding-guide": "/components/onboarding-guide/index",
+    "p3-icon": "/components/p3-icon/index",
+    "p3-section-header": "/components/p3-section-header/index",
+    "p3-thermometer": "/components/p3-thermometer/index"
   }
 }

@@ -24,7 +24,8 @@ def _variables(source: str) -> dict[str, str]:
 def _expected(tokens: dict, client: str) -> dict[str, str]:
     unit = "rpx" if client == "miniprogram" else "px"
     size_key = "miniprogram_rpx" if client == "miniprogram" else "web_px"
-    values = {f"experience-{name.replace('_', '-')}": value for name, value in tokens["color"].items()}
+    palette = tokens.get("miniprogram_color", tokens["color"]) if client == "miniprogram" else tokens["color"]
+    values = {f"experience-{name.replace('_', '-')}": value for name, value in palette.items()}
     values["experience-touch"] = f'{tokens["touch_target"][size_key]}{unit}'
     for name, config in tokens["type"].items():
         values[f"experience-font-{name.replace('_', '-')}"] = f"{config[size_key]}{unit}"
@@ -41,8 +42,9 @@ def main() -> None:
                 failures.append(f"{client}: --{name} expected {expected!r}, got {actual.get(name)!r}")
 
     app = json.loads(APP_JSON.read_text(encoding="utf-8"))
-    if app["tabBar"]["selectedColor"].lower() != tokens["color"]["primary"].lower():
-        failures.append("miniprogram: tabBar.selectedColor does not match color.primary")
+    mini_primary = tokens.get("miniprogram_color", tokens["color"])["primary"]
+    if app["tabBar"]["selectedColor"].lower() != mini_primary.lower():
+        failures.append("miniprogram: tabBar.selectedColor does not match the miniprogram primary colour")
 
     if failures:
         raise SystemExit("Design token drift:\n- " + "\n- ".join(failures))

@@ -1,0 +1,7 @@
+<view class="p3-tab-hero" style="height: {{hero.height}}px;">
+  <view wx:if="{{hero.offset > 0}}" class="p3-tab-hero__sky" style="height: {{hero.offset}}px;" aria-hidden="true"></view>
+  <image class="p3-tab-hero__art" src="/assets/art/tab-hero.svg" style="top: {{hero.offset}}px;" aria-hidden="true" />
+  <text class="p3-tab-hero__title" style="top: {{hero.titleTop}}px;" role="heading" aria-level="1">{{title}}</text>
+  <text wx:if="{{subtitle}}" class="p3-tab-hero__subtitle" style="top: {{hero.subtitleTop}}px;">{{subtitle}}</text>
+  <slot name="corner"></slot>
+</view>

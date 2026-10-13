@@ -1,439 +1,282 @@
-.thermometer-page {
+/* 情绪温度计（Figma 647:955）：强度卡（衬线数字、横放温度计、±微调）；补充观察；记录一次；今日曲线；今天的记录。 */
+page {
+  background: var(--p3-paper);
+}
+
+.thermo-page {
   display: flex;
   flex-direction: column;
-  gap: 34rpx;
-  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+  gap: var(--p3-section);
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 16rpx var(--p3-page-x) calc(72rpx + env(safe-area-inset-bottom));
+  background: var(--p3-paper);
   overflow-x: hidden;
 }
 
-.page-head {
-  min-height: 0;
-  display: block;
-  padding: 22rpx 0 8rpx;
-  overflow: visible;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  text-align: center;
+.thermo-now {
+  gap: var(--p3-stack);
 }
 
-.page-title,
-.page-subtitle,
-.section-title,
-.section-meta,
-.level-text,
-.step-label,
-.micro-title,
-.micro-label,
-.micro-value,
-.field-limit,
-.receipt-kicker,
-.receipt-title,
-.receipt-message,
-.receipt-boundary,
-.selected-title,
-.selected-desc,
-.state-title,
-.state-text,
-.row-title,
-.row-level,
-.row-meta,
-.row-desc {
-  display: block;
-}
-
-.page-title {
-  color: var(--safe-title);
-  font-size: 44rpx;
-  font-weight: 900;
-  line-height: 1.2;
-}
-
-.page-subtitle {
-  margin-top: 14rpx;
-  color: var(--safe-muted);
-  font-size: 30rpx;
-  line-height: 1.6;
-}
-
-.record-section,
-.curve-section,
-.list-section {
-  padding-top: 30rpx;
-  border-top: 1rpx solid var(--safe-border);
-}
-
-.panel-top,
-.receipt-heading,
-.record-heading,
-.micro-heading {
+.thermo-now__head {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20rpx;
+  align-items: baseline;
+  gap: var(--p3-tight);
 }
 
-.section-title {
-  color: var(--safe-title);
-  font-size: 34rpx;
-  font-weight: 850;
-  line-height: 1.35;
+.thermo-now__title {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
 }
 
-.level-text {
-  color: var(--safe-primary-deep);
-  font-size: 64rpx;
-  font-weight: 900;
-  line-height: 1;
+.thermo-now__value {
+  color: var(--p3-ink);
+  font-family: var(--p3-font-serif);
+  font-size: 60rpx;
+  line-height: 80rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
 }
 
-.level-range {
-  font-size: 34rpx;
-  font-weight: 600;
+.thermo-now__range {
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
 }
 
-.thermometer-control {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 210rpx;
-  align-items: center;
-  gap: 32rpx;
-  margin-top: 28rpx;
-  padding-bottom: 34rpx;
+.thermo-now__steps {
+  display: flex;
+  justify-content: center;
+  gap: var(--p3-stack);
 }
 
-.thermometer-actions {
-  padding-left: 30rpx;
-  border-left: 1rpx solid var(--safe-border);
-}
-
-.step-button-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18rpx;
-  margin-top: 0;
-}
-
-.step-button {
-  width: 88rpx;
-  height: 88rpx;
-  min-height: 88rpx;
-  padding: 0;
+.thermo-step {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2rpx solid var(--safe-primary);
+  width: 96rpx;
+  height: 96rpx;
+  min-height: 96rpx;
   border-radius: 50%;
-  background: transparent;
-  color: var(--safe-primary-deep);
-  font-size: 42rpx;
+  background: var(--p3-surface);
+  box-shadow: inset 0 0 0 2rpx var(--p3-hairline);
+  color: var(--p3-primary);
+  font-size: 40rpx;
+  line-height: 56rpx;
   font-weight: 500;
-  line-height: 1;
 }
 
-.step-button::after,
-.receipt-close::after,
-.refresh-button::after {
-  border: 0;
+.thermo-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+  min-width: 0;
 }
 
-.step-button:active,
-.receipt-close:active,
-.refresh-button:active {
-  opacity: 0.75;
-  transform: scale(0.97);
+.thermo-section__head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--p3-tight);
 }
 
-.micro-panel {
-  padding-top: 30rpx;
-  border-top: 1rpx solid var(--safe-border);
+.thermo-section__header {
+  flex: 1 0 0;
+  min-width: 0;
 }
 
-.micro-title {
-  color: var(--safe-title);
-  font-size: 30rpx;
-  font-weight: 850;
-  line-height: 1.4;
+.thermo-section__head .p3-link {
+  min-height: 40rpx;
 }
 
-.micro-row {
-  padding: 24rpx 0 18rpx;
-  border-bottom: 1rpx solid var(--safe-border);
+.thermo-save {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
 }
 
-.micro-label,
-.micro-value {
-  color: var(--safe-text);
-  font-size: 30rpx;
-  font-weight: 700;
-  line-height: 1.4;
+.thermo-micro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
 }
 
 .micro-value {
-  color: var(--safe-primary-deep);
+  display: block;
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
 }
 
 .micro-slider {
-  width: 100%;
-  margin: 12rpx 0 0;
-  padding: 0;
-}
-
-.text-field {
-  position: relative;
-  margin-top: 20rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-sm);
-  background: var(--safe-card);
-}
-
-.emotion-input,
-.brief-input {
-  box-sizing: border-box;
-  width: 100%;
-  padding-right: 22rpx;
-  padding-left: 22rpx;
-  color: var(--safe-title);
-  font-size: 30rpx;
-  line-height: 1.55;
-}
-
-.emotion-input {
-  min-height: 88rpx;
-}
-
-.brief-input {
-  min-height: 168rpx;
-  padding-top: 22rpx;
-  padding-bottom: 22rpx;
-}
-
-.field-limit {
   display: block;
-  padding: 8rpx 20rpx 16rpx;
-  text-align: right;
-  color: var(--safe-muted);
-  font-size: 26rpx;
-  line-height: 1.4;
-}
-
-.save-button {
   width: 100%;
-  min-height: 92rpx;
-  margin: 26rpx 0 0;
-  border-radius: var(--safe-radius-sm);
 }
 
-.receipt-panel,
-.error-panel,
-.selected-point,
-.quiet-state {
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-sm);
-  background: var(--safe-primary-pale);
-}
-
-.curve-empty {
-  min-height: 180rpx;
+.thermo-receipt__head {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  gap: var(--p3-tight);
 }
 
-.receipt-panel,
-.error-panel {
-  padding: 26rpx;
+.thermo-receipt__head .p3-notice__title {
+  flex: 1 0 0;
 }
 
-.receipt-title-group {
-  min-width: 0;
-  flex: 1;
+.thermo-receipt__close {
+  width: 72rpx;
+  height: 72rpx;
+  min-height: 72rpx;
+  color: var(--p3-muted);
+  font-size: 36rpx;
+  line-height: 72rpx;
 }
 
-.receipt-kicker {
-  color: var(--safe-primary-deep);
+.thermo-receipt__boundary {
+  color: var(--p3-muted);
   font-size: 26rpx;
-  font-weight: 800;
+  line-height: 40rpx;
 }
 
-.receipt-title,
-.state-title,
-.selected-title {
-  margin-top: 6rpx;
-  color: var(--safe-title);
-  font-size: 30rpx;
-  font-weight: 850;
-  line-height: 1.4;
-}
-
-.receipt-close {
-  width: 88rpx;
-  height: 88rpx;
-  min-height: 88rpx;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--safe-muted);
-  font-size: 38rpx;
-}
-
-.receipt-message,
-.receipt-boundary,
-.state-text,
-.selected-desc {
-  margin-top: 14rpx;
-  color: var(--safe-text);
-  font-size: 30rpx;
-  line-height: 1.6;
-}
-
-.receipt-boundary {
-  color: var(--safe-muted);
-}
-
-.receipt-action,
-.retry-button {
-  width: 100%;
-  min-height: 88rpx;
-  margin: 22rpx 0 0;
-  border-radius: var(--safe-radius-sm);
-}
-
-.curve-heading {
-  align-items: flex-start;
-}
-
-.section-meta {
+.thermo-receipt__action {
   margin-top: 8rpx;
-  color: var(--safe-muted);
-  font-size: 26rpx;
-  line-height: 1.4;
 }
 
-.refresh-button {
-  min-width: 96rpx;
-  min-height: 88rpx;
-  padding: 0 18rpx;
-  border: 0;
-  background: transparent;
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  font-weight: 800;
+.thermo-curve {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-surface);
 }
 
-.curve-canvas {
-  width: 100%;
-  height: 340rpx;
-  margin-top: 20rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-sm);
-  background: #ffffff;
+.thermo-curve__grid {
+  position: absolute;
+  left: 5.71%;
+  right: 5.71%;
+  height: 2rpx;
+  background: var(--p3-hairline);
 }
 
-.selected-point,
-.quiet-state {
-  margin-top: 18rpx;
-  padding: 22rpx;
+.thermo-curve__segment {
+  position: absolute;
+  height: 5rpx;
+  margin-top: -2.5rpx;
+  border-radius: 3rpx;
+  background: var(--p3-primary);
+  transform-origin: 0 50%;
 }
 
-.error-panel {
-  border-color: #edd7d4;
-  background: #fff7f5;
-}
-
-.list-section > .section-title {
-  margin-bottom: 8rpx;
-}
-
-.record-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 20rpx;
-  padding: 24rpx 0;
-  border-bottom: 1rpx solid var(--safe-border);
-}
-
-.record-badge {
-  width: 58rpx;
-  height: 58rpx;
+.thermo-curve__point {
+  position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 58rpx;
+  width: 64rpx;
+  height: 64rpx;
+  min-height: 64rpx;
+  margin: -32rpx 0 0 -32rpx;
+}
+
+.thermo-curve__dot {
+  box-sizing: border-box;
+  width: 28rpx;
+  height: 28rpx;
+  border: 6rpx solid var(--p3-surface);
   border-radius: 50%;
-  background: var(--safe-primary-soft);
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  font-weight: 900;
 }
 
-.record-copy {
+.thermo-curve__label {
+  position: absolute;
+  width: 96rpx;
+  margin-left: -48rpx;
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+  text-align: center;
+}
+
+.thermo-selected {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  padding: 24rpx 32rpx;
+  border-radius: 32rpx;
+  background: var(--p3-mist);
+}
+
+.thermo-selected__title {
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
+  font-weight: 500;
+}
+
+.thermo-selected__body {
+  color: var(--p3-muted);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.thermo-record {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-stack);
+  padding: 24rpx 0;
+}
+
+.thermo-record--divided {
+  box-shadow: inset 0 -2rpx 0 var(--p3-hairline);
+}
+
+.thermo-record__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72rpx;
+  height: 72rpx;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+.thermo-record__text {
+  flex: 1 0 0;
   min-width: 0;
-  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  overflow-wrap: anywhere;
 }
 
-.row-title,
-.row-level {
-  color: var(--safe-title);
-  font-size: 30rpx;
-  font-weight: 800;
-  line-height: 1.4;
+.thermo-record__head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--p3-tight);
 }
 
-.row-level {
-  color: var(--safe-primary-deep);
+.thermo-record__time {
+  flex: 1 0 0;
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
 }
 
-.row-meta,
-.row-desc {
-  margin-top: 8rpx;
-  color: var(--safe-muted);
+.thermo-record__level,
+.thermo-record__meta {
+  color: var(--p3-muted);
   font-size: 26rpx;
-  line-height: 1.5;
+  line-height: 40rpx;
 }
 
-.list-empty {
-  margin-top: 18rpx;
+.thermo-record__brief {
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
 }
-
-.boundary-note {
-  padding: 24rpx 0 0;
-  border-top: 1rpx solid var(--safe-border);
-  color: var(--safe-muted);
-  font-size: 26rpx;
-  line-height: 1.65;
-}
-
-@media (max-width: 360px) {
-  .thermometer-control {
-    grid-template-columns: minmax(0, 1fr) 192rpx;
-    gap: 20rpx;
-  }
-
-  .thermometer-actions {
-    padding-left: 20rpx;
-  }
-
-  .step-button-row {
-    gap: 10rpx;
-  }
-
-  .step-button {
-    width: 88rpx;
-    height: 88rpx;
-  }
-
-  .record-heading {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 4rpx;
-  }
-}
-
-.thermometer-page { box-sizing:border-box; padding-left:48rpx; padding-right:48rpx; }
-.thermometer-control { padding:32rpx 24rpx; border-radius:28rpx; background:var(--ui2-soft); }
-.field-label { display:block; margin-top:28rpx; font-size:30rpx; font-weight:600; }
-.field-placeholder { color:var(--safe-muted); opacity:1; }
-.text-field { margin-top:12rpx; border:2rpx solid var(--safe-border-strong); }
-@media(max-width:340px){.thermometer-page{padding-left:32rpx;padding-right:32rpx}.thermometer-control{padding-left:12rpx;padding-right:12rpx}}
-@media(prefers-reduced-motion:reduce){.step-button:active,.receipt-close:active,.refresh-button:active{transform:none}}

@@ -17,8 +17,8 @@ def test_task18_profile_charts_use_numbered_axes_and_external_legends():
     assert 'ctx.fillText(point.label' not in script
     assert 'class="chart-legend cluster-legend"' in markup
     assert 'class="chart-legend radar-legend"' in markup
-    assert '.position-canvas' in styles and 'height: 300rpx;' in styles
-    assert '.radar-canvas' in styles and 'height: 360rpx;' in styles
+    assert '.position-canvas' in styles and 'height: 360rpx;' in styles
+    assert '.radar-canvas' in styles and 'height: 400rpx;' in styles
 
 
 def test_task18_dimension_rows_allow_long_labels_without_covering_scores():
@@ -35,7 +35,7 @@ def test_assessment_result_renders_own_exploratory_analysis_states():
     markup = (PAGE / "index.wxml").read_text(encoding="utf-8")
 
     assert "getAssessmentExploratoryAnalysis" in script
-    assert "buildExploratoryAnalysisView" in script
+    assert "buildEmotionInsightsView" in script
     assert 'title="近期情绪与互动线索"' in markup
     assert "exploratoryAnalysis.availability" in markup
     assert "场景—情绪共现" in markup

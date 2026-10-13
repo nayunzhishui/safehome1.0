@@ -1,1 +1,34 @@
-:host{display:block}.action-row{min-height:140rpx;display:flex;gap:28rpx;align-items:flex-start;padding:28rpx 8rpx;border-bottom:1rpx solid var(--experience-line)}.action-number,.step-text{display:block}.action-number{width:88rpx;flex:0 0 88rpx;color:var(--experience-primary-deep);font-size:40rpx;font-weight:700;line-height:56rpx}.step-text{min-width:0;flex:1;color:var(--experience-ink);font-size:var(--experience-font-body);line-height:44rpx;overflow-wrap:anywhere}
+/* 编号步骤行（Figma StepRow·Number 670:3087）：衬线青瓷数字 + 正文，底部细线可关。 */
+:host {
+  display: block;
+}
+
+.step-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 28rpx;
+  padding: 28rpx 0;
+}
+
+.step-row--divided {
+  border-bottom: 2rpx solid var(--p3-hairline);
+}
+
+.step-row__number {
+  flex: 0 0 auto;
+  width: 56rpx;
+  color: var(--p3-primary);
+  font-family: var(--p3-font-serif-text);
+  font-size: 34rpx;
+  line-height: 56rpx;
+  letter-spacing: 0.6rpx;
+}
+
+.step-row__text {
+  flex: 1 0 0;
+  min-width: 0;
+  padding-top: 2rpx;
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
+}

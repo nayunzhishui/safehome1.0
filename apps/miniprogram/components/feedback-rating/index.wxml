@@ -4,7 +4,7 @@
     <button
       wx:for="{{options}}"
       wx:key="value"
-      class="feedback-rating-option {{value === item.value ? 'feedback-rating-option--active' : ''}} {{item.value === 'uncomfortable' ? 'feedback-rating-option--care' : ''}}"
+      class="p3-chip feedback-rating-option {{value === item.value ? 'p3-chip--selected' : ''}} {{item.value === 'uncomfortable' ? 'feedback-rating-option--care' : ''}}"
       data-value="{{item.value}}"
       disabled="{{disabled}}"
       aria-label="评价为{{item.label}}"

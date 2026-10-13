@@ -1,1 +1,10 @@
-<view class="composer"><view class="composer-head"><text class="composer-label">你的问题或想法</text><text class="composer-counter">{{value.length}}/1000</text></view><textarea class="question-input" aria-label="输入你的问题或想法，最多一千字" value="{{value}}" maxlength="1000" placeholder="例如：情绪升高时，我可以先做什么？" placeholder-class="question-placeholder" bindinput="onInput" disabled="{{sending}}"/><text wx:if="{{guidance && !error}}" class="composer-guidance">{{guidance}}</text><text wx:if="{{error}}" class="inline-error">{{error}}</text><button class="send-button" hover-class="button-pressed" aria-label="整理一个小步骤" disabled="{{sending || disabled}}" bindtap="onSubmit">{{sending ? '正在整理' : '整理一个小步骤'}}</button></view>
+<view class="composer">
+  <view class="p3-field">
+    <text class="p3-field__label">你的问题或想法</text>
+    <textarea class="p3-field__input p3-field__input--multi" aria-label="输入你的问题或想法，最多一千字" value="{{value}}" maxlength="1000" placeholder="例如：情绪升高时，我可以先做什么？" placeholder-class="p3-field__placeholder" bindinput="onInput" disabled="{{sending}}" />
+    <text class="p3-field__hint">{{value.length}}/1000</text>
+  </view>
+  <text wx:if="{{guidance && !error}}" class="p3-meta">{{guidance}}</text>
+  <text wx:if="{{error}}" class="p3-form-message p3-form-message--error inline-error" role="alert">{{error}}</text>
+  <button class="p3-btn p3-btn--primary" hover-class="button-pressed" aria-label="整理一个小步骤" disabled="{{sending || disabled}}" bindtap="onSubmit">{{sending ? '正在整理' : '整理一个小步骤'}}</button>
+</view>

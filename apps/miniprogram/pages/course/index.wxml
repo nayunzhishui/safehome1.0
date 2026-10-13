@@ -1,71 +1,54 @@
-<view class="safe-page ui2-page safe-page--with-tabbar course-page" role="main" aria-label="课程列表">
-  <view class="course-hero">
-    <text class="hero-title">课程</text>
-  </view>
+<view class="course-page" role="main" aria-label="课程">
+  <p3-tab-hero title="课程" subtitle="每次一小节，配一张练习卡" />
 
-  <view class="safe-section">
-    <view class="progress-card">
-      <view>
-        <text class="progress-number">从一小节开始</text>
-        <text class="progress-text">{{weeklyProgress.suggestion}}</text>
+  <view class="course-content">
+    <page-state wx:if="{{loading}}" kind="loading" title="正在读取课程内容" />
+    <page-state wx:elif="{{errorMessage}}" kind="error" title="课程内容暂时没有加载成功" description="{{errorMessage}}" action-label="重新加载" bind:action="retryLoadCourses" />
+    <block wx:else>
+      <view wx:if="{{focusCourse}}" class="p3-card course-focus" aria-label="从这一节开始">
+        <view class="course-focus__head">
+          <view class="course-focus__copy">
+            <text class="course-focus__kicker">从这一节开始 · {{focusCourse.category}}</text>
+            <text class="course-focus__title">{{focusCourse.title}}</text>
+          </view>
+          <image class="course-focus__art" src="/assets/art/bamboo-slips.svg" aria-hidden="true" />
+        </view>
+        <text wx:if="{{focusCourse.scene}}" class="course-focus__scene">{{focusCourse.scene}}</text>
+        <text class="course-focus__meta">{{focusCourse.sizeText}}</text>
+        <button class="p3-btn p3-btn--primary" aria-label="查看内容：{{focusCourse.title}}" data-id="{{focusCourse.id}}" bindtap="openCourse">查看内容</button>
       </view>
-    </view>
-  </view>
 
-  <view class="safe-section">
-    <section-title title="内容主题" />
-    <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}">
-      <view class="category-list">
+      <view wx:if="{{categories.length > 1}}" class="course-section">
+        <p3-section-header title="按主题看" />
+        <scroll-view class="course-themes" scroll-x enhanced show-scrollbar="{{false}}">
+          <view class="course-themes__list">
+            <button
+              wx:for="{{categories}}"
+              wx:key="*this"
+              class="p3-chip course-themes__chip {{activeCategory === item ? 'p3-chip--selected' : ''}}"
+              aria-pressed="{{activeCategory === item}}"
+              data-category="{{item}}"
+              bindtap="selectCategory"
+            >{{item}}</button>
+          </view>
+        </scroll-view>
+      </view>
+
+      <view wx:if="{{otherCourses.length}}" class="course-list">
         <button
-          wx:for="{{categories}}"
-          wx:key="*this"
-          class="category-chip {{activeCategory === item ? 'active' : ''}}"
-          data-category="{{item}}"
-          bindtap="selectCategory"
-          aria-pressed="{{activeCategory === item}}"
+          wx:for="{{otherCourses}}"
+          wx:key="id"
+          class="course-list__item"
+          aria-label="{{item.title}}，{{item.metaText}}"
+          data-id="{{item.id}}"
+          bindtap="openCourse"
         >
-          {{item}}
+          <p3-course-row title="{{item.title}}" scene="{{item.scene}}" meta="{{item.metaText}}" show-divider="{{index < otherCourses.length - 1}}" />
         </button>
       </view>
-    </scroll-view>
-  </view>
+      <page-state wx:if="{{!focusCourse}}" kind="empty" title="当前主题暂无可选内容" description="可以切换其他主题；课程开放以审核状态为准。" />
+    </block>
 
-  <view wx:if="{{errorMessage}}" class="safe-section">
-    <view class="course-state-card">
-      <text>{{errorMessage}}</text>
-      <button class="retry-button" bindtap="retryLoadCourses">重新加载</button>
-    </view>
+    <text wx:if="{{boundaryNotice}}" class="p3-footnote">{{boundaryNotice}}</text>
   </view>
-
-  <view wx:if="{{loading}}" class="safe-section">
-    <view class="course-state-card">
-      <text>正在读取课程内容...</text>
-    </view>
-  </view>
-
-  <view wx:if="{{!loading && !errorMessage}}" class="safe-section">
-    <section-title title="可选内容" />
-    <view class="course-list">
-      <course-card
-        wx:for="{{visibleCourses}}"
-        wx:key="id"
-        course-id="{{item.id}}"
-        title="{{item.title}}"
-        description="{{item.description}}"
-        category="{{item.category}}"
-        lesson-count="{{item.lessonCount}}"
-        progress="{{item.progress}}"
-        show-progress="{{false}}"
-        button-text="查看内容"
-        bind:tapcard="openCourse"
-      />
-    </view>
-    <page-state wx:if="{{!visibleCourses.length}}" kind="empty" title="当前主题暂无可选内容" description="可以切换其他主题；课程开放以审核状态为准。" />
-  </view>
-
-  <view wx:if="{{boundaryNotice}}" class="safe-section">
-    <view class="boundary-card">{{boundaryNotice}}</view>
-  </view>
-
-  <view class="quiet-arc-footer" aria-hidden="true"></view>
 </view>

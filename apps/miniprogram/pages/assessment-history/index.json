@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "全部测评记录",
   "usingComponents": {
-    "assessment-worksheet-card": "/components/assessment-worksheet-card/index"
+    "page-state": "/components/page-state/index",
+    "p3-course-row": "/components/p3-course-row/index"
   }
 }

@@ -1,0 +1,13 @@
+<view class="p3-course-row">
+  <view class="p3-course-row__main">
+    <view class="p3-course-row__text">
+      <text class="p3-course-row__title">{{title}}</text>
+      <text wx:if="{{scene}}" class="p3-course-row__scene">{{scene}}</text>
+      <text wx:if="{{meta}}" class="p3-course-row__meta">{{meta}}</text>
+    </view>
+    <view class="p3-course-row__chevron" aria-hidden="true">
+      <p3-icon name="chevron-right" size="18" tone="muted" />
+    </view>
+  </view>
+  <view wx:if="{{showDivider}}" class="p3-course-row__divider"></view>
+</view>

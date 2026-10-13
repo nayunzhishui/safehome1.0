@@ -1,183 +1,135 @@
-.diary-history-page {
-  padding: 48rpx;
-  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+/* 情绪记录（Figma 647:1213）：每条一节竹；日期列 62；“我/孩子”情绪与强度；10 格强度刻度用 intensity 色。 */
+page {
+  background: var(--p3-paper);
 }
 
-.history-header {
-  display: grid;
-  gap: 18rpx;
-  margin-bottom: 40rpx;
-}
-
-.history-title,
-.history-description,
-.history-count,
-.record-date,
-.record-clock,
-.record-scene,
-.record-description,
-.record-emotion,
-.record-intensity-label,
-.history-boundary {
-  display: block;
-}
-
-.history-title {
-  color: var(--safe-title);
-  font-size: 46rpx;
-  font-weight: 900;
-  line-height: 1.3;
-  text-align: center;
+.history-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-section);
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 16rpx var(--p3-page-x) calc(72rpx + env(safe-area-inset-bottom));
+  background: var(--p3-paper);
+  overflow-x: hidden;
 }
 
 .history-count {
-  color: var(--safe-muted);
-  font-size: 24rpx;
-  line-height: 1.5;
-}
-
-.record-list {
-  display: grid;
-}
-
-.record-row {
-  display: grid;
-  grid-template-columns: 112rpx 36rpx minmax(0, 1fr);
-  gap: 16rpx;
-  min-height: 272rpx;
-}
-
-.record-time {
-  min-width: 0;
-  padding-top: 2rpx;
-}
-
-.record-date {
-  color: var(--safe-title);
-  font-size: 24rpx;
-  line-height: 1.5;
-  white-space: nowrap;
-}
-
-.record-clock {
-  margin-top: 4rpx;
-  color: var(--safe-muted);
-  font-size: 24rpx;
-  line-height: 1.5;
-  white-space: nowrap;
-}
-
-.record-axis {
-  position: relative;
-  min-height: 272rpx;
-}
-
-.record-axis > bamboo-timeline-node {
   display: block;
-  margin-top: 2rpx;
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
 }
 
-.record-content {
-  min-width: 0;
-  padding-bottom: 18rpx;
-  border-bottom: 1rpx solid var(--safe-border);
+.history-list {
+  display: flex;
+  flex-direction: column;
 }
 
-.record-scene {
-  overflow: hidden;
-  color: var(--safe-title);
-  font-size: 30rpx;
-  font-weight: 800;
-  line-height: 1.45;
-  text-overflow: ellipsis;
+.history-row {
+  display: flex;
+  align-items: stretch;
+  gap: var(--p3-stack);
+}
+
+.history-row__time {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  width: 124rpx;
+  flex: 0 0 auto;
+  font-size: 26rpx;
+  line-height: 40rpx;
   white-space: nowrap;
 }
 
-.record-description {
-  display: -webkit-box;
-  margin-top: 10rpx;
-  overflow: hidden;
-  color: var(--safe-text);
-  font-size: 26rpx;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+.history-row__date {
+  color: var(--p3-ink);
 }
 
-.record-meta {
+.history-row__clock {
+  color: var(--p3-muted);
+}
+
+.history-row__rail {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8rpx 16rpx;
-  margin-top: 10rpx;
-  font-size: 24rpx;
-  line-height: 1.5;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  width: 24rpx;
+  flex: 0 0 auto;
 }
 
-.record-emotion {
-  color: var(--safe-primary-deep);
-  font-weight: 700;
+.history-row__joint {
+  width: 16rpx;
+  height: 36rpx;
+  flex: 0 0 auto;
+  border-radius: 999rpx;
+  background: var(--p3-primary);
 }
 
-.record-intensity-label {
-  color: var(--safe-muted);
+.history-row__line {
+  flex: 1 0 0;
+  width: 4rpx;
+  background: var(--p3-primary);
+  opacity: 0.22;
+}
+
+.history-row__content {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  overflow-wrap: anywhere;
+}
+
+.history-row__content--spaced {
+  padding-bottom: 44rpx;
+}
+
+.history-row__scene {
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+.history-row__description {
+  color: var(--p3-muted);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.history-row__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-tight);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.history-row__emotion {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-ink);
+}
+
+.history-row__level {
+  flex: 0 0 auto;
+  color: var(--p3-muted);
+  white-space: nowrap;
 }
 
 .intensity-scale {
   display: flex;
   gap: 6rpx;
-  margin-top: 8rpx;
 }
 
 .intensity-tick {
-  width: 8rpx;
-  height: 24rpx;
-  border-radius: 4rpx;
-  background: var(--safe-border);
+  flex: 1 0 0;
+  min-width: 0;
+  height: 12rpx;
+  border-radius: 999rpx;
+  background: var(--p3-mist);
 }
-
-.intensity-tick--active {
-  background: var(--safe-orange);
-}
-
-.record-action {
-  width: 100%;
-  min-height: 88rpx;
-  margin-top: 28rpx;
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-primary);
-  color: #ffffff;
-  font-size: 28rpx;
-  font-weight: 800;
-}
-
-.record-action:active {
-  background: var(--safe-primary-deep);
-}
-
-.history-boundary {
-  margin-top: 40rpx;
-  color: var(--safe-muted);
-  font-size: 24rpx;
-  line-height: 1.6;
-}
-
-.diary-history-page > page-state {
-  display: block;
-}
-
-/* UIproduct2: task-scoped visual refinement, no business behavior. */
-.ui2-page { --ui2-section-accent-display:none; --safe-shadow-card:none; --safe-shadow-float:none; box-sizing:border-box; background:var(--ui2-canvas); padding:48rpx 40rpx calc(64rpx + env(safe-area-inset-bottom)); }
-.ui2-page .page-title,.ui2-page .hero-title,.ui2-page .history-title,.ui2-page .result-title { font-size:44rpx; line-height:1.6; font-weight:700; text-align:center; color:var(--ui2-ink); }
-.ui2-page .safe-primary-button,.ui2-page .safe-outline-button { min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; box-shadow:none; }
-.ui2-page .ui2-placeholder { color:var(--ui2-muted); }
-.ui2-page .history-header { gap:28rpx; }
-.ui2-page .history-count { font-size:26rpx; }
-.ui2-page .record-row { min-height:0; grid-template-columns:104rpx 28rpx minmax(0,1fr); gap:16rpx; margin-bottom:32rpx; }
-.ui2-page .record-axis { min-height:0; }
-.ui2-page .record-scene { white-space:normal; overflow:visible; font-size:32rpx; line-height:1.6; }
-.ui2-page .record-description { display:block; overflow:visible; -webkit-line-clamp:unset; font-size:30rpx; line-height:1.7; }
-.ui2-page .record-meta,.ui2-page .record-date,.ui2-page .record-clock { font-size:26rpx; }
-.ui2-page .record-content { padding-bottom:32rpx; }
-.ui2-page .record-action { min-height:96rpx; padding:22rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; }
-.ui2-page .history-boundary { font-size:28rpx; line-height:1.7; }

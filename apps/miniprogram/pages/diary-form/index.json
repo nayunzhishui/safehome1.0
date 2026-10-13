@@ -1,6 +1,10 @@
 {
   "navigationBarTitleText": "记录情绪事件",
   "usingComponents": {
-    "service-consent": "/components/service-consent/index"
+    "service-consent": "/components/service-consent/index",
+    "status-pill": "/components/status-pill/index",
+    "p3-icon": "/components/p3-icon/index",
+    "p3-section-header": "/components/p3-section-header/index",
+    "p3-intensity-slider": "/components/p3-intensity-slider/index"
   }
 }

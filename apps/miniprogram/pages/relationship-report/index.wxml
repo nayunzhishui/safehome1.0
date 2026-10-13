@@ -1,97 +1,119 @@
-<view class="safe-page ui2-page relationship-report-page" role="main" aria-label="关系阶段性报告">
+<view class="p3-page report-page" role="main" aria-label="关系阶段性报告">
   <page-state wx:if="{{loading}}" kind="loading" title="正在整理阶段性报告" description="报告、研究者确认和你的核对会分开呈现。" />
   <page-state wx:elif="{{errorMessage}}" kind="error" title="阶段性报告暂时没有读取成功" description="{{errorMessage}}" action-label="重新读取" bind:action="loadReport" />
-  <view wx:else>
-    <view wx:if="{{deliveryPending}}" class="report-head report-head--pending">
-      <text class="report-title">{{report.title}}</text>
-      <text class="pending-status">正在人工核对</text>
-      <view class="report-pending-body">
-        <text class="report-copy">研究者完成核对并发送后，你会在消息列表收到提醒。当前不会展示画像、解释或机制假设。</text>
-        <view class="boundary-note">{{report.boundary_notice}}</view>
+  <block wx:else>
+    <block wx:if="{{deliveryPending}}">
+      <view class="report-head">
+        <text class="p3-serif-title" role="heading" aria-level="1">{{report.title}}</text>
+        <status-pill label="正在人工核对" tone="neutral" />
       </view>
-    </view>
-    <block wx:else>
-    <view class="report-head">
-      <text class="report-title">{{report.title}}</text>
-      <view class="report-status-row">
-        <relationship-status status="{{record.status}}"></relationship-status>
-        <view class="report-meta-group"><text class="report-meta">{{generatedAtText}}</text><text class="version-chip">{{report.version}}</text></view>
+      <view class="report-paper report-paper--padded">
+        <text class="report-body">研究者完成核对并发送后，你会在消息列表收到提醒。当前不会展示画像、解释或机制假设。</text>
       </view>
-      <view class="status-track">
-        <view wx:for="{{statusSteps}}" wx:key="key" class="status-step status-step--{{item.state}}"><text>{{item.label}}</text></view>
+      <view class="p3-boundary">
+        <view class="p3-boundary__rule" aria-hidden="true"></view>
+        <text class="p3-boundary__title">边界说明</text>
+        <text class="p3-meta">{{report.boundary_notice}}</text>
       </view>
-      <view wx:if="{{attentionNotice}}" class="attention-notice"><text class="attention-title">需要多一点人工核对</text><text>{{attentionNotice}}</text></view>
-      <view class="profile-excerpt">
-      <text class="report-profile">{{report.visible_profile_name}}</text>
-      <text class="report-copy">{{report.profile_description}}</text>
-      </view>
-    </view>
-
-    <view class="report-section report-feedback-section">
-      <feedback-rating editorial="{{true}}" value="{{reportEvaluation}}" disabled="{{reportEvaluationSaving}}" prompt="这份阶段性报告与你的实际情况相符吗？" bind:select="submitReportEvaluation" />
-    </view>
-
-    <view wx:if="{{radarRows.length}}" class="report-section">
-      <text class="section-title">本次维度轮廓</text>
-      <text class="section-help">条形只表示本次在参考样本中的相对位置，不代表好坏或能力排名。</text>
-      <view class="radar-list">
-        <view wx:for="{{radarRows}}" wx:key="code" class="radar-row">
-          <view class="radar-label-row"><text>{{item.label}}</text><text>{{item.valueText}}</text></view>
-          <view class="radar-track"><view class="radar-fill" style="{{item.style}}"></view></view>
-        </view>
-      </view>
-    </view>
-
-    <view wx:if="{{report.four_layer_profile.tension.clues.length}}" class="report-section">
-      <text class="section-title">两种需要可能同时存在</text>
-      <view class="tension-axis"><text>靠近与行动意愿</text><text class="axis-connector">同时</text><text>保护与现实节奏</text></view>
-      <view wx:for="{{report.four_layer_profile.tension.clues}}" wx:key="*this" class="tension-clue">{{item}}</view>
-    </view>
-
-    <view wx:if="{{mechanismCards.length}}" class="report-section">
-      <text class="section-title">待核对假设</text>
-      <text class="section-help">这些只是讨论线索。请以你的真实经验为准，共同修订比“被系统定义”更重要。</text>
-      <view wx:for="{{mechanismCards}}" wx:key="index" class="hypothesis-card">
-        <text class="hypothesis-text">{{item.text}}</text>
-        <text class="hypothesis-state">{{feedbackSavingIndex === item.index ? '正在保存你的核对…' : '当前选择：' + item.responseText}}</text>
-        <view class="feedback-options">
-          <button class="feedback-option {{item.response === 'matches' ? 'feedback-option--active' : ''}}" data-index="{{item.index}}" data-response="matches" disabled="{{feedbackSavingIndex >= 0}}" aria-pressed="{{item.response === 'matches'}}" bindtap="saveHypothesisFeedback">符合</button>
-          <button class="feedback-option {{item.response === 'does_not_match' ? 'feedback-option--active' : ''}}" data-index="{{item.index}}" data-response="does_not_match" disabled="{{feedbackSavingIndex >= 0}}" aria-pressed="{{item.response === 'does_not_match'}}" bindtap="saveHypothesisFeedback">不符合</button>
-          <button class="feedback-option {{item.response === 'uncertain' ? 'feedback-option--active' : ''}}" data-index="{{item.index}}" data-response="uncertain" disabled="{{feedbackSavingIndex >= 0}}" aria-pressed="{{item.response === 'uncertain'}}" bindtap="saveHypothesisFeedback">不确定</button>
-        </view>
-      </view>
-    </view>
-
-    <view class="report-section">
-      <text class="section-title">连续记录</text>
-      <view wx:if="{{report.four_layer_profile.dynamic.rounds_count >= 2}}">
-        <text class="section-help">已有 {{report.four_layer_profile.dynamic.rounds_count}} 次记录，变化只作为讨论线索。</text>
-        <text wx:for="{{report.four_layer_profile.dynamic.changes}}" wx:key="dimension" class="list-line">{{item.dimension}}：{{item.from}} → {{item.to}}</text>
-      </view>
-      <text wx:else class="section-help">目前只有一次记录。完成两次以上后，才显示趋势箭头。</text>
-    </view>
-
-    <view class="report-section">
-      <text class="section-title">{{isStageFeedback ? '研究者阶段性反馈' : '怎样理解这份结果'}}</text>
-      <text class="report-copy">{{report.personalized_interpretation}}</text>
-    </view>
-
-    <view class="report-section">
-      <text class="section-title">可以带去讨论的问题</text>
-      <text wx:for="{{report.suggested_assessment_questions}}" wx:key="*this" class="list-line">{{index + 1}}. {{item}}</text>
-    </view>
-
-    <view class="report-section">
-      <text class="section-title">建议的项目任务</text>
-      <text wx:for="{{report.recommended_project_tasks}}" wx:key="*this" class="list-line">• {{item}}</text>
-    </view>
-
-    <view class="report-export">
-      <view class="boundary-note"><text class="boundary-title">边界说明</text>{{report.boundary_notice}}</view>
-      <button class="safe-primary-button" loading="{{exporting}}" disabled="{{exporting}}" bindtap="drawLongImage">生成脱敏报告长图</button>
-      <text class="download-help">长图只包含用户可见的支持性内容，不含模型中心、内部关联字段或研究备注。</text>
-    </view>
     </block>
-  </view>
+    <block wx:else>
+      <view class="report-head">
+        <view class="report-head__titles">
+          <text class="p3-serif-title" role="heading" aria-level="1">{{report.title}}</text>
+          <text class="p3-meta">{{statusText}} · {{generatedAtText}}{{report.version ? ' · ' + report.version : ''}}</text>
+        </view>
+        <view class="report-steps" aria-label="报告进度：{{statusText}}">
+          <view wx:for="{{statusSteps}}" wx:key="key" class="report-step report-step--{{item.state}}">
+            <view class="report-step__bar" aria-hidden="true"></view>
+            <text class="report-step__label">{{item.label}}</text>
+          </view>
+        </view>
+        <view wx:if="{{attentionNotice}}" class="p3-notice p3-notice--warm" role="note">
+          <text class="p3-notice__title">需要多一点人工核对</text>
+          <text class="p3-notice__body">{{attentionNotice}}</text>
+        </view>
+        <view class="report-excerpt">
+          <text class="p3-quote p3-quote--open">{{report.visible_profile_name}}</text>
+          <text class="report-body report-body--muted">{{report.profile_description}}</text>
+        </view>
+      </view>
+
+      <feedback-rating editorial="{{true}}" value="{{reportEvaluation}}" disabled="{{reportEvaluationSaving}}" prompt="这份阶段性报告与你的实际情况相符吗？" bind:select="submitReportEvaluation" />
+
+      <view class="report-paper">
+        <view wx:if="{{radarRows.length}}" class="report-section">
+          <text class="p3-item-title">本次维度轮廓</text>
+          <text class="p3-meta">条形只表示本次在参考样本中的相对位置，不代表好坏或能力排名。</text>
+          <view wx:for="{{radarRows}}" wx:key="code" class="report-bar" aria-label="{{item.label}}：{{item.bandText}}">
+            <view class="report-bar__label">
+              <text class="report-bar__name">{{item.label}}</text>
+              <text class="p3-meta">{{item.bandText}}</text>
+            </view>
+            <view class="report-bar__track" aria-hidden="true"><view class="report-bar__fill" style="{{item.style}}"></view></view>
+          </view>
+        </view>
+
+        <view wx:if="{{report.four_layer_profile.tension.clues.length}}" class="report-section">
+          <text class="p3-item-title">两种需要可能同时存在</text>
+          <view class="report-axis" aria-label="靠近与行动意愿，同时，保护与现实节奏">
+            <text class="report-axis__near">靠近与行动意愿</text>
+            <view class="report-axis__line"></view>
+            <text class="p3-meta">同时</text>
+            <view class="report-axis__line"></view>
+            <text class="report-axis__guard">保护与现实节奏</text>
+          </view>
+          <text wx:for="{{report.four_layer_profile.tension.clues}}" wx:key="*this" class="report-body">{{item}}</text>
+        </view>
+
+        <view wx:if="{{mechanismCards.length}}" class="report-section">
+          <text class="p3-item-title">待核对假设</text>
+          <text class="p3-meta">这些只是讨论线索。请以你的真实经验为准，共同修订比“被系统定义”更重要。</text>
+          <view wx:for="{{mechanismCards}}" wx:key="index" class="report-hypothesis">
+            <text class="p3-quote p3-quote--open">{{item.text}}</text>
+            <text class="p3-meta">{{feedbackSavingIndex === item.index ? '正在保存你的核对…' : '当前选择：' + item.responseText}}</text>
+            <view class="p3-segment p3-segment--paper" role="radiogroup" aria-label="这条假设像不像你">
+              <button class="p3-segment__item {{item.response === 'matches' ? 'p3-segment__item--active' : ''}}" role="radio" aria-checked="{{item.response === 'matches'}}" data-index="{{item.index}}" data-response="matches" disabled="{{feedbackSavingIndex >= 0}}" bindtap="saveHypothesisFeedback">符合</button>
+              <button class="p3-segment__item {{item.response === 'does_not_match' ? 'p3-segment__item--active' : ''}}" role="radio" aria-checked="{{item.response === 'does_not_match'}}" data-index="{{item.index}}" data-response="does_not_match" disabled="{{feedbackSavingIndex >= 0}}" bindtap="saveHypothesisFeedback">不符合</button>
+              <button class="p3-segment__item {{item.response === 'uncertain' ? 'p3-segment__item--active' : ''}}" role="radio" aria-checked="{{item.response === 'uncertain'}}" data-index="{{item.index}}" data-response="uncertain" disabled="{{feedbackSavingIndex >= 0}}" bindtap="saveHypothesisFeedback">不确定</button>
+            </view>
+          </view>
+        </view>
+
+        <view class="report-section">
+          <text class="p3-item-title">连续记录</text>
+          <block wx:if="{{report.four_layer_profile.dynamic.rounds_count >= 2}}">
+            <text class="report-body report-body--muted">已有 {{report.four_layer_profile.dynamic.rounds_count}} 次记录，变化只作为讨论线索。</text>
+            <text wx:for="{{report.four_layer_profile.dynamic.changes}}" wx:key="dimension" class="report-body">{{item.dimension}}：{{item.from}} → {{item.to}}</text>
+          </block>
+          <text wx:else class="report-body report-body--muted">目前只有一次记录。完成两次以上后，才显示趋势箭头。</text>
+        </view>
+
+        <view class="report-section">
+          <text class="p3-item-title">{{isStageFeedback ? '研究者阶段性反馈' : '怎样理解这份结果'}}</text>
+          <text class="report-body">{{report.personalized_interpretation}}</text>
+        </view>
+
+        <view wx:if="{{report.suggested_assessment_questions.length}}" class="report-section">
+          <text class="p3-item-title">可以带去讨论的问题</text>
+          <text wx:for="{{report.suggested_assessment_questions}}" wx:key="*this" class="report-body">{{index + 1}}. {{item}}</text>
+        </view>
+
+        <view wx:if="{{report.recommended_project_tasks.length}}" class="report-section">
+          <text class="p3-item-title">建议的项目任务</text>
+          <text wx:for="{{report.recommended_project_tasks}}" wx:key="*this" class="report-body">· {{item}}</text>
+        </view>
+      </view>
+
+      <view class="report-export">
+        <view class="p3-boundary">
+          <view class="p3-boundary__rule" aria-hidden="true"></view>
+          <text class="p3-boundary__title">边界说明</text>
+          <text class="p3-meta">{{report.boundary_notice}}</text>
+        </view>
+        <button class="p3-btn p3-btn--primary" loading="{{exporting}}" disabled="{{exporting}}" bindtap="drawLongImage">生成脱敏报告长图</button>
+        <text class="p3-meta report-export__help">长图只包含用户可见的支持性内容，不含模型中心、内部关联字段或研究备注。</text>
+      </view>
+    </block>
+  </block>
   <canvas canvas-id="reportShareCanvas" class="share-canvas" style="width:640px;height:{{shareCanvasHeight}}px;" width="640" height="{{shareCanvasHeight}}" aria-hidden="true"></canvas>
 </view>

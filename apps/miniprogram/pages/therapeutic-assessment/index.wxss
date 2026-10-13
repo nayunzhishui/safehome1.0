@@ -1,550 +1,269 @@
-/* 支持性评估总览：自助整理在先，真人复核在后；单一主行动，细线分组，正文 30rpx。 */
+/* 支持性评估（Figma 657:1923）：自助整理卡（唯一实心按钮）→ 我的整理 → 真人支持性复核 → 页尾边界与求助入口。 */
 .ta-page {
   display: flex;
   flex-direction: column;
-  gap: 48rpx;
-  padding-top: 48rpx;
-  padding-bottom: calc(64rpx + env(safe-area-inset-bottom));
-  background: var(--ui2-canvas);
-  color: var(--ui2-ink);
+  gap: var(--p3-section);
+  padding-top: 16rpx;
+  padding-bottom: calc(72rpx + env(safe-area-inset-bottom));
 }
 
-.ta-title,
-.ta-section-title,
-.ta-copy,
-.ta-meta,
-.ta-kicker,
-.ta-question,
-.ta-candidate,
-.ta-feedback-copy,
-.ta-evidence-line,
-.ta-field-label,
-.ta-form-boundary,
-.ta-policy-title,
-.ta-policy-copy,
-.ta-policy-boundary,
-.ta-policy-status,
-.ta-footer-boundary,
-.ta-service-level {
-  display: block;
-}
-
-.ta-title {
-  color: var(--ui2-ink);
-  font-size: 44rpx;
-  font-weight: 600;
-  line-height: 1.4;
-  text-align: center;
-}
-
-.ta-section-title {
-  color: var(--ui2-ink);
-  font-size: 34rpx;
-  font-weight: 600;
-  line-height: 1.45;
-}
-
-.ta-copy {
-  color: var(--ui2-muted);
-  font-size: 30rpx;
-  line-height: 1.75;
-}
-
-.ta-meta {
-  color: var(--ui2-muted);
-  font-size: 26rpx;
-  line-height: 1.6;
-}
-
-.ta-kicker {
-  color: #195159;
-  font-size: 28rpx;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
-/* 竹节式短标记：只标出两个主要区块的起点。 */
-.ta-joint {
-  width: 32rpx;
-  height: 4rpx;
-  border-radius: 2rpx;
-  background: var(--ui2-primary);
-}
-
-.ta-notice,
-.ta-error,
-.ta-loading {
-  padding: 22rpx 24rpx;
-  border-radius: 16rpx;
-  font-size: 30rpx;
-  line-height: 1.6;
-}
-
-.ta-notice {
-  background: var(--ui2-soft);
-  color: #195159;
-}
-
-.ta-error {
-  background: #fcefed;
-  color: #7d2f2a;
-}
-
-.ta-loading {
-  color: var(--ui2-muted);
-  text-align: center;
-}
-
-/* 自助整理：页面唯一的实心主行动所在区块。 */
 .ta-self {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
-  padding: 40rpx;
-  border: 1rpx solid #e7e1d6;
-  border-radius: 28rpx;
-  background: #fffdf8;
+  gap: var(--p3-stack);
 }
 
 .ta-path {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
-  padding: 8rpx 0;
+  gap: var(--p3-tight);
+  padding: 28rpx 32rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-soft);
 }
 
 .ta-path__item {
   display: flex;
-  align-items: baseline;
-  gap: 20rpx;
+  align-items: flex-start;
+  gap: var(--p3-stack);
 }
 
 .ta-path__index {
-  flex: none;
-  width: 40rpx;
-  color: var(--ui2-primary);
-  font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
-  font-size: 32rpx;
-  font-weight: 600;
-  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 999rpx;
+  background: var(--p3-surface);
+  color: var(--p3-primary);
+  font-size: 26rpx;
+  line-height: 40rpx;
 }
 
 .ta-path__text {
-  color: var(--ui2-ink);
-  font-size: 30rpx;
-  line-height: 1.6;
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
 }
 
 .ta-current-review {
   display: flex;
   flex-direction: column;
-  gap: 6rpx;
-  padding: 20rpx 0;
-  border-top: 1rpx solid #efe9de;
-  border-bottom: 1rpx solid #efe9de;
+  gap: 8rpx;
+  padding: 28rpx 32rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-soft);
 }
 
-.ta-current-review__question {
-  display: -webkit-box;
-  overflow: hidden;
-  color: var(--ui2-ink);
-  font-size: 30rpx;
-  line-height: 1.6;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+.ta-current-review__kicker {
+  color: var(--p3-primary);
+  font-size: 26rpx;
+  line-height: 40rpx;
 }
 
-.ta-page .safe-primary-button,
-.ta-page .safe-outline-button {
-  min-height: 96rpx;
-  border-radius: 24rpx;
-  font-size: 30rpx;
-  font-weight: 600;
-  box-shadow: none;
-}
-
-.ta-page .safe-primary-button {
-  background: var(--ui2-primary);
-}
-
-.ta-page .safe-outline-button {
-  border: 2rpx solid var(--ui2-primary);
-  background: var(--ui2-surface);
-  color: #195159;
-}
-
-.ta-primary {
-  margin-top: 8rpx;
-}
-
-.ta-link-action {
-  min-height: 88rpx;
-  display: flex;
-  align-items: center;
-  color: var(--ui2-primary);
-  font-size: 30rpx;
-  font-weight: 600;
-}
-
-.ta-link-action--center {
-  justify-content: center;
-}
-
-/* 我的整理：细线列表，整行可点。 */
-.ta-reviews {
+.ta-section,
+.ta-form {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: var(--p3-stack);
 }
 
-.ta-review-list {
-  display: flex;
-  flex-direction: column;
-  border-top: 1rpx solid var(--ui2-line);
-}
-
-.ta-review-row {
-  min-height: 128rpx;
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-  padding: 24rpx 0;
-  border-bottom: 1rpx solid var(--ui2-line);
+.ta-row-button {
+  display: block;
+  width: 100%;
+  min-height: 0;
   text-align: left;
 }
 
-.ta-review-row__copy {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6rpx;
-}
-
-.ta-review-row__title {
-  display: -webkit-box;
-  overflow: hidden;
-  color: var(--ui2-ink);
-  font-size: 30rpx;
-  line-height: 1.6;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
-.ta-review-row__meta {
-  color: var(--ui2-muted);
-  font-size: 26rpx;
-  line-height: 1.6;
-}
-
-.ta-review-row__meta--due {
-  color: #8a4b1a;
-  font-weight: 600;
-}
-
-.ta-chevron {
-  flex: none;
-  color: var(--ui2-muted);
-  font-size: 40rpx;
-  line-height: 1;
-  transition: transform 200ms ease;
-}
-
-.ta-chevron--open {
-  transform: rotate(90deg);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ta-chevron {
-    transition: none;
-  }
-}
-
-/* 真人复核：说明为主，按钮用描边，避免与自助整理争夺主行动。 */
+/* 真人复核：纸白组块，暂未开放时只显示说明与状态标签 */
 .ta-human {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
-  padding-top: 40rpx;
-  border-top: 1rpx solid var(--ui2-line);
-}
-
-.ta-service-level {
-  color: #195159;
-  font-size: 26rpx;
-  line-height: 1.6;
-}
-
-.ta-current,
-.ta-next-action,
-.ta-question-form,
-.ta-policy-index {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
-}
-
-.ta-current {
-  padding: 28rpx 0;
-  border-top: 1rpx solid var(--ui2-line);
-  border-bottom: 1rpx solid var(--ui2-line);
-}
-
-.ta-heading,
-.ta-contract-heading {
-  display: flex;
-  flex-wrap: wrap;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 16rpx;
+  gap: var(--p3-tight);
+  padding: 36rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-surface);
 }
 
-.ta-heading > view {
+.ta-human .p3-btn {
+  align-self: stretch;
+}
+
+.ta-case {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  gap: 6rpx;
+  gap: var(--p3-stack);
+  padding: var(--p3-card);
+  border-radius: var(--p3-radius-card);
+  background: var(--p3-surface);
+}
+
+.ta-case__head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--p3-tight);
+}
+
+.ta-case__titles {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 4rpx;
   min-width: 0;
 }
 
-.ta-status,
-.ta-version,
-.ta-policy-status {
-  flex: none;
-  max-width: 100%;
-  padding: 6rpx 16rpx;
-  border-radius: 999rpx;
-  background: var(--ui2-soft);
-  color: #195159;
-  font-size: 26rpx;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-}
-
-.ta-question,
-.ta-feedback-copy {
-  color: var(--ui2-ink);
-  font-size: 30rpx;
-  line-height: 1.75;
-}
-
-.ta-question {
-  font-weight: 600;
-}
-
-.ta-question-actions {
+.ta-links {
   display: flex;
-  flex-direction: column;
-  gap: 16rpx;
-}
-
-.ta-text-action,
-.ta-withdraw {
-  min-height: 96rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 24rpx;
-  border: 2rpx solid var(--ui2-control-border);
-  border-radius: 24rpx;
-  background: var(--ui2-surface);
-  color: var(--ui2-primary);
-  font-size: 30rpx;
-  line-height: 1.45;
-  text-align: center;
-}
-
-.ta-withdraw {
-  border-color: var(--ui2-line);
-  color: var(--ui2-muted);
+  flex-wrap: wrap;
+  column-gap: var(--p3-stack);
 }
 
 .ta-candidate,
-.ta-evidence-line {
-  padding: 16rpx 0;
-  border-top: 1rpx solid var(--ui2-line);
-  color: var(--ui2-ink);
-  font-size: 30rpx;
-  line-height: 1.65;
+.ta-evidence__line {
+  padding: 20rpx 28rpx;
+  border-radius: 28rpx;
+  background: var(--p3-paper);
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
 }
 
-.ta-feedback {
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-  padding: 32rpx;
-  border-radius: 24rpx;
-  background: var(--ui2-soft);
-}
-
-.ta-waiting {
-  padding: 24rpx;
-  border: 1rpx solid var(--ui2-line);
-  border-radius: 20rpx;
-  background: var(--ui2-surface);
-  color: var(--ui2-muted);
-  font-size: 30rpx;
-  line-height: 1.65;
-}
-
+/* 反馈与线索：左侧青瓷竖线，与反馈信同一语言 */
+.ta-spine,
 .ta-evidence {
   display: flex;
   flex-direction: column;
-  gap: 10rpx;
+  gap: 8rpx;
+  padding-left: 28rpx;
+  border-left: 4rpx solid var(--p3-primary);
 }
 
-.ta-evidence-summary {
+.ta-spine__label {
+  color: var(--p3-primary);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.ta-spine__body,
+.ta-evidence__main {
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
+}
+
+.ta-evidence__summary {
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
-  padding: 20rpx 24rpx;
-  border-radius: 16rpx;
-  background: var(--ui2-soft);
+  gap: 4rpx;
 }
 
-.ta-evidence-summary__main {
-  color: var(--ui2-ink);
-  font-size: 30rpx;
-  font-weight: 600;
-  line-height: 1.6;
+.ta-withdraw {
+  color: var(--p3-risk-ink);
 }
 
-.ta-question-form {
-  padding: 32rpx 0;
-  border-top: 1rpx solid var(--ui2-line);
-  border-bottom: 1rpx solid var(--ui2-line);
-}
-
-.ta-textarea {
-  box-sizing: border-box;
-  width: 100%;
-  min-height: 240rpx;
-  padding: 24rpx 28rpx;
-  border: 2rpx solid var(--ui2-control-border);
-  border-radius: 20rpx;
-  background: var(--ui2-surface);
-  color: var(--ui2-ink);
-  font-size: 30rpx;
-  line-height: 1.7;
-}
-
-.ta-textarea--short {
-  min-height: 176rpx;
-}
-
-.ta-placeholder {
-  color: #7f979a;
-  font-size: 30rpx;
-}
-
-.ta-field-label {
-  color: var(--ui2-ink);
-  font-size: 30rpx;
-  font-weight: 600;
+.ta-short-input {
+  height: auto;
+  min-height: 96rpx;
 }
 
 .ta-scope-list {
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  gap: var(--p3-tight);
 }
 
-.ta-scope-list label {
-  min-height: 96rpx;
+.ta-scope {
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  color: var(--ui2-ink);
-  font-size: 30rpx;
-}
-
-.ta-form-boundary {
-  color: var(--ui2-muted);
+  gap: var(--p3-tight);
+  min-height: 88rpx;
+  color: var(--p3-ink);
   font-size: 28rpx;
-  line-height: 1.7;
+  line-height: 44rpx;
 }
 
-.ta-policy-index {
-  gap: 0;
-  border-top: 1rpx solid var(--ui2-line);
-  border-bottom: 1rpx solid var(--ui2-line);
+.ta-policy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+  padding: 36rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-surface);
 }
 
-.ta-disclosure {
-  min-height: 104rpx;
+.ta-policy__toggle {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16rpx;
+  gap: var(--p3-tight);
+  width: 100%;
+  min-height: 88rpx;
   text-align: left;
 }
 
-.ta-policy-intro,
-.ta-policy-row {
+.ta-policy__title {
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+.ta-policy__action {
+  flex: 0 0 auto;
+  color: var(--p3-primary);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.ta-policy__row {
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
-  padding: 24rpx 0;
-  border-top: 1rpx solid var(--ui2-line);
+  align-items: flex-start;
+  gap: 8rpx;
+  padding-top: 24rpx;
+  border-top: 2rpx solid var(--p3-hairline);
 }
 
-.ta-policy-title {
-  color: #195159;
-  font-size: 30rpx;
-  font-weight: 600;
-  line-height: 1.5;
+.ta-policy__row .p3-btn {
+  align-self: stretch;
 }
 
-.ta-policy-copy {
-  color: var(--ui2-ink);
-  font-size: 30rpx;
-  line-height: 1.7;
+.ta-policy__head {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-tight);
+  width: 100%;
 }
 
-.ta-policy-boundary {
-  color: var(--ui2-muted);
+.ta-policy__name {
+  flex: 1 0 auto;
+  color: var(--p3-ink);
   font-size: 28rpx;
-  line-height: 1.7;
+  line-height: 44rpx;
+  font-weight: 500;
+}
+
+.ta-policy__copy {
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
 }
 
 .ta-footer {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4rpx;
-  padding-top: 8rpx;
+  gap: var(--p3-tight);
 }
 
-.ta-footer-boundary {
-  color: var(--ui2-muted);
+/* “查看紧急求助资源 ›”：风险色文字链，上下补触控区 */
+.ta-footer__link {
+  align-self: flex-start;
+  width: auto;
+  min-height: 0;
+  margin: -16rpx 0;
+  padding: 16rpx 0;
+  color: var(--p3-risk-ink);
   font-size: 26rpx;
-  line-height: 1.7;
-  text-align: center;
-}
-
-.ta-footer-link {
-  min-height: 88rpx;
-  display: flex;
-  align-items: center;
-  color: #7d2f2a;
-  font-size: 28rpx;
-  font-weight: 600;
-}
-
-@media (max-width: 360px) {
-  .ta-page {
-    padding-right: 28rpx;
-    padding-left: 28rpx;
-  }
-
-  .ta-self {
-    padding: 32rpx 28rpx;
-  }
-}
-
-@media (min-width: 600px) {
-  .ta-page {
-    max-width: 820rpx;
-    margin: 0 auto;
-  }
+  line-height: 40rpx;
+  text-align: left;
 }

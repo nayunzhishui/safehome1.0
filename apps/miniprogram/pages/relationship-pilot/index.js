@@ -3,12 +3,20 @@ const { getAuthUser, requireLogin } = require("../../utils/authGuard");
 const { reportStatusLabel } = require("../../utils/relationshipStatus.generated");
 
 const api = createSafeHomeApi();
+// lead 是当前步骤卡里的说明：在路径描述后补一句“现在可以怎么做”。
 const STAGES = [
-  { key: "assessment", number: 1, title: "起点测评", description: "看见本次关系体验的位置" },
-  { key: "report", number: 2, title: "阶段性报告", description: "阅读维度、边界与待讨论问题" },
-  { key: "exploration", number: 3, title: "线上探索", description: "用绘画或句子留下愿意表达的部分" },
-  { key: "feedback", number: 4, title: "阶段性反馈", description: "线上探索后接收研究者的人工补充" },
-  { key: "growth", number: 5, title: "连续记录", description: "用多次记录观察变化，不急于下结论" },
+  { key: "assessment", number: 1, title: "起点测评", description: "看见本次关系体验的位置", lead: "先完成一份关系探索测一测，看见本次关系体验的位置。" },
+  { key: "report", number: 2, title: "阶段性报告", description: "阅读维度、边界与待讨论问题", lead: "阅读维度、边界与待讨论问题。报告由研究者核对后发送给你。" },
+  { key: "exploration", number: 3, title: "线上探索", description: "用绘画或句子留下愿意表达的部分", lead: "用绘画或句子留下愿意表达的部分。只写你愿意写的，随时可以停下。" },
+  { key: "feedback", number: 4, title: "阶段性反馈", description: "线上探索后接收研究者的人工补充", lead: "线上探索后接收研究者的人工补充，送达后会出现在成长记录里。" },
+  { key: "growth", number: 5, title: "连续记录", description: "用多次记录观察变化，不急于下结论", lead: "用多次记录观察变化，不急于下结论。每次只记一点也可以。" },
+];
+const SECONDARY_ACTIONS = [
+  { key: "report", icon: "book", label: "阶段性报告", description: "查看状态与支持性解释" },
+  { key: "drawing", icon: "pen", label: "关系隐喻绘画", description: "用线条记录此刻" },
+  { key: "sentences", icon: "message", label: "情境句子补全", description: "只回答愿意回答的题" },
+  { key: "growth", icon: "chart", label: "成长仪表盘", description: "查看曲线与时间轴" },
+  { key: "assessment", icon: "compass", label: "再次测一测", description: "为后续变化保留新起点" },
 ];
 
 function buildJourney(enrollment, growth) {
@@ -41,6 +49,7 @@ function decorateStages(currentIndex) {
   return STAGES.map((stage, index) => ({
     ...stage,
     state: index < currentIndex ? "completed" : index === currentIndex ? "current" : "upcoming",
+    timelineState: index < currentIndex ? "done" : index === currentIndex ? "current" : "upcoming",
     stateText: index < currentIndex ? "已完成" : index === currentIndex ? "当前步骤" : "稍后进行",
   }));
 }
@@ -57,6 +66,7 @@ Page({
     currentStepNumber: 1,
     currentActionState: "not_due",
     currentStageTitle: "起点测评",
+    currentStageLead: STAGES[0].lead,
     primaryAction: "assessment",
     primaryLabel: "先完成起点测评",
     reportStatusText: "尚未生成",
@@ -89,15 +99,8 @@ Page({
         }
       }
       const journey = buildJourney(enrollment, growth);
-      const secondaryActions = enrollment
-        ? [
-          { key: "report", label: "阶段性报告", description: "查看状态与支持性解释" },
-          { key: "drawing", label: "关系隐喻绘画", description: "用线条记录此刻" },
-          { key: "sentences", label: "情境句子补全", description: "只回答愿意回答的题" },
-          { key: "growth", label: "成长仪表盘", description: "查看曲线与时间轴" },
-          { key: "assessment", label: "再次测一测", description: "为后续变化保留新起点" },
-        ].filter((item) => item.key !== journey.primaryAction)
-        : [];
+      // 其它入口固定五项（Figma 665:2685），和当前步骤按钮重复的一项也保留，方便按习惯找到。
+      const secondaryActions = enrollment ? SECONDARY_ACTIONS : [];
       this.setData({
         loading: false,
         enrollment,
@@ -105,9 +108,13 @@ Page({
         currentStepNumber: journey.currentIndex + 1,
         currentActionState: enrollment && ["confirmed", "sent", "updated"].includes(enrollment.report_status) ? "ready" : "not_due",
         currentStageTitle: STAGES[journey.currentIndex].title,
+        currentStageLead: STAGES[journey.currentIndex].lead,
         primaryAction: journey.primaryAction,
         primaryLabel: journey.primaryLabel,
-        reportStatusText: enrollment && enrollment.report_status ? reportStatusLabel(enrollment.report_status) : "尚未生成",
+        // “已发送 / 已更新”单独放在卡片角上不知道指什么，补上“报告”（设计稿：报告已发送）。
+        reportStatusText: enrollment && enrollment.report_status
+          ? `${["sent", "updated"].includes(enrollment.report_status) ? "报告" : ""}${reportStatusLabel(enrollment.report_status)}`
+          : "尚未生成",
         secondaryActions,
       });
     } catch (error) {
@@ -117,6 +124,11 @@ Page({
 
   toggleConsent(event) {
     this.setData({ consent: (event.detail.value || []).includes("agree") });
+  },
+
+  // 点说明文字也能勾选，和登录页协议勾选一致。
+  flipConsent() {
+    this.setData({ consent: !this.data.consent });
   },
 
   async enroll() {

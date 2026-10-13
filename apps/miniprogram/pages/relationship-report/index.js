@@ -8,24 +8,36 @@ const FEEDBACK_LABELS = {
   uncertain: "不确定",
 };
 
+// 条形旁用“接近平均 / 略高于平均…”代替 z 分数（Figma 675:3529）；±0.5 个标准差以内算接近平均。
+function bandText(zScore) {
+  const z = Number(zScore);
+  if (!Number.isFinite(z)) return "位置待核对";
+  if (z >= 1) return "高于平均";
+  if (z >= 0.5) return "略高于平均";
+  if (z > -0.5) return "接近平均";
+  if (z > -1) return "略低于平均";
+  return "低于平均";
+}
+
 function radarRows(report) {
   const dimensionLabels = Object.fromEntries((report.dimensions || []).map((row) => [row.code || row.key, row.label || row.code || row.key]));
   return (report.radar_features || []).map((row) => ({
     ...row,
     label: dimensionLabels[row.code] || row.code,
     valueText: Number(row.z_score).toFixed(2),
+    bandText: bandText(row.z_score),
     style: `width:${Math.max(8, Math.min(100, (Number(row.z_score) + 2) * 25))}%;`,
   }));
 }
 
+// 已生成 → 已确认 → 已发送（Figma 675:3498）；人工复核中的报告不展示正文，所以不再单列“已复核”。
 function statusSteps(status) {
   const confirmed = ["confirmed", "sent", "updated"].includes(status);
   const sent = ["sent", "updated"].includes(status);
   return [
     { key: "generated", label: "已生成", state: "complete" },
-    { key: "review", label: status === "pending_review" ? "待复核" : "已复核", state: status === "pending_review" ? "current" : "complete" },
     { key: "confirmed", label: "已确认", state: confirmed ? "complete" : "upcoming" },
-    { key: "sent", label: "已发送", state: sent ? "complete" : "upcoming" },
+    { key: "sent", label: sent && status === "updated" ? "已更新" : "已发送", state: sent ? "complete" : "upcoming" },
   ];
 }
 
@@ -173,7 +185,7 @@ Page({
     const height = Math.min(3900, Math.max(1500, 330 + totalLines * 48));
     this.setData({ shareCanvasHeight: height, exporting: true }, () => {
       const ctx = wx.createCanvasContext("reportShareCanvas", this);
-      ctx.setFillStyle("#f4f8f8");
+      ctx.setFillStyle("#f6f4ef");
       ctx.fillRect(0, 0, 640, height);
       ctx.setFillStyle("#173c43");
       ctx.setFontSize(20);
@@ -184,7 +196,7 @@ Page({
       ctx.setFillStyle("#23666e");
       ctx.setFontSize(22);
       ctx.fillText(this.data.statusText, 42, 154);
-      ctx.setStrokeStyle("#d5e3e3");
+      ctx.setStrokeStyle("#e7e1d6");
       ctx.moveTo(42, 184);
       ctx.lineTo(598, 184);
       ctx.stroke();

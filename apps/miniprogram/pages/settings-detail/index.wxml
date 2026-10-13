@@ -1,21 +1,39 @@
-<view class="safe-page ui2-page settings-detail-page" role="main" aria-label="设置详情">
-  <view class="hero-card">
-    <text class="hero-kicker">{{notice.kicker}}</text>
-    <text class="hero-title">{{notice.title}}</text>
+<view class="p3-page sd-page" role="main" aria-label="设置详情">
+  <view class="sd-head">
+    <text class="p3-serif-title" role="heading" aria-level="1">{{notice.title}}</text>
+    <text wx:if="{{notice.version}}" class="p3-meta">版本 {{notice.version}}</text>
+    <text wx:if="{{notice.subtitle}}" class="sd-subtitle">{{notice.subtitle}}</text>
   </view>
 
-  <view wx:for="{{notice.sections}}" wx:key="title" class="safe-section">
-    <section-title title="{{item.title}}" subtitle="" />
-    <view class="notice-card">
-      <view wx:for="{{item.items}}" wx:key="*this" wx:for-item="line" class="notice-row">
-        <text class="dot"></text>
-        <text class="notice-text">{{line}}</text>
+  <view class="sd-sections">
+    <view wx:for="{{openSections}}" wx:key="title" wx:for-item="section" class="sd-section">
+      <text class="p3-item-title" role="heading" aria-level="2">{{section.title}}</text>
+      <view wx:for="{{section.items}}" wx:key="text" wx:for-item="line" class="sd-item">
+        <view class="sd-item__dot" aria-hidden="true"></view>
+        <text class="sd-item__text {{line.pending ? 'sd-item__text--pending' : ''}}">{{line.text}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{foldSections.length}}" class="sd-folds">
+      <view wx:for="{{foldSections}}" wx:key="title" wx:for-item="section" wx:for-index="sectionIndex" class="sd-fold-section">
+        <button class="sd-fold" aria-expanded="{{section.expanded}}" data-index="{{sectionIndex}}" bindtap="toggleSection">
+          <text class="sd-fold__title">{{section.title}}</text>
+          <view class="sd-fold__chevron {{section.expanded ? 'sd-fold__chevron--open' : ''}}" aria-hidden="true">
+            <p3-icon name="chevron-down" size="24" tone="ink" />
+          </view>
+        </button>
+        <view wx:if="{{section.expanded}}" class="sd-fold__body">
+          <view wx:for="{{section.items}}" wx:key="text" wx:for-item="line" class="sd-item">
+            <view class="sd-item__dot" aria-hidden="true"></view>
+            <text class="sd-item__text {{line.pending ? 'sd-item__text--pending' : ''}}">{{line.text}}</text>
+          </view>
+        </view>
       </view>
     </view>
   </view>
 
-  <view wx:if="{{noticeType === 'protection'}}" class="safe-section">
-    <section-title title="保护状态" />
+  <view wx:if="{{noticeType === 'protection'}}" class="sd-block">
+    <p3-section-header title="保护状态" />
 
     <page-state
       wx:if="{{protectionLoading}}"
@@ -32,177 +50,179 @@
       bind:action="goProtectionLogin"
     />
 
-    <view wx:else>
-      <view wx:if="{{protectionError}}" class="notice-card">
-        <text class="notice-text">{{protectionError}}</text>
-        <button class="safe-secondary-button" bindtap="loadProtectionStatus">重新读取</button>
+    <block wx:else>
+      <view wx:if="{{protectionError}}" class="sd-card">
+        <text class="p3-form-message p3-form-message--error">{{protectionError}}</text>
+        <button class="p3-btn p3-btn--secondary" bindtap="loadProtectionStatus">重新读取</button>
       </view>
 
-      <view wx:if="{{protectionRole === 'student' && protectionStatus}}" class="notice-card">
-        <view class="privacy-request-heading">
-          <text class="privacy-request-title">学生保护状态</text>
-          <status-pill label="{{protectionStatus.statusLabel}}" tone="{{protectionStatus.status === 'active' || protectionStatus.status === 'age_verified' ? 'success' : 'warning'}}" />
+      <view wx:if="{{protectionRole === 'student' && protectionStatus}}" class="sd-card">
+        <view class="sd-card__head">
+          <text class="p3-item-title">学生保护状态</text>
+          <text class="sd-status {{protectionStatus.status === 'active' || protectionStatus.status === 'age_verified' ? 'sd-status--done' : ''}}">{{protectionStatus.statusLabel}}</text>
         </view>
 
-        <view wx:if="{{protectionStatus.age_verification_required}}">
-          <text class="notice-text">请选择符合你的年龄范围。系统不会要求填写出生日期。</text>
-          <button class="safe-primary-button" data-age="14_or_over" disabled="{{protectionBusy}}" bindtap="chooseAge">我已满14周岁</button>
-          <button class="safe-secondary-button" data-age="under_14" disabled="{{protectionBusy}}" bindtap="chooseAge">我未满14周岁</button>
-        </view>
+        <block wx:if="{{protectionStatus.age_verification_required}}">
+          <text class="sd-card__text">请选择符合你的年龄范围。系统不会要求填写出生日期。</text>
+          <view class="sd-pair">
+            <button class="p3-btn p3-btn--secondary" data-age="14_or_over" disabled="{{protectionBusy}}" bindtap="chooseAge">我已满14周岁</button>
+            <button class="p3-btn p3-btn--secondary" data-age="under_14" disabled="{{protectionBusy}}" bindtap="chooseAge">我未满14周岁</button>
+          </view>
+        </block>
 
-        <view wx:if="{{protectionStatus.status === 'guardian_link_required'}}">
-          <text class="notice-text">请向家长获取10位绑定码。完成绑定后，仍需家长单独确认是否同意受保护的数据处理。</text>
+        <block wx:if="{{protectionStatus.status === 'guardian_link_required'}}">
+          <text class="sd-card__text">请向家长获取10位绑定码。完成绑定后，仍需家长单独确认是否同意受保护的数据处理。</text>
           <input
-            class="safe-input"
+            class="p3-field__input"
             aria-label="10位家长绑定码"
-            placeholder-class="ui2-placeholder"
+            placeholder-class="p3-field__placeholder"
             type="number"
             maxlength="10"
             value="{{bindCodeInput}}"
             placeholder="输入10位绑定码"
             bindinput="onBindCodeInput"
           />
-          <button class="safe-primary-button" disabled="{{protectionBusy || bindCodeInput.length !== 10}}" bindtap="submitStudentBinding">完成家长绑定</button>
-        </view>
+          <button class="p3-btn p3-btn--primary" disabled="{{protectionBusy || bindCodeInput.length !== 10}}" bindtap="submitStudentBinding">完成家长绑定</button>
+        </block>
 
-        <view wx:if="{{protectionStatus.status === 'guardian_consent_required'}}">
-          <text class="notice-text">已完成家长账号绑定，正在等待监护人确认。绑定关系本身不等于监护人同意。</text>
-        </view>
+        <text wx:if="{{protectionStatus.status === 'guardian_consent_required'}}" class="sd-card__text">已完成家长账号绑定，正在等待监护人确认。绑定关系本身不等于监护人同意。</text>
 
-        <view wx:if="{{protectionStatus.status === 'child_assent_required'}}">
-          <text class="notice-text">监护人已经同意，但你自己仍可以决定是否继续使用测评、研究参与、自由文本和画像等受保护功能。</text>
-          <button class="safe-primary-button" data-assented="true" disabled="{{protectionBusy}}" bindtap="updateChildDecision">我愿意继续</button>
-          <button class="safe-secondary-button" data-assented="false" disabled="{{protectionBusy}}" bindtap="updateChildDecision">我暂时不继续</button>
-        </view>
-
-        <view wx:if="{{protectionStatus.status === 'blocked_withdrawn_or_refused'}}">
-          <text class="notice-text">参与者本人或监护人已经拒绝/撤回，受保护功能已暂停。需要再次继续时，应重新完成相应确认。</text>
-        </view>
-
-        <view wx:if="{{protectionStatus.status === 'active'}}">
-          <text class="notice-text">未满14周岁保护条件已经满足。监护人和学生本人仍可撤回。</text>
-          <button class="safe-secondary-button" data-assented="false" disabled="{{protectionBusy}}" bindtap="updateChildDecision">我想暂停受保护功能</button>
-        </view>
-
-        <view wx:if="{{protectionStatus.status === 'age_verified'}}">
-          <text class="notice-text">年龄范围已确认，本账号不需要监护人同意流程。</text>
-        </view>
-      </view>
-
-      <view wx:if="{{protectionRole === 'parent'}}" class="notice-card">
-        <text class="privacy-request-title">家长绑定与监护人确认</text>
-        <text class="notice-text">先生成绑定码给学生。学生完成绑定后，如果其年龄为未满14周岁，你可以在下方单独同意或撤回受保护的数据处理。</text>
-        <button class="safe-primary-button" disabled="{{protectionBusy}}" bindtap="createGuardianBindCode">生成10位绑定码</button>
-        <view wx:if="{{generatedBindCode}}" class="privacy-request-card">
-          <text class="privacy-request-title">绑定码：{{generatedBindCode}}</text>
-          <text class="privacy-request-meta">有效期至：{{generatedBindExpiresAt}}</text>
-          <text class="privacy-boundary">绑定码只用于建立家庭账号关系，不代表已经同意敏感数据处理。</text>
-        </view>
-
-        <view wx:if="{{guardianChildren.length}}" class="privacy-request-list">
-          <view wx:for="{{guardianChildren}}" wx:key="id" class="privacy-request-card">
-            <view class="privacy-request-heading">
-              <text class="privacy-request-title">已绑定学生</text>
-              <status-pill label="{{item.safeguard.statusLabel}}" tone="{{item.safeguard.status === 'active' || item.safeguard.status === 'age_verified' ? 'success' : 'warning'}}" />
-            </view>
-            <text class="privacy-request-meta">关系：{{item.relation_label || '家长'}}</text>
-            <text wx:if="{{item.safeguard.age_band === 'under_14'}}" class="privacy-request-meta">年龄范围：未满14周岁</text>
-            <text wx:elif="{{item.safeguard.age_band === '14_or_over'}}" class="privacy-request-meta">年龄范围：已满14周岁</text>
-            <text wx:else class="privacy-request-meta">年龄范围：待学生确认</text>
-
-            <view wx:if="{{item.safeguard.age_band === 'under_14'}}">
-              <button
-                wx:if="{{item.safeguard.guardian_consent_status !== 'active'}}"
-                class="safe-primary-button"
-                data-child="{{item.student_user_id}}"
-                data-agreed="true"
-                disabled="{{protectionBusy}}"
-                bindtap="updateGuardianDecision"
-              >同意受保护数据处理</button>
-              <button
-                wx:else
-                class="safe-secondary-button"
-                data-child="{{item.student_user_id}}"
-                data-agreed="false"
-                disabled="{{protectionBusy}}"
-                bindtap="updateGuardianDecision"
-              >撤回监护人同意</button>
-              <text class="privacy-boundary">你的同意不会替代学生本人选择；学生拒绝或撤回时，受保护功能仍会停止。</text>
-            </view>
+        <block wx:if="{{protectionStatus.status === 'child_assent_required'}}">
+          <text class="sd-card__text">监护人已经同意，但你自己仍可以决定是否继续使用测评、研究参与、自由文本和画像等受保护功能。</text>
+          <view class="sd-pair">
+            <button class="p3-btn p3-btn--secondary" data-assented="true" disabled="{{protectionBusy}}" bindtap="updateChildDecision">我愿意继续</button>
+            <button class="p3-btn p3-btn--secondary" data-assented="false" disabled="{{protectionBusy}}" bindtap="updateChildDecision">我暂时不继续</button>
           </view>
-        </view>
-        <text wx:else class="privacy-boundary">当前还没有已绑定学生。可先生成绑定码。</text>
+        </block>
+
+        <text wx:if="{{protectionStatus.status === 'blocked_withdrawn_or_refused'}}" class="sd-card__text">参与者本人或监护人已经拒绝/撤回，受保护功能已暂停。需要再次继续时，应重新完成相应确认。</text>
+
+        <block wx:if="{{protectionStatus.status === 'active'}}">
+          <text class="sd-card__text">未满14周岁保护条件已经满足。监护人和学生本人仍可撤回。</text>
+          <button class="p3-btn p3-btn--secondary" data-assented="false" disabled="{{protectionBusy}}" bindtap="updateChildDecision">我想暂停受保护功能</button>
+        </block>
+
+        <text wx:if="{{protectionStatus.status === 'age_verified'}}" class="sd-card__text">年龄范围已确认，本账号不需要监护人同意流程。</text>
       </view>
 
-      <view wx:if="{{protectionRole && protectionRole !== 'student' && protectionRole !== 'parent'}}" class="notice-card">
-        <text class="notice-text">研究、督导和管理账号不需要进行参与者年龄确认。</text>
+      <view wx:if="{{protectionRole === 'parent'}}" class="sd-card">
+        <text class="p3-item-title">家长绑定与监护人确认</text>
+        <text class="sd-card__text">先生成绑定码给学生。学生完成绑定后，如果其年龄为未满14周岁，你可以在下方单独同意或撤回受保护的数据处理。</text>
+        <button class="p3-btn p3-btn--primary" disabled="{{protectionBusy}}" bindtap="createGuardianBindCode">生成10位绑定码</button>
+        <view wx:if="{{generatedBindCode}}" class="sd-paper">
+          <text class="p3-item-title">绑定码：{{generatedBindCode}}</text>
+          <text class="p3-meta">有效期至：{{generatedBindExpiresAt}}</text>
+          <text class="p3-meta">绑定码只用于建立家庭账号关系，不代表已经同意敏感数据处理。</text>
+        </view>
+
+        <view wx:for="{{guardianChildren}}" wx:key="id" class="sd-paper">
+          <view class="sd-card__head">
+            <text class="p3-item-title">已绑定学生</text>
+            <text class="sd-status {{item.safeguard.status === 'active' || item.safeguard.status === 'age_verified' ? 'sd-status--done' : ''}}">{{item.safeguard.statusLabel}}</text>
+          </view>
+          <text class="p3-meta">关系：{{item.relation_label || '家长'}}</text>
+          <text wx:if="{{item.safeguard.age_band === 'under_14'}}" class="p3-meta">年龄范围：未满14周岁</text>
+          <text wx:elif="{{item.safeguard.age_band === '14_or_over'}}" class="p3-meta">年龄范围：已满14周岁</text>
+          <text wx:else class="p3-meta">年龄范围：待学生确认</text>
+
+          <block wx:if="{{item.safeguard.age_band === 'under_14'}}">
+            <button
+              wx:if="{{item.safeguard.guardian_consent_status !== 'active'}}"
+              class="p3-btn p3-btn--secondary"
+              data-child="{{item.student_user_id}}"
+              data-agreed="true"
+              disabled="{{protectionBusy}}"
+              bindtap="updateGuardianDecision"
+            >同意受保护数据处理</button>
+            <button
+              wx:else
+              class="p3-btn p3-btn--secondary"
+              data-child="{{item.student_user_id}}"
+              data-agreed="false"
+              disabled="{{protectionBusy}}"
+              bindtap="updateGuardianDecision"
+            >撤回监护人同意</button>
+            <text class="p3-meta">你的同意不会替代学生本人选择；学生拒绝或撤回时，受保护功能仍会停止。</text>
+          </block>
+        </view>
+        <text wx:if="{{!guardianChildren.length}}" class="p3-meta">当前还没有已绑定学生。可先生成绑定码。</text>
       </view>
-    </view>
+
+      <view wx:if="{{protectionRole && protectionRole !== 'student' && protectionRole !== 'parent'}}" class="sd-card">
+        <text class="sd-card__text">研究、督导和管理账号不需要进行参与者年龄确认。</text>
+      </view>
+    </block>
   </view>
 
-  <view wx:if="{{noticeType === 'privacy'}}" class="safe-section privacy-control-section">
-    <section-title title="我的可选用途决定" />
-    <text class="privacy-boundary">各用途分别决定。此处只查看已有决定与撤回；浏览说明不会新增同意。撤回不等于即时删除历史数据。</text>
-    <page-state wx:if="{{consentLoading || consentError}}" kind="{{consentLoading ? 'loading' : 'error'}}" title="{{consentLoading ? '正在读取用途决定' : '用途决定暂时不可用'}}" description="{{consentError}}" action-label="{{consentLoading ? '' : '重新读取'}}" bind:action="loadConsentDecisions" />
-    <view wx:elif="{{consentDecisions.length}}">
-      <view wx:for="{{consentDecisions}}" wx:key="id" class="privacy-request-card">
-        <text class="privacy-request-title">{{item.label}}</text>
-        <text class="privacy-boundary">{{item.agreed ? '已记录同意' : '已记录拒绝或撤回'}} · 版本 {{item.consent_version}}</text>
-        <button wx:if="{{item.agreed}}" class="privacy-cancel-button" disabled="{{consentBusy}}" data-id="{{item.id}}" bindtap="withdrawOptionalConsent">撤回这一用途</button>
-      </view>
-    </view>
-    <text wx:else class="privacy-boundary">暂无已记录的可选用途决定；这不代表已经同意。</text>
-
-    <section-title title="我的删除申请" />
-
-    <page-state
-      wx:if="{{privacyLoading || privacyError}}"
-      kind="{{privacyLoading ? 'loading' : 'error'}}"
-      title="{{privacyLoading ? '正在读取申请' : '申请暂时没有读取成功'}}"
-      description="{{privacyError}}"
-      action-label="{{privacyLoading ? '' : (privacyNeedsLogin ? '去登录' : '重新读取')}}"
-      bind:action="handlePrivacyStateAction"
-    />
-
-    <view wx:elif="{{privacyRequests.length}}" class="privacy-request-list">
-      <view wx:for="{{privacyRequests}}" wx:key="id" class="privacy-request-card">
-        <view class="privacy-request-heading">
-          <text class="privacy-request-title">删除申请</text>
-          <status-pill label="{{item.statusLabel}}" tone="{{item.status === 'completed' ? 'success' : (item.status === 'pending' || item.status === 'processing' ? 'warning' : 'neutral')}}" />
+  <block wx:if="{{noticeType === 'privacy'}}">
+    <view class="sd-block">
+      <p3-section-header title="我的可选用途决定" />
+      <text class="p3-meta">各用途分别决定。此处只查看已有决定与撤回；浏览说明不会新增同意。撤回不等于即时删除历史数据。</text>
+      <page-state wx:if="{{consentLoading || consentError}}" kind="{{consentLoading ? 'loading' : 'error'}}" title="{{consentLoading ? '正在读取用途决定' : '用途决定暂时不可用'}}" description="{{consentError}}" action-label="{{consentLoading ? '' : '重新读取'}}" bind:action="loadConsentDecisions" />
+      <view wx:elif="{{consentDecisions.length}}" class="sd-list">
+        <view wx:for="{{consentDecisions}}" wx:key="id" class="sd-row {{index < consentDecisions.length - 1 ? 'sd-row--divided' : ''}}">
+          <view class="sd-row__text">
+            <text class="p3-item-title">{{item.label}}</text>
+            <text class="p3-meta">{{item.agreed ? '已记录同意' : '已记录拒绝或撤回'}} · 版本 {{item.consent_version}}</text>
+          </view>
+          <button wx:if="{{item.agreed}}" class="sd-row__action" disabled="{{consentBusy}}" data-id="{{item.id}}" bindtap="withdrawOptionalConsent">撤回这一用途</button>
         </view>
-        <text class="privacy-request-meta">提交于 {{item.createdDate}}</text>
-        <text class="privacy-request-meta">更新于 {{item.updatedDate}}</text>
-        <text wx:if="{{item.participant_notice}}" class="privacy-request-notice">{{item.participant_notice}}</text>
-        <text wx:if="{{item.execution_proof_hash}}" class="privacy-request-proof">执行证明：{{item.execution_proof_hash}}</text>
-        <button
-          wx:if="{{item.canCancel}}"
-          class="privacy-cancel-button"
-          data-id="{{item.id}}"
-          disabled="{{privacySubmitting}}"
-          bindtap="cancelPrivacyRequest"
-        >取消申请</button>
-        <button
-          wx:if="{{item.canAppeal}}"
-          class="privacy-cancel-button privacy-appeal-button"
-          data-id="{{item.id}}"
-          disabled="{{privacySubmitting}}"
-          bindtap="appealPrivacyRequest"
-        >补充说明并重新提交</button>
       </view>
+      <text wx:else class="p3-meta">暂无已记录的可选用途决定；这不代表已经同意。</text>
     </view>
 
-    <page-state
-      wx:else
-      kind="empty"
-      title="当前没有删除申请"
-      description="如果需要删除账号相关数据，可以在下方提交申请。提交后不会立即执行。"
-    />
+    <view class="sd-block">
+      <p3-section-header title="我的删除申请" />
 
-    <button class="safe-primary-button privacy-submit-button" disabled="{{privacySubmitting || privacyNeedsLogin}}" bindtap="submitPrivacyDeleteRequest">
-      {{privacySubmitting ? '正在处理...' : '提交删除申请'}}
-    </button>
-    <text class="privacy-boundary">“已完成”只会在管理员按保存规则执行删除或匿名化并生成记录后显示。</text>
-  </view>
+      <page-state
+        wx:if="{{privacyLoading || privacyError}}"
+        kind="{{privacyLoading ? 'loading' : 'error'}}"
+        title="{{privacyLoading ? '正在读取申请' : '申请暂时没有读取成功'}}"
+        description="{{privacyError}}"
+        action-label="{{privacyLoading ? '' : (privacyNeedsLogin ? '去登录' : '重新读取')}}"
+        bind:action="handlePrivacyStateAction"
+      />
 
-  <button class="safe-secondary-button back-button" bindtap="goBack">返回</button>
+      <view wx:elif="{{privacyRequests.length}}" class="sd-list">
+        <view wx:for="{{privacyRequests}}" wx:key="id" class="sd-request {{index < privacyRequests.length - 1 ? 'sd-row--divided' : ''}}">
+          <view class="sd-card__head">
+            <text class="p3-item-title">删除申请</text>
+            <status-pill label="{{item.statusLabel}}" tone="{{item.status === 'completed' ? 'success' : (item.status === 'pending' || item.status === 'processing' ? 'warning' : 'neutral')}}" />
+          </view>
+          <text class="p3-meta">提交于 {{item.createdDate}} · 更新于 {{item.updatedDate}}</text>
+          <text wx:if="{{item.participant_notice}}" class="sd-card__text">{{item.participant_notice}}</text>
+          <text wx:if="{{item.execution_proof_hash}}" class="p3-meta sd-proof">执行证明：{{item.execution_proof_hash}}</text>
+          <button
+            wx:if="{{item.canCancel}}"
+            class="sd-row__action"
+            data-id="{{item.id}}"
+            disabled="{{privacySubmitting}}"
+            bindtap="cancelPrivacyRequest"
+          >取消申请</button>
+          <button
+            wx:if="{{item.canAppeal}}"
+            class="sd-row__action sd-row__action--primary"
+            data-id="{{item.id}}"
+            disabled="{{privacySubmitting}}"
+            bindtap="appealPrivacyRequest"
+          >补充说明并重新提交</button>
+        </view>
+      </view>
+
+      <page-state
+        wx:else
+        kind="empty"
+        title="当前没有删除申请"
+        description="如果需要删除账号相关数据，可以在下方提交申请。提交后不会立即执行。"
+      />
+
+      <button class="p3-btn p3-btn--primary" disabled="{{privacySubmitting || privacyNeedsLogin}}" bindtap="submitPrivacyDeleteRequest">{{privacySubmitting ? '正在处理...' : '提交删除申请'}}</button>
+      <view class="p3-boundary">
+        <view class="p3-boundary__rule" aria-hidden="true"></view>
+        <text class="p3-meta">“已完成”只会在管理员按保存规则执行删除或匿名化并生成记录后显示。</text>
+      </view>
+    </view>
+  </block>
+
+  <button class="p3-btn p3-btn--secondary" bindtap="goBack">返回</button>
 </view>

@@ -4,9 +4,12 @@ const { requireLogin, captureAuthSession, isCurrentAuthSession } = require("../.
 const api = createSafeHomeApi();
 const PAGE_SIZE = 50;
 
+// “10月10日 20:40”；读不到时间时显示占位。
 function formatDate(value) {
-  if (!value) return "时间待补充";
-  return String(value).slice(0, 16).replace("T", " ");
+  const matched = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2}))?/);
+  if (!matched) return "时间待补充";
+  const day = `${Number(matched[2])}月${Number(matched[3])}日`;
+  return matched[4] ? `${day} ${matched[4]}:${matched[5]}` : day;
 }
 
 function formatResult(item) {
@@ -23,6 +26,7 @@ function formatResult(item) {
     summaryText,
     dimensionCount: dimensions.length,
     dimensionText,
+    rowMeta: `${createdAtText} · 查看结果`,
     cardItem: {
       id: item.id,
       display_title: worksheetTitle,
@@ -112,7 +116,7 @@ Page({
   },
 
   openResult(event) {
-    const id = event.detail && event.detail.id ? event.detail.id : "";
+    const id = (event.detail && event.detail.id) || (event.currentTarget && event.currentTarget.dataset.id) || "";
     const selected = this.data.items.find((item) => item.id === id) || {};
     const worksheetId = selected.worksheet_id || "";
     if (!id) return;

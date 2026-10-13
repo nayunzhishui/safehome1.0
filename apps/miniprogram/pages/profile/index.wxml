@@ -1,126 +1,91 @@
-<view class="safe-page ui2-page safe-page--with-tabbar profile-page">
-  <view class="profile-heading">我的</view>
-  <view class="user-card safe-card">
-    <view class="avatar" aria-hidden="true"></view>
-    <view class="user-copy">
-      <text class="user-name">{{user.nickname}}</text>
-      <text class="user-state">{{user.loginState}}</text>
-      <text wx:if="{{user.roleText}}" class="user-role">{{user.roleText}}</text>
-      <text class="streak-text">{{user.streakText}}</text>
-    </view>
-    <text class="growth-level">{{user.growthLevel}}</text>
-  </view>
-
-  <view class="auth-panel safe-card">
-    <text class="auth-title">{{loggedIn ? '账号已连接' : '先登录后保存记录'}}</text>
-    <text class="auth-text">登录后，你的记录只会用于本工具内的复盘、训练建议和必要的人工补充反馈。</text>
-    <view wx:if="{{loggedIn}}" class="auth-actions">
-      <button class="auth-secondary" bindtap="doLogout" loading="{{logoutBusy}}" disabled="{{logoutBusy}}">退出登录</button>
-    </view>
-    <view wx:else class="auth-actions">
-      <button class="auth-primary" bindtap="goLogin">去登录</button>
-      <button class="auth-secondary" bindtap="goRegister">注册账号</button>
-    </view>
-    <view wx:if="{{identityStatus}}" class="identity-summary" aria-label="登录方式">
-      <view class="identity-heading">
-        <text class="identity-title">登录方式</text>
-        <text class="identity-note">只显示连接状态，不显示身份值</text>
+<view class="profile-page" role="main" aria-label="我的">
+  <view class="profile-hero" style="height: {{hero.height}}px;">
+    <view wx:if="{{hero.offset > 0}}" class="profile-hero__sky" style="height: {{hero.offset}}px;" aria-hidden="true"></view>
+    <image class="profile-hero__art" src="/assets/art/tab-hero.svg" style="top: {{hero.offset}}px;" aria-hidden="true" />
+    <view class="profile-hero__user" style="top: {{hero.top}}px;">
+      <view class="profile-hero__avatar" aria-hidden="true">
+        <p3-icon name="person" size="30" tone="primary" />
       </view>
-      <view class="identity-row">
-        <view class="identity-copy">
-          <text class="identity-label">微信登录</text>
-          <text class="identity-state">{{identityStatus.identities.wechat.state === 'unbound' ? '未连接' : '已连接'}}</text>
-        </view>
-        <button wx:if="{{identityStatus.identities.wechat.can_unbind}}" class="identity-action" data-identity="wechat" bindtap="requestIdentityUnbind" disabled="{{identityBusy}}">撤销</button>
+      <view class="profile-hero__copy">
+        <text class="profile-hero__name" role="heading" aria-level="1">{{user.nickname}}</text>
+        <text class="profile-hero__meta">{{user.metaText}}</text>
+        <status-pill class="profile-hero__pill" label="{{user.growthLevel}}" tone="success" />
       </view>
-      <view class="identity-row">
-        <view class="identity-copy">
-          <text class="identity-label">手机号登录</text>
-          <text class="identity-state">{{identityStatus.identities.phone.state === 'unbound' ? '未连接' : '已连接'}}</text>
-        </view>
-        <button wx:if="{{identityStatus.identities.phone.can_unbind}}" class="identity-action" data-identity="phone" bindtap="requestIdentityUnbind" disabled="{{identityBusy}}">撤销</button>
+    </view>
+  </view>
+
+  <view class="profile-content">
+    <view wx:if="{{!loggedIn}}" class="p3-card profile-account" aria-label="登录">
+      <text class="profile-account__title">登录后保存你的记录</text>
+      <text class="profile-account__body">记录只用于本工具内的复盘、训练建议和必要的人工补充反馈。</text>
+      <view class="profile-account__actions">
+        <button class="p3-btn p3-btn--primary" bindtap="goLogin">去登录</button>
+        <button class="p3-btn p3-btn--secondary" bindtap="goRegister">注册账号</button>
       </view>
-      <text class="identity-boundary">撤销登录方式会退出所有设备，但不会删除你的记录。</text>
     </view>
-  </view>
-
-  <view wx:if="{{dataClaim}}" class="claim-card safe-card" aria-label="找回本机试用记录">
-    <view class="claim-marker">可找回</view>
-    <text class="claim-title">把本机试用记录放进当前账号</text>
-    <text class="claim-text">找到 {{dataClaim.total_records}} 条本机试用记录。确认后，测评、日记和练习记录会归到当前账号；暂不处理也不会删除。</text>
-    <view class="claim-modules">
-      <text wx:for="{{dataClaim.modules}}" wx:key="module" class="claim-module">{{item.label}} {{item.count}}</text>
-    </view>
-    <text class="claim-boundary">{{dataClaim.boundary_notice}}</text>
-    <view class="claim-actions">
-      <button class="auth-primary" bindtap="confirmDataClaim" loading="{{claimBusy}}" disabled="{{claimBusy}}">确认合并</button>
-      <button class="auth-secondary" bindtap="dismissDataClaim" disabled="{{claimBusy}}">暂不处理</button>
-    </view>
-  </view>
-
-  <view class="safe-card researcher-entry">
-    <view class="row-copy">
-      <text class="row-title">{{isResearcher ? '研究者评估仪表盘' : '研究者登录'}}</text>
-      <text class="row-subtitle">{{isResearcher ? '查看报名、报告、任务材料和人工备注' : '仅限由管理员创建的研究者账号'}}</text>
-    </view>
-    <button class="auth-secondary" bindtap="goResearcher">{{isResearcher ? '进入仪表盘' : '账号登录'}}</button>
-  </view>
-
-  <view class="safe-section">
-    <section-title title="我的记录" />
-    <view class="plain-list">
-      <button wx:for="{{recordEntries}}" wx:key="title" class="plain-row" data-group="recordEntries" data-index="{{index}}" bindtap="openEntry">
-        <view class="row-copy">
-          <text class="row-title">{{item.title}}</text>
-          <text class="row-subtitle">{{item.subtitle}}</text>
+    <view wx:else class="p3-card profile-account" aria-label="登录方式">
+      <text class="profile-account__title">{{identityStatus ? '登录方式' : '账号已连接'}}</text>
+      <text wx:if="{{!identityStatus}}" class="profile-account__body">你的记录只会用于本工具内的复盘、训练建议和必要的人工补充反馈。</text>
+      <block wx:else>
+        <text class="profile-account__note">只显示连接状态，不显示身份值</text>
+        <view class="profile-identity">
+          <view class="profile-identity__row">
+            <text class="profile-identity__label">微信登录</text>
+            <text class="profile-identity__state">{{identityStatus.identities.wechat.state === 'unbound' ? '未连接' : '已连接'}}</text>
+            <button wx:if="{{identityStatus.identities.wechat.can_unbind}}" class="profile-identity__action" data-identity="wechat" bindtap="requestIdentityUnbind" disabled="{{identityBusy}}">撤销</button>
+          </view>
+          <view class="profile-identity__divider"></view>
+          <view class="profile-identity__row">
+            <text class="profile-identity__label">手机号登录</text>
+            <text class="profile-identity__state">{{identityStatus.identities.phone.state === 'unbound' ? '未连接' : '已连接'}}</text>
+            <button wx:if="{{identityStatus.identities.phone.can_unbind}}" class="profile-identity__action" data-identity="phone" bindtap="requestIdentityUnbind" disabled="{{identityBusy}}">撤销</button>
+          </view>
         </view>
-        <text class="row-arrow">›</text>
-      </button>
+        <text class="profile-account__boundary">撤销登录方式会退出所有设备，但不会删除你的记录。</text>
+      </block>
+      <button class="p3-btn p3-btn--secondary profile-account__logout" bindtap="doLogout" loading="{{logoutBusy}}" disabled="{{logoutBusy}}">退出登录</button>
+    </view>
+
+    <view wx:if="{{dataClaim}}" class="p3-card profile-claim" aria-label="找回本机试用记录">
+      <status-pill label="可找回" tone="success" />
+      <text class="profile-account__title">把本机试用记录放进当前账号</text>
+      <text class="profile-account__body">找到 {{dataClaim.total_records}} 条本机试用记录。确认后，测评、日记和练习记录会归到当前账号；暂不处理也不会删除。</text>
+      <view class="profile-claim__modules">
+        <text wx:for="{{dataClaim.modules}}" wx:key="module" class="profile-claim__module">{{item.label}} {{item.count}}</text>
+      </view>
+      <text wx:if="{{dataClaim.boundary_notice}}" class="profile-account__boundary">{{dataClaim.boundary_notice}}</text>
+      <view class="profile-account__actions">
+        <button class="p3-btn p3-btn--primary" bindtap="confirmDataClaim" loading="{{claimBusy}}" disabled="{{claimBusy}}">确认合并</button>
+        <button class="p3-btn p3-btn--secondary" bindtap="dismissDataClaim" disabled="{{claimBusy}}">暂不处理</button>
+      </view>
+    </view>
+
+    <view wx:for="{{entryGroups}}" wx:for-item="group" wx:key="key" class="profile-section">
+      <p3-section-header title="{{group.title}}" subtitle="{{group.subtitle}}" />
+      <view class="p3-group {{group.tone === 'warm' ? 'p3-group--warm' : ''}}">
+        <button
+          wx:for="{{group.entries}}"
+          wx:key="title"
+          class="profile-row"
+          aria-label="{{item.title}}{{item.subtitle ? '，' + item.subtitle : ''}}"
+          data-group="{{group.key}}"
+          data-index="{{index}}"
+          bindtap="openEntry"
+        >
+          <p3-group-row
+            icon="{{item.icon}}"
+            icon-tone="{{item.iconTone || 'primary'}}"
+            title="{{item.title}}"
+            subtitle="{{group.showSubtitles ? item.subtitle : ''}}"
+            tone="{{group.tone}}"
+            show-divider="{{index < group.entries.length - 1}}"
+          />
+        </button>
+      </view>
+    </view>
+
+    <view class="profile-footer">
+      <button class="p3-link" bindtap="goResearcher">{{isResearcher ? '进入研究者工作台 ›' : '研究者登录 ›'}}</button>
     </view>
   </view>
-
-  <view class="safe-section">
-    <section-title title="专业支持" />
-    <view class="plain-list">
-      <button wx:for="{{supportEntries}}" wx:key="title" class="support-row" data-group="supportEntries" data-index="{{index}}" bindtap="openEntry">
-        <view class="row-copy">
-          <text class="row-title">{{item.title}}</text>
-          <text class="row-subtitle">{{item.subtitle}}</text>
-        </view>
-        <text class="row-arrow">›</text>
-      </button>
-    </view>
-  </view>
-
-  <view class="safe-section">
-    <section-title title="安全支持" />
-    <view class="safety-card">
-      <text class="safety-title">如果出现紧急安全风险</text>
-      <text class="safety-text">请先联系身边可信赖的人、学校老师、当地紧急医疗或心理危机支持。本小程序不能提供实时危机干预。</text>
-    </view>
-    <view class="plain-list safety-list">
-      <button wx:for="{{safetyEntries}}" wx:key="title" class="support-row" data-group="safetyEntries" data-index="{{index}}" bindtap="openEntry">
-        <view class="row-copy">
-          <text class="row-title">{{item.title}}</text>
-          <text class="row-subtitle">{{item.subtitle}}</text>
-        </view>
-        <text class="row-arrow">›</text>
-      </button>
-    </view>
-  </view>
-
-  <view class="safe-section">
-    <section-title title="设置与说明" />
-    <view class="plain-list">
-      <button wx:for="{{settingsEntries}}" wx:key="title" class="support-row" data-group="settingsEntries" data-index="{{index}}" bindtap="openEntry">
-        <view class="row-copy">
-          <text class="row-title">{{item.title}}</text>
-          <text class="row-subtitle">{{item.subtitle}}</text>
-        </view>
-        <text class="row-arrow">›</text>
-      </button>
-    </view>
-  </view>
-
-  <view class="quiet-arc-footer" aria-hidden="true"></view>
 </view>

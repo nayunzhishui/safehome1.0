@@ -1,1 +1,14 @@
-Component({properties:{text:{type:String,value:""},consented:{type:Boolean,value:false},sending:{type:Boolean,value:false},error:{type:String,value:""}},methods:{confirm(){this.triggerEvent("confirm");}}});
+Component({
+  options: { styleIsolation: "apply-shared" },
+  properties: {
+    text: { type: String, value: "" },
+    consented: { type: Boolean, value: false },
+    sending: { type: Boolean, value: false },
+    error: { type: String, value: "" },
+  },
+  methods: {
+    confirm() {
+      this.triggerEvent("confirm");
+    },
+  },
+});

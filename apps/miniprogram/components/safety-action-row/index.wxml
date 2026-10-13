@@ -1,1 +1,4 @@
-<view class="action-row"><text class="action-number">{{marker}}</text><text class="step-text">{{text}}</text></view>
+<view class="step-row {{showDivider ? 'step-row--divided' : ''}}">
+  <text class="step-row__number" aria-hidden="true">{{marker}}</text>
+  <text class="step-row__text">{{text}}</text>
+</view>

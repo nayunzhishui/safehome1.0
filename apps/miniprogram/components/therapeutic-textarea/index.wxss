@@ -1,17 +1,27 @@
+/* 多行输入（Figma P3/Field Multi）：高 128、1px 控件描边、圆角 14、15/26。 */
+:host {
+  display: block;
+  width: 100%;
+}
+
 .therapeutic-textarea {
   box-sizing: border-box;
   width: 100%;
-  min-height: 392rpx;
-  padding: var(--ui2-textarea-padding,40rpx);
-  border: 2rpx solid var(--ui2-control-border,var(--safe-border));
-  border-radius: var(--ui2-button-radius,36rpx);
-  background: var(--safe-card);
-  color: var(--safe-title);
-  font-size: var(--ui2-body,28rpx);
-  line-height: var(--ui2-textarea-line-height,46rpx);
+  height: 256rpx;
+  padding: 24rpx 28rpx;
+  border-radius: 28rpx;
+  background: var(--p3-surface);
+  box-shadow: inset 0 0 0 2rpx var(--p3-control);
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
 }
-.therapeutic-textarea--filled { border-color: var(--safe-primary-deep); }
-.therapeutic-textarea--error { border-color: var(--safe-danger); }
-.therapeutic-textarea[disabled] { background: var(--safe-bg-soft); }
 
-.therapeutic-placeholder { color: var(--ui2-muted,var(--safe-muted)); }
+.therapeutic-textarea--error {
+  box-shadow: inset 0 0 0 3rpx var(--p3-risk-ink);
+}
+
+.therapeutic-placeholder {
+  color: var(--p3-muted);
+  opacity: 1;
+}

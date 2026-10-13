@@ -1,9 +1,9 @@
 {
   "navigationBarTitleText": "测一测结果",
   "usingComponents": {
-    "section-title": "/components/section-title/index",
-    "alert-card": "/components/alert-card/index",
-    "bottom-tip-card": "/components/bottom-tip-card/index",
+    "page-state": "/components/page-state/index",
+    "status-pill": "/components/status-pill/index",
+    "p3-section-header": "/components/p3-section-header/index",
     "visualization-state": "/components/visualization-state/index"
   }
 }

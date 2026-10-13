@@ -1,0 +1,78 @@
+/* GroupRow（Figma 639:418）：行上下 13、间距 12；底圆 30；16/24 标题、13/20 说明；箭头 18 透明度 .6；分隔线左缩 42。 */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.p3-group-row {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.p3-group-row__main {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-stack);
+  padding: var(--p3-row-y) 0;
+}
+
+.p3-group-row__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60rpx;
+  height: 60rpx;
+  flex: 0 0 auto;
+  border-radius: 999rpx;
+  background: var(--p3-soft);
+}
+
+.p3-group-row--warm .p3-group-row__badge {
+  background: var(--p3-surface);
+}
+
+.p3-group-row__text {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rpx;
+  overflow-wrap: anywhere;
+}
+
+.p3-group-row__title {
+  display: block;
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+.p3-group-row__subtitle {
+  display: block;
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.p3-group-row--warm .p3-group-row__title,
+.p3-group-row--warm .p3-group-row__subtitle {
+  color: var(--p3-warm-ink);
+}
+
+.p3-group-row__chevron {
+  display: flex;
+  flex: 0 0 auto;
+  opacity: 0.6;
+}
+
+.p3-group-row__divider {
+  height: 2rpx;
+  margin-left: 84rpx;
+  background: var(--p3-hairline);
+}
+
+.p3-group-row--warm .p3-group-row__divider {
+  background: var(--p3-warm-line);
+}

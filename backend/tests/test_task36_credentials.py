@@ -347,7 +347,8 @@ def test_miniprogram_login_forces_temporary_account_to_change_password_before_na
 
     assert "must_change_password" in page_js
     assert "api.changePassword" in page_js
-    assert "首次登录，请先设置新密码" in page_wxml
+    assert "先设置一个新密码" in page_wxml
+    assert "这是首次登录" in page_wxml
     assert "changePassword(data)" in api
     assert 'authChangePassword: "/api/auth/change-password"' in api
     assert 'backendCode !== "invalid_credentials"' in api

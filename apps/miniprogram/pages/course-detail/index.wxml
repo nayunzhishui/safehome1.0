@@ -1,95 +1,115 @@
-<view class="safe-page ui2-page course-detail-page" role="main" aria-label="课程详情">
-  <view wx:if="{{loading}}" class="state-card">
-    <text>正在读取课程内容...</text>
-  </view>
+<view class="p3-page course-detail-page" role="main" aria-label="课程详情">
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取课程内容" />
 
-  <view wx:elif="{{errorMessage}}" class="state-card error">
-    <text>{{errorMessage}}</text>
-    <button class="outline-button" bindtap="retryLoadCourse">重新加载</button>
-  </view>
+  <page-state wx:elif="{{errorMessage}}" kind="error" title="课程内容暂时没有读取成功" description="{{errorMessage}}" action-label="重新加载" bind:action="retryLoadCourse" />
 
-  <view wx:elif="{{course}}">
-    <view class="detail-hero">
-      <text class="hero-title">{{course.title}}</text>
-      <text class="hero-meta">{{course.theme}} · {{course.durationText}} · {{course.sections.length}} 小节</text>
+  <block wx:elif="{{course}}">
+    <view class="course-head">
+      <view class="course-head__text">
+        <text class="p3-serif-title" role="heading" aria-level="1">{{course.title}}</text>
+        <text class="p3-meta">{{course.metaText}}</text>
+      </view>
+      <image class="course-head__art" src="/assets/art/bamboo-slips.svg" aria-hidden="true" />
     </view>
 
-    <view class="safe-section">
-      <section-title title="这节课会练什么" />
-      <view class="learning-panel">
-        <text class="core-concept">{{course.core_concept}}</text>
-        <text wx:for="{{course.learning_objectives}}" wx:key="*this" class="learning-line">{{index + 1}}. {{item}}</text>
+    <view class="course-section">
+      <p3-section-header title="这节课会练什么" />
+      <view class="course-panel course-panel--soft">
+        <text wx:if="{{course.core_concept}}" class="p3-quote">{{course.core_concept}}</text>
+        <text wx:for="{{course.learning_objectives}}" wx:key="*this" class="course-panel__line">{{index + 1}}. {{item}}</text>
       </view>
     </view>
 
-    <view class="safe-section">
-      <section-title title="课程小节" />
-      <view class="section-list">
-        <view wx:for="{{course.sections}}" wx:key="title" class="section-card">
-          <text class="section-index">{{index + 1}}</text>
-          <view class="section-copy">
-            <text class="section-title">{{item.title}}</text>
-            <text class="section-body">{{item.body}}</text>
+    <view wx:if="{{course.sections.length}}" class="course-section">
+      <p3-section-header title="课程小节" />
+      <view class="course-timeline">
+        <p3-timeline-item
+          wx:for="{{course.sections}}"
+          wx:key="title"
+          state="{{index === 0 ? 'current' : 'upcoming'}}"
+          kicker="第 {{index + 1}} 节"
+          title="{{item.title}}"
+          body="{{item.body}}"
+          show-line="{{index < course.sections.length - 1}}"
+        />
+      </view>
+    </view>
+
+    <view wx:if="{{course.common_misconceptions.length}}" class="course-section">
+      <p3-section-header title="常见误区" />
+      <view class="p3-group p3-group--course">
+        <block wx:for="{{course.common_misconceptions}}" wx:key="statement">
+          <view class="course-myth course-myth--divided">
+            <text class="course-myth__label course-myth__label--warm">容易误解</text>
+            <text class="course-myth__text">{{item.statement}}</text>
+          </view>
+          <view class="course-myth {{index < course.common_misconceptions.length - 1 ? 'course-myth--divided' : ''}}">
+            <text class="course-myth__label">可以这样理解</text>
+            <text class="course-myth__text">{{item.correction}}</text>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <view wx:if="{{course.worked_example || course.counter_example}}" class="course-section">
+      <view wx:if="{{course.worked_example}}" class="course-panel course-panel--soft">
+        <text class="course-panel__label">完整示例</text>
+        <text class="course-panel__line">{{course.worked_example}}</text>
+      </view>
+      <view wx:if="{{course.counter_example}}" class="course-panel course-panel--warm">
+        <text class="course-panel__label course-panel__label--warm">常见反例</text>
+        <text class="course-panel__line">{{course.counter_example}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{course.knowledgeChecks.length}}" class="course-section">
+      <p3-section-header title="理解检查" />
+      <view wx:for="{{course.knowledgeChecks}}" wx:key="id" wx:for-item="check" class="course-check">
+        <text class="p3-item-title">{{check.prompt}}</text>
+        <view class="course-check__options" role="radiogroup" aria-label="{{check.prompt}}">
+          <view
+            wx:for="{{check.options}}"
+            wx:key="value"
+            wx:for-item="option"
+            class="course-option {{check.selectedValue === option.value ? 'course-option--active' : ''}}"
+            role="radio"
+            aria-checked="{{check.selectedValue === option.value}}"
+            data-check-id="{{check.id}}"
+            data-value="{{option.value}}"
+            bindtap="chooseKnowledgeAnswer"
+          >
+            <image class="course-option__radio" src="{{check.selectedValue === option.value ? '/assets/icons/p3/radio-20-selected.svg' : '/assets/icons/p3/radio-20-default.svg'}}" aria-hidden="true" />
+            <text class="course-option__label">{{option.label}}</text>
           </view>
         </view>
+        <text wx:if="{{check.feedback}}" class="course-check__feedback" role="status" aria-live="polite">{{check.feedback}}</text>
       </view>
     </view>
 
-    <view class="safe-section">
-      <section-title title="常见误区" />
-      <view wx:for="{{course.common_misconceptions}}" wx:key="statement" class="learning-panel">
-        <text class="example-label">容易误解</text>
-        <text class="learning-line">{{item.statement}}</text>
-        <text class="example-label correction-label">可以这样理解</text>
-        <text class="learning-line">{{item.correction}}</text>
+    <view wx:if="{{course.guided_practice.instruction || course.transfer_task}}" class="course-section">
+      <p3-section-header title="现在练一次" />
+      <text wx:if="{{course.guided_practice.instruction}}" class="p3-body">{{course.guided_practice.instruction}}</text>
+      <text wx:if="{{course.transfer_task}}" class="p3-body-compact">真实场景迁移 · {{course.transfer_task}}</text>
+      <view wx:if="{{course.reflection_prompts.length}}" class="course-reflect">
+        <text class="p3-meta">练习后想一想</text>
+        <text wx:for="{{course.reflection_prompts}}" wx:key="*this" class="p3-body-compact">{{index + 1}}. {{item}}</text>
       </view>
+      <text wx:if="{{course.boosterText}}" class="p3-meta">{{course.boosterText}}</text>
     </view>
 
-    <view class="safe-section example-grid">
-      <view class="learning-panel">
-        <text class="example-label">完整示例</text>
-        <text class="learning-line">{{course.worked_example}}</text>
-      </view>
-      <view class="learning-panel counter-panel">
-        <text class="example-label">常见反例</text>
-        <text class="learning-line">{{course.counter_example}}</text>
-      </view>
+    <view wx:if="{{course.relationCount}}" class="p3-group">
+      <button class="course-row-button" aria-label="去训练页查看关联训练卡" bindtap="goTraining">
+        <p3-group-row icon="leaf" title="关联训练卡" subtitle="本课关联 {{course.relationCount}} 项练习，可到训练页查看" show-divider="{{false}}" />
+      </button>
     </view>
 
-    <view class="safe-section">
-      <section-title title="理解检查" />
-      <view wx:for="{{course.knowledgeChecks}}" wx:key="id" wx:for-item="check" class="learning-panel">
-        <text class="check-prompt">{{check.prompt}}</text>
-        <button wx:for="{{check.options}}" wx:key="value" wx:for-item="option" class="answer-button {{check.selectedValue === option.value ? 'selected' : ''}}" aria-pressed="{{check.selectedValue === option.value}}" data-check-id="{{check.id}}" data-value="{{option.value}}" bindtap="chooseKnowledgeAnswer">{{option.label}}</button>
-        <text wx:if="{{check.feedback}}" class="check-feedback">{{check.feedback}}</text>
-      </view>
+    <view class="course-progress">
+      <text class="p3-item-title">记录本次学习</text>
+      <text class="p3-body-compact">完成表示已经阅读并尝试理解检查，不代表掌握程度或心理状态改善。</text>
+      <text wx:if="{{progressMessage}}" class="course-check__feedback" role="status" aria-live="polite">{{progressMessage}}</text>
+      <button class="p3-btn p3-btn--primary" loading="{{savingProgress}}" disabled="{{savingProgress}}" bindtap="markCourseComplete">记录课程完成</button>
     </view>
 
-    <view class="safe-section practice-band">
-      <section-title title="现在练一次" />
-      <text class="learning-line">{{course.guided_practice.instruction}}</text>
-      <text class="example-label">真实场景迁移</text>
-      <text class="learning-line">{{course.transfer_task}}</text>
-      <text class="example-label">练习后想一想</text>
-      <text wx:for="{{course.reflection_prompts}}" wx:key="*this" class="learning-line">{{index + 1}}. {{item}}</text>
-      <text wx:if="{{course.boosterText}}" class="booster-line">{{course.boosterText}}</text>
-    </view>
-
-    <view wx:if="{{course.relationText}}" class="safe-section">
-      <view class="relation-card">
-        <text class="relation-title">关联训练卡</text>
-        <text class="relation-text">本课关联 {{course.relation_to_cards_or_programs.length}} 项练习，可到训练页查看内容。</text>
-        <button class="safe-secondary-button" bindtap="goTraining">去训练页</button>
-      </view>
-    </view>
-
-    <view class="safe-section progress-band">
-      <text class="core-concept">记录本次学习</text>
-      <text class="learning-line">完成表示已经阅读并尝试理解检查，不代表掌握程度或心理状态改善。</text>
-      <text wx:if="{{progressMessage}}" class="check-feedback">{{progressMessage}}</text>
-      <button class="safe-primary-button" loading="{{savingProgress}}" disabled="{{savingProgress}}" bindtap="markCourseComplete">记录课程完成</button>
-    </view>
-
-    <view class="boundary-note">{{course.boundary_notice}}</view>
-  </view>
+    <text wx:if="{{course.boundary_notice}}" class="p3-footnote">{{course.boundary_notice}}</text>
+  </block>
 </view>

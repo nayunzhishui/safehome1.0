@@ -1,0 +1,50 @@
+/* TabHero（Figma 642:448）：竹林插画 + 衬线标题 30/40 + 一句副标题 13/20；插画底边米纸色与页面衔接。 */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.p3-tab-hero {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  background: var(--p3-paper);
+}
+
+.p3-tab-hero__sky {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: var(--p3-mist);
+}
+
+.p3-tab-hero__art {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 190px;
+}
+
+.p3-tab-hero__title {
+  position: absolute;
+  left: 48rpx;
+  right: 48rpx;
+  color: var(--p3-ink);
+  font-family: var(--p3-font-serif);
+  font-size: 60rpx;
+  line-height: 80rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
+  white-space: nowrap;
+}
+
+.p3-tab-hero__subtitle {
+  position: absolute;
+  left: 48rpx;
+  right: 48rpx;
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+  white-space: nowrap;
+}

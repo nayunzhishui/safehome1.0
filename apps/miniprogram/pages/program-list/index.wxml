@@ -1,32 +1,23 @@
-<view class="safe-page ui2-page program-list-page" role="main" aria-label="项目测试列表">
-  <view class="page-head">
-    <text class="safe-h1">项目测试</text>
+<view class="p3-page program-list-page" role="main" aria-label="项目测试列表">
+  <view wx:if="{{previewMode}}" class="p3-notice">
+    <text class="p3-notice__title">研究者预览</text>
+    <text class="p3-notice__body">草案仅供审核，不可作为正式项目提交。</text>
   </view>
 
-  <view wx:if="{{previewMode}}" class="preview-notice">
-    <view class="preview-copy">
-      <text class="preview-label">研究者预览</text>
-      <text class="preview-text">草案仅供审核，不可作为正式项目提交。</text>
+  <button wx:for="{{programs}}" wx:key="id" class="program-card" data-id="{{item.id}}" data-preview="{{item.preview_only}}" aria-label="打开项目：{{item.title}}" bindtap="openProgram" hover-class="program-card--pressed" hover-stay-time="90">
+    <view class="program-card__status">
+      <status-pill label="{{item.showcase_open ? '体验开放' : item.preview_only ? '待三方审核' : item.review_status === 'production_approved' ? '已开放' : '已批准试点'}}" tone="{{item.preview_only ? 'warning' : 'success'}}" />
+      <text class="p3-meta">{{item.session_count}} 小节</text>
     </view>
-  </view>
-
-  <button wx:for="{{programs}}" wx:key="id" class="program-card {{item.preview_only ? 'program-card--preview' : ''}}" data-id="{{item.id}}" data-preview="{{item.preview_only}}" role="button" aria-label="打开项目：{{item.title}}" bindtap="openProgram" hover-class="program-card--pressed" hover-stay-time="90">
-    <view class="program-head">
-      <text class="program-status">{{item.showcase_open ? '体验开放' : item.preview_only ? '待三方审核' : item.review_status === 'production_approved' ? '已开放' : '已批准试点'}}</text>
-      <text class="program-count">{{item.session_count}} 小节</text>
+    <view class="program-card__title-row">
+      <text class="p3-item-title program-card__title">{{item.title}}</text>
+      <p3-icon name="chevron-right" size="24" tone="ink" />
     </view>
-    <view class="program-body">
-      <view class="program-copy">
-        <text class="program-title">{{item.title}}</text>
-        <text wx:if="{{item.summary}}" class="program-summary">{{item.summary}}</text>
-        <text class="program-meta">受众：{{item.audience}}</text>
-        <view class="construct-row">
-          <text class="construct-label">练习主题：</text>
-          <text wx:for="{{item.target_constructs}}" wx:key="*this" class="construct-chip">{{item}}</text>
-        </view>
-        <text class="program-first">第一节：{{item.first_session_title}}</text>
-      </view>
-      <text class="program-chevron" aria-hidden="true">›</text>
+    <text wx:if="{{item.summary}}" class="program-card__summary">{{item.summary}}</text>
+    <text class="p3-meta">受众：{{item.audience}}</text>
+    <text wx:if="{{item.directionText}}" class="program-card__direction">练习方向：{{item.directionText}}</text>
+    <view wx:if="{{item.first_session_title}}" class="program-card__first">
+      <text class="program-card__first-text">第一节：{{item.first_session_title}}</text>
     </view>
   </button>
 
@@ -35,9 +26,7 @@
   <page-state wx:if="{{!loading && errorMessage}}" kind="error" title="项目内容暂时没能读取" description="{{errorMessage}}" action-label="重新读取" bind:action="loadPrograms" />
 
   <page-state wx:if="{{!loading && !errorMessage && !programs.length}}" kind="empty" title="项目方案正在审核" description="{{availability && availability.message ? availability.message : '当前还没有已完成治理审核的项目测试内容。'}}" />
-  <text wx:if="{{!loading && !errorMessage && !programs.length && availability && availability.pending_review_count}}" class="pending-count">已有 {{availability.pending_review_count}} 个方案完成开发，待研究、心理和伦理审核。</text>
+  <text wx:if="{{!loading && !errorMessage && !programs.length && availability && availability.pending_review_count}}" class="p3-meta program-pending">已有 {{availability.pending_review_count}} 个方案完成开发，待研究、心理和伦理审核。</text>
 
-  <view class="boundary-note">
-    <text class="boundary-copy">{{boundaryNotice}}</text>
-  </view>
+  <text class="p3-footnote">{{boundaryNotice}}</text>
 </view>

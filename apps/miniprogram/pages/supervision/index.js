@@ -6,6 +6,11 @@ const { createResilientForm } = require("../../utils/resilientForm");
 const api = createSafeHomeApi();
 const DRAFT_FIELDS = ["selectedSource", "message", "contact", "riskHint"];
 
+function dayText(value) {
+  const matched = String(value || "").match(/^\d{4}-(\d{2})-(\d{2})/);
+  return matched ? `${Number(matched[1])}月${Number(matched[2])}日` : "";
+}
+
 Page({
   retryServiceEntry() { return this.onLoad(this._entryOptions || {}); },
   returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
@@ -66,17 +71,21 @@ Page({
         api.listDiaries({ limit: 8 }),
         api.listAssessmentResults({ limit: 8 }),
       ]);
+      // 选项按日期称呼（Figma 671:3354：“10月8日 的情绪记录”），说明写记录内容；
+      // 提交给老师的 source_title 仍用带类型的原格式，便于对方一眼看出是什么记录。
       const diaryOptions = (diariesPayload.items || []).map((item) => ({
         type: "diary",
         id: item.id,
-        title: `情绪日记 · ${item.scene || item.parent_emotion || "具体事件"}`,
-        meta: String(item.event_description || "").slice(0, 42) || String(item.created_at || "").slice(0, 10),
+        title: `${dayText(item.created_at) || "最近"} 的情绪记录`,
+        meta: item.scene || String(item.event_description || "").slice(0, 42) || item.parent_emotion || "具体事件",
+        sourceTitle: `情绪日记 · ${item.scene || item.parent_emotion || "具体事件"}`,
       }));
       const assessmentOptions = (assessmentsPayload.items || []).map((item) => ({
         type: "assessment",
         id: item.id,
-        title: `测一测 · ${item.worksheet_title || "支持性测评"}`,
-        meta: String(item.created_at || "").slice(0, 10),
+        title: `${dayText(item.created_at) || "最近"} 的问卷结果`,
+        meta: item.worksheet_title || "支持性测评",
+        sourceTitle: `测一测 · ${item.worksheet_title || "支持性测评"}`,
       }));
       const options = [
         { type: "", id: "", title: "不关联具体记录", meta: "单独提交一条人工支持请求" },
@@ -139,7 +148,7 @@ Page({
       await api.createSupervision({
         source_type: this.data.selectedSource.type || undefined,
         source_id: this.data.selectedSource.id || undefined,
-        source_title: this.data.selectedSource.title || undefined,
+        source_title: this.data.selectedSource.sourceTitle || this.data.selectedSource.title || undefined,
         message,
         contact: this.data.contact.trim(),
         risk_hint: this.data.riskHint.trim(),

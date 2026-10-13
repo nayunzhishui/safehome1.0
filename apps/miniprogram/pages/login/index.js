@@ -103,6 +103,10 @@ Page({
     this.setData({ agreed: values.indexOf("agreed") !== -1 });
   },
 
+  toggleAgreement() {
+    this.setData({ agreed: !this.data.agreed });
+  },
+
   openAgreement() {
     wx.navigateTo({ url: "/pages/settings-detail/index?type=agreement" });
   },

@@ -2,6 +2,7 @@
   "navigationBarTitleText": "记录尝试",
   "usingComponents": {
     "service-consent": "/components/service-consent/index",
-    "page-state": "/components/page-state/index"
+    "page-state": "/components/page-state/index",
+    "p3-intensity-slider": "/components/p3-intensity-slider/index"
   }
 }

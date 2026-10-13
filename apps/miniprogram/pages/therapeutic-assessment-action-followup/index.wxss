@@ -1,18 +1,103 @@
-.action-page { display: grid; align-content: start; gap: 48rpx; padding: 48rpx 40rpx calc(64rpx + env(safe-area-inset-bottom)); background: var(--ui2-canvas); }
-.action-hero { text-align: center; }
-.action-hero .safe-h1 { display: block; margin: 0; font-size: 44rpx; font-weight: 700; line-height: 1.6; }
-.action-card { display: grid; gap: 48rpx; }
-.action-plan { padding: 40rpx; border-radius: 24rpx; background: var(--ui2-soft); }
-.action-plan__content { display: grid; gap: 24rpx; min-width: 0; }
-.plan-label, .action-boundary__title { color: var(--ui2-primary); font-size: 30rpx; font-weight: 700; line-height: 1.6; }
-.action-plan .safe-h3 { margin: 0; color: var(--ui2-ink); font-size: 34rpx; font-weight: 700; line-height: 1.6; }
-.action-purpose, .action-boundary__item { display: block; margin: 0; color: var(--ui2-ink); font-size: 30rpx; line-height: 1.6; overflow-wrap: anywhere; }
-.field-group { display: grid; gap: 24rpx; }
-.field-label { display: block; color: var(--ui2-ink); font-size: 30rpx; font-weight: 700; line-height: 1.6; }
-.option-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16rpx; }
-.option-row--kind { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.option-row button { min-height: 96rpx; display: flex; align-items: center; justify-content: center; padding: 20rpx 8rpx; border: 2rpx solid var(--ui2-control-border); border-radius: 24rpx; background: var(--ui2-surface); color: var(--ui2-primary); font-size: 30rpx; line-height: 1.5; }
-.option-row button.selected { border-color: var(--ui2-primary); background: var(--ui2-soft); font-weight: 700; }
-.action-textarea { box-sizing: border-box; width: 100%; min-height: 280rpx; padding: 24rpx; border: 2rpx solid var(--ui2-control-border); border-radius: 24rpx; background: var(--ui2-surface); color: var(--ui2-ink); font-size: 30rpx; line-height: 1.6; }
-.action-placeholder, .action-note { color: var(--ui2-muted); font-size: 30rpx; line-height: 1.6; }
-.option-row button:focus-visible { outline: 4rpx solid var(--ui2-primary); outline-offset: 4rpx; }
+/* 回看这次小行动（Figma 663:2446）：一张纸白卡——原计划米色块、两组分段、记录框、操作。 */
+.action-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-section);
+  padding-top: 16rpx;
+  padding-bottom: calc(72rpx + env(safe-area-inset-bottom));
+}
+
+.action-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-section);
+  padding: var(--p3-card);
+  border-radius: var(--p3-radius-card);
+  background: var(--p3-surface);
+}
+
+.action-plan {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+  padding: 32rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-paper);
+}
+
+/* 原计划：与反馈信同一条青瓷竹节脊线 */
+.action-spine {
+  display: flex;
+  align-items: stretch;
+  gap: var(--p3-tight);
+}
+
+.action-spine__rail {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+  padding-top: 14rpx;
+}
+
+.action-spine__joint {
+  width: 20rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+  background: var(--p3-primary);
+}
+
+.action-spine__line {
+  flex: 1 0 0;
+  width: 4rpx;
+  background: var(--p3-primary);
+  opacity: 0.35;
+}
+
+.action-spine__copy {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.action-spine__label {
+  color: var(--p3-primary);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.action-spine__body,
+.action-stops__item {
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
+  overflow-wrap: anywhere;
+}
+
+.action-stops {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+}
+
+.action-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+}
+
+.action-buttons__note {
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+  text-align: center;
+}

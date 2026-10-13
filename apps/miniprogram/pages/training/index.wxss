@@ -1,379 +1,182 @@
+/* 训练（Figma 643:636）：TabHero；分段切换；今天推荐（全页唯一实心按钮）；3 天竹节时间线；训练库三阶段类别。 */
+page {
+  background: var(--p3-paper);
+}
+
 .training-page {
-  display: flex;
-  flex-direction: column;
-  gap: 34rpx;
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--p3-paper);
   overflow-x: hidden;
 }
 
-.training-hero {
-  padding: 24rpx 0 32rpx;
-  text-align: center;
-}
-
-.hero-title,
-.hero-summary,
-.entry-kicker,
-.entry-title,
-.entry-desc,
-.recommendation-kicker,
-.recommendation-title,
-.recommendation-label,
-.recommendation-text,
-.recommendation-role,
-.recommendation-card-title,
-.recommendation-purpose,
-.repeat-hint,
-.recommendation-boundary,
-.plan-kicker,
-.plan-title,
-.plan-summary,
-.plan-day-index,
-.plan-day-role,
-.plan-day-card,
-.plan-day-suggestion,
-.plan-boundary,
-.starter-title,
-.starter-text,
-.step-name,
-.step-desc {
-  display: block;
-}
-
-.hero-title {
-  color: var(--safe-title);
-  font-size: 44rpx;
-  font-weight: 900;
-  line-height: 1.2;
-}
-
-.hero-summary {
-  margin-top: 16rpx;
-  color: var(--safe-muted);
-  font-size: 30rpx;
-  line-height: 1.65;
-}
-
-.hero-steps {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 28rpx;
-  padding: 20rpx 0 0;
-  border-top: 1rpx solid var(--safe-border);
-}
-
-.hero-steps text {
-  position: relative;
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  font-weight: 800;
-  line-height: 1.4;
-  text-align: center;
-}
-
-.hero-steps text + text {
-  border-left: 1rpx solid var(--safe-border);
-}
-
-.training-entry-panel,
-.relationship-pilot-entry,
-.plan-card,
-.starter-card,
-.stage-section {
-  padding-top: 30rpx;
-  border-top: 1rpx solid var(--safe-border);
-}
-
-.entry-kicker,
-.recommendation-kicker,
-.plan-kicker {
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  font-weight: 800;
-  line-height: 1.4;
-}
-
-.entry-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 18rpx;
-  border-bottom: 1rpx solid var(--safe-border);
-}
-
-.entry-item {
-  min-width: 0;
-  min-height: 112rpx;
-  margin: 0;
-  padding: 18rpx 10rpx;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: var(--safe-title);
-}
-
-.entry-item::after {
-  border: 0;
-}
-
-.entry-item--active {
-  border-bottom: 4rpx solid var(--safe-primary);
-  color: var(--safe-primary-deep);
-  background: var(--safe-primary-pale);
-}
-
-.entry-title {
-  font-size: 30rpx;
-  font-weight: 850;
-  line-height: 1.35;
-}
-
-.entry-desc {
-  margin-top: 6rpx;
-  color: var(--safe-muted);
-  font-size: 26rpx;
-  line-height: 1.4;
-}
-
-.recommendation-card {
-  padding: 30rpx;
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-primary-pale);
-}
-
-.recommendation-head,
-.recommendation-copy,
-.plan-head,
-.starter-copy {
-  min-width: 0;
-}
-
-.recommendation-title,
-.plan-title,
-.starter-title,
-.relationship-pilot-entry > .entry-title {
-  margin-top: 8rpx;
-  color: var(--safe-title);
-  font-size: 36rpx;
-  font-weight: 900;
-  line-height: 1.35;
-}
-
-.recommendation-label {
-  margin-top: 22rpx;
-  color: var(--safe-title);
-  font-size: 26rpx;
-  font-weight: 850;
-  line-height: 1.4;
-}
-
-.recommendation-text,
-.recommendation-boundary,
-.plan-summary,
-.plan-boundary,
-.starter-text,
-.relationship-pilot-entry > .entry-desc {
-  margin-top: 8rpx;
-  color: var(--safe-muted);
-  font-size: 30rpx;
-  line-height: 1.6;
-}
-
-.recommendation-list {
-  margin-top: 22rpx;
-}
-
-.recommendation-item {
+.training-content {
   display: flex;
-  align-items: flex-start;
-  gap: 18rpx;
-  padding: 22rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-sm);
-  background: var(--safe-card);
+  flex-direction: column;
+  gap: var(--p3-section);
+  padding: 8rpx var(--p3-page-x) 56rpx;
 }
 
-.recommendation-role {
-  flex: 0 0 auto;
-  color: var(--safe-primary-deep);
+.training-today__kicker {
+  display: block;
+  color: var(--p3-muted);
   font-size: 26rpx;
-  font-weight: 850;
+  line-height: 40rpx;
 }
 
-.recommendation-item-copy {
+.training-today__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-tight);
+}
+
+.training-today__title {
+  flex: 1 0 0;
   min-width: 0;
-  flex: 1;
+  display: block;
+  color: var(--p3-ink);
+  font-size: 40rpx;
+  line-height: 56rpx;
+  font-weight: 500;
+  overflow-wrap: anywhere;
 }
 
-.recommendation-card-title {
-  color: var(--safe-title);
-  font-size: 30rpx;
-  font-weight: 850;
-  line-height: 1.4;
+.training-today__pill {
+  flex: 0 0 auto;
 }
 
-.recommendation-purpose,
-.repeat-hint {
-  margin-top: 6rpx;
-  color: var(--safe-muted);
+.training-today__body {
+  display: block;
+  color: var(--p3-muted);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.training-today__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-tight);
+}
+
+.training-today__meta-text {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-muted);
   font-size: 26rpx;
-  line-height: 1.5;
+  line-height: 40rpx;
 }
 
-.recommendation-action,
-.relationship-action,
-.plan-toggle,
-.library-toggle {
+.training-today__why {
+  flex: 0 0 auto;
+  width: auto;
+  min-height: 72rpx;
+  display: flex;
+  align-items: center;
+  color: var(--p3-primary);
+  font-size: 26rpx;
+  line-height: 40rpx;
+  white-space: nowrap;
+}
+
+.training-today__reason {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  padding: 28rpx 32rpx;
+  border-radius: 32rpx;
+  background: var(--p3-mist);
+}
+
+.training-today__reason-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.training-today__reason-label {
+  color: var(--p3-primary);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.training-today__reason-text {
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.training-today__boundary {
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.training-pilot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+  padding: 36rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-surface);
+}
+
+.training-pilot__kicker {
+  color: var(--p3-primary);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.training-pilot__title {
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+.training-pilot__desc {
+  color: var(--p3-muted);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.training-pilot .p3-btn {
+  margin-top: 8rpx;
+}
+
+.training-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+}
+
+.training-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.training-timeline__item {
+  display: block;
   width: 100%;
-  min-height: 88rpx;
-  margin: 24rpx 0 0;
-  border-radius: var(--safe-radius-sm);
-  font-size: 30rpx;
-  font-weight: 850;
-}
-
-.recommendation-action::after,
-.relationship-action::after,
-.plan-toggle::after,
-.library-toggle::after,
-.plan-day::after {
-  border: 0;
-}
-
-.plan-toggle,
-.library-toggle {
-  border: 2rpx solid var(--safe-primary);
-  background: transparent;
-  color: var(--safe-primary-deep);
-}
-
-.plan-days {
-  display: grid;
-  gap: 0;
-  margin-top: 18rpx;
-  border-top: 1rpx solid var(--safe-border);
-}
-
-.plan-day {
-  width: 100%;
-  min-height: 88rpx;
-  margin: 0;
-  padding: 22rpx 0;
-  border: 0;
-  border-bottom: 1rpx solid var(--safe-border);
-  border-radius: 0;
-  background: transparent;
+  min-height: 0;
   text-align: left;
 }
 
-.plan-day-index,
-.plan-day-role {
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  font-weight: 800;
-}
-
-.plan-day-card {
-  margin-top: 6rpx;
-  color: var(--safe-title);
-  font-size: 30rpx;
-  font-weight: 850;
-  line-height: 1.4;
-}
-
-.plan-day-suggestion {
-  margin-top: 6rpx;
-  color: var(--safe-muted);
-  font-size: 26rpx;
-  line-height: 1.5;
-}
-
-.starter-head {
+.training-stage {
   display: flex;
-  align-items: flex-start;
-  gap: 18rpx;
+  flex-direction: column;
+  gap: var(--p3-stack);
+  padding: 36rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-surface);
 }
 
-.starter-icon {
-  width: 52rpx;
-  height: 52rpx;
+.training-stage__chips {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 52rpx;
-  border-radius: 50%;
-  background: var(--safe-primary-soft);
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  font-weight: 900;
+  flex-wrap: wrap;
+  gap: var(--p3-tight);
 }
 
-.starter-title {
-  margin-top: 0;
+.training-stage__chip {
+  width: auto;
+  flex: 0 0 auto;
 }
-
-.starter-steps {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12rpx;
-  margin-top: 22rpx;
-}
-
-.starter-step {
-  min-width: 0;
-  padding: 18rpx 14rpx;
-  border-radius: var(--safe-radius-sm);
-  background: var(--safe-primary-pale);
-}
-
-.step-name {
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  font-weight: 850;
-  line-height: 1.35;
-}
-
-.step-desc {
-  margin-top: 6rpx;
-  color: var(--safe-muted);
-  font-size: 26rpx;
-  line-height: 1.4;
-}
-
-.task-list {
-  display: grid;
-  gap: 18rpx;
-  margin-top: 18rpx;
-}
-
-.repeat-hint,
-.recommendation-boundary,
-.plan-boundary {
-  font-size: 26rpx;
-}
-
-@media (max-width: 360px) {
-  .entry-grid,
-  .starter-steps {
-    grid-template-columns: 1fr;
-  }
-
-  .entry-item {
-    min-height: 88rpx;
-    text-align: left;
-  }
-
-  .entry-item--active {
-    border-right: 0;
-    border-bottom-width: 2rpx;
-  }
-}
-
-.training-page { box-sizing:border-box; padding-left:48rpx; padding-right:48rpx; }
-.entry-grid { grid-template-columns:1fr; border:0; margin-top:0; }
-.entry-item { display:block; box-sizing:border-box; width:100%; padding:24rpx 0; text-align:left; border-bottom:1rpx solid var(--safe-border); }
-.entry-item--active { background:transparent; border:0; min-height:0; padding-top:0; color:var(--safe-primary-deep); }
-.recommendation-item { border:0; background:transparent; padding:20rpx 0; }
-.starter-card { border:0; padding:32rpx; background:var(--ui2-soft); border-radius:28rpx; }
-.starter-steps { grid-template-columns:1fr; gap:0; }
-.starter-step { display:flex; gap:20rpx; padding:18rpx 0; border-radius:0; background:transparent; border-bottom:1rpx solid var(--safe-border); }
-.step-desc { margin-top:0; }
-.task-list { --ui2-training-border:0; --ui2-training-padding:28rpx 0; --ui2-training-radius:0; }

@@ -1,0 +1,10 @@
+<view class="p3-section-header">
+  <view class="p3-section-header__label">
+    <view class="p3-section-header__mark" aria-hidden="true">
+      <view class="p3-section-header__node p3-section-header__node--long"></view>
+      <view class="p3-section-header__node p3-section-header__node--short"></view>
+    </view>
+    <text class="p3-section-header__title" role="heading" aria-level="2">{{title}}</text>
+  </view>
+  <text wx:if="{{subtitle}}" class="p3-section-header__subtitle">{{subtitle}}</text>
+</view>

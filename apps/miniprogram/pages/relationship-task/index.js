@@ -206,7 +206,7 @@ Page({
     const previous = this.currentStroke[this.currentStroke.length - 1];
     this.currentStroke.push({ x: touch.x, y: touch.y });
     const ctx = wx.createCanvasContext("relationshipCanvas", this);
-    ctx.setStrokeStyle("#4f7c6b");
+    ctx.setStrokeStyle("#23666e");
     ctx.setLineWidth(3);
     ctx.setLineCap("round");
     ctx.beginPath();
@@ -236,7 +236,7 @@ Page({
   redrawCanvas() {
     const ctx = wx.createCanvasContext("relationshipCanvas", this);
     ctx.clearRect(0, 0, 1000, 1000);
-    ctx.setStrokeStyle("#4f7c6b");
+    ctx.setStrokeStyle("#23666e");
     ctx.setLineWidth(3);
     ctx.setLineCap("round");
     this.strokes.forEach((stroke) => {
@@ -318,9 +318,15 @@ Page({
     this.scheduleDraftSave();
   },
 
+  // 点说明文字也能勾选，和登录页协议勾选一致。
+  flipConsent() {
+    this.setData({ consent: !this.data.consent });
+    this.scheduleDraftSave();
+  },
+
   getCanvasSize() {
     return new Promise((resolve) => {
-      wx.createSelectorQuery().in(this).select(".drawing-canvas").boundingClientRect((rect) => {
+      wx.createSelectorQuery().in(this).select(".task-canvas__surface").boundingClientRect((rect) => {
         resolve({ width: rect && rect.width ? rect.width : 320, height: rect && rect.height ? rect.height : 260 });
       }).exec();
     });

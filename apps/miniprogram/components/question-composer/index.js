@@ -1,1 +1,18 @@
-Component({properties:{value:{type:String,value:""},sending:{type:Boolean,value:false},disabled:{type:Boolean,value:false},error:{type:String,value:""},guidance:{type:String,value:""}},methods:{onInput(event){this.triggerEvent("input",{value:event.detail.value});},onSubmit(){this.triggerEvent("submit");}}});
+Component({
+  options: { styleIsolation: "apply-shared" },
+  properties: {
+    value: { type: String, value: "" },
+    sending: { type: Boolean, value: false },
+    disabled: { type: Boolean, value: false },
+    error: { type: String, value: "" },
+    guidance: { type: String, value: "" },
+  },
+  methods: {
+    onInput(event) {
+      this.triggerEvent("input", { value: event.detail.value });
+    },
+    onSubmit() {
+      this.triggerEvent("submit");
+    },
+  },
+});

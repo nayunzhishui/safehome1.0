@@ -1,238 +1,76 @@
+/* 陪伴案例（Figma 655:2036）：来源说明 → 横滑主题 → 案例列表（选中项浅青瓷块）→ 案例拆解卡 → 关联练习 → 边界说明。 */
 .hot-topics-page {
-  padding-bottom: 48rpx;
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-section);
+  padding-top: 16rpx;
+  padding-bottom: calc(72rpx + env(safe-area-inset-bottom));
 }
 
-.topic-hero {
-  padding: 12rpx 0 8rpx;
-  text-align: center;
-}
-
-.hero-kicker,
-.hero-title,
-.hero-text {
-  display: block;
-}
-
-.hero-kicker {
-  margin-bottom: 12rpx;
-  color: var(--safe-primary-deep);
-  font-size: 24rpx;
-  font-weight: 800;
-}
-
-.hero-title {
-  color: var(--safe-title);
-  font-size: 46rpx;
-  font-weight: 800;
-  line-height: 1.35;
-}
-
-.hero-text {
-  margin-top: 14rpx;
-  color: var(--safe-text);
-  font-size: 26rpx;
-  line-height: 1.7;
-}
-
-.tag-scroll {
-  width: 100%;
+/* 主题标签横向滑动，右侧可露出半个提示还能滑 */
+.topic-tags {
+  width: auto;
+  margin: 0 calc(-1 * var(--p3-page-x));
   white-space: nowrap;
 }
 
-.tag-list {
+.topic-tags__row {
   display: inline-flex;
-  gap: 14rpx;
-  padding-right: 24rpx;
+  align-items: center;
+  gap: var(--p3-tight);
+  padding: 0 var(--p3-page-x);
 }
 
-.topic-tag {
-  min-height: 64rpx;
-  margin: 0;
-  padding: 0 24rpx;
-  border: 1rpx solid #efe7dc;
-  border-radius: 32rpx;
-  background: #ffffff;
-  color: #666666;
-  font-size: 24rpx;
-  font-weight: 700;
-  line-height: 64rpx;
-}
-
-.topic-tag.active {
-  border-color: #7ccb8a;
-  background: #eef8e9;
-  color: #4caf7d;
-}
-
-.topic-list {
-  display: grid;
-  gap: 18rpx;
-  margin-top: 20rpx;
-}
-
-.topic-card {
+.topic-section {
   display: flex;
-  gap: 18rpx;
-  min-height: 148rpx;
-  margin: 0;
-  padding: 20rpx;
-  border: 1rpx solid #efe7dc;
-  border-radius: var(--safe-radius-md);
-  background: #ffffff;
-  box-shadow: var(--safe-shadow-card);
+  flex-direction: column;
+  gap: var(--p3-stack);
+}
+
+.topic-row {
+  display: block;
+  width: 100%;
+  min-height: 0;
   text-align: left;
 }
 
-.topic-card.active {
-  border-color: #7ccb8a;
-  background: #fbfef9;
-}
-
-.topic-card:active,
-.practice-button:active,
-.home-button:active {
-  transform: scale(0.99);
-}
-
-.topic-mark {
-  flex: 0 0 8rpx;
-  width: 8rpx;
-  height: 44rpx;
-  margin-top: 4rpx;
-  border-radius: 999rpx;
-  background: var(--safe-primary);
-}
-
-.topic-copy {
-  min-width: 0;
-  flex: 1;
-}
-
-.topic-title,
-.topic-summary {
-  display: block;
-}
-
-.topic-title {
-  color: #333333;
-  font-size: 28rpx;
-  font-weight: 800;
-  line-height: 1.45;
-}
-
-.topic-meta {
+.topic-current {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12rpx;
-  margin-top: 12rpx;
-  color: #999999;
-  font-size: 24rpx;
-}
-
-.topic-meta text:first-child {
-  min-height: 38rpx;
-  display: inline-flex;
-  align-items: center;
-  padding: 0 14rpx;
-  border-radius: 19rpx;
-  background: #fff2df;
-  color: #f28b38;
-}
-
-.topic-summary {
-  margin-top: 12rpx;
-  color: #666666;
-  font-size: 24rpx;
-  line-height: 1.6;
-}
-
-.detail-card,
-.practice-card,
-.boundary-card {
-  margin-top: 20rpx;
-  border: 1rpx solid #efe7dc;
-  border-radius: 24rpx;
-  background: #ffffff;
-  box-shadow: 0 12rpx 32rpx rgba(80, 64, 45, 0.08);
-}
-
-.detail-card {
+  flex-direction: column;
+  gap: 8rpx;
   padding: 28rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-soft);
 }
 
-.detail-title {
-  display: block;
-  margin-bottom: 20rpx;
-  color: #333333;
-  font-size: 32rpx;
-  font-weight: 800;
-  line-height: 1.45;
-}
-
-.detail-block {
-  padding: 20rpx 0;
-  border-top: 1rpx solid #efe7dc;
-}
-
-.detail-label,
-.detail-text {
-  display: block;
-}
-
-.detail-label {
-  color: #4caf7d;
-  font-size: 24rpx;
-  font-weight: 800;
-}
-
-.detail-text {
-  margin-top: 8rpx;
-  color: #555555;
+.topic-current__meta {
+  color: var(--p3-primary);
   font-size: 26rpx;
-  line-height: 1.7;
+  line-height: 40rpx;
 }
 
-.practice-card {
-  padding: 20rpx;
+.topic-breakdown {
+  gap: var(--p3-stack);
 }
 
-.practice-button {
-  margin-top: 20rpx;
+.topic-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
 }
 
-.boundary-card {
-  padding: 24rpx;
-  background: #fff9e8;
-  color: #735b21;
-  font-size: 25rpx;
-  line-height: 1.7;
+.topic-block__label {
+  color: var(--p3-primary);
+  font-size: 26rpx;
+  line-height: 40rpx;
 }
 
-.home-button {
-  width: 100%;
+.topic-block__label--warm {
+  color: var(--p3-warm-ink);
 }
 
-/* UIproduct2: task-scoped visual refinement, no business behavior. */
-.ui2-page { --ui2-section-accent-display:none; --safe-shadow-card:none; --safe-shadow-float:none; box-sizing:border-box; background:var(--ui2-canvas); padding:48rpx 40rpx calc(64rpx + env(safe-area-inset-bottom)); }
-.ui2-page .page-title,.ui2-page .hero-title,.ui2-page .history-title,.ui2-page .result-title { font-size:44rpx; line-height:1.6; font-weight:700; text-align:center; color:var(--ui2-ink); }
-.ui2-page .safe-primary-button,.ui2-page .safe-outline-button { min-height:96rpx; padding:22rpx 24rpx; border-radius:24rpx; font-size:30rpx; line-height:1.6; box-shadow:none; }
-.ui2-page .ui2-placeholder { color:var(--ui2-muted); }
-.ui2-page .topic-hero { padding:0 0 24rpx; }
-.ui2-page .case-source { display:block; padding:16rpx 0; font-size:26rpx; color:var(--ui2-muted); }
-.ui2-page .topic-tag { min-height:96rpx; padding:20rpx 24rpx; line-height:1.6; font-size:30rpx; border:2rpx solid var(--ui2-control-border); border-radius:24rpx; background:transparent; color:var(--ui2-primary); }
-.ui2-page .topic-tag.active { background:var(--ui2-soft); border-bottom-width:5rpx; }
-.ui2-page .topic-card { padding:28rpx; border:1rpx solid var(--ui2-line); border-radius:24rpx; background:var(--ui2-surface); box-shadow:none; }
-.ui2-page .topic-card.active { background:var(--ui2-soft); border:2rpx solid var(--ui2-primary); }
-.ui2-page .topic-mark { display:none; }
-.ui2-page .topic-title,.ui2-page .detail-title { color:var(--ui2-ink); font-size:32rpx; line-height:1.6; }
-.ui2-page .topic-summary,.ui2-page .detail-text { color:var(--ui2-muted); font-size:30rpx; line-height:1.7; }
-.ui2-page .topic-meta,.ui2-page .topic-meta text:first-child { color:var(--ui2-muted); font-size:26rpx; background:transparent; padding:0; }
-.ui2-page .detail-card,.ui2-page .practice-card { padding:24rpx 0; border:0; border-radius:0; background:transparent; box-shadow:none; }
-.ui2-page .detail-label { font-size:30rpx; color:var(--ui2-ink); }
-.ui2-page .detail-block { border-color:var(--ui2-line); padding:24rpx 0; }
-.ui2-page .detail-block:last-child { padding:28rpx; background:var(--ui2-soft); border:0; border-radius:24rpx; }
-.ui2-page .boundary-card { padding:24rpx 0; border:0; border-radius:0; background:transparent; box-shadow:none; font-size:28rpx; line-height:1.7; color:var(--ui2-muted); }
-.ui2-page .practice-button { width:100%; }
-.ui2-page .topic-card:active,.ui2-page .practice-button:active,.ui2-page .home-button:active { transform:none; }
-
-.ui2-page { --ui2-training-tag-color:#765323; }
+.topic-block__text {
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}

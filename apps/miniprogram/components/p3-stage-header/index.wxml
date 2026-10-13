@@ -1,0 +1,9 @@
+<view class="p3-stage-header">
+  <view class="p3-stage-header__head">
+    <view class="p3-stage-header__joints" aria-hidden="true">
+      <view wx:for="{{joints}}" wx:key="*this" class="p3-stage-header__joint {{item <= level ? '' : 'p3-stage-header__joint--later'}}"></view>
+    </view>
+    <text class="p3-stage-header__title" role="heading" aria-level="3">{{title}}</text>
+  </view>
+  <text wx:if="{{subtitle}}" class="p3-stage-header__subtitle">{{subtitle}}</text>
+</view>

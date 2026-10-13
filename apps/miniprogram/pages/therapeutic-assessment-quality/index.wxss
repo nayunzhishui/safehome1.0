@@ -1,350 +1,219 @@
+/* 评估质量与更正（Figma 664:2477 参与者 / 664:2576 复核人员）：纸白卡片分区，复核条目横滑切换。 */
 .quality-page {
   display: flex;
   flex-direction: column;
-  gap: 48rpx;
-  padding-top: 48rpx;
-  padding-bottom: calc(64rpx + env(safe-area-inset-bottom));
-  background: var(--ui2-canvas);
-}
-
-.quality-hero {
-  padding: 0;
-  text-align: center;
-}
-
-.quality-kicker,
-.quality-title,
-.section-kicker,
-.section-title,
-.runtime-title,
-.runtime-copy,
-.state-title,
-.state-copy,
-.detail-title,
-.dimension-title,
-.boundary-copy,
-.submission-consequence,
-.page-boundary,
-.field-heading,
-.item-meta {
-  display: block;
-}
-
-.quality-kicker,
-.section-kicker {
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  font-weight: 750;
-  letter-spacing: 1rpx;
-}
-
-.quality-title {
-  margin-top: 0;
-  color: var(--safe-title);
-  font-size: 44rpx;
-  font-weight: 700;
-  line-height: 1.6;
-  text-align: center;
-}
-
-.quality-card,
-.runtime-card,
-.state-card {
-  box-sizing: border-box;
-  width: 100%;
+  gap: var(--p3-section);
+  padding-top: 16rpx;
+  padding-bottom: calc(72rpx + env(safe-area-inset-bottom));
 }
 
 .quality-card {
-  padding: 0 0 32rpx;
-  border-bottom: 1rpx solid var(--safe-border);
-  background: transparent;
-}
-
-.runtime-card,
-.state-card {
-  padding: 24rpx 28rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-primary-pale);
-}
-
-.runtime-card--paused,
-.state-card--error {
-  border-color: var(--safe-warning);
-  background: #fff7e8;
-}
-
-.state-card--notice {
-  background: var(--safe-primary-pale);
-}
-
-.runtime-title,
-.state-title {
-  color: var(--safe-title);
-  font-size: 30rpx;
-  font-weight: 800;
-  line-height: 1.5;
-}
-
-.runtime-copy,
-.state-copy,
-.boundary-copy,
-.submission-consequence,
-.page-boundary {
-  color: var(--safe-muted);
-  font-size: 30rpx;
-  line-height: 1.65;
-}
-
-.runtime-copy,
-.state-copy {
-  margin-top: 8rpx;
-}
-
-.section-heading {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20rpx;
+  flex-direction: column;
+  gap: var(--p3-stack);
+  padding: var(--p3-card);
+  border-radius: var(--p3-radius-card);
+  background: var(--p3-surface);
 }
 
-.section-title {
-  margin-top: 10rpx;
-  color: var(--safe-title);
-  font-size: 32rpx;
-  font-weight: 700;
-  line-height: 1.4;
+.quality-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-tight);
 }
 
-.count-pill {
-  flex: none;
-  color: var(--safe-primary-deep);
+.quality-card__titles {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 4rpx;
+  min-width: 0;
+}
+
+/* 生产门禁检查：图标 + 名称 + 证据状态，细线分隔 */
+.gate-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.gate-row {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-tight);
+  padding: 24rpx 0;
+}
+
+.gate-row--divided {
+  border-bottom: 2rpx solid var(--p3-hairline);
+}
+
+.gate-row__label {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
+}
+
+.gate-row__status {
+  flex: 0 0 auto;
+  color: var(--p3-primary);
   font-size: 26rpx;
-  font-weight: 750;
-  line-height: 1.5;
+  line-height: 40rpx;
 }
 
-.gate-grid {
-  display: grid;
-  margin-top: 26rpx;
-  border-top: 1rpx solid var(--safe-border);
+.gate-row__status--missing {
+  color: var(--p3-warm-ink);
 }
 
-.gate-item {
-  min-height: 96rpx;
+/* 选择器字段（Figma P3/Field Select） */
+.quality-select {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20rpx;
-  padding: 0;
-  border: 0;
-  border-bottom: 1rpx solid var(--safe-border);
-  border-radius: 0;
-  background: transparent;
-}
-
-.gate-label {
-  color: var(--safe-title);
-  font-size: 30rpx;
-  font-weight: 750;
-}
-
-.field-heading {
-  margin-top: 40rpx;
-  color: var(--safe-title);
-  font-size: 30rpx;
-  font-weight: 800;
-  line-height: 1.45;
-}
-
-.record-select-row,
-.review-summary {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  align-items: stretch;
-  margin-top: 14rpx;
-}
-
-.record-select-row picker {
-  min-width: 0;
-}
-
-.picker-field,
-.text-input,
-.text-area {
+  gap: var(--p3-tight);
   box-sizing: border-box;
-  width: 100%;
-  margin-top: 14rpx;
-  padding: 22rpx 24rpx;
-  border: 2rpx solid var(--ui2-control-border);
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-card);
-  color: var(--safe-title);
-  font-size: 30rpx;
-  line-height: 1.55;
-}
-
-.record-select-row .picker-field {
   min-height: 96rpx;
-  display: flex;
-  align-items: center;
-  margin-top: 0;
+  padding: 22rpx 28rpx;
+  border-radius: 28rpx;
+  background: var(--p3-surface);
+  box-shadow: inset 0 0 0 2rpx var(--p3-control);
 }
 
-.text-area {
-  min-height: 280rpx;
-  line-height: 1.65;
-}
-
-.text-area--short { min-height: 200rpx; }
-
-.field-label {
-  display: block;
-  margin-top: 40rpx;
-  color: var(--safe-title);
+.quality-select__value {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-ink);
   font-size: 30rpx;
-  font-weight: 800;
-  line-height: 1.45;
+  line-height: 52rpx;
 }
 
-.primary-button,
-.outline-button {
-  min-height: 96rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 28rpx;
-  border-radius: var(--safe-radius-md);
-  font-size: 30rpx;
-  font-weight: 700;
-}
-
-.primary-button {
-  border: 0;
-  background: var(--ui2-primary);
-  color: var(--safe-card);
-}
-
-.outline-button {
-  border: 2rpx solid var(--safe-primary);
-  background: transparent;
-  color: var(--safe-primary-deep);
-}
-
-.submission-consequence {
-  margin-top: 20rpx;
-  color: var(--safe-primary-deep);
+.quality-consequence {
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
   text-align: center;
 }
 
+/* 复核条目横滑：圆角块，当前项青瓷浅底 + 1px 青瓷描边 */
 .item-tabs {
   width: 100%;
-  margin-top: 24rpx;
   white-space: nowrap;
 }
 
-.item-tab {
-  min-width: 220rpx;
-  min-height: 96rpx;
+.item-tabs__row {
   display: inline-flex;
+  gap: var(--p3-tight);
+}
+
+.item-tab {
+  display: inline-flex;
+  flex: 0 0 auto;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
-  margin-right: 16rpx;
-  padding: 14rpx 18rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-card);
-  color: var(--safe-title);
+  gap: 4rpx;
+  width: auto;
+  white-space: nowrap;
+  min-height: 88rpx;
+  padding: 20rpx 24rpx;
+  border-radius: var(--p3-radius-tile);
+  background: var(--p3-paper);
+  box-shadow: inset 0 0 0 2rpx var(--p3-hairline);
   text-align: left;
 }
 
-.item-tab.is-active {
-  border-color: var(--safe-primary);
-  background: var(--safe-primary-pale);
+.item-tab--active {
+  background: var(--p3-soft);
+  box-shadow: inset 0 0 0 2rpx var(--p3-primary);
 }
 
-.item-meta {
-  margin-top: 6rpx;
-  color: var(--safe-muted);
+.item-tab__title {
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.item-tab--active .item-tab__title {
+  color: var(--p3-primary);
+}
+
+.item-tab__meta {
+  color: var(--p3-muted);
   font-size: 26rpx;
-  line-height: 1.5;
+  line-height: 40rpx;
 }
 
 .quality-detail {
-  margin-top: 40rpx;
-  padding-top: 30rpx;
-  border-top: 1rpx solid var(--safe-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
 }
 
-.review-summary {
-  margin-top: 0;
+.quality-detail__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
 }
 
-.review-summary__copy {
-  min-width: 0;
-  padding: 8rpx 0 18rpx;
+/* 六项结论：米纸块，每项一行“名称 · 结论 · 下拉” */
+.dimension-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0 28rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-paper);
 }
 
-.detail-title,
-.dimension-title {
-  color: var(--safe-title);
-  font-size: 30rpx;
-  font-weight: 800;
-  line-height: 1.5;
-}
-
-.dimension-card,
-.participant-incident {
-  margin-top: 0;
+.dimension-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
   padding: 24rpx 0;
-  border: 0;
-  border-bottom: 1rpx solid var(--safe-border);
-  border-radius: 0;
-  background: transparent;
 }
 
-.resolution-card {
-  margin-top: 24rpx;
-  padding: 24rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-primary-pale);
+.dimension-item--divided {
+  border-bottom: 2rpx solid var(--p3-hairline);
 }
 
-.dimension-fields {
-  display: grid;
-  gap: 12rpx;
+.dimension-item__row {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-tight);
+  min-height: 52rpx;
 }
 
-.empty-state {
-  padding: 48rpx 0 18rpx;
-  text-align: center;
+.dimension-item__label {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
 }
 
-.production-gate-card .boundary-copy {
-  margin-top: 24rpx;
+.dimension-item__status {
+  flex: 0 0 auto;
+  color: var(--p3-primary);
+  font-size: 28rpx;
+  line-height: 44rpx;
 }
 
-.page-boundary {
-  padding: 16rpx 0 0;
-  border-top: 1rpx solid var(--safe-border);
-  text-align: center;
+.dimension-item__status--concern {
+  color: var(--p3-warm-ink);
 }
 
-@media (max-width: 360px) {
-  .section-heading { align-items: flex-start; }
-  .quality-title { font-size: 44rpx; }
+.dimension-item__status--not_applicable {
+  color: var(--p3-muted);
 }
 
-.picker-field { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; min-height: 96rpx; }
-.picker-copy { min-width: 0; flex: 1; overflow-wrap: anywhere; }
-.picker-arrow { flex: 0 0 auto; color: var(--ui2-primary); font-size: 30rpx; }
-.quality-placeholder { color: var(--ui2-muted); }
-.primary-button, .outline-button { padding: 20rpx 24rpx; line-height: 1.5; border-radius: 24rpx; }
-.section-heading { flex-wrap: wrap; }
-.count-pill { max-width: 100%; overflow-wrap: anywhere; }
-.item-tab { border-color: var(--ui2-control-border); }
-.item-tab.is-active { background: var(--ui2-soft); }
-.review-timing { display: block; color: var(--ui2-muted); font-size: 30rpx; line-height: 1.6; }
+.quality-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+}
+
+/* 参与者自己的更正与投诉：整行可点，弹出处理详情 */
+.quality-row {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  text-align: left;
+}

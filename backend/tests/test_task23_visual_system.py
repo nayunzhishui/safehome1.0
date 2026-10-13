@@ -32,7 +32,7 @@ def test_home_uses_one_shared_journey_action_card_in_the_frozen_position():
 
     core_index = markup.index('class="home-capture"')
     journey_index = markup.index("<journey-action-card")
-    three_step_index = markup.index('title="如何开始"')
+    three_step_index = markup.index('class="home-footer"')
     assert journey_index < core_index < three_step_index
     assert markup.count("<journey-action-card") == 1
     assert 'bind:action="openTodayAction"' in markup

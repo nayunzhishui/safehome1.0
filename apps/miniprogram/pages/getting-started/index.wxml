@@ -1,76 +1,77 @@
-<view class="safe-page ui2-page getting-page" role="main" aria-label="三步开始">
-  <view class="intro-block">
-    <text class="intro-title">从一件具体小事开始</text>
+<view class="getting-page" role="main" aria-label="三步开始">
+  <view class="getting-intro">
+    <text class="p3-serif-title" role="heading" aria-level="1">从一件具体小事开始</text>
     <text class="intro-text">把一次亲子冲突写成一个小片段，看看反馈里的线索，再挑一个今天能做的小动作。</text>
     <text class="intro-text">也可以先“测一测”了解自己，大约 5 分钟；没时间写的话，在首页点一下“情绪温度计”记下此刻的感受。</text>
   </view>
 
-  <view class="before-start" aria-label="开始前的说明与保护入口">
-    <text class="before-start-title">开始前，先了解</text>
-    <text class="before-start-copy">查看说明不会自动记录同意；涉及具体用途时，你仍需单独作出选择。</text>
-    <navigator class="before-start-link" url="/pages/settings-detail/index?type=consent">知情与边界 <text aria-hidden="true">›</text></navigator>
-    <navigator class="before-start-link" url="/pages/settings-detail/index?type=privacy">隐私说明 <text aria-hidden="true">›</text></navigator>
-    <navigator class="before-start-link" url="/pages/settings-detail/index?type=protection">参与者保护 <text aria-hidden="true">›</text></navigator>
+  <view class="getting-section">
+    <p3-section-header title="三步练习" />
+    <view class="getting-timeline">
+      <p3-timeline-item
+        wx:for="{{exerciseSteps}}"
+        wx:key="kicker"
+        state="current"
+        kicker="{{item.kicker}}"
+        title="{{item.title}}"
+        body="{{item.text}}"
+        show-line="{{index < exerciseSteps.length - 1}}"
+      />
+    </view>
   </view>
 
-  <view class="practice-list">
-    <view class="practice-step">
-      <text class="step-number" aria-hidden="true">01</text>
-      <view class="step-content">
-        <text class="step-title">写一个片段</text>
-        <text class="step-text">{{exerciseSteps[0].text}}</text>
-        <view class="reason-list">
-          <view wx:for="{{eventReasons}}" wx:key="*this" class="reason-row">
-            <text class="reason-dot" aria-hidden="true">•</text>
-            <text class="reason-text">{{item}}</text>
-          </view>
+  <view class="p3-notice" aria-label="为什么写具体的小事">
+    <text class="p3-notice__title">为什么写具体的小事</text>
+    <text wx:for="{{eventReasons}}" wx:key="*this" class="p3-notice__body">{{item}}</text>
+  </view>
+
+  <view class="getting-section">
+    <p3-section-header title="情绪反射弧的七个位置" subtitle="第二步就在这里找一个位置" />
+    <view class="getting-arc" role="list" aria-label="情绪反射弧七个位置">
+      <view wx:for="{{arcNodes}}" wx:key="label" class="getting-arc__row" role="listitem">
+        <view class="getting-arc__rail" aria-hidden="true">
+          <view class="getting-arc__joint" style="opacity: {{item.opacity}};"></view>
         </view>
-      </view>
-    </view>
-
-    <view class="practice-step">
-      <text class="step-number" aria-hidden="true">02</text>
-      <view class="step-content">
-        <text class="step-title">看反馈，标一个位置</text>
-        <text class="step-text">{{exerciseSteps[1].text}}</text>
-        <text class="arc-intro">保存后先看支持性反馈，再对照以下七个位置梳理发生的全过程：</text>
-        <view class="arc-chain" role="list" aria-label="情绪反射弧七个位置">
-          <view wx:for="{{arcNodes}}" wx:key="*this" class="arc-row" role="listitem">
-            <text class="arc-index">{{index + 1}}</text>
-            <text class="arc-node">{{item}}</text>
-          </view>
-        </view>
-      </view>
-    </view>
-
-    <view class="practice-step practice-step-last">
-      <text class="step-number" aria-hidden="true">03</text>
-      <view class="step-content">
-        <text class="step-title">做一个动作</text>
-        <text class="step-text">{{exerciseSteps[2].text}}</text>
-        <text class="step-route">记录一次 → 查看反馈线索 → 去训练中心练一个小动作</text>
-        <text class="step-text">训练中心里还有三个分节书写的练习项目，适合想多练几次的时候。</text>
+        <text class="getting-arc__index">{{index + 1}}</text>
+        <text class="getting-arc__label">{{item.label}}</text>
       </view>
     </view>
   </view>
 
-  <view class="boundary-block" aria-label="使用边界">
-    <text class="boundary-title">使用边界</text>
-    <view wx:for="{{boundaries}}" wx:key="*this" class="boundary-row">
-      <text class="boundary-dot" aria-hidden="true">•</text>
-      <text class="boundary-text">{{item}}</text>
+  <view class="p3-notice" aria-label="使用边界">
+    <text class="p3-notice__title">使用边界</text>
+    <text wx:for="{{boundaries}}" wx:key="*this" class="p3-notice__body">{{item}}</text>
+  </view>
+
+  <view class="getting-section" aria-label="开始前的说明与保护入口">
+    <view class="getting-section__head">
+      <p3-section-header title="开始前，先了解" />
+      <text class="getting-section__subtitle before-start-copy">查看说明不会自动记录同意；具体用途仍需单独选择</text>
+    </view>
+    <view class="p3-group">
+      <navigator class="getting-row before-start-link" url="/pages/settings-detail/index?type=consent">
+        <p3-group-row icon="info" title="知情与边界" />
+      </navigator>
+      <navigator class="getting-row before-start-link" url="/pages/settings-detail/index?type=privacy">
+        <p3-group-row icon="lock" title="隐私说明" />
+      </navigator>
+      <navigator class="getting-row before-start-link" url="/pages/settings-detail/index?type=protection">
+        <p3-group-row icon="shield" title="参与者保护" show-divider="{{false}}" />
+      </navigator>
     </view>
   </view>
 
-  <view class="action-row">
-    <button class="safe-primary-button primary-action" bindtap="startDiary">记录一次</button>
-    <button class="safe-outline-button secondary-action" bindtap="openAssessment">先测一测</button>
-    <button class="safe-outline-button secondary-action" bindtap="openTraining">去训练中心</button>
+  <view class="getting-actions">
+    <button class="p3-btn p3-btn--primary" bindtap="startDiary">记录一次</button>
+    <button class="p3-btn p3-btn--secondary" bindtap="openAssessment">先测一测</button>
+    <button class="p3-btn p3-btn--secondary" bindtap="openTraining">去训练中心</button>
   </view>
 
-  <view class="before-start" aria-label="需要帮助时">
-    <text class="before-start-title">需要帮助时</text>
-    <navigator class="before-start-link" url="/pages/emergency-resources/index">查看求助资源 <text aria-hidden="true">›</text></navigator>
-    <navigator class="before-start-link" url="/pages/supervision/index">提交人工支持请求 <text aria-hidden="true">›</text></navigator>
+  <view class="getting-help" aria-label="需要帮助时">
+    <text class="getting-help__title">需要帮助时</text>
+    <view class="getting-help__links">
+      <navigator class="p3-link" url="/pages/emergency-resources/index">查看求助资源 ›</navigator>
+      <navigator class="p3-link" url="/pages/supervision/index">提交人工支持请求 ›</navigator>
+    </view>
   </view>
 </view>

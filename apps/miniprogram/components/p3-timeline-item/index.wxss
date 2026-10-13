@@ -1,0 +1,86 @@
+/* TimelineItem（Figma 642:422）：竹节 8×18、连线 2px 青瓷 22%，文字 13/20 · 16/24 · 14/22，条目下留 18。 */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.p3-timeline-item {
+  display: flex;
+  align-items: stretch;
+  gap: 28rpx;
+  text-align: left;
+}
+
+.p3-timeline-item__rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  width: 32rpx;
+  flex: 0 0 auto;
+}
+
+.p3-timeline-item__joint {
+  width: 16rpx;
+  height: 36rpx;
+  flex: 0 0 auto;
+  border-radius: 999rpx;
+  background: var(--p3-primary);
+}
+
+.p3-timeline-item--upcoming .p3-timeline-item__joint {
+  background: var(--p3-soft);
+  box-shadow: inset 0 0 0 2rpx var(--p3-primary);
+}
+
+.p3-timeline-item--done .p3-timeline-item__joint {
+  opacity: 0.4;
+}
+
+.p3-timeline-item__line {
+  flex: 1 0 0;
+  width: 4rpx;
+  min-height: 2rpx;
+  background: var(--p3-primary);
+  opacity: 0.22;
+}
+
+.p3-timeline-item--done .p3-timeline-item__line {
+  opacity: 0.4;
+}
+
+.p3-timeline-item__text {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  padding-bottom: 36rpx;
+  overflow-wrap: anywhere;
+}
+
+.p3-timeline-item__kicker {
+  display: block;
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.p3-timeline-item--current .p3-timeline-item__kicker {
+  color: var(--p3-primary);
+}
+
+.p3-timeline-item__title {
+  display: block;
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+.p3-timeline-item__body {
+  display: block;
+  color: var(--p3-muted);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}

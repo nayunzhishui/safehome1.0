@@ -1,285 +1,142 @@
-.relationship-task-page {
+/* 关系探索任务（Figma 667:2907 绘画 / 667:2958 句子补全）：标题与本机草稿状态、画布或七个可折叠情境、同意与提交。 */
+.task-page {
   display: flex;
   flex-direction: column;
-  padding-top: 48rpx;
-  padding-bottom: calc(64rpx + env(safe-area-inset-bottom));
-  background: var(--ui2-canvas);
+  gap: var(--p3-section);
+  padding-top: 16rpx;
+  padding-bottom: calc(72rpx + env(safe-area-inset-bottom));
 }
 
-.task-meta,
-.task-heading,
-.task-copy,
-.sentence-prompt,
-.field-label,
-.char-count {
-  display: block;
-}
-
-.task-hero {
-  padding: 0;
-  text-align: center;
-}
-
-.task-meta {
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  font-weight: 700;
-}
-
-.task-heading {
-  margin-top: 0;
-  color: var(--safe-title);
-  font-size: 44rpx;
-  font-weight: 700;
-  line-height: 1.6;
-  text-align: center;
-}
-
-.task-instruction {
-  padding: 48rpx 0 0;
-  color: var(--ui2-ink);
-  font-size: 30rpx;
-  line-height: 1.65;
-}
-
-.task-copy {
-  margin-top: 14rpx;
-  color: var(--ui2-ink);
-  font-size: 30rpx;
-  line-height: 1.65;
-}
-
-.save-state {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-  margin-top: 48rpx;
-  color: var(--safe-muted);
-  font-size: 26rpx;
-}
-
-.save-state.is-saving .save-dot {
-  background: var(--safe-warning);
-}
-
-.save-dot {
-  width: 16rpx;
-  height: 16rpx;
-  border-radius: 50%;
-  background: var(--safe-primary);
-}
-
-.draft-notice {
-  margin-top: 16rpx;
-  padding: 18rpx 20rpx;
-  border-radius: var(--safe-radius-sm);
-  background: var(--safe-primary-pale);
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  line-height: 1.6;
-}
-
-.drawing-section {
+.task-head,
+.task-drawing {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
-  padding: 48rpx 0;
+  gap: var(--p3-tight);
 }
 
-.canvas-label-row {
+.task-head__row {
   display: flex;
-  flex-direction: column;
-  gap: 16rpx;
-}
-
-.canvas-label {
-  color: var(--safe-title);
-  font-size: 30rpx;
-  font-weight: 700;
-}
-
-.canvas-help {
-  color: var(--safe-muted);
-  font-size: 26rpx;
-  text-align: left;
-}
-
-.drawing-canvas {
-  box-sizing: border-box;
-  width: 100%;
-  height: 520rpx;
-  border: 1rpx solid var(--safe-border-strong);
-  border-radius: var(--safe-radius-md);
-  background: #fff;
-}
-
-.canvas-tools {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12rpx;
-}
-
-.tool-button {
-  min-height: 96rpx;
-  border: 1rpx solid var(--safe-primary);
-  border-radius: var(--safe-radius-sm);
-  background: transparent;
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  font-weight: 700;
-}
-
-.tool-button::after {
-  border: 0;
-}
-
-.tool-button.danger {
-  border-color: rgba(168, 66, 50, 0.56);
-  color: #934c43;
-}
-
-.tool-button[disabled] {
-  border-color: var(--safe-border);
-  background: var(--safe-bg-soft);
-  color: #9ba29d;
-  opacity: 1;
-}
-
-.field-block {
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-  margin-top: 8rpx;
-}
-
-.field-label {
-  color: var(--safe-title);
-  font-size: 30rpx;
-  font-weight: 700;
-}
-
-.task-textarea {
-  box-sizing: border-box;
-  width: 100%;
-  min-height: 224rpx;
-  padding: 20rpx 22rpx;
-  border: 1rpx solid var(--safe-border-strong);
-  border-radius: var(--safe-radius-sm);
-  background: #fff;
-  color: var(--ui2-ink);
-  font-size: 30rpx;
-  line-height: 1.65;
-}
-
-.char-count {
-  color: var(--safe-muted);
-  font-size: 26rpx;
-  text-align: right;
-}
-
-.sentence-list {
-  padding: 24rpx 0 16rpx;
-}
-
-.sentence-section {
-  border-bottom: 1rpx solid var(--safe-border);
-}
-
-.sentence-toggle {
-  display: flex;
-  width: 100%;
-  min-height: 104rpx;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16rpx;
-  margin: 0;
-  padding: 22rpx 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  text-align: left;
+  gap: var(--p3-tight);
 }
 
-.sentence-toggle::after {
-  border: 0;
-}
-
-.sentence-heading {
-  display: flex;
+.task-head__title {
+  flex: 0 1 auto;
   min-width: 0;
-  align-items: center;
-  gap: 14rpx;
-  color: var(--safe-title);
+}
+
+.task-head__intro {
+  color: var(--p3-muted);
   font-size: 30rpx;
-  font-weight: 700;
+  line-height: 52rpx;
 }
 
-.answered-chip {
-  padding: 6rpx 14rpx;
-  border-radius: var(--safe-radius-pill);
-  background: var(--safe-primary-soft);
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  font-weight: 700;
-}
-
-.sentence-arrow {
-  color: var(--safe-muted);
-  font-size: 26rpx;
-}
-
-.sentence-editor {
+.task-canvas__label {
   display: flex;
-  flex-direction: column;
-  gap: 14rpx;
-  padding: 4rpx 0 28rpx;
-}
-
-.sentence-prompt {
-  color: var(--safe-title);
-  font-size: 30rpx;
-  font-weight: 700;
-}
-
-.editor-meta {
-  display: flex;
-  justify-content: space-between;
-  color: var(--safe-muted);
-  font-size: 26rpx;
-}
-
-.task-submit-section {
-  display: flex;
-  flex-direction: column;
-  gap: 24rpx;
-  padding-top: 32rpx;
-}
-
-.consent-row {
-  display: flex;
-  min-height: 96rpx;
   align-items: flex-start;
-  gap: 14rpx;
-  color: var(--ui2-ink);
+  justify-content: space-between;
+  gap: var(--p3-tight);
+}
+
+/* 画布：纸白、细线、分组圆角，高 250 */
+.task-canvas {
+  overflow: hidden;
+  height: 500rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-surface);
+  box-shadow: inset 0 0 0 2rpx var(--p3-hairline);
+}
+
+.task-canvas__surface {
+  display: block;
+  width: 100%;
+  height: 500rpx;
+}
+
+.task-tools {
+  display: flex;
+  gap: var(--p3-tight);
+}
+
+.task-tool {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.task-tool--warm {
+  color: var(--p3-warm-ink);
+}
+
+.task-tool[disabled] {
+  opacity: 0.45;
+}
+
+/* 七个情境：纸白分组，每项细线分隔，可折叠 */
+.task-contexts {
+  display: flex;
+  flex-direction: column;
+  padding: 0 32rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-surface);
+}
+
+.task-context {
+  display: flex;
+  flex-direction: column;
+}
+
+.task-context--divided {
+  border-bottom: 2rpx solid var(--p3-hairline);
+}
+
+/* 整行可点（上下各 14，触控高度 52）；展开后与题干间距 8 */
+.task-context__toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-tight);
+  width: 100%;
+  min-height: 0;
+  padding: 28rpx 0;
+  text-align: left;
+}
+
+.task-context__toggle--open {
+  padding-bottom: 16rpx;
+}
+
+.task-context__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+  padding-bottom: 28rpx;
+}
+
+.task-context__spacer {
+  flex: 1 0 0;
+}
+
+.task-context__chevron {
+  display: flex;
+  transition: transform 0.2s ease;
+}
+
+.task-context__chevron--open {
+  transform: rotate(180deg);
+}
+
+.task-context__prompt {
+  color: var(--p3-ink);
   font-size: 30rpx;
-  line-height: 1.6;
+  line-height: 52rpx;
 }
 
-.boundary-note {
-  padding: 32rpx;
-  border-radius: 24rpx;
-  background: var(--ui2-warm);
-  color: var(--ui2-ink);
-  font-size: 30rpx;
-  line-height: 1.6;
+.task-submit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
 }
-
-.submit-button {
-  position: static;
-}
-
-.field-placeholder { color: var(--ui2-muted); font-size: 30rpx; }
-.sentence-heading { flex-wrap: wrap; }
-.sentence-arrow { flex: none; }
-.task-textarea { border-width: 2rpx; }
-.tool-button { display: flex; align-items: center; justify-content: center; padding: 20rpx 8rpx; font-size: 30rpx; }

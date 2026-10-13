@@ -1,1 +1,72 @@
-:host{display:block}.message{padding:28rpx 0;border-bottom:1rpx solid var(--safe-border)}.message-label,.message-content,.citation-title,.citation-item{display:block}.message-label{color:var(--safe-primary-deep);font-size:var(--ui2-caption,24rpx);font-weight:700;line-height:36rpx}.message-content{margin-top:10rpx;color:var(--safe-title);font-size:var(--ui2-body,28rpx);line-height:44rpx;white-space:pre-wrap}.citations{margin-top:20rpx;padding:20rpx 24rpx;border-radius:16rpx;background:var(--safe-bg-soft)}.citation-title{color:var(--safe-text);font-size:var(--ui2-caption,24rpx);font-weight:700;line-height:36rpx}.citation-item{margin-top:6rpx;color:var(--safe-muted);font-size:var(--ui2-caption,24rpx);line-height:36rpx}.message--user{padding-left:24rpx;border-left:var(--ui2-conversation-border,4rpx) solid var(--safe-primary)}
+/* 对话记录（Figma 671:3148）：你的问题按“原话引用”排（青瓷引号 + 衬线）；回答前一条细线，标“支持性整理”，末尾列参考来源。 */
+:host {
+  display: block;
+}
+
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.entry--assistant {
+  gap: var(--p3-tight);
+  padding-top: var(--p3-stack);
+  border-top: 2rpx solid var(--p3-hairline);
+}
+
+.entry__label {
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.entry__label--answer {
+  color: var(--p3-primary);
+}
+
+.entry__quote {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+}
+
+.entry__mark {
+  flex: 0 0 auto;
+  color: var(--p3-primary);
+  font-family: var(--p3-font-serif);
+  font-size: 48rpx;
+  line-height: 64rpx;
+  font-weight: 500;
+}
+
+.entry__quote-text {
+  flex: 1 0 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.entry__text {
+  display: block;
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
+  overflow-wrap: anywhere;
+}
+
+.entry__citations {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  padding-top: 8rpx;
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.entry__citations-title {
+  color: var(--p3-muted);
+}
+
+.entry__citation {
+  color: var(--p3-primary);
+}

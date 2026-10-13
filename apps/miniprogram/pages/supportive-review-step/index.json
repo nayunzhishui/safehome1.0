@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "自助整理"
+  "navigationBarTitleText": "自助整理",
+  "usingComponents": {
+    "p3-icon": "/components/p3-icon/index"
+  }
 }

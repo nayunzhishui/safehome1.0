@@ -1,175 +1,189 @@
-<view class="safe-page ui2-page quality-page" role="main" aria-label="治疗性评估质量监督与更正">
-  <view class="quality-hero">
-    <text class="quality-title">质量与更正</text>
+<view class="p3-page quality-page" role="main" aria-label="治疗性评估质量监督与更正">
+  <page-state wx:if="{{!loading && !runtime && !productionGate && !cases.length && !reviews.length && !incidents.length && !errorMessage}}" kind="empty" title="当前没有可处理的质量记录" />
+
+  <view wx:if="{{runtime}}" class="p3-notice {{runtime.paused ? 'p3-notice--warm' : ''}}">
+    <text class="p3-notice__title">{{runtime.paused ? '新协作记录已自动暂停' : '质量队列在承诺范围内'}}</text>
+    <text class="p3-notice__body">待处理 {{runtime.pending_count}} · 已超时 {{runtime.overdue_count}}　规则 {{runtime.policy_version}}</text>
   </view>
 
-  <view wx:if="{{!loading && !runtime && !productionGate && !cases.length && !reviews.length && !incidents.length && !errorMessage}}" class="state-card">
-    <text class="state-title">当前没有可处理的质量记录</text>
-  </view>
+  <page-state wx:if="{{errorMessage}}" kind="error" title="暂时没有处理成功" description="{{errorMessage}}" action-label="重新读取" bind:action="loadData" />
+  <view wx:if="{{notice}}" class="p3-notice" role="status"><text class="p3-notice__body">{{notice}}</text></view>
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取质量记录" description="只加载当前账号可查看的对象范围。" />
 
-  <view wx:if="{{runtime}}" class="runtime-card {{runtime.paused ? 'runtime-card--paused' : ''}}">
-    <text class="runtime-title">{{runtime.paused ? '新协作记录已自动暂停' : '质量队列在承诺范围内'}}</text>
-    <text class="runtime-copy">待处理 {{runtime.pending_count}} · 已超时 {{runtime.overdue_count}}</text><text class="item-meta">规则 {{runtime.policy_version}}</text>
-  </view>
-
-  <view wx:if="{{errorMessage}}" class="state-card state-card--error">
-    <text class="state-title">暂时没有处理成功</text>
-    <text class="state-copy">{{errorMessage}}</text>
-    <button class="outline-button" bindtap="loadData">重新读取</button>
-  </view>
-  <view wx:if="{{notice}}" class="state-card state-card--notice">
-    <text class="state-copy">{{notice}}</text>
-  </view>
-  <view wx:if="{{loading}}" class="state-card">
-    <text class="state-title">正在读取质量记录</text>
-    <text class="state-copy">只加载当前账号可查看的对象范围。</text>
-  </view>
-
-  <view wx:if="{{productionGate}}" class="quality-card production-gate-card">
-    <view class="section-heading">
-      <view>
-        <text class="section-kicker">生产门禁</text>
-        <text class="section-title">{{productionGate.status === 'blocked' ? '当前不可发布' : '等待负责人最终批准'}}</text>
+  <view wx:if="{{productionGate}}" class="quality-card">
+    <view class="quality-card__head">
+      <view class="quality-card__titles">
+        <text class="p3-meta">生产门禁</text>
+        <text class="p3-item-title">{{productionGate.status === 'blocked' ? '当前不可发布' : '等待负责人最终批准'}}</text>
       </view>
-      <text class="count-pill">{{productionGate.policy_version}}</text>
+      <status-pill label="{{productionGate.policy_version}}" tone="success" />
     </view>
-    <view class="gate-grid">
-      <view wx:for="{{productionGateChecks}}" wx:key="key" class="gate-item {{item.passed ? 'is-passed' : ''}}">
-        <text class="gate-label">{{item.label}}</text>
-        <text class="item-meta">{{item.passed ? '已具备证据' : '缺少 ' + item.missingCount + ' 项'}}</text>
+    <view class="gate-list">
+      <view wx:for="{{productionGateChecks}}" wx:key="key" class="gate-row {{index < productionGateChecks.length - 1 ? 'gate-row--divided' : ''}}">
+        <p3-icon name="{{item.passed ? 'check' : 'alert'}}" size="24" tone="{{item.passed ? 'primary' : 'warm'}}" />
+        <text class="gate-row__label">{{item.label}}</text>
+        <text class="gate-row__status {{item.passed ? '' : 'gate-row__status--missing'}}">{{item.passed ? '已具备证据' : '缺少 ' + item.missingCount + ' 项'}}</text>
       </view>
     </view>
-    <text class="boundary-copy">{{productionGate.boundary_notice}}</text>
+    <text class="p3-meta">{{productionGate.boundary_notice}}</text>
   </view>
 
-  <view wx:if="{{!loading && cases.length}}" class="quality-card">
-
-    <text class="section-title">提交更正与投诉</text>
-    <text class="field-heading">协作记录</text>
-    <view class="record-select-row">
-
+  <view wx:if="{{!loading && cases.length && !isReviewRole}}" class="quality-card">
+    <p3-stage-header level="1" title="提交更正与投诉" />
+    <view class="p3-field">
+      <text class="p3-field__label">协作记录</text>
       <picker mode="selector" range="{{cases}}" range-key="displayQuestion" value="{{selectedCaseIndex}}" bindchange="onCaseChange">
-        <view class="picker-field" role="button"><text class="picker-copy">{{cases[selectedCaseIndex].displayQuestion}}</text><text class="picker-arrow" aria-hidden="true">⌄</text></view>
+        <view class="quality-select" role="button" aria-label="选择协作记录">
+          <text class="quality-select__value">{{cases[selectedCaseIndex].displayQuestion}}</text>
+          <p3-icon name="chevron-down" size="24" tone="muted" />
+        </view>
       </picker>
     </view>
-    <text class="field-heading">问题类型</text>
-    <picker mode="selector" range="{{incidentCategoryOptions}}" value="{{incidentCategoryIndex}}" bindchange="onIncidentCategory">
-      <view class="picker-field" role="button"><text class="picker-copy">{{incidentCategoryOptions[incidentCategoryIndex]}}</text><text class="picker-arrow" aria-hidden="true">⌄</text></view>
-    </picker>
-    <label class="field-label">
-      <text>具体哪里不像或发生了什么</text>
-      <textarea placeholder-class="quality-placeholder" class="text-area" value="{{incidentDescription}}" data-key="incidentDescription" aria-label="具体哪里不像或发生了什么" bindinput="onFieldInput" maxlength="4000" placeholder="只写你愿意补充的部分"></textarea>
-    </label>
-    <label class="field-label">
-      <text>希望怎样处理</text>
-      <textarea placeholder-class="quality-placeholder" class="text-area text-area--short" value="{{requestedResolution}}" data-key="requestedResolution" aria-label="希望怎样处理" bindinput="onFieldInput" maxlength="1000" placeholder="例如：记录不同理解、撤回或重新核对"></textarea>
-    </label>
-    <button class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="submitIncident">提交更正或投诉</button>
-    <text class="submission-consequence">原记录会保留，反馈、异议和处理版本不会被覆盖。</text>
+    <view class="p3-field">
+      <text class="p3-field__label">问题类型</text>
+      <picker mode="selector" range="{{incidentCategoryOptions}}" value="{{incidentCategoryIndex}}" bindchange="onIncidentCategory">
+        <view class="quality-select" role="button" aria-label="选择问题类型">
+          <text class="quality-select__value">{{incidentCategoryOptions[incidentCategoryIndex]}}</text>
+          <p3-icon name="chevron-down" size="24" tone="muted" />
+        </view>
+      </picker>
+    </view>
+    <view class="p3-field">
+      <label for="incident-description" class="p3-field__label">具体哪里不像或发生了什么</label>
+      <textarea id="incident-description" placeholder-class="p3-field__placeholder" class="p3-field__input p3-field__input--multi" value="{{incidentDescription}}" data-key="incidentDescription" aria-label="具体哪里不像或发生了什么" bindinput="onFieldInput" maxlength="4000" placeholder="只写你愿意补充的部分"></textarea>
+      <text class="p3-field__hint">{{incidentDescription.length || 0}} / 4000</text>
+    </view>
+    <view class="p3-field">
+      <label for="incident-resolution" class="p3-field__label">希望怎样处理</label>
+      <textarea id="incident-resolution" placeholder-class="p3-field__placeholder" class="p3-field__input p3-field__input--auto" auto-height value="{{requestedResolution}}" data-key="requestedResolution" aria-label="希望怎样处理" bindinput="onFieldInput" maxlength="1000" placeholder="例如：记录不同理解、撤回或重新核对"></textarea>
+    </view>
+    <button class="p3-btn p3-btn--primary" loading="{{saving}}" disabled="{{saving}}" bindtap="submitIncident">提交更正或投诉</button>
+    <text class="quality-consequence">原记录会保留，反馈、异议和处理版本不会被覆盖。</text>
   </view>
 
   <view wx:if="{{isReviewRole && !loading}}" class="quality-card">
-    <view class="section-heading">
-      <view>
-
-        <text class="section-title">逐项质量复核</text>
+    <view class="quality-card__head">
+      <text class="p3-item-title quality-card__titles">逐项质量复核</text>
+      <status-pill label="{{reviews.length}} 项" tone="success" />
+    </view>
+    <page-state wx:if="{{!reviews.length}}" kind="empty" title="当前授权范围内没有复核任务" />
+    <scroll-view wx:else scroll-x class="item-tabs" enhanced show-scrollbar="{{false}}">
+      <view class="item-tabs__row">
+        <button wx:for="{{reviews}}" wx:key="id" class="item-tab {{selectedReview.id === item.id ? 'item-tab--active' : ''}}" data-id="{{item.id}}" aria-pressed="{{selectedReview.id === item.id}}" bindtap="selectReview">
+          <text class="item-tab__title">{{item.statusText}}</text>
+          <text class="item-tab__meta">{{item.service_level}} · {{item.overdue ? '已超时' : '时限内'}}</text>
+        </button>
       </view>
-      <text class="count-pill">{{reviews.length}} 项</text>
-    </view>
-    <view wx:if="{{!reviews.length}}" class="empty-state">
-      <text class="state-title">当前授权范围内没有复核任务</text>
-    </view>
-    <scroll-view wx:else scroll-x class="item-tabs">
-      <button wx:for="{{reviews}}" wx:key="id" class="item-tab {{selectedReview.id === item.id ? 'is-active' : ''}}" data-id="{{item.id}}" bindtap="selectReview">
-        <text>{{item.statusText}}</text>
-        <text class="item-meta">{{item.service_level}} · {{item.overdue ? '已超时' : '时限内'}}</text>
-      </button>
     </scroll-view>
 
     <view wx:if="{{selectedReview}}" class="quality-detail">
-      <view class="review-summary">
-
-        <view class="review-summary__copy">
-          <text class="detail-title">{{selectedReview.assessment_question || '协作记录'}}</text>
-          <text class="review-timing">抽检原因：{{selectedReview.sampleReasonText}}</text>
-          <text class="review-timing">截止（本地时间）：{{selectedReview.dueAtText}}</text>
-        </view>
+      <view class="quality-detail__summary">
+        <text class="p3-item-title">{{selectedReview.assessment_question || '协作记录'}}</text>
+        <text class="p3-meta">抽检原因：{{selectedReview.sampleReasonText}}</text>
+        <text class="p3-meta">截止（本地时间）：{{selectedReview.dueAtText}}</text>
       </view>
-      <button wx:if="{{selectedReview.status === 'pending'}}" class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="claimReview">认领这项复核</button>
-      <view wx:if="{{selectedReview.status === 'in_review'}}">
-        <view wx:for="{{reviewDimensions}}" wx:key="key" class="dimension-card">
-          <text class="dimension-title">{{item.label}}</text>
-          <picker mode="selector" range="{{statusOptions}}" value="{{item.statusIndex}}" data-index="{{index}}" bindchange="onDimensionStatus">
-            <view class="picker-field" role="button"><text class="picker-copy">结论：{{item.statusLabel}}</text><text class="picker-arrow" aria-hidden="true">⌄</text></view>
-          </picker>
-          <view wx:if="{{item.status === 'concern'}}" class="dimension-fields">
-            <input placeholder-class="quality-placeholder" class="text-input" value="{{item.note}}" data-index="{{index}}" data-key="note" aria-label="{{item.label}}：需要修复的位置" bindinput="onDimensionInput" placeholder="说明需要修复的位置" />
-            <input placeholder-class="quality-placeholder" class="text-input" value="{{item.evidenceRef}}" data-index="{{index}}" data-key="evidenceRef" aria-label="{{item.label}}：可追溯依据" bindinput="onDimensionInput" placeholder="填写可追溯依据" />
+      <button wx:if="{{selectedReview.status === 'pending'}}" class="p3-btn p3-btn--primary" loading="{{saving}}" disabled="{{saving}}" bindtap="claimReview">认领这项复核</button>
+      <block wx:if="{{selectedReview.status === 'in_review'}}">
+        <view class="dimension-list">
+          <view wx:for="{{reviewDimensions}}" wx:key="key" class="dimension-item {{index < reviewDimensions.length - 1 ? 'dimension-item--divided' : ''}}">
+            <picker mode="selector" range="{{statusOptions}}" value="{{item.statusIndex}}" data-index="{{index}}" bindchange="onDimensionStatus">
+              <view class="dimension-item__row" role="button" aria-label="{{item.label}}：{{item.statusLabel}}">
+                <text class="dimension-item__label">{{item.label}}</text>
+                <text class="dimension-item__status dimension-item__status--{{item.status}}">{{item.statusLabel}}</text>
+                <p3-icon name="chevron-down" size="24" tone="muted" />
+              </view>
+            </picker>
+            <block wx:if="{{item.status === 'concern'}}">
+              <view class="p3-field">
+                <text class="p3-field__label">需要修复的位置</text>
+                <input placeholder-class="p3-field__placeholder" class="p3-field__input" value="{{item.note}}" data-index="{{index}}" data-key="note" aria-label="{{item.label}}：需要修复的位置" bindinput="onDimensionInput" placeholder="说明需要修复的位置" />
+              </view>
+              <view class="p3-field">
+                <text class="p3-field__label">可追溯依据</text>
+                <input placeholder-class="p3-field__placeholder" class="p3-field__input" value="{{item.evidenceRef}}" data-index="{{index}}" data-key="evidenceRef" aria-label="{{item.label}}：可追溯依据" bindinput="onDimensionInput" placeholder="填写可追溯依据" />
+              </view>
+            </block>
           </view>
         </view>
-        <label class="field-label">
-          <text>修复说明（有修复项时必填）</text>
-          <textarea placeholder-class="quality-placeholder" class="text-area text-area--short" value="{{remediationSummary}}" data-key="remediationSummary" aria-label="修复说明，有修复项时必填" bindinput="onFieldInput"></textarea>
-        </label>
-        <button class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="completeReview">提交质量结论</button>
-      </view>
+        <view class="p3-field">
+          <label for="remediation-summary" class="p3-field__label">修复说明（有修复项时必填）</label>
+          <textarea id="remediation-summary" placeholder-class="p3-field__placeholder" class="p3-field__input p3-field__input--multi" value="{{remediationSummary}}" data-key="remediationSummary" aria-label="修复说明，有修复项时必填" bindinput="onFieldInput" placeholder="写清修复内容和依据"></textarea>
+        </view>
+        <button class="p3-btn p3-btn--primary" loading="{{saving}}" disabled="{{saving}}" bindtap="completeReview">提交质量结论</button>
+      </block>
     </view>
   </view>
 
   <view wx:if="{{isReviewRole && !loading}}" class="quality-card">
-    <view class="section-heading">
-      <view>
-
-        <text class="section-title">影响分析与独立结案</text>
+    <view class="quality-card__head">
+      <text class="p3-item-title quality-card__titles">影响分析与独立结案</text>
+      <status-pill label="{{incidents.length}} 项" tone="success" />
+    </view>
+    <page-state wx:if="{{!incidents.length}}" kind="empty" title="当前授权范围内没有质量事件" />
+    <scroll-view wx:else scroll-x class="item-tabs" enhanced show-scrollbar="{{false}}">
+      <view class="item-tabs__row">
+        <button wx:for="{{incidents}}" wx:key="id" class="item-tab {{selectedIncident.id === item.id ? 'item-tab--active' : ''}}" data-id="{{item.id}}" aria-pressed="{{selectedIncident.id === item.id}}" bindtap="selectIncident">
+          <text class="item-tab__title">{{item.statusText}}</text>
+          <text class="item-tab__meta">{{item.categoryText}}</text>
+        </button>
       </view>
-      <text class="count-pill">{{incidents.length}} 项</text>
-    </view>
-    <view wx:if="{{!incidents.length}}" class="empty-state">
-      <text class="state-title">当前授权范围内没有质量事件</text>
-    </view>
-    <scroll-view wx:else scroll-x class="item-tabs">
-      <button wx:for="{{incidents}}" wx:key="id" class="item-tab {{selectedIncident.id === item.id ? 'is-active' : ''}}" data-id="{{item.id}}" bindtap="selectIncident">
-        <text>{{item.statusText}}</text>
-        <text class="item-meta">{{item.categoryText}}</text>
-      </button>
     </scroll-view>
     <view wx:if="{{selectedIncident}}" class="quality-detail">
-      <text class="detail-title">{{selectedIncident.description}}</text>
-      <text class="boundary-copy">希望的处理：{{selectedIncident.requested_resolution}}</text>
-      <view wx:if="{{selectedIncident.status === 'reported'}}">
-        <label class="field-label">
-          <text>立即措施与影响摘要</text>
-          <textarea placeholder-class="quality-placeholder" class="text-area" value="{{impactSummary}}" data-key="impactSummary" aria-label="立即措施与影响摘要" bindinput="onFieldInput"></textarea>
-        </label>
-        <button class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="analyzeIncident">保存影响分析</button>
+      <view class="quality-detail__summary">
+        <text class="p3-item-title">{{selectedIncident.description}}</text>
+        <text class="p3-meta">希望的处理：{{selectedIncident.requested_resolution}}</text>
       </view>
-      <view wx:if="{{selectedIncident.status === 'independent_review'}}">
-        <picker mode="selector" range="{{resolutionActionOptions}}" value="{{resolutionActionIndex}}" bindchange="onResolutionAction">
-          <view class="picker-field" role="button"><text class="picker-copy">处理动作：{{resolutionActionOptions[resolutionActionIndex]}}</text><text class="picker-arrow" aria-hidden="true">⌄</text></view>
-        </picker>
-        <label class="field-label">
-          <text>参与者可理解的处理说明</text>
-          <textarea placeholder-class="quality-placeholder" class="text-area" value="{{resolutionSummary}}" data-key="resolutionSummary" aria-label="参与者可理解的处理说明" bindinput="onFieldInput"></textarea>
-        </label>
-        <button class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="resolveIncident">独立结案并通知参与者</button>
-      </view>
-      <view wx:if="{{selectedIncident.status === 'resolved'}}" class="resolution-card">
-        <text class="state-title">已完成处理</text>
-        <text class="state-copy">{{selectedIncident.resolution_summary}}</text>
-        <text class="item-meta">通知状态：{{selectedIncident.notificationStatusText}}</text>
+      <block wx:if="{{selectedIncident.status === 'reported'}}">
+        <view class="p3-field">
+          <label for="impact-summary" class="p3-field__label">立即措施与影响摘要</label>
+          <textarea id="impact-summary" placeholder-class="p3-field__placeholder" class="p3-field__input p3-field__input--multi" value="{{impactSummary}}" data-key="impactSummary" aria-label="立即措施与影响摘要" bindinput="onFieldInput" placeholder="写下已采取的措施和影响范围"></textarea>
+        </view>
+        <button class="p3-btn p3-btn--secondary" loading="{{saving}}" disabled="{{saving}}" bindtap="analyzeIncident">保存影响分析</button>
+      </block>
+      <block wx:if="{{selectedIncident.status === 'independent_review'}}">
+        <view class="p3-field">
+          <text class="p3-field__label">处理动作</text>
+          <picker mode="selector" range="{{resolutionActionOptions}}" value="{{resolutionActionIndex}}" bindchange="onResolutionAction">
+            <view class="quality-select" role="button" aria-label="选择处理动作">
+              <text class="quality-select__value">{{resolutionActionOptions[resolutionActionIndex]}}</text>
+              <p3-icon name="chevron-down" size="24" tone="muted" />
+            </view>
+          </picker>
+        </view>
+        <view class="p3-field">
+          <label for="resolution-summary" class="p3-field__label">参与者可理解的处理说明</label>
+          <textarea id="resolution-summary" placeholder-class="p3-field__placeholder" class="p3-field__input p3-field__input--multi" value="{{resolutionSummary}}" data-key="resolutionSummary" aria-label="参与者可理解的处理说明" bindinput="onFieldInput"></textarea>
+        </view>
+        <button class="p3-btn p3-btn--secondary" loading="{{saving}}" disabled="{{saving}}" bindtap="resolveIncident">独立结案并通知参与者</button>
+      </block>
+      <view wx:if="{{selectedIncident.status === 'resolved'}}" class="p3-notice">
+        <text class="p3-notice__title">已完成处理</text>
+        <text class="p3-notice__body">{{selectedIncident.resolution_summary}}</text>
+        <text class="p3-notice__body">通知状态：{{selectedIncident.notificationStatusText}}</text>
       </view>
     </view>
   </view>
 
-  <view wx:if="{{!loading && incidents.length && !isReviewRole}}" class="quality-card">
-
-    <text class="section-title">你提交的更正与投诉</text>
-    <view wx:for="{{incidents}}" wx:key="id" class="participant-incident">
-      <text class="detail-title">{{item.description}}</text>
-      <text class="item-meta">{{item.statusText}}</text>
-      <text wx:if="{{item.resolution_summary}}" class="state-copy">{{item.resolution_summary}}</text>
+  <view wx:if="{{!loading && incidents.length && !isReviewRole}}" class="quality-section">
+    <p3-section-header title="你提交的更正与投诉" />
+    <view class="p3-group">
+      <button
+        wx:for="{{incidents}}"
+        wx:key="id"
+        class="quality-row"
+        data-id="{{item.id}}"
+        aria-label="{{item.description}}，{{item.statusText}}，查看处理详情"
+        bindtap="openIncident"
+      >
+        <p3-group-row
+          icon="{{item.status === 'resolved' ? 'message' : 'clock'}}"
+          title="{{item.description}}"
+          subtitle="{{item.resolution_summary ? item.statusText + ' · ' + item.resolution_summary : item.statusText}}"
+          show-divider="{{index < incidents.length - 1}}"
+        />
+      </button>
     </view>
   </view>
 
-  <text wx:if="{{isReviewRole}}" class="page-boundary">临时展示权限不能替代正式任务授权；同一人不能同时起草和最终复核。</text>
+  <text wx:if="{{isReviewRole}}" class="p3-footnote">临时展示权限不能替代正式任务授权；同一人不能同时起草和最终复核。</text>
 </view>

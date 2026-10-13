@@ -1,6 +1,9 @@
 {
   "navigationBarTitleText": "课程内容",
   "usingComponents": {
-    "section-title": "../../components/section-title/index"
+    "page-state": "/components/page-state/index",
+    "p3-group-row": "/components/p3-group-row/index",
+    "p3-section-header": "/components/p3-section-header/index",
+    "p3-timeline-item": "/components/p3-timeline-item/index"
   }
 }

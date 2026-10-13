@@ -1,106 +1,61 @@
-.message-detail-page {
-  box-sizing: border-box;
-  padding: 40rpx 48rpx calc(72rpx + env(safe-area-inset-bottom));
+/* 消息详情（Figma 670:3155）：像一封短信——小标签、宋体标题、来源、细线、正文段落；下方核对卡、边界脚注与返回。 */
+.detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-section);
+  padding-top: 16rpx;
+  padding-bottom: calc(72rpx + env(safe-area-inset-bottom));
 }
 
-.detail-kicker,
-.detail-title,
-.detail-time,
-.detail-body,
-.boundary-title,
-.boundary-text {
-  display: block;
+.detail-letter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+}
+
+.detail-head {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
 }
 
 .detail-kicker {
-  color: var(--safe-primary-deep);
+  color: var(--p3-primary);
   font-size: 26rpx;
-  font-weight: 700;
-  line-height: 1.5;
-  text-align: center;
+  line-height: 40rpx;
 }
 
 .detail-title {
-  margin-top: 16rpx;
-  color: var(--safe-title);
-  font-size: 44rpx;
-  font-weight: 800;
-  line-height: 1.28;
-  text-align: center;
-}
-
-.detail-time {
-  color: var(--safe-muted);
-  font-size: 26rpx;
-  line-height: 1.5;
-}
-
-.detail-body-copy {
-  min-width: 0;
-  display: grid;
-  gap: 20rpx;
-}
-
-.detail-body-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 32rpx;
-  margin-top: 24rpx;
-  padding: 32rpx 0;
-}
-
-.detail-body {
-  color: var(--safe-text);
-  font-size: 30rpx;
-  line-height: 1.67;
-  white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
-.source-action,
+.detail-body {
+  display: block;
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
+  overflow-wrap: anywhere;
+}
+
+.detail-letter--withdrawn .detail-title,
+.detail-letter--withdrawn .detail-body {
+  color: var(--p3-muted);
+}
+
+/* 测试要求保留 safe-outline-button return-action 类名；外观按 P3 Secondary 覆盖 */
 .return-action {
-  border-radius: 24rpx;
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--p3-button);
+  min-height: var(--p3-button);
+  margin: 0;
+  padding: 0 32rpx;
+  border: 0;
+  border-radius: var(--p3-radius-pill);
+  background: transparent;
+  box-shadow: inset 0 0 0 2rpx var(--p3-control);
+  color: var(--p3-primary);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
 }
-
-.source-action {
-  margin-top: 32rpx;
-}
-
-.feedback-section {
-  margin-top: 24rpx;
-}
-
-.boundary-note {
-  margin-top: 32rpx;
-}
-
-.boundary-rule {
-  height: 1rpx;
-  background: var(--safe-border);
-}
-
-.boundary-copy {
-  padding-top: 32rpx;
-}
-
-.boundary-title {
-  color: var(--safe-title);
-  font-size: 26rpx;
-  font-weight: 700;
-  line-height: 1.54;
-}
-
-.boundary-text {
-  margin-top: 12rpx;
-  color: var(--safe-muted);
-  font-size: 26rpx;
-  line-height: 1.58;
-}
-
-.return-action {
-  margin-top: 32rpx;
-}
-
-.feedback-section { --ui2-feedback-bg: var(--ui2-soft); --ui2-feedback-padding: 32rpx; --ui2-feedback-option-flex: 0 1 calc(50% - 8rpx); }
-.boundary-text { font-size: 30rpx; line-height: 48rpx; }
-@media(max-width:340px){.message-detail-page{padding-left:32rpx;padding-right:32rpx}}

@@ -1,13 +1,12 @@
-<view class="taf-page {{ui2 ? 'ui2-page' : ''}}" role="main" aria-label="{{title}}">
+<view class="p3-page taf-page" role="main" aria-label="{{title}}">
   <view class="taf-progress" aria-label="第 {{stepNumber}} 步，共 {{stepTotal}} 步">
-    <view class="taf-progress__bar"><view class="taf-progress__value" style="width: {{stepNumber * 12.5}}%;"></view></view>
-    <text>{{ui2 ? '第 ' + stepNumber + ' 步 / 共 ' + stepTotal + ' 步' : '0' + stepNumber + ' / 0' + stepTotal}}</text>
+    <text class="taf-progress__text">第 {{stepNumber}} 步 / 共 {{stepTotal}} 步</text>
+    <view class="taf-progress__joints" aria-hidden="true">
+      <view wx:for="{{joints}}" wx:key="index" class="taf-progress__joint taf-progress__joint--{{item}}"></view>
+    </view>
   </view>
 
-  <view class="taf-hero">
-    <text wx:if="{{!ui2}}" class="safe-eyebrow">{{eyebrow}}</text>
-    <text class="safe-h1">{{title}}</text>
-  </view>
+  <text class="p3-serif-title taf-title" role="heading" aria-level="1">{{title}}</text>
 
   <page-state
     wx:if="{{loading}}"
@@ -24,13 +23,22 @@
     bindaction="handleRetry"
   />
 
-  <view wx:if="{{offline}}" class="taf-offline" role="status" aria-live="polite">
-    当前离线。内容会先保存在本机，联网后可再次同步。
+  <view wx:if="{{offline}}" class="p3-notice p3-notice--warm" role="status" aria-live="polite">
+    <text class="p3-notice__body">当前离线。内容会先保存在本机，联网后可再次同步。</text>
   </view>
 
-  <view wx:if="{{!loading && stateKind !== 'withdrawn' && stateKind !== 'expired'}}" class="safe-card taf-card">
-    <text wx:if="{{ui2 && description}}" class="taf-description">{{description}}</text>
-    <text wx:if="{{prompt}}" class="safe-h3">{{prompt}}</text>
+  <view wx:if="{{!loading && stateKind !== 'withdrawn' && stateKind !== 'expired'}}" class="taf-card">
+    <text wx:if="{{description}}" class="taf-description">{{description}}</text>
+
+    <view wx:if="{{mode === 'text'}}" class="p3-field">
+      <text wx:if="{{prompt}}" class="p3-field__label">{{prompt}}</text>
+      <therapeutic-textarea maxlength="4000" value="{{value}}" aria-label="{{prompt || title}}" placeholder="{{placeholder}}" bind:input="handleInput" />
+    </view>
+    <text wx:elif="{{prompt}}" class="p3-item-title">{{prompt}}</text>
+
+    <view wx:if="{{notice}}" class="p3-notice">
+      <text class="p3-notice__body">{{notice}}</text>
+    </view>
 
     <therapeutic-feedback-letter
       wx:if="{{mode === 'feedback' && feedbackContent}}"
@@ -52,7 +60,7 @@
     </view>
 
     <therapeutic-textarea
-      wx:if="{{mode === 'text' || (mode === 'feedback' && selected === 'not_like')}}"
+      wx:if="{{mode === 'feedback' && selected === 'not_like'}}"
       maxlength="4000"
       value="{{value}}"
       aria-label="{{prompt || title}}"
@@ -62,66 +70,67 @@
 
     <view wx:if="{{mode === 'action'}}" class="taf-action-form">
       <view class="taf-action-section">
-        <view class="taf-action-section__heading">
-          <text>想做什么</text>
-          <view class="taf-action-section__rule" aria-hidden="true"><view></view><view></view></view>
+        <p3-section-header title="想做什么" />
+        <view class="p3-field">
+          <text class="p3-field__label">我愿意尝试的一小步</text>
+          <therapeutic-textarea maxlength="500" value="{{value}}" aria-label="我愿意尝试的一小步" placeholder="写下低压力、可停止的一小步。" bind:input="handleInput" />
         </view>
-        <label class="taf-field">
-          <text class="taf-field__label">我愿意尝试的一小步</text>
-          <therapeutic-compact-textarea maxlength="500" value="{{value}}" field="actionText" aria-label="我愿意尝试的一小步" placeholder="写下低压力、可停止的一小步。" bind:input="handleInput" />
-        </label>
-        <label class="taf-field">
-          <text class="taf-field__label">我为什么想试试</text>
+        <view class="p3-field">
+          <text class="p3-field__label">我为什么想试试</text>
           <therapeutic-compact-textarea maxlength="500" value="{{actionPlan.purposeText}}" field="purposeText" aria-label="行动目的" placeholder="记录你的目的，不要求证明效果。" bind:input="handleActionInput" />
-        </label>
-      </view>
-      <view class="taf-action-section">
-        <view class="taf-action-section__heading">
-          <text>怎样安排</text>
-          <view class="taf-action-section__rule" aria-hidden="true"><view></view><view></view></view>
         </view>
+      </view>
+      <view class="taf-action-section taf-action-section--divided">
+        <p3-section-header title="怎样安排" />
         <view class="taf-action-grid">
-          <label class="taf-field">
-            <text class="taf-field__label">计划日期（可不填）</text>
-            <input class="taf-input" type="date" value="{{actionPlan.plannedDate}}" data-field="plannedDate" aria-label="计划日期" bindinput="handleActionInput" />
-          </label>
-          <label class="taf-field">
-            <text class="taf-field__label">提醒方式</text>
-            <picker mode="selector" range="{{reminderOptions}}" value="{{actionPlan.reminderMode === 'in_app' ? 1 : actionPlan.reminderMode === 'wechat_subscription' ? 2 : 0}}" bindchange="handleReminderMode">
-              <view class="taf-input" role="button" aria-label="选择提醒方式">{{actionPlan.reminderMode === 'in_app' ? '仅站内提醒' : actionPlan.reminderMode === 'wechat_subscription' ? '微信订阅提醒' : '不提醒'}}</view>
+          <view class="p3-field taf-action-grid__item">
+            <text class="p3-field__label">计划日期（可不填）</text>
+            <picker mode="date" value="{{actionPlan.plannedDate}}" data-field="plannedDate" aria-label="选择计划日期" bindchange="handleActionInput">
+              <view class="taf-select">
+                <text class="taf-select__value {{plannedDateText ? '' : 'taf-select__value--empty'}}">{{plannedDateText || '选择日期'}}</text>
+                <p3-icon class="taf-select__icon" name="calendar" size="24" tone="field" />
+              </view>
             </picker>
-          </label>
+          </view>
+          <view class="p3-field taf-action-grid__item">
+            <text class="p3-field__label">提醒方式</text>
+            <picker mode="selector" range="{{reminderOptions}}" value="{{actionPlan.reminderMode === 'in_app' ? 1 : actionPlan.reminderMode === 'wechat_subscription' ? 2 : 0}}" bindchange="handleReminderMode">
+              <view class="taf-select" role="button" aria-label="选择提醒方式">
+                <text class="taf-select__value">{{actionPlan.reminderMode === 'in_app' ? '仅站内提醒' : actionPlan.reminderMode === 'wechat_subscription' ? '微信订阅提醒' : '不提醒'}}</text>
+                <p3-icon class="taf-select__icon" name="chevron-down" size="24" tone="muted" />
+              </view>
+            </picker>
+          </view>
         </view>
       </view>
-      <view class="taf-action-section">
-        <view class="taf-action-section__heading">
-          <text>何时停下</text>
-          <view class="taf-action-section__rule" aria-hidden="true"><view></view><view></view></view>
-        </view>
-        <label class="taf-field">
-          <text class="taf-field__label">什么情况下先停下来</text>
+      <view class="taf-action-section taf-action-section--divided">
+        <p3-section-header title="何时停下" />
+        <view class="p3-field">
+          <text class="p3-field__label">什么情况下先停下来</text>
           <therapeutic-compact-textarea maxlength="300" value="{{actionPlan.stopCondition}}" field="stopCondition" aria-label="停止条件" placeholder="例如：感到明显不适、冲突升级或不再愿意时。" bind:input="handleActionInput" />
-        </label>
-        <label class="taf-field">
-          <text class="taf-field__label">如果没做到，我会怎么记录</text>
+        </view>
+        <view class="p3-field">
+          <text class="p3-field__label">如果没做到，我会怎么记录</text>
           <therapeutic-compact-textarea maxlength="800" value="{{actionPlan.setbackPlan}}" field="setbackPlan" aria-label="未完成时的记录方式" placeholder="只记录发生了什么，不责备自己。" bind:input="handleActionInput" />
-        </label>
+        </view>
       </view>
-      <button class="taf-confirmation {{actionPlan.confirmed ? 'taf-confirmation--selected' : ''}}" role="checkbox" aria-checked="{{actionPlan.confirmed}}" bindtap="handleActionConfirmation">
-        <text class="taf-confirmation__mark">{{actionPlan.confirmed ? '✓' : ''}}</text>
-        <text>这是我自愿选择的行动，我知道可以修改、停止或不做。</text>
+      <button class="taf-confirmation" role="checkbox" aria-checked="{{actionPlan.confirmed}}" bindtap="handleActionConfirmation">
+        <view class="taf-confirmation__box {{actionPlan.confirmed ? 'taf-confirmation__box--checked' : ''}}" aria-hidden="true">
+          <image wx:if="{{actionPlan.confirmed}}" class="taf-confirmation__tick" src="/assets/icons/p3/tick-14-white.svg" />
+        </view>
+        <text class="taf-confirmation__text">这是我自愿选择的行动，我知道可以修改、停止或不做。</text>
       </button>
     </view>
 
     <therapeutic-comparison wx:if="{{mode === 'summary'}}" original-text="{{originalText}}" system-text="{{systemText}}" />
 
-    <text class="draft-status" aria-live="polite">{{saveStatus}}</text>
+    <text wx:if="{{saveStatus}}" class="taf-status" aria-live="polite">{{saveStatus}}</text>
   </view>
 
   <view wx:if="{{!loading && stateKind !== 'withdrawn' && stateKind !== 'expired'}}" class="taf-actions">
-    <button class="safe-ghost-button" aria-label="返回上一步" bindtap="handleBack">上一步</button>
+    <button class="p3-btn p3-btn--secondary taf-actions__back" aria-label="返回上一步" bindtap="handleBack">上一步</button>
     <button
-      class="safe-primary-button"
+      class="p3-btn p3-btn--primary taf-actions__next"
       loading="{{saving}}"
       disabled="{{saving || !canContinue}}"
       aria-label="{{nextLabel}}"
@@ -129,5 +138,5 @@
     >{{nextLabel}}</button>
   </view>
 
-  <text wx:if="{{stepNumber === 1}}" class="taf-boundary">你可以暂停、修改或撤回。这里提供自我了解线索，不替代诊断、治疗或紧急帮助。</text>
+  <text wx:if="{{stepNumber === 1}}" class="p3-footnote">你可以暂停、修改或撤回。这里提供自我了解线索，不替代诊断、治疗或紧急帮助。</text>
 </view>

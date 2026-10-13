@@ -57,6 +57,13 @@ function minutesText(sessions) {
   return low === high ? `${low}` : `${low}–${high}`;
 }
 
+// 已提交记录按“10月8日”显示（Figma 666:2991）；解析失败时退回原始日期。
+function shortDateText(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value || ""));
+  if (!match) return String(value || "").slice(0, 10);
+  return `${Number(match[2])}月${Number(match[3])}日`;
+}
+
 function formatProgram(program) {
   const measurementPlan = program.measurement_plan || null;
   const sessions = program.sessions || [];
@@ -67,6 +74,7 @@ function formatProgram(program) {
     sessionCountText: sessions.length ? `共 ${sessions.length} 节${minutes ? `，每节约 ${minutes} 分钟` : ""}` : "",
     reviewText: REVIEW_TEXT[program.review_status] || program.review_status || "",
     evidence: (program.evidence_basis || []).filter((item) => item && item.finding),
+    constructText: (program.target_constructs || []).join(" · "),
     doseText: program.minimum_dose
       ? `计划 ${program.minimum_dose.planned_sessions} 节，至少完成 ${program.minimum_dose.minimum_completed_sessions} 节；建议间隔 ${program.minimum_dose.session_interval_days}`
       : "",
@@ -74,6 +82,7 @@ function formatProgram(program) {
       ? {
           ...measurementPlan,
           statusLabel: measurementPlan.status === "pilot_approved" ? "试点已确认" : "待研究负责人确认",
+          outcomeText: (measurementPlan.primary_outcomes || []).join(" · "),
         }
       : null,
   };
@@ -246,6 +255,10 @@ Page({
     this.setData({ participationStatus: event.detail.value || "completed", successMessage: "", errorMessage: "" });
   },
 
+  pickParticipation(event) {
+    this.onParticipationChange({ detail: { value: event.currentTarget.dataset.value } });
+  },
+
   onStatusNoteInput(event) {
     this.setData({ statusNote: event.detail.value });
   },
@@ -262,6 +275,15 @@ Page({
 
   onAdverseResponseChange(event) {
     this.setData({ adverseResponse: !!event.detail.value.length });
+  },
+
+  // 点勾选框旁的文字也能切换，和登录页协议勾选一致。
+  flipAdverseResponse() {
+    this.setData({ adverseResponse: !this.data.adverseResponse });
+  },
+
+  flipAnalysisConsent() {
+    this.setData({ analysisConsent: !this.data.analysisConsent });
   },
 
   saveDraft() {
@@ -291,7 +313,7 @@ Page({
       this.setData({
         submittedEntries: items.map((item) => ({
           ...item,
-          createdAtText: String(item.created_at || "").slice(0, 16).replace("T", " "),
+          createdAtText: shortDateText(item.created_at),
           sessionText: `第 ${item.session_no} 节`,
           statusText: PARTICIPATION_TEXT[item.participation_status] || "已提交",
         })),

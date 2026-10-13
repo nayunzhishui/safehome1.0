@@ -1,9 +1,23 @@
 <view wx:if="{{notice}}" class="consent-shade" catchtouchmove="stop">
   <view class="consent-dialog" role="dialog" aria-modal="true" aria-label="{{notice.title}}">
     <text class="consent-title">{{notice.title}}</text>
-    <scroll-view scroll-y class="consent-content"><text>{{notice.text}}</text><text class="consent-boundary">{{notice.boundary}}</text><button class="consent-link" bindtap="privacy">查看隐私与授权管理</button></scroll-view>
-    <checkbox-group bindchange="check"><label class="consent-check"><checkbox value="agree" checked="{{checked}}" color="#2f6a60" /><text>我已阅读并同意本次功能的数据处理说明</text></label></checkbox-group>
-    <button class="consent-primary" bindtap="agree" disabled="{{!checked}}">我已知晓，同意并继续</button>
-    <button class="consent-secondary" bindtap="refuse">暂不同意，不提交</button>
+    <scroll-view scroll-y class="consent-content">
+      <text>{{notice.text}}</text>
+      <text class="consent-boundary">{{notice.boundary}}</text>
+      <button class="p3-link consent-link" bindtap="privacy">查看隐私与授权管理 ›</button>
+    </scroll-view>
+    <checkbox-group class="p3-agreement" bindchange="check">
+      <label class="p3-agreement__box {{checked ? 'p3-agreement__box--checked' : ''}}">
+        <checkbox class="p3-agreement__native" value="agree" checked="{{checked}}" aria-label="我已阅读并同意本次功能的数据处理说明" />
+        <image wx:if="{{checked}}" class="p3-agreement__tick" src="/assets/icons/p3/tick-14-white.svg" aria-hidden="true" />
+      </label>
+      <view class="p3-agreement__text">
+        <text bindtap="toggle">我已阅读并同意本次功能的数据处理说明</text>
+      </view>
+    </checkbox-group>
+    <view class="consent-actions">
+      <button class="p3-btn p3-btn--primary" bindtap="agree" disabled="{{!checked}}">我已知晓，同意并继续</button>
+      <button class="p3-btn p3-btn--quiet" bindtap="refuse">暂不同意，不提交</button>
+    </view>
   </view>
 </view>

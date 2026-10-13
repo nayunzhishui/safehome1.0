@@ -1,0 +1,17 @@
+<view class="p3-slider">
+  <view class="p3-slider__track" aria-hidden="true">
+    <view wx:if="{{level > 0 && percent > 0}}" class="p3-slider__fill" style="width: {{percent}}%; background: linear-gradient(90deg, var(--p3-intensity-1), var(--p3-intensity-{{level}}));"></view>
+  </view>
+  <view class="p3-slider__knob" style="left: {{percent}}%;" aria-hidden="true"></view>
+  <slider
+    class="p3-slider__native"
+    min="{{min}}"
+    max="{{max}}"
+    step="1"
+    value="{{value}}"
+    block-size="28"
+    aria-label="{{ariaLabel}}"
+    bindchanging="onChanging"
+    bindchange="onChanging"
+  />
+</view>

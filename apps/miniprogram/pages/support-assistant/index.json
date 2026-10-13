@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "支持性问答",
+  "navigationBarTitleText": "AI支持性问答",
   "usingComponents": {
     "page-state": "/components/page-state/index",
     "boundary-note": "/components/boundary-note/index",

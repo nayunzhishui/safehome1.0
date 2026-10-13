@@ -1,27 +1,26 @@
-<view class="journey-action journey-action--{{loading ? 'loading' : (errorMessage ? 'error' : state)}}" role="region" aria-label="{{regionAriaLabel}}">
+<view class="journey-action journey-action--{{variant}} journey-action--{{loading ? 'loading' : (errorMessage ? 'error' : state)}}" role="region" aria-label="{{regionAriaLabel}}">
   <view class="journey-action__head">
-    <view class="journey-action__marker" aria-hidden="true">{{marker}}</view>
-    <text class="journey-action__kicker">{{eyebrow}}</text>
+    <text wx:if="{{showMarker}}" class="journey-action__marker" aria-hidden="true">{{marker}}</text>
+    <text class="journey-action__kicker">{{eyebrow}}{{!loading && !errorMessage && metaText ? ' · ' + metaText : ''}}</text>
     <status-pill wx:if="{{!loading && !errorMessage}}" label="{{stateLabel}}" tone="{{statusTone}}" />
   </view>
 
   <view wx:if="{{loading}}" class="journey-action__loading" role="status" aria-live="polite">
     <view class="journey-action__skeleton journey-action__skeleton--title"></view>
     <view class="journey-action__skeleton journey-action__skeleton--copy"></view>
-    <text>正在整理可继续的操作</text>
+    <text class="journey-action__description">正在整理可继续的操作</text>
   </view>
 
-  <view wx:elif="{{errorMessage}}" class="journey-action__content" role="status" aria-live="polite">
-    <text class="journey-action__title">暂时没有读取到下一步</text>
+  <block wx:elif="{{errorMessage}}">
+    <text class="journey-action__title" role="status" aria-live="polite">暂时没有读取到下一步</text>
     <text class="journey-action__description">{{errorMessage}}</text>
-    <button class="journey-action__button journey-action__button--secondary" aria-label="重新读取今天的一小步" bindtap="handleRetry">重新读取</button>
-  </view>
+    <button class="p3-btn p3-btn--secondary journey-action__button" aria-label="重新读取今天的一小步" bindtap="handleRetry">重新读取</button>
+  </block>
 
-  <view wx:else class="journey-action__content">
+  <block wx:else>
     <text class="journey-action__title">{{title}}</text>
     <text wx:if="{{description}}" class="journey-action__description">{{description}}</text>
-    <text wx:if="{{metaText}}" class="journey-action__meta">{{metaText}}</text>
-    <button class="journey-action__button" aria-label="{{actionAriaLabel}}" bindtap="handleAction">{{buttonLabel}}</button>
+    <button class="p3-btn p3-btn--primary journey-action__button" aria-label="{{actionAriaLabel}}" bindtap="handleAction">{{buttonLabel}}</button>
     <text wx:if="{{boundaryNotice}}" class="journey-action__boundary">{{boundaryNotice}}</text>
-  </view>
+  </block>
 </view>

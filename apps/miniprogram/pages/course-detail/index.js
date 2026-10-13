@@ -3,13 +3,26 @@ const { isLoggedIn, requireLogin } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
 
+// 巩固提示：内容里已写明“一周后回看：……”时直接显示，避免“7 天后：一周后回看：”重复。
+function formatBooster(plan) {
+  if (!plan || !plan.prompt) return "";
+  const prompt = String(plan.prompt).trim();
+  if (/^[^：:]{0,8}后回看[：:]/.test(prompt)) return prompt;
+  return plan.review_after_days ? `${plan.review_after_days} 天后回看：${prompt}` : prompt;
+}
+
 function formatCourse(course) {
+  const durationText = course.duration_minutes ? `${course.duration_minutes} 分钟` : "一小节";
+  const sectionCount = (course.sections || []).length;
   return {
     ...course,
-    durationText: course.duration_minutes ? `${course.duration_minutes} 分钟` : "一小节",
+    durationText,
+    // “情绪管理 · 12 分钟 · 3 小节”（Figma 655:1909）
+    metaText: [course.theme, durationText, sectionCount ? `${sectionCount} 小节` : ""].filter(Boolean).join(" · "),
     relationText: (course.relation_to_cards_or_programs || []).join("、"),
+    relationCount: (course.relation_to_cards_or_programs || []).length,
     knowledgeChecks: (course.knowledge_checks || []).map((check) => ({ ...check, selectedValue: "", feedback: "" })),
-    boosterText: course.booster_plan ? `${course.booster_plan.review_after_days} 天后：${course.booster_plan.prompt}` : "",
+    boosterText: formatBooster(course.booster_plan),
   };
 }
 

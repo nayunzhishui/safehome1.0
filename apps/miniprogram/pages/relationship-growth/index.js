@@ -1,5 +1,6 @@
 const { createSafeHomeApi } = require("../../services/api");
 const { createResilientForm } = require("../../utils/resilientForm");
+const { reportStatusLabel } = require("../../utils/relationshipStatus.generated");
 
 const api = createSafeHomeApi();
 const COUNT_KEYS = ["active_social_count", "authentic_expression_count"];
@@ -26,7 +27,7 @@ const TIMELINE_FILTERS = [
 ];
 const SECTION_TABS = [
   { key: "curve", label: "变化曲线" },
-  { key: "timeline", label: "成长时间线" },
+  { key: "timeline", label: "时间线" },
   { key: "feedback", label: "阶段反馈" },
   { key: "records", label: "补充记录" },
 ];
@@ -36,6 +37,73 @@ function formatDate(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return String(value);
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+// 时间线和曲线日期用“10月9日”（Figma 667:6212）。
+function shortDate(value) {
+  const date = new Date(value);
+  if (!value || Number.isNaN(date.getTime())) return "时间待记录";
+  return `${date.getMonth() + 1}月${date.getDate()}日`;
+}
+
+// 时间线小标题里的类型用短词：记录 / 任务 / 报告……
+const TIMELINE_KINDS = {
+  assessment: "测评",
+  project_task: "任务",
+  weekly_supplement: "记录",
+  key_event: "记录",
+  report: "报告",
+  researcher_feedback: "反馈",
+};
+
+// 后端时间线里任务和报告的摘要是状态码（pending_review、sent…），这里换成参与者能读懂的话；
+// 两类任务的名字与试点页一致（关系隐喻绘画、情境句子补全）。
+const TASK_REVIEW_TEXT = {
+  pending_review: "已提交，等待人工复核",
+  priority_review: "已提交，等待人工复核",
+  reviewed: "研究者已查看",
+};
+const TASK_TITLES = { 关系绘画: "关系隐喻绘画", 句子补全: "情境句子补全" };
+
+function timelineSummary(item) {
+  if (item.type === "project_task") return TASK_REVIEW_TEXT[item.summary] || item.summary;
+  if (item.type === "report" && /^[a-z_]+$/.test(String(item.summary || ""))) {
+    const label = reportStatusLabel(item.summary);
+    return /^已/.test(label) ? `研究者${label}` : label;
+  }
+  return item.summary;
+}
+
+function timelineView(item) {
+  return {
+    ...item,
+    title: item.type === "project_task" ? TASK_TITLES[item.title] || item.title : item.title,
+    summary: timelineSummary(item),
+    typeLabel: timelineTypeLabel(item.type),
+    dateText: formatDate(item.created_at),
+    kicker: `${shortDate(item.created_at)} · ${TIMELINE_KINDS[item.type] || "记录"}`,
+  };
+}
+
+// 曲线下方最多放四个日期，与折线上等分的位置对应。
+function chartDateLabels(points) {
+  if (points.length <= 4) return points.map((point) => point.shortDate);
+  return [0, 1, 2, 3].map((step) => points[Math.round((step * (points.length - 1)) / 3)].shortDate);
+}
+
+const CN_COUNTS = ["零", "一", "两", "三", "四", "五", "六", "七", "八", "九", "十"];
+
+// 只描述范围，不判断变好变差（设计稿：“变化只作为讨论线索”）。
+function trendSummary(groupKey, label, points) {
+  const values = points.map((point) => Number(point.value)).filter((value) => Number.isFinite(value));
+  if (values.length < 2) return "";
+  const round = (value) => Number(value.toFixed(1));
+  const low = round(Math.min(...values));
+  const high = round(Math.max(...values));
+  const times = values.length <= 10 ? `${CN_COUNTS[values.length]}次` : `${values.length} 次`;
+  const unit = groupKey === "count" ? " 次" : "";
+  const range = low === high ? `都是 ${low}${unit}` : `在 ${low}—${high}${unit || " "}之间`;
+  return `最近${times}记录里，${label}${range}。变化只作为讨论线索。`;
 }
 
 function buildCurveGroups(curves = {}) {
@@ -102,6 +170,7 @@ Page({
     selectedMetric: "",
     selectedMetricLabel: "",
     selectedPoints: [],
+    chartDates: [],
     trendText: "",
     sectionTabs: SECTION_TABS,
     activeSection: "curve",
@@ -184,11 +253,7 @@ Page({
       const curveGroups = buildCurveGroups(growth.curves);
       const selectedGroup = curveGroups[0]?.key || "";
       const selectedMetric = curveGroups[0]?.metrics[0]?.key || "";
-      const timeline = (growth.timeline || []).map((item) => ({
-        ...item,
-        typeLabel: timelineTypeLabel(item.type),
-        dateText: formatDate(item.created_at),
-      }));
+      const timeline = (growth.timeline || []).map(timelineView);
       this.setData({
         loading: false,
         enrollmentId,
@@ -215,14 +280,15 @@ Page({
       this.setData({ selectedGroup: "", selectedMetrics: [], selectedMetric: "", selectedPoints: [], trendText: "" });
       return;
     }
-    const points = (this.data.curves[metric.key] || []).map((point, index) => ({ ...point, order: index + 1, dateText: formatDate(point.created_at) }));
-    let trendText = "";
-    if (points.length >= 2) {
-      const change = Number(points[points.length - 1].value) - Number(points[0].value);
-      const arrow = change > 0 ? "↑" : change < 0 ? "↓" : "→";
-      trendText = `${arrow} 从 ${points[0].value} 到 ${points[points.length - 1].value}，仅作描述，不代表变好或变差。`;
-    }
+    const points = (this.data.curves[metric.key] || []).map((point, index) => ({
+      ...point,
+      order: index + 1,
+      dateText: formatDate(point.created_at),
+      shortDate: shortDate(point.created_at),
+    }));
+    const trendText = trendSummary(group.key, metric.label, points);
     this.setData({
+      chartDates: chartDateLabels(points),
       selectedGroup: group.key,
       selectedMetrics: group.metrics,
       selectedMetric: metric.key,
@@ -274,13 +340,16 @@ Page({
     if (panel === "event") this.setData({ showEventForm: !this.data.showEventForm });
   },
 
+  // 旧版 canvas 按 CSS 像素绘制：先量画布尺寸，再按设计稿样式画（Figma 667:6264）。
   drawChart(groupKey, points) {
+    wx.createSelectorQuery().in(this).select(".growth-chart__canvas").boundingClientRect((rect) => {
+      this.paintChart(groupKey, points, rect && rect.width ? rect.width : 310, rect && rect.height ? rect.height : 150);
+    }).exec();
+  },
+
+  paintChart(groupKey, points, width, height) {
     const ctx = wx.createCanvasContext("growthChart", this);
-    const width = 620;
-    const height = 300;
     ctx.clearRect(0, 0, width, height);
-    ctx.setFillStyle("#ffffff");
-    ctx.fillRect(0, 0, width, height);
     if (!points.length) {
       ctx.draw();
       return;
@@ -302,54 +371,38 @@ Page({
       min -= padding;
       max += padding;
     }
-    const left = 58;
-    const right = 24;
-    const top = 30;
-    const bottom = 52;
-    const plotWidth = width - left - right;
-    const plotHeight = height - top - bottom;
-    ctx.setStrokeStyle("#d5e3e3");
+    const top = 8;
+    const bottom = height - 22;
+    const inset = 12;
+    ctx.setStrokeStyle("#e7e1d6");
     ctx.setLineWidth(1);
-    [0, 0.5, 1].forEach((ratio) => {
-      const y = top + plotHeight * ratio;
+    [top, (top + bottom) / 2, bottom].forEach((y) => {
       ctx.beginPath();
-      ctx.moveTo(left, y);
-      ctx.lineTo(width - right, y);
+      ctx.moveTo(0, y + 0.5);
+      ctx.lineTo(width, y + 0.5);
       ctx.stroke();
     });
-    const coordinates = points.map((point, index) => ({
-      x: points.length === 1 ? left + plotWidth / 2 : left + (index / (points.length - 1)) * plotWidth,
-      y: top + ((max - Number(point.value)) / (max - min || 1)) * plotHeight,
-      value: point.value,
-      order: index + 1,
+    const span = Math.max(1, points.length - 1);
+    const coordinates = values.map((value, index) => ({
+      x: points.length === 1 ? width / 2 : inset + (index / span) * (width - inset * 2),
+      y: bottom - ((value - min) / (max - min || 1)) * (bottom - top),
     }));
+    ctx.setStrokeStyle("#23666e");
+    ctx.setLineWidth(2);
+    ctx.setLineJoin("round");
     if (coordinates.length >= 2) {
-      ctx.setStrokeStyle("#23666e");
-      ctx.setLineWidth(4);
-      ctx.setLineJoin("round");
       ctx.beginPath();
       ctx.moveTo(coordinates[0].x, coordinates[0].y);
       coordinates.slice(1).forEach((point) => ctx.lineTo(point.x, point.y));
       ctx.stroke();
     }
-    coordinates.forEach((point, index) => {
-      ctx.setTextAlign(index === 0 ? "left" : index === coordinates.length - 1 ? "right" : "center");
-      ctx.setFillStyle("#23666e");
+    coordinates.forEach((point) => {
       ctx.beginPath();
-      ctx.arc(point.x, point.y, 7, 0, Math.PI * 2);
+      ctx.arc(point.x, point.y, 3, 0, Math.PI * 2);
+      ctx.setFillStyle("#fffdf9");
       ctx.fill();
-      ctx.setFillStyle("#173c43");
-      ctx.setFontSize(28);
-      ctx.fillText(String(point.value), point.x, point.y < 58 ? point.y + 38 : point.y - 14);
-      ctx.setFillStyle("#536e73");
-      ctx.setFontSize(26);
-      ctx.fillText(`第${point.order}次`, point.x, height - 22);
+      ctx.stroke();
     });
-    ctx.setFillStyle("#536e73");
-    ctx.setFontSize(26);
-    ctx.setTextAlign("left");
-    ctx.fillText(String(Number(max.toFixed(1))), 8, top + 6);
-    ctx.fillText(String(Number(min.toFixed(1))), 8, top + plotHeight + 6);
     ctx.draw();
   },
 
@@ -357,7 +410,7 @@ Page({
     const timelineFilter = event.currentTarget.dataset.key;
     const filteredTimeline = (this.data.growth.timeline || [])
       .filter((item) => timelineMatches(item, timelineFilter))
-      .map((item) => ({ ...item, typeLabel: timelineTypeLabel(item.type), dateText: formatDate(item.created_at) }));
+      .map(timelineView);
     this.setData({ timelineFilter, filteredTimeline });
   },
 

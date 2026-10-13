@@ -1,0 +1,12 @@
+<view class="p3-timeline-item p3-timeline-item--{{state}}">
+  <view class="p3-timeline-item__rail" aria-hidden="true">
+    <view class="p3-timeline-item__joint"></view>
+    <view wx:if="{{showLine}}" class="p3-timeline-item__line"></view>
+  </view>
+  <view class="p3-timeline-item__text">
+    <text wx:if="{{kicker}}" class="p3-timeline-item__kicker">{{kicker}}</text>
+    <text class="p3-timeline-item__title">{{title}}</text>
+    <text wx:if="{{body}}" class="p3-timeline-item__body">{{body}}</text>
+    <slot></slot>
+  </view>
+</view>

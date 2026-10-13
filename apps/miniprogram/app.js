@@ -1,4 +1,5 @@
 const { getCloudConfig, migrateLegacyCloudConfig } = require("./services/cloudConfig");
+const { loadDisplayFonts } = require("./utils/display-font");
 
 App({
   globalData: {
@@ -8,6 +9,7 @@ App({
   },
 
   onLaunch() {
+    loadDisplayFonts();
     migrateLegacyCloudConfig();
     if (wx.cloud && wx.cloud.init) {
       try {

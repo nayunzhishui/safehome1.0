@@ -1,78 +1,79 @@
-<view class="safe-page ui2-page auth-page">
-  <view class="auth-shell">
-    <view class="auth-header">
-      <text class="auth-title">登录</text>
+<view class="login-page" role="main" aria-label="登录">
+  <block wx:if="{{mustChangePassword}}">
+    <view class="login-intro">
+      <text class="p3-serif-title" role="heading" aria-level="1">先设置一个新密码</text>
+      <text class="login-intro__body">这是首次登录。新密码至少 12 位，并包含三类字符；更新后临时密码和旧会话立即失效。</text>
     </view>
 
-    <block wx:if="{{mustChangePassword}}">
-      <view class="password-change-panel">
-        <view class="password-change-title">首次登录，请先设置新密码</view>
-        <view class="auth-note">新密码至少 12 位，并包含三类字符。更新后临时密码和旧会话立即失效。</view>
-
-        <view class="field password-field-first">
-          <text>临时密码</text>
-          <input value="{{currentPassword}}" aria-label="临时密码" placeholder-class="field-placeholder" password placeholder="请输入临时密码" bindinput="onCurrentPasswordInput" />
-        </view>
-        <view class="field">
-          <text>新密码</text>
-          <input value="{{newPassword}}" aria-label="新密码，至少12位并包含三类字符" placeholder-class="field-placeholder" password placeholder="请输入新密码" bindinput="onNewPasswordInput" />
-        </view>
-        <view class="field">
-          <text>再次输入新密码</text>
-          <input value="{{confirmPassword}}" aria-label="再次输入新密码" placeholder-class="field-placeholder" password placeholder="请再次输入新密码" bindinput="onConfirmPasswordInput" />
-        </view>
-
-        <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>
-        <button class="primary-action" loading="{{loading}}" disabled="{{loading}}" bindtap="submitPasswordChange">更新密码并继续</button>
+    <view class="login-form">
+      <view class="p3-field">
+        <text class="p3-field__label">临时密码</text>
+        <input class="p3-field__input" value="{{currentPassword}}" aria-label="临时密码" placeholder-class="p3-field__placeholder" password placeholder="请输入临时密码" bindinput="onCurrentPasswordInput" />
       </view>
-    </block>
-
-    <block wx:else>
-      <view class="auth-agreement" aria-label="协议确认">
-        <checkbox-group bindchange="onAgreementChange">
-          <label class="auth-agreement-label">
-            <checkbox value="agreed" checked="{{agreed}}" aria-label="我已阅读并同意用户服务协议和隐私政策" />
-            <text class="auth-agreement-text">我已阅读并同意</text>
-          </label>
-        </checkbox-group>
-        <text class="auth-agreement-link" bindtap="openAgreement">《用户服务协议》</text>
-        <text class="auth-agreement-text">和</text>
-        <text class="auth-agreement-link" bindtap="openPrivacy">《隐私政策》</text>
+      <view class="p3-field">
+        <text class="p3-field__label">新密码</text>
+        <input class="p3-field__input" value="{{newPassword}}" aria-label="新密码，至少12位并包含三类字符" placeholder-class="p3-field__placeholder" password placeholder="请输入新密码" bindinput="onNewPasswordInput" />
+        <text class="p3-field__hint">至少 12 位，含大小写字母、数字或符号中的三类</text>
       </view>
-
-      <view class="auth-methods" aria-label="快捷登录方式">
-        <view class="auth-section-title">快捷登录</view>
-        <button wx:if="{{wechatAvailable}}" class="wechat-action" loading="{{wechatLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="submitWechatLogin">微信一键登录</button>
-        <view wx:else class="auth-unavailable" aria-label="微信一键登录暂不可用">微信一键登录（暂不可用）</view>
-        <block wx:if="{{phoneAvailable}}">
-          <button wx:if="{{agreed}}" class="phone-action" open-type="getPhoneNumber" loading="{{phoneLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindgetphonenumber="handlePhoneLogin">手机号快捷登录</button>
-          <button wx:else class="phone-action" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="ensureAgreed">手机号快捷登录</button>
-        </block>
-        <view wx:else class="auth-unavailable auth-unavailable-secondary" aria-label="手机号快捷登录暂不可用">手机号快捷登录（暂不可用）</view>
-
-        <view class="auth-privacy-note">
-          <text class="auth-privacy-dot">•</text>
-          <text class="auth-privacy-copy">手机号登录仅保存用于识别账号的摘要，不保存该授权流程中的完整号码；人工支持中自填的联系方式另行说明。</text>
-        </view>
-        <view wx:if="{{capabilityMessage}}" class="capability-note" aria-live="polite">{{capabilityMessage}}</view>
+      <view class="p3-field">
+        <text class="p3-field__label">再次输入新密码</text>
+        <input class="p3-field__input" value="{{confirmPassword}}" aria-label="再次输入新密码" placeholder-class="p3-field__placeholder" password placeholder="请再次输入新密码" bindinput="onConfirmPasswordInput" />
       </view>
+    </view>
 
-      <view class="divider"><text>或使用账号密码</text></view>
+    <view class="login-actions">
+      <text wx:if="{{message}}" class="p3-form-message p3-form-message--{{status}}" aria-live="polite">{{message}}</text>
+      <button class="p3-btn p3-btn--primary primary-action" loading="{{loading}}" disabled="{{loading}}" bindtap="submitPasswordChange">更新密码并继续</button>
+    </view>
+  </block>
 
-      <view class="auth-form">
-        <view class="field">
-          <text>用户名</text>
-          <input value="{{username}}" aria-label="用户名" placeholder-class="field-placeholder" placeholder="请输入用户名" bindinput="onUsernameInput" />
-        </view>
-        <view class="field">
-          <text>密码</text>
-          <input value="{{password}}" aria-label="密码" placeholder-class="field-placeholder" password placeholder="请输入密码" bindinput="onPasswordInput" />
-        </view>
+  <block wx:else>
+    <view class="login-brand">
+      <image class="login-brand__art" src="/assets/art/empty-sprout.svg" aria-hidden="true" />
+      <text class="login-brand__name">安心陪伴</text>
+      <text class="login-brand__tagline">记录、反馈与练习，陪你慢慢来</text>
+    </view>
 
-        <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>
-        <button class="primary-action {{wechatAvailable ? 'primary-action--secondary' : ''}}" loading="{{loading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="submitLogin">登录</button>
-        <button class="ghost-action" bindtap="goRegister">注册新账号</button>
+    <checkbox-group class="p3-agreement" aria-label="协议确认" bindchange="onAgreementChange">
+      <label class="p3-agreement__box {{agreed ? 'p3-agreement__box--checked' : ''}}">
+        <checkbox class="p3-agreement__native" value="agreed" checked="{{agreed}}" aria-label="我已阅读并同意用户服务协议和隐私政策" />
+        <image wx:if="{{agreed}}" class="p3-agreement__tick" src="/assets/icons/p3/tick-14-white.svg" aria-hidden="true" />
+      </label>
+      <view class="p3-agreement__text">
+        <text bindtap="toggleAgreement">我已阅读并同意</text><text class="p3-agreement__link" bindtap="openAgreement">《用户服务协议》</text><text bindtap="toggleAgreement">和</text><text class="p3-agreement__link" bindtap="openPrivacy">《隐私政策》</text>
       </view>
-    </block>
-  </view>
+    </checkbox-group>
+
+    <view class="login-actions" aria-label="快捷登录方式">
+      <button wx:if="{{wechatAvailable}}" class="p3-btn p3-btn--primary wechat-action" loading="{{wechatLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="submitWechatLogin">微信一键登录</button>
+      <view wx:else class="p3-btn p3-btn--unavailable auth-unavailable" aria-label="微信一键登录暂不可用">微信一键登录（暂不可用）</view>
+      <block wx:if="{{phoneAvailable}}">
+        <button wx:if="{{agreed}}" class="p3-btn p3-btn--secondary phone-action" open-type="getPhoneNumber" loading="{{phoneLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindgetphonenumber="handlePhoneLogin">手机号快捷登录</button>
+        <button wx:else class="p3-btn p3-btn--secondary phone-action" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="ensureAgreed">手机号快捷登录</button>
+      </block>
+      <view wx:else class="p3-btn p3-btn--unavailable auth-unavailable" aria-label="手机号快捷登录暂不可用">手机号快捷登录（暂不可用）</view>
+      <text class="login-note">手机号登录仅保存用于识别账号的摘要，不保存该授权流程中的完整号码；人工支持中自填的联系方式另行说明。</text>
+      <text wx:if="{{capabilityMessage}}" class="login-note" aria-live="polite">{{capabilityMessage}}</text>
+    </view>
+
+    <view class="login-divider" aria-hidden="true">
+      <view class="login-divider__line"></view>
+      <text>或使用账号密码</text>
+      <view class="login-divider__line"></view>
+    </view>
+
+    <view class="login-form" aria-label="账号密码登录">
+      <view class="p3-field">
+        <text class="p3-field__label">用户名</text>
+        <input class="p3-field__input" value="{{username}}" aria-label="用户名" placeholder-class="p3-field__placeholder" placeholder="请输入用户名" bindinput="onUsernameInput" />
+      </view>
+      <view class="p3-field">
+        <text class="p3-field__label">密码</text>
+        <input class="p3-field__input" value="{{password}}" aria-label="密码" placeholder-class="p3-field__placeholder" password placeholder="请输入密码" bindinput="onPasswordInput" />
+      </view>
+      <text wx:if="{{message}}" class="p3-form-message p3-form-message--{{status}}" aria-live="polite">{{message}}</text>
+      <button class="p3-btn {{wechatAvailable ? 'p3-btn--secondary' : 'p3-btn--primary'}} primary-action" loading="{{loading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="submitLogin">登录</button>
+      <button class="p3-btn p3-btn--quiet" bindtap="goRegister">注册新账号</button>
+    </view>
+  </block>
 </view>

@@ -1,10 +1,8 @@
-<view class="page-shell ui2-page" aria-label="{{eyebrow}}页面">
-  <view class="page-header">
-    <text class="page-kicker">{{eyebrow}}</text>
-    <text class="page-title">{{title}}</text>
-  </view>
-  <view class="mode-note">
-    <text class="page-summary">{{subtitle}}</text>
+<view class="p3-page assistant-page" role="main" aria-label="{{eyebrow}}页面">
+  <view class="assistant-head">
+    <text class="assistant-head__kicker">{{eyebrow}}</text>
+    <text class="p3-serif-title" role="heading" aria-level="1">{{title}}</text>
+    <text class="assistant-head__summary">{{subtitle}}</text>
   </view>
 
   <page-state
@@ -23,15 +21,12 @@
     bind:action="loadStatus"
   />
 
-  <view wx:elif="{{!enabled}}" class="unavailable" role="status">
-    <text class="section-title">当前未开放</text>
-    <text class="section-copy">你仍可使用情绪记录、训练卡和人工支持。</text>
-  </view>
+  <page-state wx:elif="{{!enabled}}" kind="empty" title="当前未开放" description="你仍可使用情绪记录、训练卡和人工支持。" />
 
   <block wx:else>
     <boundary-note text="{{boundary}}" consented="{{consented}}" sending="{{sending}}" error="{{error}}" bind:confirm="enableConsent" />
 
-    <view wx:if="{{messages.length}}" class="conversation" aria-live="polite">
+    <view wx:if="{{messages.length}}" class="assistant-conversation" aria-live="polite">
       <conversation-entry wx:for="{{messages}}" wx:key="id" message="{{item}}" />
     </view>
 

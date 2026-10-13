@@ -58,17 +58,17 @@
   ],
   "window": {
     "navigationBarTitleText": "安心陪伴",
-    "navigationBarBackgroundColor": "#FFF7F0",
+    "navigationBarBackgroundColor": "#F6F4EF",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#FFF7F0"
+    "backgroundColor": "#F6F4EF"
   },
   "usingComponents": {
     "page-state": "/components/page-state/index"
   },
   "tabBar": {
-    "color": "#8A8D89",
-    "selectedColor": "#4f7c6b",
-    "backgroundColor": "#FFFDF8",
+    "color": "#536E73",
+    "selectedColor": "#23666E",
+    "backgroundColor": "#FFFDF9",
     "borderStyle": "white",
     "list": [
       {

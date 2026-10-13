@@ -1,1 +1,128 @@
-.welcome-shade,.tour-layer{position:fixed;inset:0;z-index:1300}.welcome-shade{background:rgba(20,39,35,.58);display:flex;align-items:center;justify-content:center;padding:28rpx}.welcome-dialog,.tour-dialog{box-sizing:border-box;background:#fffdf9;border-radius:28rpx;color:#20332e;padding:32rpx;display:flex;flex-direction:column;gap:18rpx}.welcome-dialog{width:100%;max-width:680rpx;max-height:92vh}.guide-kicker{font-size:26rpx;color:#46655d}.guide-title{display:block;font-size:36rpx;line-height:1.45;font-weight:600}.welcome-content{min-height:0;max-height:38vh;font-size:28rpx;line-height:1.75}.welcome-content text{display:block;margin-bottom:22rpx}.guide-check{display:flex;gap:12rpx;align-items:flex-start;font-size:28rpx;line-height:1.55}button{margin:0;width:100%;min-height:88rpx;font-size:28rpx;line-height:1.5;padding:22rpx 16rpx;border-radius:16rpx}button::after{border:0}.guide-primary{background:#2f6a60;color:#fff}.guide-primary[disabled],.guide-secondary[disabled]{background:#e5ebe7;color:#6b7971}.guide-secondary{background:#eef3ef;color:#254e43}.guide-link{color:#2f6a60;background:transparent;text-decoration:underline;padding:12rpx;min-height:72rpx}.guide-error{color:#8c3531;font-size:26rpx;line-height:1.5}.tour-highlight{position:fixed;box-sizing:border-box;border:3px solid #bddbd0;border-radius:16rpx;box-shadow:0 0 0 3000px rgba(20,39,35,.65);pointer-events:none}.tour-fallback{position:absolute;inset:0;background:rgba(20,39,35,.65)}.tour-dialog{position:fixed;left:16px;right:16px;max-height:calc(100vh - 32px);z-index:1}.tour-copy{font-size:28rpx;line-height:1.7;max-height:100px}.tour-actions{display:flex;gap:16rpx}.tour-actions button{flex:1}.tour-arrow{position:absolute;width:16px;height:16px;background:#fffdf9;transform:rotate(45deg)}.tour-arrow.up{top:-8px}.tour-arrow.down{bottom:-8px}
+/* 首页使用教程浮层：UIproduct3 色板（行动卡 + 一个实心按钮 + 描边按钮 + 文字链接）。 */
+.tour-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+}
+
+.tour-highlight {
+  position: fixed;
+  box-sizing: border-box;
+  border: 3px solid var(--p3-soft, #e2f0ed);
+  border-radius: 40rpx;
+  box-shadow: 0 0 0 3000px rgba(23, 60, 67, 0.62);
+  pointer-events: none;
+}
+
+.tour-fallback {
+  position: absolute;
+  inset: 0;
+  background: rgba(23, 60, 67, 0.62);
+}
+
+.tour-dialog {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  box-sizing: border-box;
+  max-height: calc(100vh - 32px);
+  padding: 40rpx;
+  border-radius: 48rpx;
+  background: var(--p3-surface, #fffdf9);
+  color: var(--p3-ink, #173c43);
+  box-shadow: 0 20rpx 56rpx rgba(23, 61, 66, 0.07);
+}
+
+.guide-kicker {
+  color: var(--p3-muted, #536e73);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.guide-title {
+  display: block;
+  color: var(--p3-ink, #173c43);
+  font-size: 40rpx;
+  line-height: 56rpx;
+  font-weight: 600;
+}
+
+.tour-copy {
+  max-height: 100px;
+  color: var(--p3-ink, #173c43);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.tour-actions {
+  display: flex;
+  gap: 24rpx;
+  margin-top: 8rpx;
+}
+
+button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 88rpx;
+  margin: 0;
+  padding: 0 24rpx;
+  border-radius: 52rpx;
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+button::after {
+  border: 0;
+}
+
+.guide-primary {
+  height: 104rpx;
+  background: var(--p3-primary, #23666e);
+  color: #ffffff;
+}
+
+.guide-secondary {
+  height: 104rpx;
+  background: transparent;
+  box-shadow: inset 0 0 0 2rpx var(--p3-control, #6d9294);
+  color: var(--p3-primary, #23666e);
+}
+
+.guide-primary[disabled],
+.guide-secondary[disabled] {
+  opacity: 0.45;
+}
+
+.guide-link {
+  flex: none;
+  background: transparent;
+  color: var(--p3-primary, #23666e);
+  font-size: 26rpx;
+  line-height: 40rpx;
+  font-weight: 400;
+}
+
+.tour-arrow {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: var(--p3-surface, #fffdf9);
+  transform: rotate(45deg);
+}
+
+.tour-arrow.up {
+  top: -8px;
+}
+
+.tour-arrow.down {
+  bottom: -8px;
+}

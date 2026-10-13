@@ -51,6 +51,34 @@ function formatDimensionSummaries(items = []) {
   return groups;
 }
 
+// “10月4日 – 10月10日”；日期缺失时退回原始文字。
+function formatRange(start, end) {
+  const toText = (value) => {
+    const matched = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return matched ? `${Number(matched[2])}月${Number(matched[3])}日` : String(value || "");
+  };
+  return `${toText(start)} – ${toText(end)}`;
+}
+
+// 近 7 天阶段反馈（原首页“阶段性反馈”，随设计移到本周复盘）。
+const PROGRESS_STATUS_TEXT = {
+  insufficient: "记录还不够",
+  fluctuating: "仍在观察",
+  converging: "开始形成线索",
+  stable: "较稳定",
+  low_confidence: "暂不归纳",
+};
+
+function formatProgressSummary(summary) {
+  if (!summary || typeof summary !== "object") return null;
+  return {
+    status: summary.stability_status || "",
+    statusText: PROGRESS_STATUS_TEXT[summary.stability_status] || "阶段复盘",
+    summaryText: summary.summary_text || "记录还不够，先继续完成测评和练习。",
+    nextAction: summary.next_action || "先完成一次测一测或一张训练卡。",
+  };
+}
+
 Page({
   data: {
     loading: true,
@@ -66,6 +94,10 @@ Page({
     recommendedCardsText: "",
     thermometerDetailText: "",
     trainingEffectivenessText: "",
+    rangeText: "",
+    statCells: [],
+    commonRows: [],
+    progressSummary: null,
   },
 
   onLoad() {
@@ -83,12 +115,35 @@ Page({
     this.setData({ loading: true, errorMessage: "" });
 
     try {
-      const report = await api.getWeeklyReport();
+      const [report, progress] = await Promise.all([
+        api.getWeeklyReport(),
+        api.getProgressSummary({ range: "7d" }).catch(() => null),
+      ]);
+      const frequentScenes = formatPairs(report.frequent_scenes || []);
+      const frequentEmotions = formatPairs(report.frequent_emotions || []);
+      const commonPatterns = formatPairs(report.common_patterns || []);
+      const completedCards = report.completed_cards || [];
       this.setData({
         report,
-        frequentScenes: formatPairs(report.frequent_scenes || []),
-        frequentEmotions: formatPairs(report.frequent_emotions || []),
-        commonPatterns: formatPairs(report.common_patterns || []),
+        frequentScenes,
+        frequentEmotions,
+        commonPatterns,
+        rangeText: formatRange(report.week_start, report.week_end),
+        // 数字格直接展示接口计数，不做加总。
+        statCells: [
+          { label: "温度记录", value: String(report.thermometer_trend ? report.thermometer_trend.record_count || 0 : 0) },
+          { label: "测评记录", value: String(report.assessment_trend ? report.assessment_trend.assessment_count || 0 : 0) },
+          { label: "练习尝试", value: completedCards.length ? "已记" : "待记" },
+          { label: "常见场景", value: `${frequentScenes.length} 类` },
+          { label: "常见情绪", value: `${frequentEmotions.length} 类` },
+          { label: "互动线索", value: `${commonPatterns.length} 条` },
+        ],
+        commonRows: [
+          ...frequentScenes.map((item, index) => ({ ...item, kind: "场景", key: `scene-${index}` })),
+          ...frequentEmotions.map((item, index) => ({ ...item, kind: "情绪", key: `emotion-${index}` })),
+          ...commonPatterns.map((item, index) => ({ ...item, kind: "线索", key: `pattern-${index}` })),
+        ],
+        progressSummary: formatProgressSummary(progress),
         completedCardsText: (report.completed_cards || []).map((item) => userLabel(item, "已完成一项练习")).join("、"),
         profileTrendNamesText: ((report.profile_trend && report.profile_trend.profile_names) || [])
           .map((item) => `${item[0]} ${item[1]} 次`)

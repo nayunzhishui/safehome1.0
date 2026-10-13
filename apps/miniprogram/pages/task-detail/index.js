@@ -1,5 +1,6 @@
 const { createSafeHomeApi } = require("../../services/api");
 const { ensureServiceConsent, finishServiceConsent } = require("../../utils/serviceConsent");
+const { joinRules } = require("../../utils/card-text");
 const api = createSafeHomeApi();
 
 // Legacy navigation IDs select a real card; they never provide fallback content.
@@ -45,10 +46,10 @@ Page({
         subtitle: card.purpose || card.subtitle || "",
         scenario: card.suitable_scene || (card.suitable_for || [])[0] || "请按个人情况选择",
         duration: card.duration_minutes ? `${card.duration_minutes} 分钟` : "按个人节奏",
-        goal: steps[0] || "", steps,
+        goal: card.today_goal || steps[0] || "", steps,
         scripts: card.example_phrase || card.example ? [card.example_phrase || card.example] : [],
         boundaryNotice: card.boundary_notice || "陪伴练习不替代专业咨询或紧急帮助。",
-        stopText: (card.stop_rules || card.not_suitable_for || []).join("；"),
+        stopText: joinRules(card.stop_rules || card.not_suitable_for || []),
       } });
       return true;
     } catch (error) {
@@ -96,7 +97,11 @@ Page({
     } finally { this._openingCheckin = false; }
   },
   recordFeeling() {
-    if (!this.data.serviceReady || !this.isCurrentAccount()) return;
+    if (!this.isCurrentAccount()) return;
+    if (!this.data.serviceReady) {
+      wx.showToast({ title: "阅读知情说明后可以记录感受", icon: "none" });
+      return;
+    }
     wx.showToast({ title: this.data.reflection.trim() ? "仅保留本页，未提交" : "可以先写一句感受", icon: "none" });
   },
 });

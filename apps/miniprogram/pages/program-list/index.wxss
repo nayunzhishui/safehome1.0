@@ -1,212 +1,75 @@
+/* 项目测试（Figma 665:2619）：每个项目一张纸白卡——状态与小节数、标题与箭头、受众、练习方向、第一节米色块。 */
 .program-list-page {
   display: flex;
   flex-direction: column;
-  gap: 0;
-}
-
-.page-head {
-  min-height: 0;
-  padding: 32rpx 0 40rpx;
-  border: 0;
-  box-shadow: none;
-  background: transparent;
-  text-align: center;
-}
-
-.program-list-page .safe-h1 {
-  font-size: 44rpx;
-  line-height: 1.25;
-  letter-spacing: 0;
-  text-align: center;
-}
-
-.program-list-page .safe-subtitle {
-  margin-top: 10rpx;
-  font-size: 30rpx;
-  line-height: 1.55;
-}
-
-.preview-notice {
-  display: flex;
-  align-items: center;
-  gap: 24rpx;
-  margin-bottom: 26rpx;
-  padding: 28rpx 30rpx 28rpx 22rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-sm);
-  background: var(--safe-primary-soft);
-}
-
-.editorial-marker {
-  flex: 0 0 auto;
-  width: 6rpx;
-  height: 88rpx;
-  border-radius: var(--safe-radius-pill);
-  background: var(--safe-primary);
-}
-
-.preview-copy {
-  display: flex;
-  min-width: 0;
-  flex: 1;
-  flex-direction: column;
-  gap: 6rpx;
-}
-
-.preview-label {
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  font-weight: 700;
-  line-height: 1.4;
-}
-
-.preview-text {
-  color: var(--safe-text);
-  font-size: 30rpx;
-  line-height: 1.55;
+  gap: var(--p3-section);
+  padding-top: 16rpx;
+  padding-bottom: calc(72rpx + env(safe-area-inset-bottom));
 }
 
 .program-card {
   display: flex;
-  min-height: 232rpx;
   flex-direction: column;
-  gap: 20rpx;
-  padding: 34rpx 0;
-  border-top: 1rpx solid var(--safe-border);
-  background: transparent;
-  transition: background-color 120ms ease;
-}
-
-.program-card:last-of-type {
-  border-bottom: 1rpx solid var(--safe-border);
+  gap: var(--p3-tight);
+  width: 100%;
+  min-height: 0;
+  padding: var(--p3-card);
+  border-radius: var(--p3-radius-card);
+  background: var(--p3-surface);
+  text-align: left;
 }
 
 .program-card--pressed {
-  background: var(--safe-primary-soft);
+  background: var(--p3-paper);
 }
 
-.program-card--preview .program-status {
-  color: var(--safe-orange-deep, #8d4a1e);
-}
-
-.program-head {
+.program-card__status {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--p3-tight);
 }
 
-.program-status,
-.program-count {
-  color: var(--safe-primary-deep);
-  font-size: 26rpx;
-  font-weight: 700;
-  line-height: 1.4;
-}
-
-.program-count {
-  color: var(--safe-muted);
-  font-weight: 500;
-}
-
-.program-body {
+.program-card__title-row {
   display: flex;
   align-items: center;
-  gap: 20rpx;
+  gap: var(--p3-tight);
 }
 
-.program-copy {
-  display: flex;
+.program-card__title {
+  flex: 1 0 0;
   min-width: 0;
-  flex: 1;
-  flex-direction: column;
-  gap: 12rpx;
 }
 
-.program-title {
-  color: var(--safe-title);
-  font-size: 36rpx;
-  font-weight: 700;
-  line-height: 1.35;
-}
-
-.program-meta,
-.program-first {
-  color: var(--safe-text);
-  font-size: 30rpx;
-  line-height: 1.55;
-}
-
-.program-summary {
-  color: var(--safe-muted);
+/* text-v2 新增的项目简介：标题下两行摘要，全文在详情页 */
+.program-card__summary {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--p3-muted);
   font-size: 28rpx;
-  line-height: 1.65;
+  line-height: 44rpx;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
-.pending-count {
-  margin-top: 20rpx;
-  color: var(--safe-primary-deep);
+.program-card__direction {
+  color: var(--p3-primary);
   font-size: 26rpx;
-  font-weight: 700;
-  line-height: 1.6;
+  line-height: 40rpx;
 }
 
-.construct-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8rpx 16rpx;
-  color: var(--safe-muted);
-  font-size: 26rpx;
-  line-height: 1.55;
+.program-card__first {
+  padding: 20rpx 24rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-paper);
 }
 
-.construct-label,
-.construct-chip {
-  color: inherit;
-  font-size: inherit;
-  line-height: inherit;
+.program-card__first-text {
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
 }
 
-.construct-chip + .construct-chip::before {
-  margin-right: 16rpx;
-  color: var(--safe-border-strong, #b7c3bc);
-  content: "·";
+.program-pending {
+  text-align: center;
 }
-
-.program-chevron {
-  flex: 0 0 auto;
-  color: var(--safe-primary-deep);
-  font-size: 44rpx;
-  font-weight: 400;
-  line-height: 1;
-}
-
-.boundary-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 22rpx;
-  margin-top: 34rpx;
-  padding: 26rpx 28rpx 26rpx 20rpx;
-  border-radius: var(--safe-radius-sm);
-  background: var(--safe-primary-soft);
-}
-
-.boundary-note .editorial-marker {
-  height: 76rpx;
-}
-
-.boundary-copy {
-  min-width: 0;
-  flex: 1;
-  color: var(--safe-muted);
-  font-size: 26rpx;
-  line-height: 1.6;
-}
-
-.program-list-page{box-sizing:border-box;padding-left:48rpx;padding-right:48rpx;}
-.program-card{box-sizing:border-box;width:100%;margin:0;border-radius:0;text-align:left;}
-.program-card::after{border:0;}
-.boundary-note{background:transparent;border-top:1rpx solid var(--safe-border);padding:28rpx 0;}
-@media(prefers-reduced-motion:reduce){.program-card{transition:none}}
-
-.program-head{gap:20rpx;flex-wrap:wrap;}
-.program-status,.program-count{flex:0 0 auto;}

@@ -48,9 +48,13 @@ def audit() -> dict:
     if "--safe-touch: 88rpx" not in mini_css or "--safe-touch: 44px" not in web_css:
         issues["touch_target"].append("shared_touch_target_missing")
 
-    colors = tokens["color"]
-    if contrast(colors["ink"], colors["surface"]) < 4.5 or contrast(colors["muted"], colors["surface"]) < 4.5:
-        issues["contrast"].append("core_text_contrast_below_wcag_aa")
+    for palette_name in ("color", "miniprogram_color"):
+        colors = tokens.get(palette_name)
+        if not colors:
+            continue
+        for background in ("surface", "canvas"):
+            if contrast(colors["ink"], colors[background]) < 4.5 or contrast(colors["muted"], colors[background]) < 4.5:
+                issues["contrast"].append(f"core_text_contrast_below_wcag_aa:{palette_name}:{background}")
 
     if ":focus-visible" not in web_css or "--safe-focus" not in web_css:
         issues["focus_visible"].append("web_focus_style_missing")

@@ -1,162 +1,138 @@
-<view class="safe-page ui2-page plan-page" role="main" aria-label="个性化训练方案">
-  <view class="page-head">
-    <text class="safe-h1">个性化训练方案</text>
-  </view>
-
-  <view class="assignment-panel">
-    <view class="assignment-head">
-      <view>
-        <text class="safe-h3">安排练习节奏</text>
-        <text class="plan-help">先选一个当前可承受的频率，之后可以随时调整。</text>
-      </view>
-      <text class="assignment-state">{{assignment.agreement_status === 'researcher_confirmed' ? '已共同确认' : '本人设置'}}</text>
+<view class="p3-page plan-page" role="main" aria-label="个性化训练方案">
+  <view class="p3-card plan-rhythm">
+    <view class="plan-rhythm__head">
+      <text class="p3-action-title plan-rhythm__title" role="heading" aria-level="1">安排练习节奏</text>
+      <status-pill label="{{assignment.agreement_status === 'researcher_confirmed' ? '已共同确认' : '本人设置'}}" tone="success" />
     </view>
+    <text class="p3-body-compact">先选一个当前可承受的频率，之后可以随时调整。</text>
 
-    <text class="assignment-label">当前阶段</text>
-    <view class="segmented-control">
+    <text class="p3-meta">当前阶段</text>
+    <view class="p3-segment" role="radiogroup" aria-label="当前阶段">
       <button
         wx:for="{{phaseOptions}}"
         wx:key="value"
-        class="segment-button {{assignment.phase === item.value ? 'segment-button--active' : ''}}"
+        class="p3-segment__item {{assignment.phase === item.value ? 'p3-segment__item--active' : ''}}"
+        role="radio"
+        aria-checked="{{assignment.phase === item.value}}"
         data-field="phase"
         data-value="{{item.value}}"
         bindtap="selectAssignmentOption"
       >{{item.label}}</button>
     </view>
 
-    <text class="assignment-label">练习频率</text>
-    <view class="segmented-control segmented-control--wrap">
+    <text class="p3-meta">练习频率</text>
+    <view class="plan-chips" role="radiogroup" aria-label="练习频率">
       <button
         wx:for="{{cadenceOptions}}"
         wx:key="value"
-        class="segment-button {{assignment.cadence === item.value ? 'segment-button--active' : ''}}"
+        class="p3-chip {{assignment.cadence === item.value ? 'p3-chip--selected' : ''}}"
+        role="radio"
+        aria-checked="{{assignment.cadence === item.value}}"
         data-field="cadence"
         data-value="{{item.value}}"
         bindtap="selectAssignmentOption"
       >{{item.label}}</button>
     </view>
 
-    <view class="assignment-field">
-      <text class="assignment-label">开始日期</text>
+    <view class="p3-field">
+      <text class="p3-field__label">开始日期</text>
       <picker aria-label="选择练习开始日期" mode="date" value="{{assignment.start_date}}" bindchange="onStartDateChange">
-        <view class="picker-value">{{assignment.start_date}}</view>
+        <view class="p3-field__input plan-date">{{startDateText}}</view>
       </picker>
     </view>
-    <view class="assignment-field">
-      <text class="assignment-label">计划状态</text>
-      <view class="segmented-control">
-        <button
-          wx:for="{{statusOptions}}"
-          wx:key="value"
-          class="segment-button {{assignment.status === item.value ? 'segment-button--active' : ''}}"
-          data-field="status"
-          data-value="{{item.value}}"
-          bindtap="selectAssignmentOption"
-        >{{item.label}}</button>
-      </view>
+
+    <text class="p3-meta">计划状态</text>
+    <view class="p3-segment" role="radiogroup" aria-label="计划状态">
+      <button
+        wx:for="{{statusOptions}}"
+        wx:key="value"
+        class="p3-segment__item {{assignment.status === item.value ? 'p3-segment__item--active' : ''}}"
+        role="radio"
+        aria-checked="{{assignment.status === item.value}}"
+        data-field="status"
+        data-value="{{item.value}}"
+        bindtap="selectAssignmentOption"
+      >{{item.label}}</button>
     </view>
 
-    <text class="assignment-label">这一阶段的小目标（可选）</text>
-    <textarea
-      aria-label="这一阶段的小目标，可选，最多200字" placeholder-class="field-placeholder"
-      class="goal-input"
-      value="{{assignment.goal_text}}"
-      maxlength="200"
-      placeholder="可选：写下这一阶段最想练习的一小步"
-      bindinput="onGoalInput"
-    />
-    <button class="safe-primary-button" loading="{{savingAssignment}}" bindtap="saveAssignment">保存练习节奏</button>
-    <view wx:if="{{assignment.due_reason}}" class="cadence-summary {{assignment.is_due_today ? 'cadence-summary--due' : ''}}">
-      <text class="cadence-summary-title">{{assignment.is_due_today ? '今天可以练一次' : assignment.cadence_label}}</text>
-      <text class="cadence-summary-text">{{assignment.due_reason}}</text>
-    </view>
-    <text class="item-boundary">{{assignment.boundary_notice || '练习节奏由用户自行设置，研究者共同确认前不代表正式干预安排。'}}</text>
-  </view>
-
-  <view wx:if="{{plan && plan.assignment}}" class="reminder-panel">
-    <view class="reminder-head">
-      <view class="reminder-icon"><text>提醒</text></view>
-      <view class="reminder-copy">
-        <text class="safe-h3">微信练习提醒</text>
-        <text class="plan-help">只在你主动授权后发送；关闭提醒不影响训练。</text>
-      </view>
-    </view>
-    <view wx:if="{{!notification.available}}" class="reminder-state reminder-state--muted">
-      <text class="reminder-state-title">暂未开放</text>
-      <text class="reminder-state-text">管理员完成微信模板审核后，这里可以开启。</text>
-    </view>
-    <view wx:elif="{{notification.preference && notification.preference.consent_status === 'accepted'}}" class="reminder-state reminder-state--active">
-      <text class="reminder-state-title">已同意本次提醒</text>
-      <text class="reminder-state-text">到达下一次练习日期后发送；一次性授权使用后需要重新开启。</text>
-    </view>
-    <view wx:elif="{{notification.preference && notification.preference.consent_status === 'consumed'}}" class="reminder-state">
-      <text class="reminder-state-title">上次授权已使用</text>
-      <text class="reminder-state-text">如需下一次提醒，请再次主动开启。</text>
-    </view>
-    <view wx:elif="{{notification.preference && notification.preference.consent_status === 'banned'}}" class="reminder-state reminder-state--muted">
-      <text class="reminder-state-title">微信设置中已关闭</text>
-      <text class="reminder-state-text">如需恢复，请前往小程序设置调整订阅消息权限。</text>
-    </view>
-    <view wx:else class="reminder-state">
-      <text class="reminder-state-title">需要时再开启</text>
-      <text class="reminder-state-text">建议在保存好练习节奏后，开启一次微信提醒。</text>
-    </view>
-    <button
-      wx:if="{{notification.available && (!notification.preference || notification.preference.consent_status !== 'accepted') && notification.preference.consent_status !== 'banned'}}"
-      class="reminder-button"
-      loading="{{requestingReminder}}"
-      bindtap="requestTrainingReminder"
-    >开启一次微信提醒</button>
-    <button
-      wx:if="{{notification.available && notification.preference && notification.preference.consent_status === 'banned'}}"
-      class="reminder-button reminder-button--secondary"
-      bindtap="openNotificationSettings"
-    >前往微信设置</button>
-  </view>
-
-  <view wx:if="{{!loading && plan && !plan.has_assessment}}" class="empty-card">
-    <text class="safe-h3">{{plan.next_action.title}}</text>
-    <text class="safe-body">{{plan.next_action.description}}</text>
-    <button class="safe-outline-button" bindtap="openAssessment">去测一测</button>
-  </view>
-
-  <view wx:for="{{planItems}}" wx:key="source_result_id" class="item-card">
-    <view class="item-head">
-      <text class="item-tag">{{item.sourceLabel}}</text>
-      <text class="item-source">{{item.source_worksheet.title}}</text>
-    </view>
-    <text wx:if="{{item.cluster_name}}" class="item-title">{{item.cluster_name}}</text>
-    <text class="item-reason">{{item.reason}}</text>
-    <view class="card-list">
-      <training-task-card
-        wx:for="{{item.cards}}"
-        wx:for-item="card"
-        wx:key="id"
-        item-id="{{card.id}}"
-        title="{{card.title}}"
-        subtitle="{{card.purpose}}"
-        duration="{{card.duration_minutes ? card.duration_minutes + ' 分钟' : ''}}"
-        reason="{{item.reason}}"
-        bind:tapcard="openSingleCard"
+    <view class="p3-field">
+      <label for="plan-goal" class="p3-field__label">这一阶段的小目标（可选）</label>
+      <textarea
+        id="plan-goal"
+        class="p3-field__input p3-field__input--multi"
+        aria-label="这一阶段的小目标，可选，最多200字"
+        placeholder-class="p3-field__placeholder"
+        value="{{assignment.goal_text}}"
+        maxlength="200"
+        placeholder="可选：写下这一阶段最想练习的一小步"
+        bindinput="onGoalInput"
       />
+      <text class="p3-field__hint">{{goalCount}} / 200</text>
     </view>
-    <text class="item-boundary">{{item.boundary_notice}}</text>
+
+    <button class="p3-btn p3-btn--primary" loading="{{savingAssignment}}" disabled="{{savingAssignment}}" bindtap="saveAssignment">保存练习节奏</button>
+
+    <view wx:if="{{assignment.due_reason}}" class="plan-cadence">
+      <text class="plan-cadence__title">{{assignment.is_due_today ? '今天可以练一次' : assignment.cadence_label}}</text>
+      <text class="plan-cadence__text">{{assignment.due_reason}}</text>
+    </view>
+    <text class="p3-footnote">{{assignment.boundary_notice || '练习节奏由用户自行设置，研究者共同确认前不代表正式干预安排。'}}</text>
   </view>
 
-  <view wx:if="{{loading}}" class="empty-card">
-    <text class="safe-body">正在读取训练方案...</text>
+  <view wx:if="{{plan && plan.assignment}}" class="plan-reminder">
+    <view class="plan-reminder__head">
+      <view class="plan-reminder__badge" aria-hidden="true">
+        <p3-icon name="bell" size="20" tone="primary" />
+      </view>
+      <view class="plan-reminder__copy">
+        <text class="p3-item-title" role="heading" aria-level="2">微信练习提醒</text>
+        <text class="p3-meta">只在你主动授权后发送；关闭提醒不影响训练。</text>
+      </view>
+    </view>
+    <text class="plan-reminder__state">{{reminder.title}} · {{reminder.text}}</text>
+    <button wx:if="{{reminder.showRequest}}" class="p3-btn p3-btn--secondary" loading="{{requestingReminder}}" disabled="{{requestingReminder}}" bindtap="requestTrainingReminder">开启一次微信提醒</button>
+    <button wx:if="{{reminder.showSettings}}" class="p3-btn p3-btn--secondary" bindtap="openNotificationSettings">前往微信设置</button>
   </view>
 
-  <view wx:if="{{!loading && errorMessage}}" class="empty-card empty-card--error">
-    <text class="safe-h3">暂时没能读取</text>
-    <text class="safe-body">{{errorMessage}}</text>
-    <button class="safe-outline-button" bindtap="loadPlan">重试</button>
-  </view>
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取训练方案" />
+  <page-state wx:elif="{{errorMessage}}" kind="error" title="暂时没能读取训练方案" description="{{errorMessage}}" action-label="重试" bind:action="loadPlan" />
 
-  <view wx:if="{{!loading && plan && plan.has_assessment && !planItems.length}}" class="empty-card">
-    <text class="safe-h3">{{plan.assignment && !plan.assignment.is_due_today ? '今天不用赶进度' : '暂未匹配到训练卡'}}</text>
-    <text class="safe-body">{{plan.assignment && !plan.assignment.is_due_today ? plan.assignment.due_reason : '可以先从通用训练里选择一张最容易完成的卡。'}}</text>
-  </view>
+  <block wx:else>
+    <view wx:if="{{plan && !plan.has_assessment}}" class="plan-empty">
+      <text class="p3-item-title">{{plan.next_action.title}}</text>
+      <text class="p3-body-compact">{{plan.next_action.description}}</text>
+      <button class="p3-btn p3-btn--secondary" bindtap="openAssessment">去测一测</button>
+    </view>
 
-  <view class="boundary-note">{{boundaryNotice}}</view>
+    <view wx:for="{{planItems}}" wx:key="source_result_id" class="plan-item">
+      <view class="plan-item__source">
+        <status-pill label="{{item.sourceLabel}}" tone="success" />
+        <text class="p3-meta plan-item__worksheet">{{item.source_worksheet.title}}</text>
+      </view>
+      <text wx:if="{{item.cluster_name}}" class="p3-item-title">{{item.cluster_name}}</text>
+      <text class="plan-item__reason">{{item.reason}}</text>
+      <view class="p3-group p3-group--course">
+        <button
+          wx:for="{{item.cards}}"
+          wx:for-item="card"
+          wx:for-index="cardIndex"
+          wx:key="id"
+          class="plan-item__card"
+          data-card-id="{{card.id}}"
+          aria-label="打开训练卡：{{card.title}}"
+          bindtap="openSingleCard"
+        >
+          <p3-course-row title="{{card.title}}" scene="{{card.sceneText}}" meta="{{card.metaText}}" show-divider="{{cardIndex < item.cards.length - 1}}" />
+        </button>
+      </view>
+      <text wx:if="{{item.boundary_notice}}" class="p3-footnote">{{item.boundary_notice}}</text>
+    </view>
+
+    <view wx:if="{{plan && plan.has_assessment && !planItems.length}}" class="plan-empty">
+      <text class="p3-item-title">{{plan.assignment && !plan.assignment.is_due_today ? '今天不用赶进度' : '暂未匹配到训练卡'}}</text>
+      <text class="p3-body-compact">{{plan.assignment && !plan.assignment.is_due_today ? plan.assignment.due_reason : '可以先从通用训练里选择一张最容易完成的卡。'}}</text>
+    </view>
+  </block>
+
+  <text class="p3-footnote">{{boundaryNotice}}</text>
 </view>

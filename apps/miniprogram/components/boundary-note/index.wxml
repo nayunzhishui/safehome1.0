@@ -1,1 +1,14 @@
-<view class="boundary-note"><text class="boundary-title">使用边界</text><text class="boundary-copy">{{text}}</text><button wx:if="{{!consented}}" class="consent-button" hover-class="button-pressed" aria-label="确认已阅读使用边界并同意AI辅助处理" disabled="{{sending}}" bindtap="confirm">{{sending ? '正在记录' : '阅读并同意 AI 辅助处理'}}</button><navigator wx:if="{{!consented && !sending}}" class="consent-defer" open-type="navigateBack" delta="1">暂不使用，返回</navigator><view wx:else class="consent-status" role="status"><view class="consent-check" aria-hidden="true">✓</view><text>已记录本次选择</text></view><text wx:if="{{error && !consented}}" class="inline-error">{{error}}</text></view>
+<view class="boundary">
+  <view class="p3-boundary">
+    <view class="p3-boundary__rule" aria-hidden="true"></view>
+    <text class="p3-boundary__title">使用边界</text>
+    <text class="p3-meta">{{text}}</text>
+  </view>
+  <button wx:if="{{!consented}}" class="p3-btn p3-btn--secondary" hover-class="button-pressed" aria-label="确认已阅读使用边界并同意AI辅助处理" disabled="{{sending}}" bindtap="confirm">{{sending ? '正在记录' : '阅读并同意 AI 辅助处理'}}</button>
+  <navigator wx:if="{{!consented && !sending}}" class="p3-btn p3-btn--quiet consent-defer" open-type="navigateBack" delta="1">暂不使用，返回</navigator>
+  <text wx:if="{{error && !consented}}" class="p3-form-message p3-form-message--error inline-error" role="alert">{{error}}</text>
+  <view wx:if="{{consented}}" class="consent-status" role="status">
+    <p3-icon name="check" size="18" tone="primary" />
+    <text>已记录本次选择</text>
+  </view>
+</view>

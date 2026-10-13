@@ -1,7 +1,9 @@
 {
   "navigationBarTitleText": "关系探索成长记录",
   "usingComponents": {
-    "visualization-state": "/components/visualization-state/index",
-    "timeline-record": "/components/timeline-record/index"
+    "page-state": "/components/page-state/index",
+    "p3-icon": "/components/p3-icon/index",
+    "p3-timeline-item": "/components/p3-timeline-item/index",
+    "visualization-state": "/components/visualization-state/index"
   }
 }

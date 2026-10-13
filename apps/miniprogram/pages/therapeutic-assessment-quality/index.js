@@ -312,6 +312,25 @@ Page({
     }
   },
 
+  // 列表只放得下摘要；点开后把问题类型、希望的处理和通知状态一起说清楚。
+  openIncident(event) {
+    const item = this.data.incidents.find((entry) => entry.id === event.currentTarget.dataset.id);
+    if (!item) return;
+    const lines = [
+      `问题类型：${item.categoryText}`,
+      `希望的处理：${item.requested_resolution || "未填写"}`,
+      `处理进度：${item.statusText}`,
+    ];
+    if (item.resolution_summary) lines.push(`处理说明：${item.resolution_summary}`);
+    if (item.status === "resolved") lines.push(`站内通知：${item.notificationStatusText}`);
+    wx.showModal({
+      title: "更正与投诉详情",
+      content: lines.join("\n"),
+      showCancel: false,
+      confirmText: "知道了",
+    });
+  },
+
   selectIncident(event) {
     const selectedIncident = this.data.incidents.find((item) => item.id === event.currentTarget.dataset.id) || null;
     this.setData({ selectedIncident, impactSummary: "", resolutionSummary: "" });

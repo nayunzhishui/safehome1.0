@@ -1,180 +1,227 @@
-.settings-detail-page {
-  padding-bottom: calc(44rpx + env(safe-area-inset-bottom));
-}
-
-.hero-card {
-  padding: 24rpx 0 12rpx;
-  text-align: center;
-}
-
-.hero-kicker,
-.hero-title,
-.notice-text {
-  display: block;
-}
-
-.hero-kicker {
-  color: var(--safe-primary);
-  font-size: 24rpx;
-  font-weight: 900;
-  line-height: 1.4;
-}
-
-.hero-title {
-  margin-top: 10rpx;
-  color: var(--safe-title);
-  font-size: 44rpx;
-  font-weight: 900;
-  line-height: 1.3;
-}
-
-.notice-card {
-  position: relative;
-  padding: 24rpx 28rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-card);
-  box-shadow: var(--safe-shadow-card);
-}
-
-.notice-card::before {
-  content: "";
-  display: block;
-  width: 52rpx;
-  height: 8rpx;
-  margin-bottom: 14rpx;
-  border-radius: 999rpx;
-  background: var(--safe-primary-deep);
-}
-
-.notice-row {
+/* 设置与说明（Figma 672:3306 知情与边界 / 672:3363 隐私说明 / 672:3502 参与者保护）：宋体标题、圆点条目章节，长文后半折叠；隐私与保护的操作区沿用纸白卡与分组。 */
+.sd-page {
   display: flex;
-  gap: 14rpx;
-  padding: 12rpx 0;
+  flex-direction: column;
+  gap: var(--p3-section);
+  padding-top: 16rpx;
+  padding-bottom: calc(72rpx + env(safe-area-inset-bottom));
 }
 
-.dot {
-  width: 10rpx;
-  height: 10rpx;
-  flex: 0 0 10rpx;
-  margin-top: 18rpx;
-  border-radius: 50%;
-  background: var(--safe-primary);
+.sd-head {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
 }
 
-.notice-text {
-  flex: 1;
-  color: var(--safe-text);
-  font-size: 26rpx;
-  line-height: 1.7;
+.sd-subtitle {
+  color: var(--p3-muted);
+  font-size: 30rpx;
+  line-height: 52rpx;
 }
 
-.back-button {
-  margin-top: 24rpx;
+.sd-sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-section);
 }
 
-.privacy-control-section {
-  display: grid;
-  gap: 20rpx;
+.sd-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
 }
 
-.privacy-request-list {
-  display: grid;
-  gap: 16rpx;
+/* 长文后半折叠（Figma 672:3412）：每章一行标题 + 下拉箭头，章与章之间一条细线 */
+.sd-folds {
+  display: flex;
+  flex-direction: column;
 }
 
-.privacy-request-card {
-  display: grid;
-  gap: 8rpx;
-  padding: 24rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-card);
-  box-shadow: var(--safe-shadow-card);
+.sd-fold-section {
+  border-top: 2rpx solid var(--p3-hairline);
 }
 
-.privacy-request-heading {
+.sd-fold {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16rpx;
+  gap: var(--p3-tight);
+  width: 100%;
+  min-height: 0;
+  padding: 28rpx 0;
+  text-align: left;
 }
 
-.privacy-request-title {
-  color: var(--safe-title);
+.sd-fold__title {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-ink);
   font-size: 28rpx;
-  font-weight: 900;
+  line-height: 44rpx;
 }
 
-.privacy-request-meta,
-.privacy-boundary {
-  display: block;
-  color: var(--safe-muted);
-  font-size: 24rpx;
-  line-height: 1.6;
+.sd-fold__chevron {
+  display: flex;
+  transition: transform 0.2s ease;
 }
 
-.privacy-request-notice,
-.privacy-request-proof {
-  display: block;
-  margin-top: 12rpx;
-  color: #49685e;
-  font-size: 24rpx;
-  line-height: 1.6;
+.sd-fold__chevron--open {
+  transform: rotate(180deg);
+}
+
+.sd-fold__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+  padding-bottom: 28rpx;
+}
+
+/* 条目：4px 青瓷圆点 + 正文；待负责人填写的字段用暖棕字提示 */
+.sd-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--p3-tight);
+}
+
+.sd-item__dot {
+  flex: 0 0 auto;
+  width: 8rpx;
+  height: 8rpx;
+  margin-top: 20rpx;
+  border-radius: 50%;
+  background: var(--p3-primary);
+}
+
+.sd-item__text {
+  flex: 1 0 0;
+  min-width: 0;
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 52rpx;
   overflow-wrap: anywhere;
 }
 
-.privacy-request-proof {
-  color: #6c7772;
-  font-size: 24rpx;
+.sd-item__text--pending {
+  color: var(--p3-warm-ink);
 }
 
-.privacy-appeal-button {
-  margin-left: 12rpx;
-  color: #2f6e5b;
-  border-color: #9fc7b9;
+.sd-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
 }
 
-.privacy-cancel-button {
-  min-height: 88rpx;
-  margin-top: 8rpx;
-  border: 1rpx solid var(--safe-border-strong);
-  border-radius: 999rpx;
-  background: var(--safe-card);
-  color: var(--safe-primary-deep);
+.sd-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+  padding: var(--p3-card);
+  border-radius: var(--p3-radius-card);
+  background: var(--p3-surface);
+}
+
+.sd-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--p3-tight);
+}
+
+.sd-card__text {
+  color: var(--p3-muted);
+  font-size: 30rpx;
+  line-height: 52rpx;
+}
+
+.sd-status {
+  flex: 0 0 auto;
+  color: var(--p3-warm-ink);
   font-size: 26rpx;
-  font-weight: 800;
+  line-height: 40rpx;
 }
 
-.privacy-submit-button {
-  margin-top: 0;
+.sd-status--done {
+  color: var(--p3-primary);
 }
 
-.privacy-boundary {
-  padding: 0 8rpx;
+/* 两个同等样式的选项（不暗示哪个是“正确”答案） */
+.sd-pair {
+  display: flex;
+  gap: var(--p3-tight);
 }
-.ui2-page.settings-detail-page { background:var(--ui2-canvas); padding-top:48rpx; }
-.ui2-page .hero-card { padding:0 0 32rpx; }
-.ui2-page .hero-title { font-size:44rpx; font-weight:700; line-height:1.6; text-align:center; }
-.ui2-page .hero-kicker { color:var(--ui2-muted); font-size:26rpx; font-weight:500; }
-.ui2-page .safe-section { padding:24rpx 0 32rpx; border-bottom:1rpx solid var(--ui2-line); }
-.ui2-page .notice-card,.ui2-page .privacy-request-card { padding:16rpx 0; border:0; border-radius:0; box-shadow:none; background:transparent; }
-.ui2-page .notice-card::before { display:none; }
-.ui2-page .notice-text,.ui2-page .privacy-request-notice,.ui2-page .privacy-boundary { font-size:30rpx; line-height:1.7; color:var(--ui2-ink); }
-.ui2-page .notice-text { min-width:0; }
-.ui2-page .privacy-request-title { font-size:32rpx; font-weight:700; }
-.ui2-page .privacy-request-heading { flex-wrap:wrap; }
-.ui2-page .privacy-request-meta,.ui2-page .privacy-request-proof { font-size:26rpx; color:var(--ui2-muted); }
-.ui2-page .privacy-request-proof { word-break:break-all; }
-.ui2-page .privacy-request-card { border-bottom:1rpx solid var(--ui2-line); gap:16rpx; }
-.ui2-page button { box-sizing:border-box; min-height:96rpx; padding:22rpx 24rpx; font-size:30rpx; line-height:1.6; border-radius:24rpx; white-space:normal; }
-.ui2-page .back-button { background:transparent; border:2rpx solid var(--ui2-control-border); color:var(--ui2-primary); }
-.ui2-page .privacy-appeal-button { margin-left:0; }
-.ui2-page .privacy-submit-button { background:var(--safe-danger); }
-.ui2-page .privacy-submit-button[disabled] { background:var(--ui2-soft); color:var(--ui2-muted); }
-.ui2-page .safe-input { min-height:104rpx; background:var(--ui2-surface); border:2rpx solid var(--ui2-control-border); }
-.ui2-page .ui2-placeholder { color:var(--ui2-muted); }
 
-.ui2-page { --ui2-section-accent-display:none; }
+.sd-pair .p3-btn {
+  flex: 1 0 0;
+  min-width: 0;
+  padding: 0 16rpx;
+}
 
-.ui2-page .privacy-submit-button:not([disabled]) { background:#a5453f; }
+.sd-paper {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  padding: 28rpx 32rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-paper);
+}
+
+/* 决定与申请列表：纸白分组，行间细线 */
+.sd-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0 32rpx;
+  border-radius: var(--p3-radius-group);
+  background: var(--p3-surface);
+}
+
+.sd-row {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-tight);
+  padding: 28rpx 0;
+}
+
+.sd-row--divided {
+  border-bottom: 2rpx solid var(--p3-hairline);
+}
+
+.sd-row__text {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 4rpx;
+  min-width: 0;
+}
+
+.sd-row__action {
+  flex: 0 0 auto;
+  width: auto;
+  min-height: var(--safe-touch, 88rpx);
+  margin: -16rpx 0;
+  padding: 0;
+  color: var(--p3-warm-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
+  text-align: right;
+}
+
+.sd-row__action--primary {
+  color: var(--p3-primary);
+}
+
+.sd-request {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8rpx;
+  padding: 28rpx 0;
+}
+
+.sd-request .sd-row__action {
+  align-self: flex-start;
+  margin: 0;
+  text-align: left;
+}
+
+.sd-proof {
+  overflow-wrap: anywhere;
+}

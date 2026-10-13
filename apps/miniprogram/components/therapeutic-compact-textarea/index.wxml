@@ -1,5 +1,6 @@
 <textarea
   class="compact-textarea"
+  auto-height
   maxlength="{{maxlength}}"
   value="{{value}}"
   aria-label="{{ariaLabel}}"

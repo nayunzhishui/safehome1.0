@@ -24,7 +24,10 @@ Page({
     api
       .listPrograms(previewMode ? { include_drafts: true } : {})
       .then((data) => {
-        const programs = data.items || [];
+        const programs = (data.items || []).map((item) => ({
+          ...item,
+          directionText: (item.target_constructs || []).join(" · "),
+        }));
         this.setData({
           loading: false,
           programs,

@@ -1,166 +1,86 @@
-<view class="safe-page ui2-page weekly-page" role="main" aria-label="本周复盘">
-  <view class="weekly-hero">
-    <view class="hero-copy">
-      <text class="hero-title">本周复盘</text>
-    </view>
-  </view>
+<view class="weekly-page" role="main" aria-label="本周复盘">
+  <page-state wx:if="{{loading}}" kind="loading" title="正在整理本周复盘" />
 
-  <view wx:if="{{loading}}" class="state-card safe-card">
-    <view class="loading-dot"></view>
-    <text class="state-title">正在整理本周复盘</text>
-  </view>
+  <page-state wx:elif="{{errorMessage}}" kind="error" title="周报暂时没有加载成功" description="{{errorMessage}}" action-label="重新加载" bind:action="refreshReport" />
 
-  <view wx:elif="{{errorMessage}}" class="state-card error-card">
-    <text class="state-title">周报暂时没有加载成功</text>
-    <text class="state-text">{{errorMessage}}</text>
-    <button class="outline-button" bindtap="refreshReport">重新加载</button>
-  </view>
-
-  <view wx:else class="weekly-content">
-    <view class="change-card safe-card">
-      <text class="change-label">记录范围</text>
-      <text class="change-title">{{report.week_start}} 至 {{report.week_end}}</text>
+  <block wx:else>
+    <view class="weekly-range">
+      <text class="weekly-range__label">记录范围</text>
+      <text class="weekly-range__value">{{rangeText}}</text>
     </view>
 
-    <view class="profile-card">
-      <text class="profile-title">阶段性画像线索</text>
-      <text class="profile-text">
-        {{report.profile_trend && report.profile_trend.profile_count ? '本周画像可作为理解近期压力状态的补充线索，不代表固定判断。' : '本周还没有阶段性画像线索，也不影响你继续记录和练习。'}}
-      </text>
-      <text wx:if="{{profileTrendNamesText}}" class="profile-meta">{{profileTrendNamesText}}</text>
-      <text wx:if="{{report.profile_trend && report.profile_trend.requires_review_count}}" class="profile-meta">有内容需要人工关注，请优先等待或提交人工支持。</text>
-    </view>
-
-
-
-    <view class="stats-grid">
-      <view class="stat-card">
-        <text class="stat-value">{{frequentScenes.length}}</text>
-        <text class="stat-label">常见场景（类）</text>
-      </view>
-      <view class="stat-card">
-        <text class="stat-value">{{frequentEmotions.length}}</text>
-        <text class="stat-label">常见情绪（类）</text>
-      </view>
-      <view class="stat-card">
-        <text class="stat-value">{{commonPatterns.length}}</text>
-        <text class="stat-label">互动线索（条）</text>
-      </view>
-      <view class="stat-card">
-        <text class="stat-value">{{completedCardsText ? '已记' : '待记'}}</text>
-        <text class="stat-label">练习尝试</text>
-      </view>
-      <view class="stat-card">
-        <text class="stat-value">{{report.assessment_trend ? report.assessment_trend.assessment_count : 0}}</text>
-        <text class="stat-label">测评记录</text>
-      </view>
-      <view class="stat-card">
-        <text class="stat-value">{{report.thermometer_trend ? report.thermometer_trend.record_count : 0}}</text>
-        <text class="stat-label">温度记录</text>
+    <view class="weekly-cells">
+      <view wx:for="{{statCells}}" wx:key="label" class="weekly-cell">
+        <text class="weekly-cell__value">{{item.value}}</text>
+        <text class="weekly-cell__label">{{item.label}}</text>
       </view>
     </view>
 
-    <view class="review-section">
-      <view class="section-head">
-        <text class="section-title">本周测评记录</text>
-        <text class="section-hint">只整理你完成过的测评，不做固定判断</text>
+    <view wx:if="{{progressSummary}}" class="weekly-section">
+      <p3-section-header title="近 7 天阶段反馈" subtitle="整理近 7 天的记录、测评与练习，不构成诊断" />
+      <view class="weekly-progress">
+        <status-pill class="weekly-progress__pill" label="{{progressSummary.statusText}}" tone="{{progressSummary.status === 'low_confidence' ? 'neutral' : 'success'}}" />
+        <text class="weekly-progress__summary">{{progressSummary.summaryText}}</text>
+        <text class="weekly-progress__next">下一步：{{progressSummary.nextAction}}</text>
       </view>
-      <view class="review-card">
-        <text wx:if="{{assessmentNamesText}}" class="row-desc">{{assessmentNamesText}}</text>
-        <text wx:else class="muted">本周还没有测评记录。</text>
-        <view wx:if="{{dimensionGroups.length}}" class="dimension-group-list">
-          <view wx:for="{{dimensionGroups}}" wx:key="worksheetId" wx:for-item="group" class="dimension-group">
-            <text class="dimension-group-title">{{group.worksheetTitle}}</text>
-            <view wx:for="{{group.dimensions}}" wx:key="key" class="dimension-change-row">
-              <text class="row-name">{{item.label}}</text>
-              <text class="row-count">{{item.direction}} {{item.deltaText}}</text>
+    </view>
+
+    <view class="p3-notice">
+      <text class="p3-notice__title">阶段性画像线索</text>
+      <text class="p3-notice__body">{{report.profile_trend && report.profile_trend.profile_count ? '本周画像可作为理解近期压力状态的补充线索，不代表固定判断。' : '本周还没有阶段性画像线索，也不影响你继续记录和练习。'}}</text>
+      <text wx:if="{{profileTrendNamesText}}" class="p3-notice__body">{{profileTrendNamesText}}</text>
+      <text wx:if="{{report.profile_trend && report.profile_trend.requires_review_count}}" class="p3-notice__body">有内容需要人工关注，请优先等待或提交人工支持。</text>
+    </view>
+
+    <view class="weekly-section">
+      <p3-section-header title="本周测评记录" subtitle="只整理你完成过的测评，不做固定判断" />
+      <view class="p3-group weekly-group">
+        <block wx:if="{{dimensionGroups.length}}">
+          <view wx:for="{{dimensionGroups}}" wx:key="worksheetId" wx:for-item="group" class="weekly-assessment">
+            <text class="weekly-assessment__title">{{group.worksheetTitle}}</text>
+            <view wx:for="{{group.dimensions}}" wx:key="key" class="weekly-row {{index < group.dimensions.length - 1 ? 'weekly-row--divided' : ''}}">
+              <text class="weekly-row__name">{{item.label}}</text>
+              <text class="weekly-row__value">{{item.direction}} {{item.deltaText}}</text>
             </view>
           </view>
+        </block>
+        <text wx:elif="{{assessmentNamesText}}" class="weekly-group__text">{{assessmentNamesText}}</text>
+        <text wx:else class="weekly-group__text weekly-group__text--muted">本周还没有测评记录。</text>
+        <text wx:if="{{recommendedCardsText}}" class="weekly-group__note">推荐训练：{{recommendedCardsText}}</text>
+      </view>
+    </view>
+
+    <view class="weekly-section">
+      <p3-section-header title="情绪温度趋势" />
+      <text class="weekly-text">{{report.thermometer_trend ? report.thermometer_trend.trend_text : '本周还没有情绪温度记录。'}}</text>
+      <text wx:if="{{thermometerDetailText && thermometerDetailText !== '本周还没有情绪温度记录。'}}" class="weekly-text weekly-text--muted">{{thermometerDetailText}}</text>
+    </view>
+
+    <view class="weekly-section">
+      <p3-section-header title="训练效用线索" subtitle="只看练习前后记录，不承诺疗效" />
+      <text class="weekly-text">{{trainingEffectivenessText}}</text>
+      <text class="weekly-text weekly-text--muted">{{completedCardsText ? '已记录练习：' + completedCardsText : '本周还没有练习尝试记录。可以先选择一张容易练的训练卡。'}}</text>
+    </view>
+
+    <view class="weekly-section">
+      <p3-section-header title="本周常见" subtitle="只看重复出现的位置，不判断好坏" />
+      <view wx:if="{{commonRows.length}}" class="p3-group weekly-group">
+        <view wx:for="{{commonRows}}" wx:key="key" class="weekly-row {{index < commonRows.length - 1 ? 'weekly-row--divided' : ''}}">
+          <text class="weekly-row__name">{{item.kind}} · {{item.name}}</text>
+          <text class="weekly-row__value">{{item.count}} 次</text>
         </view>
-        <text wx:if="{{recommendedCardsText}}" class="row-desc">推荐训练：{{recommendedCardsText}}</text>
       </view>
+      <text wx:else class="weekly-text weekly-text--muted">本周记录较少，可以先从记录一次具体亲子互动开始。</text>
     </view>
 
-    <view class="review-section">
-      <view class="section-head">
-        <text class="section-title">情绪温度趋势</text>
-      </view>
-      <view class="review-card">
-        <text class="row-desc">{{report.thermometer_trend ? report.thermometer_trend.trend_text : '本周还没有情绪温度记录。'}}</text>
-        <text wx:if="{{thermometerDetailText && thermometerDetailText !== '本周还没有情绪温度记录。'}}" class="row-desc">{{thermometerDetailText}}</text>
-      </view>
+    <view class="weekly-next">
+      <text class="weekly-next__kicker">下周可以继续的一小步</text>
+      <text class="weekly-next__text">{{report.next_week_suggestion}}</text>
     </view>
 
-    <view class="review-section">
-      <view class="section-head">
-        <text class="section-title">训练效用线索</text>
-        <text class="section-hint">只看练习前后记录，不承诺疗效</text>
-      </view>
-      <view class="review-card">
-        <text class="row-desc">{{trainingEffectivenessText}}</text>
-      </view>
+    <view class="weekly-actions">
+      <button class="p3-btn p3-btn--secondary" bindtap="refreshReport">刷新复盘</button>
+      <button class="p3-btn p3-btn--quiet" bindtap="goHome">回到首页</button>
     </view>
-
-    <view class="review-section">
-      <view class="section-head">
-        <text class="section-title">本周高频场景</text>
-        <text class="section-hint">只看重复出现的位置，不判断好坏</text>
-      </view>
-      <view class="review-card">
-        <block wx:if="{{frequentScenes.length}}">
-          <view wx:for="{{frequentScenes}}" wx:key="name" class="list-row">
-            <text class="row-name">{{item.name}}</text>
-            <text class="row-count">{{item.count}} 次</text>
-          </view>
-        </block>
-        <text wx:else class="muted">本周记录较少，可以先从记录一次具体亲子互动开始。</text>
-      </view>
-    </view>
-
-    <view class="review-section">
-      <view class="section-head">
-        <text class="section-title">本周常见情绪</text>
-      </view>
-      <view class="review-card">
-        <block wx:if="{{frequentEmotions.length}}">
-          <view wx:for="{{frequentEmotions}}" wx:key="name" class="list-row">
-            <text class="row-name">{{item.name}}</text>
-            <text class="row-count">{{item.count}} 次</text>
-          </view>
-        </block>
-        <text wx:else class="muted">暂时还没有足够记录形成情绪复盘。</text>
-      </view>
-    </view>
-
-    <view class="review-section">
-      <view class="section-head">
-        <text class="section-title">互动线索</text>
-        <text class="section-hint">这些只是本周记录里可以继续观察的地方</text>
-      </view>
-      <view class="review-card">
-        <block wx:if="{{commonPatterns.length}}">
-          <view wx:for="{{commonPatterns}}" wx:key="name" class="list-row">
-            <text class="row-name">{{item.name}}</text>
-            <text class="row-count">{{item.count}} 次</text>
-          </view>
-        </block>
-        <text wx:else class="muted">暂时还没有明显重复线索，可以继续积累记录。</text>
-      </view>
-    </view>
-
-    <view class="practice-card">
-      <text class="practice-title">已记录练习卡</text>
-      <text class="practice-text">{{completedCardsText || '本周还没有练习尝试记录。可以先选择一张容易练的训练卡。'}}</text>
-    </view>
-
-    <view class="next-step-card">
-      <text class="next-title">下周可以继续的一小步</text>
-      <text class="next-text">{{report.next_week_suggestion}}</text>
-    </view>
-
-    <view class="action-area">
-      <button class="primary-button" bindtap="refreshReport">刷新复盘</button>
-      <button class="secondary-button" bindtap="goHome">回到首页</button>
-    </view>
-  </view>
+  </block>
 </view>
