@@ -1,6 +1,7 @@
 {
   "version": "2026.08-rc0810-f05",
-  "allowed_profiles": ["development", "testing", "validation"],
+  "allowed_profiles": ["development", "testing", "validation", "production"],
+  "production_opened": "2026-10-13 负责人明确批准全权限展示模式在生产生效，用于实际测试；任何登录账号都能读写研究与评估数据，招募真实参与者或正式发布前必须移除 production。",
   "break_glass": {
     "implemented": false,
     "production_available": false,
@@ -24,5 +25,5 @@
   "open_training_cards": true,
   "open_courses": true,
   "notice": "开发验证全权限模式已开启：研究者工作台发出的已登录请求可临时读写研究权限、治疗性评估、AI、情感计算、网络分析、发布与生产门禁；业务状态机、高风险阻断和审计继续生效，账号管理及研究平台以外的后台权限保持不变。正式发布前必须关闭。",
-  "updated_at": "2026-08-08"
+  "updated_at": "2026-10-13"
 }

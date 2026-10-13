@@ -75,7 +75,8 @@
     }
   ],
   "release": {
-    "l1_l3_production_enabled": false,
+    "l1_l3_production_enabled": true,
+    "owner_decision": "2026-10-13 负责人明确批准生产开放真人复核（L1—L3）新建，复核人员由负责人安排；外部人员证据仍未补齐。",
     "external_human_evidence_complete": false,
     "temporary_showcase_bypass_accepted": false
   }

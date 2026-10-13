@@ -84,6 +84,9 @@ class Config:
         "CONTENT_GOVERNANCE_PUBLISH_ENABLED",
         "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
     ).strip().lower() in {"1", "true", "yes"}
+    # Owner switch: after a production boot passes the database check, copy the deployed
+    # scale and training-card definitions into the database (same plan/apply as the admin route).
+    CONTENT_SYNC_ON_STARTUP = os.environ.get("CONTENT_SYNC_ON_STARTUP", "0").strip().lower() in {"1", "true", "yes"}
     ALLOWED_ORIGINS = [
         origin.strip()
         for origin in os.environ.get("ALLOWED_ORIGINS", "http://127.0.0.1:5173,http://localhost:5173").split(",")

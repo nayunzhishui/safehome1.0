@@ -55,11 +55,13 @@
       "rfq8_reflective_functioning",
       "rsca_adolescent_resilience",
       "self_compassion_scs_cn",
-      "student_profile_v1",
       "study_engagement_uwes_s_17",
       "swls_life_satisfaction",
       "who5_wellbeing"
     ],
+    "owner_removed": {
+      "student_profile_v1": "2026-10-13 负责人决定移出生产清单：提交仍走旧接口 /api/profile，该接口生产关闭，用户填完会提交失败。"
+    },
     "status": "owner_approved_production",
     "required_fields": [
       "source_file",

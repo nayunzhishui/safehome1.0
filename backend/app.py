@@ -73,6 +73,7 @@ from services.build_fingerprint_service import (
     public_build_identity,
 )
 from services.schema_migration_service import apply_pending_schema_migrations
+from services.content_sync_service import sync_content_on_startup
 
 
 SERVICE_VERSION = os.environ.get("SERVICE_VERSION", "safehome-2026-08-07-safety-convergence").strip() or "safehome-2026-08-07-safety-convergence"
@@ -243,6 +244,16 @@ def configure_logging(app: Flask) -> None:
     app.logger.setLevel(level)
 
 
+def _sync_content_on_startup(app: Flask) -> None:
+    # A failed sync is logged and the service still starts; the admin plan/apply route stays available.
+    try:
+        with app.app_context():
+            result = sync_content_on_startup()
+        app.logger.warning("content sync on startup: %s", json.dumps(result, ensure_ascii=False))
+    except Exception:
+        app.logger.exception("content sync on startup failed")
+
+
 def create_app(
     config_class: type[Config] = Config,
     config_overrides: dict | None = None,
@@ -265,6 +276,8 @@ def create_app(
                     database_status.get("error_code") or "database_not_ready"
                 ]
                 raise RuntimeError("生产数据库启动检查失败：" + ", ".join(reasons))
+            if app.config.get("CONTENT_SYNC_ON_STARTUP"):
+                _sync_content_on_startup(app)
         else:
             init_db()
             # Production never changes schema during application startup.

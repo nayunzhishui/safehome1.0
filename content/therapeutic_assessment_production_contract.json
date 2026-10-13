@@ -2,7 +2,7 @@
   "schema": "safehome.therapeutic-assessment.production-contract.v1",
   "version": "2026-07-28-t37-b01-v1",
   "source_contracts": {
-    "therapeutic_assessment_service_levels.json": "82d946d7b115063555b16236100c7468a29c84047dd3f93efcdf975bee00bc57",
+    "therapeutic_assessment_service_levels.json": "6d986577c41c21f0356b6724659c9c56dd127006797681431e9da3fbd7524d3e",
     "therapeutic_assessment_competency_policy.json": "32e51ff7b103fb02e3f9e7167b1843ea414e18d986cf0781189b764d527f7813",
     "therapeutic_assessment_quality_policy.json": "0a7a88d1a02869272c8afc184ca85492e938bcbd6791438996ee6ffcd06191c3"
   },

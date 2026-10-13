@@ -149,6 +149,19 @@ def apply_content_sync(actor: dict, plan_hash: str) -> dict:
     return {"applied": True, "before": before["tables"], "after": after["tables"], "in_sync": after["in_sync"]}
 
 
+def sync_content_on_startup() -> dict:
+    """CONTENT_SYNC_ON_STARTUP: plan, then apply when the database copies differ from the deployed content."""
+    plan = plan_content_sync()
+    counts = {
+        table: {key: (len(value) if isinstance(value, list) else value) for key, value in item.items()}
+        for table, item in plan["tables"].items()
+    }
+    if plan["in_sync"]:
+        return {"applied": False, "in_sync": True, "tables": counts, "content_versions": plan["content_versions"]}
+    result = apply_content_sync({"id": "system:startup-content-sync"}, plan["plan_hash"])
+    return {"applied": True, "in_sync": result["in_sync"], "tables": counts, "content_versions": plan["content_versions"]}
+
+
 def _validated_backup(backup) -> dict[str, list[dict]]:
     if not isinstance(backup, dict) or set(backup) != set(TABLE_COLUMNS):
         raise ContentSyncError("invalid_backup", "备份必须同时包含 training_cards 和 assessment_worksheets。")
