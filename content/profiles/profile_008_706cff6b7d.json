@@ -8,7 +8,7 @@
   "admission_status": "pilot_approved",
   "interpretation_approval_status": "pilot_approved",
   "model_governance_version": "profile_model_governance_v1",
-  "artifact_hash": "9183e16d84824a1d9025619d61843d043f46b9d59f0b44a37a0b7e6c0ba9c071",
+  "artifact_hash": "66ab53f6d7d7c851d4a4c4fc08787ae4e05822fd6b1f4bd8ae0f5bbe2f376119",
   "research_dir": "7 研究一-孙天娇【不健康体重控制行为】",
   "source_dataset": "7 研究一-孙天娇【不健康体重控制行为】\\研究一数据分析-孙天娇0902【n=745]\\另一个745.sav",
   "n_cases": 706,
@@ -372,7 +372,7 @@
         "pc1": 1.7451,
         "pc2": 0.0746
       },
-      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：我经常想怎样能让学业成功。、我经常想如何去预防生活中的失败。较低。它只用于群体参照和支持性解释，不代表固定标签。",
+      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：我经常想怎样能让学业成功、我经常想如何去预防生活中的失败较低。它只用于群体参照和支持性解释，不代表固定标签。",
       "display_name": "调节目标投入较低的阶段性位置",
       "product_explanation": "在学业目标追求和规避失败上，你目前的动机激活程度相对较低。这可能是正在休息的状态，也可能是缺少一个让你觉得有意义的方向。",
       "strength_note": "低激活也可以是一种稳定，你没有在焦虑中消耗自己。",
@@ -433,7 +433,7 @@
         "pc1": -1.7952,
         "pc2": -0.0767
       },
-      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：我经常想怎样能让学业成功。、我经常想如何去预防生活中的失败。较高。它只用于群体参照和支持性解释，不代表固定标签。",
+      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：我经常想怎样能让学业成功、我经常想如何去预防生活中的失败较高。它只用于群体参照和支持性解释，不代表固定标签。",
       "display_name": "调节目标投入较高的阶段性位置",
       "product_explanation": "你在追求目标和避免失败上都有较高的动机激活，行动意愿比较强。注意区分哪些是你真正想要的，哪些是焦虑在推着你走。",
       "strength_note": "高激活状态意味着你有能量，关键是找到把这个能量用在哪里。",

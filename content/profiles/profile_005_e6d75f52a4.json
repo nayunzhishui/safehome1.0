@@ -8,7 +8,7 @@
   "admission_status": "pilot_approved",
   "interpretation_approval_status": "pilot_approved",
   "model_governance_version": "profile_model_governance_v1",
-  "artifact_hash": "5c99bfe2d1b210605089ca4d1e059cb9cd74f59cdfd3397dee6d38f65692cd31",
+  "artifact_hash": "5e4e3c0fe72d45ea22470227b78f93c2277ccd4fc68389eca5361b5e6ff940f1",
   "research_dir": "5 牛至旭【中年女性自我关怀现状及其对主观幸福感的影响】",
   "source_dataset": "5 牛至旭【中年女性自我关怀现状及其对主观幸福感的影响】\\数据和问卷\\数据\\209份最终数据.sav",
   "n_cases": 209,
@@ -532,7 +532,7 @@
         "pc1": 2.2416,
         "pc2": 0.093
       },
-      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：24、与专业人士讨论健康问题、13、向健康专业人员提问，以理解专业人员的指导较低。它只用于群体参照和支持性解释，不代表固定标签。",
+      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：与专业人士讨论健康问题、向健康专业人员提问，以理解专业人员的指导较低。它只用于群体参照和支持性解释，不代表固定标签。",
       "display_name": "健康行动仍在起步的阶段性位置",
       "product_explanation": "你较少主动寻求专业健康建议或做自我健康检查，可能觉得没有必要，或者不太清楚怎么开始。",
       "strength_note": "有意识到健康管理的重要性，本身就是第一步。",
@@ -613,7 +613,7 @@
         "pc1": -3.5423,
         "pc2": -0.147
       },
-      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：24、与专业人士讨论健康问题、13、向健康专业人员提问，以理解专业人员的指导较高。它只用于群体参照和支持性解释，不代表固定标签。",
+      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：与专业人士讨论健康问题、向健康专业人员提问，以理解专业人员的指导较高。它只用于群体参照和支持性解释，不代表固定标签。",
       "display_name": "健康行动较积极的阶段性位置",
       "product_explanation": "你有主动管理健康的习惯，能定期进行自我检查并寻求专业建议。这种主动性对长期健康维护很有价值。",
       "strength_note": "健康自我管理能力是高资源状态，有助于在压力下保持稳定。",

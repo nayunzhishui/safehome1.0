@@ -252,8 +252,10 @@ def pca_projection(z: pd.DataFrame) -> tuple[np.ndarray, dict]:
 def feature_label(feature_meta: list[dict], feature_id: str) -> str:
     for item in feature_meta:
         if item["feature_id"] == feature_id:
-            label = re.sub(r"^\d+[.、，,]?\s*", "", item["label"])
-            return label[:28]
+            # Source labels may carry a block number before the item number ("15、24、…", "14、5. …")
+            # and end with a full stop; both turn into noise once labels are joined with "、".
+            label = re.sub(r"^(?:\d+[a-z]?\s*[.、，,．]?\s*)+", "", item["label"])
+            return label.rstrip("。.；;，, ")[:28]
     return feature_id
 
 

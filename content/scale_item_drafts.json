@@ -1,5 +1,5 @@
 {
-  "version": "2026.10-formal-release-v4",
+  "version": "2026.10-formal-release-v5",
   "updated_at": "2026-10-02",
   "boundary_notice": "本文件仅保存量表题项录入草稿，用于人工核对、计分复核和伦理边界审查。所有草稿默认不开放给用户填写，不输出诊断结论，不评价家长、学生或家庭人格。",
   "drafts": [
@@ -2871,7 +2871,7 @@
         {
           "item_code": "CDRISC05",
           "display_order": 5,
-          "text": "在生病.受伤.苦难之后，我很容易能恢复过来。",
+          "text": "在生病、受伤、苦难之后，我很容易能恢复过来。",
           "dimension": "TOTAL",
           "reverse_scored": false
         },
@@ -2906,7 +2906,7 @@
         {
           "item_code": "CDRISC10",
           "display_order": 10,
-          "text": "我能够处理一些不愉快或痛苦的感受，例如悲伤.害怕和生气。",
+          "text": "我能够处理一些不愉快或痛苦的感受，例如悲伤、害怕和生气。",
           "dimension": "TOTAL",
           "reverse_scored": false
         }
@@ -3511,7 +3511,7 @@
         {
           "item_code": "SCS12",
           "display_order": 12,
-          "text": "当我经历艰难困苦时，我会关心自己.善待自己。",
+          "text": "当我经历艰难困苦时，我会关心自己、善待自己。",
           "dimension": "SCS_SK",
           "reverse_scored": false
         },
@@ -3546,7 +3546,7 @@
         {
           "item_code": "SCS17",
           "display_order": 17,
-          "text": "当我在一些对自己重要的事情上失败时，我会尽量全面.客观地看待这些事情。",
+          "text": "当我在一些对自己重要的事情上失败时，我会尽量全面、客观地看待这些事情。",
           "dimension": "SCS_MIND",
           "reverse_scored": false
         },
@@ -3708,7 +3708,7 @@
         {
           "item_code": "MAAS02",
           "display_order": 2,
-          "text": "我会因为不小心.没注意或者想到其他事情而打碎物品或者弄坏东西。",
+          "text": "我会因为不小心、没注意或者想到其他事情而打碎物品或者弄坏东西。",
           "dimension": "TOTAL",
           "reverse_scored": false
         },
@@ -5040,7 +5040,7 @@
         {
           "item_code": "BFI52",
           "display_order": 52,
-          "text": "我是一个快乐.高兴的人。",
+          "text": "我是一个快乐、高兴的人。",
           "dimension": "BFI_EXTRAVERSION",
           "reverse_scored": false
         },
@@ -5241,21 +5241,21 @@
         {
           "item_code": "ASQ04",
           "display_order": 4,
-          "text": "情境2：被人误会.错怪。 请先想到一个你认为的主要原因，然后回答：这一原因是由于你自己还是由于别人或客观因素？1 表示由于他人，7 表示由于自己。",
+          "text": "情境2：被人误会、错怪。 请先想到一个你认为的主要原因，然后回答：这一原因是由于你自己还是由于别人或客观因素？1 表示由于他人，7 表示由于自己。",
           "dimension": "ASQ_INTERNAL",
           "reverse_scored": false
         },
         {
           "item_code": "ASQ05",
           "display_order": 5,
-          "text": "情境2：被人误会.错怪。 请先想到一个你认为的主要原因，然后回答：在将来的同样情境中，这一原因是否还会存在？1 表示不再会存在，7 表示总是存在着。",
+          "text": "情境2：被人误会、错怪。 请先想到一个你认为的主要原因，然后回答：在将来的同样情境中，这一原因是否还会存在？1 表示不再会存在，7 表示总是存在着。",
           "dimension": "ASQ_STABLE",
           "reverse_scored": false
         },
         {
           "item_code": "ASQ06",
           "display_order": 6,
-          "text": "情境2：被人误会.错怪。 请先想到一个你认为的主要原因，然后回答：这一原因是否仅影响这类事件，或者它也影响你生活的其他方面？1 表示仅影响这类事件，7 表示影响所有方面。",
+          "text": "情境2：被人误会、错怪。 请先想到一个你认为的主要原因，然后回答：这一原因是否仅影响这类事件，或者它也影响你生活的其他方面？1 表示仅影响这类事件，7 表示影响所有方面。",
           "dimension": "ASQ_GLOBAL",
           "reverse_scored": false
         },
@@ -6065,14 +6065,14 @@
         {
           "item_code": "PHQ02",
           "display_order": 2,
-          "text": "感到心情低落.沮丧或绝望",
+          "text": "感到心情低落、沮丧或绝望",
           "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "PHQ03",
           "display_order": 3,
-          "text": "入睡困难.睡不安稳或睡眠过多",
+          "text": "入睡困难、睡不安稳或睡眠过多",
           "dimension": "TOTAL",
           "reverse_scored": false
         },
@@ -6107,7 +6107,7 @@
         {
           "item_code": "PHQ08",
           "display_order": 8,
-          "text": "动作或说话速度缓慢到别人已经觉察？或正好相反，烦躁或坐立不安.动来动去的情况更胜于平常",
+          "text": "动作或说话速度缓慢到别人已经觉察？或正好相反，烦躁或坐立不安、动来动去的情况更胜于平常",
           "dimension": "TOTAL",
           "reverse_scored": false
         },

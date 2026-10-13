@@ -8,7 +8,7 @@
   "admission_status": "pilot_approved",
   "interpretation_approval_status": "pilot_approved",
   "model_governance_version": "profile_model_governance_v1",
-  "artifact_hash": "cc32e39459f2697764d706ce315ca11f2dc7d2fdc8fdcbf6d6c5a0f0b4f9b1e6",
+  "artifact_hash": "eadd78ac41c9ce9bb1019a25e7cb50d00b2e5e3397dfe17dcb5c14b238c9f861",
   "research_dir": "5 牛至旭【中年女性自我关怀现状及其对主观幸福感的影响】",
   "source_dataset": "5 牛至旭【中年女性自我关怀现状及其对主观幸福感的影响】\\数据和问卷\\数据\\209份最终数据.sav",
   "n_cases": 209,
@@ -196,7 +196,7 @@
         "pc1": 1.8527,
         "pc2": -0.0647
       },
-      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：5. 当我心情不好时，我会更关爱自己。、9.遇到烦心事时，我会尽量让自己的情绪保持稳定。较低。它只用于群体参照和支持性解释，不代表固定标签。",
+      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：当我心情不好时，我会更关爱自己、遇到烦心事时，我会尽量让自己的情绪保持稳定较低。它只用于群体参照和支持性解释，不代表固定标签。",
       "display_name": "自我支持资源仍需补充的阶段性位置",
       "product_explanation": "心情不好的时候，你比较难对自己温和——可能容易自我批评或者情绪很难平稳下来。这在经历压力或失败时会让你更消耗。",
       "strength_note": "你对自己有高标准，这说明你在意成长和做得更好。",
@@ -235,7 +235,7 @@
         "pc1": -1.4288,
         "pc2": 0.0499
       },
-      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：5. 当我心情不好时，我会更关爱自己。、9.遇到烦心事时，我会尽量让自己的情绪保持稳定。较高。它只用于群体参照和支持性解释，不代表固定标签。",
+      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：当我心情不好时，我会更关爱自己、遇到烦心事时，我会尽量让自己的情绪保持稳定较高。它只用于群体参照和支持性解释，不代表固定标签。",
       "display_name": "自我支持资源较可用的阶段性位置",
       "product_explanation": "心情不好时，你能给自己一些关怀和善意，情绪不容易长时间卡住。这种对自己的温柔是一种主动的自我照料，也是帮助他人的前提。",
       "strength_note": "自我关怀不是自私，是让自己能持续有能力照顾和支持别人。",

@@ -75,7 +75,10 @@ def write_json(path: Path, payload: dict) -> None:
 
 def normalize_line(value: str) -> str:
     value = re.sub(r"\s+", " ", value or "").strip()
-    value = value.replace("．", ".").replace("、", ".")
+    # Only numbering such as "1、" or "A、" becomes "1."; a 、 inside item text stays
+    # (turning every 、 into "." produced items like "不小心.没注意").
+    value = value.replace("．", ".")
+    value = re.sub(r"(?<=[0-9A-Za-z])、", ".", value)
     return value
 
 

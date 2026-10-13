@@ -1237,6 +1237,18 @@ test('画像结果按模型类型给出匹配清晰度，反向题按题目原�
   assert.equal(noPoint.userPoint, null);
 });
 
+test('画像雷达的题号取题目自身编号：带问卷大题号的HPLP、自悯题和1a类题号不再都显示成同一个', () => {
+  const { context } = pageHarness('assessment-result');
+  const compact = vm.runInNewContext('compactFeatureLabel', context);
+  assert.equal(compact('15、1、选择低脂肪、低饱和脂肪和低胆固醇的食物'), '题1');
+  assert.equal(compact('15、24、与专业人士讨论健康问题'), '题24');
+  assert.equal(compact('14、5. 当我心情不好时，我会更关爱自己。'), '题5');
+  assert.equal(compact('1a.如果我主动认识新朋友，我很可能会遇到愿意理解我、关心我的人。'), '题1a');
+  assert.equal(compact('2他人的批评指责会让我长时间难过'), '题2');
+  assert.equal(compact('40.失败总是让我感到气馁。'), '题40');
+  assert.equal(compact('我能控制自己的情绪'), '我能控制自己的情绪');
+});
+
 test('项目练习：写完明显更难受时提示停一停，跳过不要求书写，提交后显示安全提示并标出已完成小节', async () => {
   const calls = [];
   const h = pageHarness('program-detail', {

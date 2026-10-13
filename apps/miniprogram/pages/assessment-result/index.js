@@ -232,11 +232,14 @@ function normalizePlotPosition(value, min, max, invert = false) {
 
 function compactFeatureLabel(label) {
   const text = String(label || "").trim();
-  const numberMatch = text.match(/^(\d+)[.、，,]?\s*/);
-  if (numberMatch) {
-    return `题${numberMatch[1]}`;
+  // Some source labels carry the questionnaire's block number before the item number
+  // ("15、1、…", "14、5. …"); the item's own number is the last one, and "1a" keeps its letter.
+  const prefix = text.match(/^(?:\d+[a-z]?\s*[.、，,．]?\s*)+/);
+  if (prefix) {
+    const numbers = prefix[0].match(/\d+[a-z]?/g);
+    return `题${numbers[numbers.length - 1]}`;
   }
-  return text.replace(/^\d+[.、，,]?\s*/, "").slice(0, 10);
+  return text.slice(0, 10);
 }
 
 function matchingClarityText(position, interpretation) {
