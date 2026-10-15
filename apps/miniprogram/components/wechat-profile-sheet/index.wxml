@@ -1,7 +1,7 @@
 <view wx:if="{{visible}}" class="wechat-profile-shade" catchtouchmove="stop">
   <view class="wechat-profile-dialog" role="dialog" aria-modal="true" aria-label="{{context === 'edit' ? '修改头像和昵称' : '使用微信头像和昵称'}}">
     <text class="wechat-profile-title">{{context === 'edit' ? '修改头像和昵称' : '用微信头像和昵称吗？'}}</text>
-    <text class="wechat-profile-body">点头像选“用微信头像”，点昵称框选微信昵称；也可以自己选图、自己填。只存在这台手机上，用于“我的”页面显示。</text>
+    <text class="wechat-profile-body">点头像选“用微信头像”，点昵称框选微信昵称；也可以自己选图、自己填。昵称保存到账号，工作人员在后台也能看到；头像只存在这台手机上。</text>
     <form bindsubmit="submit">
       <view class="wechat-profile-form">
         <button class="wechat-profile-avatar" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar" disabled="{{saving}}" aria-label="选择头像，可以用微信头像">
@@ -17,7 +17,7 @@
         <view class="wechat-profile-actions">
           <button class="p3-btn p3-btn--primary" form-type="submit" loading="{{saving}}" disabled="{{saving}}">保存</button>
           <button class="p3-btn p3-btn--quiet" bindtap="dismiss" disabled="{{saving}}">{{context === 'edit' ? '取消' : '跳过'}}</button>
-          <button wx:if="{{context === 'edit' && hasSaved}}" class="p3-link wechat-profile-clear" bindtap="clear" disabled="{{saving}}">清除这台手机上保存的头像和昵称</button>
+          <button wx:if="{{context === 'edit' && hasSaved}}" class="p3-link wechat-profile-clear" bindtap="clear" disabled="{{saving}}">清除头像和昵称</button>
         </view>
       </view>
     </form>

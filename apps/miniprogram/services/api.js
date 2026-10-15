@@ -581,6 +581,18 @@ function createSafeHomeApi(options = {}) {
       });
     },
 
+    // 昵称保存到账号，换手机登录也在；头像只存在手机上，不经过这里。
+    updateMyNickname(nickname) {
+      return request(API_ENDPOINTS.authMe, {
+        method: "PATCH",
+        data: { nickname },
+        requiresAuth: true,
+      }).then((result) => {
+        if (result && result.user) wx.setStorageSync("auth_user", result.user);
+        return result;
+      });
+    },
+
     wechatLogin(data) {
       return request(API_ENDPOINTS.authWechatLogin, {
         method: "POST",

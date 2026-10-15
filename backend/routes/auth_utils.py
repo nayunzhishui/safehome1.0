@@ -120,11 +120,13 @@ def get_current_actor(allow_legacy_admin: bool = True) -> dict | None:
     if not token:
         return None
     user = verify_auth_token(token)
-    if bool(user.get("must_change_password")) and request.path not in {
-        "/api/auth/me",
+    # Before the first password change an account may only read itself, change the password or
+    # log out; PATCH /api/auth/me (nickname) waits until the password has been changed.
+    allowed_before_password_change = request.path in {
         "/api/auth/change-password",
         "/api/auth/logout",
-    }:
+    } or (request.path == "/api/auth/me" and request.method == "GET")
+    if bool(user.get("must_change_password")) and not allowed_before_password_change:
         raise AuthError("首次登录需要先修改一次性密码", status=403, code="password_change_required")
     return {
         "id": user["id"],

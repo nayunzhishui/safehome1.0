@@ -41,8 +41,8 @@
     {
       "artifact_type": "content",
       "path": "content/privacy.md",
-      "sha256": "c80ab4cc7f0f5dd01016c45fb978bbadbe5021c77931db80f5ce83a52288e7ae",
-      "size_bytes": 6955
+      "sha256": "e701451d44cb59fcd37bf6a05c08fdb7f5d98333b6339328a9b1356da45c0b9f",
+      "size_bytes": 7036
     },
     {
       "artifact_type": "rule",
@@ -155,8 +155,8 @@
     {
       "artifact_type": "capability_registry",
       "path": "content/operations_capability_registry.json",
-      "sha256": "f808f1820852665cf2da5f22a88bf926ec8faee9352c0eb0cc22c5174c93ba21",
-      "size_bytes": 84938
+      "sha256": "eabd8184811c00739d062e88a1690d44e8b5777a059119e96c1ee5f10299ba02",
+      "size_bytes": 84970
     }
   ],
   "fixed_replay_suites": [

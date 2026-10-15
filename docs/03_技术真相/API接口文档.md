@@ -1520,6 +1520,19 @@ Invoke-WebRequest `
 
 请求字段：`current_password`、`new_password`。新密码至少12位并包含大小写字母、数字或符号中的三类，且不能与当前密码相同。成功后清除一次性凭据状态、递增`auth_epoch`、撤销旧token并返回新`token`、`user`与`sessions_revoked=true`。
 
+### `PATCH /api/auth/me`
+
+用途：登录用户设置或清除自己的昵称（2026-10-15 起小程序登录后选的微信昵称存在这里，换手机登录也在）。头像不经过本接口，只存在用户手机上。
+
+请求字段：只接受 `nickname`，带其他字段返回 `400 validation_error`。`nickname` 为字符串或 `null`：
+- 连续空白合并为一个空格，去掉首尾空白，结果为空时清除昵称。
+- 最多 20 个字符，按 Unicode 码点计数，与小程序 `Array.from` 一致。
+- 含控制字符时拒绝。
+
+成功返回 `user`。审计动作 `account_nickname_updated` 只记是否设置和长度，日志和审计都不写昵称本身。
+
+昵称会显示在研究者工作台的参与者列表里，也能被搜索。一次性账号改密码前只能 `GET` 本路径，`PATCH` 返回 `403 password_change_required`。
+
 ### `GET /api/auth/admin-accounts/<username>`
 
 用途：持有`X-Admin-Token`的负责人核验账号状态。仅返回用户名、角色、状态、最后登录时间、是否已设置密码、是否必须改密、凭据世代、临时凭据过期时间及锁定状态；不返回密码、哈希或receipt ID。

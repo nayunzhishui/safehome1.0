@@ -57,6 +57,9 @@ _WECHAT_USER_CODE_ERRCODES = frozenset({40029, 40163, 40226})
 _WECHAT_RETRYABLE_ERRCODES = frozenset({-1, 45011})
 _WECHAT_INVALID_TOKEN_ERRCODES = frozenset({40001, 40014, 42001})
 _CLOUDBASE_OPENID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{6,128}$")
+# Matches the mini program's limit; counted in code points like Array.from() on the client.
+NICKNAME_MAX_LENGTH = 20
+_NICKNAME_CONTROL_PATTERN = re.compile(r"[\x00-\x1f\x7f]")
 MAX_PASSWORD_FAILURES = 5
 PASSWORD_LOCK_MINUTES = 15
 
@@ -1249,6 +1252,54 @@ def me():
     except AuthError as exc:
         return auth_error_response(exc)
     return ok({"user": _public_user(actor["user"])})
+
+
+@bp.patch("/me")
+def update_me():
+    """Set or clear the signed-in user's own nickname, e.g. the WeChat nickname picked after login.
+
+    Only the nickname can change here; the avatar stays on the device. The nickname is shown in
+    the researcher workbench, and is never written to logs or the audit trail.
+    """
+    try:
+        actor = require_login(allow_legacy_admin=False)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict) or "nickname" not in payload or set(payload) - {"nickname"}:
+        return fail("validation_error", "这里只能修改昵称", status=400)
+    raw_nickname = payload["nickname"]
+    if raw_nickname is not None and not isinstance(raw_nickname, str):
+        return fail("validation_error", "昵称格式不正确", status=400)
+    nickname = " ".join((raw_nickname or "").split())
+    if _NICKNAME_CONTROL_PATTERN.search(nickname):
+        return fail("validation_error", "昵称里有不能显示的字符", status=400)
+    if len(nickname) > NICKNAME_MAX_LENGTH:
+        return fail("validation_error", f"昵称最多 {NICKNAME_MAX_LENGTH} 个字", status=400)
+    timestamp = now_iso()
+    with get_connection() as conn:
+        conn.execute(
+            "UPDATE users SET nickname = ?, updated_at = ? WHERE id = ?",
+            (nickname or None, timestamp, actor["id"]),
+        )
+        write_audit_log(
+            conn,
+            "account_nickname_updated",
+            actor["id"],
+            "user",
+            actor["id"],
+            {"nickname_set": bool(nickname), "nickname_length": len(nickname)},
+        )
+        conn.commit()
+        row = conn.execute(
+            """
+            SELECT id, username, role, nickname, anonymous_id, avatar_url, status,
+                   must_change_password, auth_epoch
+            FROM users WHERE id = ?
+            """,
+            (actor["id"],),
+        ).fetchone()
+    return ok({"user": _public_user(row_to_dict(row))})
 
 
 @bp.get("/identity-status")

@@ -71,6 +71,7 @@
 | POST | `/api/auth/login` | public:public | authenticated_identity_match_before_pending_logout_revoke | — | — | active |
 | POST | `/api/auth/logout` | public:public | optional_bearer_revoke_all_account_tokens_idempotent | — | — | active |
 | GET | `/api/auth/me` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| PATCH | `/api/auth/me` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/auth/phone-login` | public:public | authenticated_identity_match_before_pending_logout_revoke | — | — | active |
 | POST | `/api/auth/register` | public:public | not_applicable_or_development_legacy | — | — | active |
 | POST | `/api/auth/wechat-login` | public:public | authenticated_identity_match_before_pending_logout_revoke | — | — | active |

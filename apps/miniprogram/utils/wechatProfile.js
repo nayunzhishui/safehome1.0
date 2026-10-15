@@ -1,5 +1,5 @@
-// 头像和昵称只存在这台手机上，按账号分开，不上传服务器：生产库 avatar_url 只有 191 个字符，
-// 研究者工作台也会显示服务器上的昵称。登录后的填写卡片和“我的”页共用这里的读写。
+// 昵称保存到账号（换手机登录也在，研究者工作台也能看到）；头像只存在这台手机上，按账号分开，
+// 因为生产库 avatar_url 只有 191 个字符，放不下图片。登录后的填写卡片和“我的”页共用这里的读写。
 const KEY_PREFIX = "safehome:wechatProfile:";
 const NICKNAME_MAX_LENGTH = 20;
 
@@ -21,16 +21,17 @@ function writeLocalProfile(userId, profile) {
   wx.setStorageSync(storageKey(userId), profile);
 }
 
-// 设置过或点过“跳过”的账号，登录后不再询问；之后可以在“我的”页点头像修改。
+// 在这台手机上保存过或点过“跳过”，登录后就不再询问；之后可以在“我的”页点头像修改。
+// 早先只存本机的版本留下的 nickname/skipped 记录也算问过。
 function shouldOfferLocalProfile(userId) {
   if (!userId) return false;
   const profile = readLocalProfile(userId);
-  return !(profile && (profile.nickname || profile.avatarPath || profile.skipped));
+  return !(profile && (profile.answered || profile.skipped || profile.avatarPath || profile.nickname));
 }
 
 function skipLocalProfile(userId) {
   if (!userId) return;
-  writeLocalProfile(userId, { ...(readLocalProfile(userId) || {}), skipped: true });
+  writeLocalProfile(userId, { ...(readLocalProfile(userId) || {}), answered: true });
 }
 
 function normalizeNickname(value) {
@@ -64,7 +65,8 @@ function persistAvatar(userId, tempPath) {
   });
 }
 
-async function saveLocalProfile(userId, { nickname, avatarTempPath }) {
+// 只处理本机头像；昵称由调用方先保存到账号。
+async function saveLocalAvatar(userId, avatarTempPath) {
   if (!userId) throw new Error("请先登录，再设置头像和昵称。");
   const previous = readLocalProfile(userId) || {};
   let avatarPath = previous.avatarPath || "";
@@ -72,24 +74,23 @@ async function saveLocalProfile(userId, { nickname, avatarTempPath }) {
     avatarPath = await persistAvatar(userId, avatarTempPath);
     if (previous.avatarPath && previous.avatarPath !== avatarPath) removeLocalFile(previous.avatarPath);
   }
-  const savedNickname = normalizeNickname(nickname);
-  const profile = { nickname: savedNickname, avatarPath, skipped: !savedNickname && !avatarPath, updatedAt: Date.now() };
+  const profile = { avatarPath, answered: true, updatedAt: Date.now() };
   writeLocalProfile(userId, profile);
   return profile;
 }
 
-function clearLocalProfile(userId) {
+function clearLocalAvatar(userId) {
   if (!userId) return;
   const previous = readLocalProfile(userId) || {};
   removeLocalFile(previous.avatarPath);
-  writeLocalProfile(userId, { nickname: "", avatarPath: "", skipped: true, updatedAt: Date.now() });
+  writeLocalProfile(userId, { avatarPath: "", answered: true, updatedAt: Date.now() });
 }
 
-// “我的”页显示：本机设置的头像昵称优先，其次是账号里的昵称（注册时可选填），最后是默认称呼。
+// 昵称：账号里的优先，其次是早先版本只存本机的昵称，最后是默认称呼；头像只看本机。
 function localDisplayIdentity(user, fallbackNickname) {
   const profile = user && user.id ? readLocalProfile(user.id) : null;
   return {
-    nickname: (profile && profile.nickname) || (user && user.nickname) || fallbackNickname,
+    nickname: (user && user.nickname) || (profile && profile.nickname) || fallbackNickname,
     avatarPath: (profile && profile.avatarPath) || "",
   };
 }
@@ -99,8 +100,8 @@ module.exports = {
   readLocalProfile,
   shouldOfferLocalProfile,
   skipLocalProfile,
-  saveLocalProfile,
-  clearLocalProfile,
+  saveLocalAvatar,
+  clearLocalAvatar,
   normalizeNickname,
   localDisplayIdentity,
 };

@@ -231,6 +231,64 @@ def test_cloudbase_identity_headers_are_ignored_without_explicit_trust(tmp_path,
     assert created["count"] == 0
 
 
+def test_update_me_nickname_follows_the_account_and_is_not_logged(tmp_path, monkeypatch, caplog):
+    monkeypatch.setenv("TRUST_CLOUDBASE_IDENTITY_HEADERS", "1")
+    app = _fresh_app(tmp_path, monkeypatch, app_env="production")
+    monkeypatch.setattr(app.logger, "handlers", [*app.logger.handlers, caplog.handler])
+    client = app.test_client()
+    identity = {"X-WX-OPENID": "cloudbase-nickname-1", "X-WX-SOURCE": "other"}
+    login = client.post("/api/auth/wechat-login", headers=identity, json={}).get_json()["data"]
+    headers = {"Authorization": f"Bearer {login['token']}"}
+    assert login["user"]["nickname"] is None
+
+    updated = client.patch("/api/auth/me", headers=headers, json={"nickname": "  合成\t 昵称  "})
+    assert updated.status_code == 200
+    assert updated.get_json()["data"]["user"]["nickname"] == "合成 昵称"
+    assert client.get("/api/auth/me", headers=headers).get_json()["data"]["user"]["nickname"] == "合成 昵称"
+    # Logging in again, as from another phone, brings the nickname back with the account.
+    again = client.post("/api/auth/wechat-login", headers=identity, json={}).get_json()["data"]
+    assert again["user"]["nickname"] == "合成 昵称"
+
+    cleared = client.patch("/api/auth/me", headers=headers, json={"nickname": " "})
+    assert cleared.status_code == 200
+    assert cleared.get_json()["data"]["user"]["nickname"] is None
+
+    from database import get_connection
+
+    with get_connection() as conn:
+        audits = conn.execute(
+            "SELECT metadata_json FROM audit_logs WHERE action = 'account_nickname_updated' ORDER BY created_at"
+        ).fetchall()
+    assert len(audits) == 2
+    assert all("合成" not in row["metadata_json"] for row in audits)
+    assert "合成" not in caplog.text
+
+
+def test_update_me_only_accepts_a_short_plain_nickname(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    token = _register(client, "nickname-user", "parent").get_json()["data"]["token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    assert client.patch("/api/auth/me", json={"nickname": "未登录"}).status_code == 401
+    for body in [
+        {"nickname": "x" * 21},
+        {"nickname": 123},
+        {"nickname": "坏\x00字"},
+        {"nickname": "好", "role": "admin"},
+        {"avatar_url": "https://example.invalid/a.png"},
+        [],
+    ]:
+        response = client.patch("/api/auth/me", headers=headers, json=body)
+        assert response.status_code == 400, body
+        assert response.get_json()["error"]["code"] == "validation_error"
+    user = client.get("/api/auth/me", headers=headers).get_json()["data"]["user"]
+    assert user["nickname"] == "测试账号"
+    assert user["role"] == "parent"
+    # Twenty emoji are twenty characters, the same count the mini program uses.
+    assert client.patch("/api/auth/me", headers=headers, json={"nickname": "😀" * 20}).status_code == 200
+
+
 def test_wechat_login_reuses_identity_and_rejects_disabled_account(tmp_path, monkeypatch):
     monkeypatch.setenv("TRUST_CLOUDBASE_IDENTITY_HEADERS", "1")
     app = _fresh_app(tmp_path, monkeypatch, app_env="production")

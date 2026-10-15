@@ -267,6 +267,7 @@
         "auth.me.get",
         "auth.phone_login.post",
         "auth.register.post",
+        "auth.update_me.patch",
         "auth.wechat_login.post"
       ]
     },

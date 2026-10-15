@@ -53,6 +53,11 @@ def test_temporary_account_requires_password_change_before_research_access(tmp_p
     )
     assert blocked.status_code == 403
     assert blocked.get_json()["error"]["code"] == "password_change_required"
+    headers = {"Authorization": f"Bearer {login_data['token']}"}
+    assert client.get("/api/auth/me", headers=headers).status_code == 200
+    nickname_change = client.patch("/api/auth/me", headers=headers, json={"nickname": "先改昵称"})
+    assert nickname_change.status_code == 403
+    assert nickname_change.get_json()["error"]["code"] == "password_change_required"
 
 
 def test_first_password_change_revokes_old_token_and_unlocks_research_access(tmp_path, monkeypatch):

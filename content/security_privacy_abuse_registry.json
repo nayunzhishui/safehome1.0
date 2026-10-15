@@ -1716,6 +1716,30 @@
       }
     },
     {
+      "operation_id": "auth.update_me.patch",
+      "method": "PATCH",
+      "path": "/api/auth/me",
+      "object_type": "auth",
+      "action": "update",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "auth.phone_login.post",
       "method": "POST",
       "path": "/api/auth/phone-login",

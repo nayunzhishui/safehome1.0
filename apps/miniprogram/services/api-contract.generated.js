@@ -4086,6 +4086,68 @@ const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "auth.update_me.patch",
+    "method": "PATCH",
+    "path": "/api/auth/me",
+    "handler": "auth.update_me",
+    "module": "routes.auth",
+    "access": {
+      "mode": "authenticated",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [
+        "nickname"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.update_me.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "auth.phone_login.post",
     "method": "POST",
     "path": "/api/auth/phone-login",
