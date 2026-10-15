@@ -360,6 +360,31 @@ def test_cloudbase_identity_requires_exact_source_and_valid_openid(tmp_path, mon
         assert response.get_json()["error"]["code"] == "validation_error"
 
 
+def test_cloudbase_identity_accepts_other_wx_sources_and_logs_rejections(tmp_path, monkeypatch, caplog):
+    monkeypatch.setenv("TRUST_CLOUDBASE_IDENTITY_HEADERS", "1")
+    app = _fresh_app(tmp_path, monkeypatch, app_env="production")
+    client = app.test_client()
+
+    accepted = client.post(
+        "/api/auth/wechat-login",
+        headers={"X-WX-OPENID": "cloudbase-openid-remote", "X-WX-SOURCE": "wx_remote_debug"},
+        json={},
+    )
+    assert accepted.status_code == 200
+    assert accepted.get_json()["data"]["identity_source"] == "cloudbase_header"
+
+    monkeypatch.setattr(app.logger, "handlers", [*app.logger.handlers, caplog.handler])
+    with caplog.at_level("WARNING"):
+        rejected = client.post(
+            "/api/auth/wechat-login",
+            headers={"X-WX-OPENID": "cloudbase-openid-public", "X-WX-SOURCE": "public-http"},
+            json={},
+        )
+    assert rejected.status_code == 400
+    assert "cloudbase_identity_rejected reason=source source=public-http" in caplog.text
+    assert "cloudbase-openid-public" not in caplog.text
+
+
 def test_phone_login_creates_and_reuses_verified_phone_without_storing_raw(tmp_path, monkeypatch, caplog):
     monkeypatch.setenv("TRUST_CLOUDBASE_IDENTITY_HEADERS", "1")
     app = _fresh_app(tmp_path, monkeypatch)

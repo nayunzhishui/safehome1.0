@@ -6,6 +6,23 @@ const api = createSafeHomeApi();
 const PROTECTION_URL = "/pages/settings-detail/index?type=protection";
 const AGREEMENT_REQUIRED = "请先阅读并勾选同意《用户服务协议》和《隐私政策》。";
 
+// getPhoneNumber returns no code when the account has not enabled the capability or the
+// privacy guide does not declare phone numbers; say which, so the owner knows what to fix.
+function phoneAuthFailureMessage(detail) {
+  const errMsg = String(detail.errMsg || "");
+  const errno = Number(detail.errno);
+  if (errno === 112 || /scope is not declared/i.test(errMsg)) {
+    return "小程序的用户隐私保护指引还没有声明手机号，暂时不能用手机号登录，请先使用账号密码登录。";
+  }
+  if (errno === 104 || /privacy permission/i.test(errMsg)) {
+    return "需要先同意小程序隐私保护指引，才能用手机号登录。";
+  }
+  if (/no permission|not authorized|permission denied/i.test(errMsg)) {
+    return "这个小程序还没有开通手机号快速验证，暂时不能用手机号登录，请先使用账号密码登录。";
+  }
+  return `没有取得新的手机号授权凭证，请重新点击或使用账号密码登录。${errMsg ? `（${errMsg}）` : ""}`;
+}
+
 function normalizeRedirect(rawRedirect) {
   if (!rawRedirect) return "";
   const decoded = decodeURIComponent(rawRedirect);
@@ -289,7 +306,7 @@ Page({
         status: canceled ? "idle" : "error",
         message: canceled
           ? "你已取消手机号授权，可以继续选择其他登录方式。"
-          : "没有取得新的手机号授权凭证，请重新点击或使用账号密码登录。",
+          : phoneAuthFailureMessage(detail),
       });
       return;
     }
