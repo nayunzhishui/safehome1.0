@@ -18,6 +18,7 @@ from services.relationship_pilot_common import (
     own_or_researcher,
     worksheet,
 )
+from services.research_access_service import sees_all_participants
 from services.showcase_access_service import allow_showcase_program_participation
 
 
@@ -120,7 +121,11 @@ def create_enrollment(actor: dict, payload: dict) -> ServiceResult:
 
 
 def list_enrollments(actor: dict) -> ServiceResult:
-    if actor.get("role") == "researcher":
+    sees_all = sees_all_participants(actor)
+    if sees_all:
+        where = ""
+        params = []
+    elif actor.get("role") == "researcher":
         where = """
         WHERE (
             (e.assigned_researcher_id IS NULL AND e.status IN ('enrolled', 'active'))
@@ -142,9 +147,6 @@ def list_enrollments(actor: dict) -> ServiceResult:
         )
         """
         params = [actor["id"]]
-    elif actor.get("role") == "admin":
-        where = ""
-        params = []
     else:
         where = "WHERE user_id = ?"
         params = [actor["id"]]
@@ -161,7 +163,7 @@ def list_enrollments(actor: dict) -> ServiceResult:
             params,
         ).fetchall()
     items = [expand_enrollment(item) for item in rows_to_dicts(rows)]
-    if actor.get("role") == "researcher":
+    if actor.get("role") == "researcher" and not sees_all:
         items = [
             item
             if str(item.get("assigned_researcher_id") or "") == str(actor["id"])

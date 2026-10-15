@@ -55,7 +55,7 @@ def test_temporary_account_requires_password_change_before_research_access(tmp_p
     assert blocked.get_json()["error"]["code"] == "password_change_required"
     headers = {"Authorization": f"Bearer {login_data['token']}"}
     assert client.get("/api/auth/me", headers=headers).status_code == 200
-    nickname_change = client.patch("/api/auth/me", headers=headers, json={"nickname": "先改昵称"})
+    nickname_change = client.post("/api/auth/me", headers=headers, json={"nickname": "先改昵称"})
     assert nickname_change.status_code == 403
     assert nickname_change.get_json()["error"]["code"] == "password_change_required"
 

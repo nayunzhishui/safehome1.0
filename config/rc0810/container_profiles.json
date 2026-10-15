@@ -88,7 +88,8 @@
     "MYSQL_PASSWORD",
     "WECHAT_SECRET",
     "DEEPSEEK_API_KEY",
-    "ADMIN_EXPORT_TOKEN"
+    "ADMIN_EXPORT_TOKEN",
+    "OWNER_CLAIM_CODE"
   ],
   "control_plane": {
     "managed_by": "deployment_operator",

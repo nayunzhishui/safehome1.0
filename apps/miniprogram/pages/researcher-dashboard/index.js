@@ -642,6 +642,8 @@ Page({
       api.getResearchCapabilities().catch(() => null),
     ]);
     const workspaces = visibleWorkspaces(capabilityScope);
+    // “管理”只给真正的总管理；展示模式临时开放的研究权限不算。
+    if (user && user.role === "admin") workspaces.push({ id: "manage", label: "管理" });
     const formalRole = capabilityScope && capabilityScope.formal_role;
     this.setData({
       developmentFullAccess: Boolean(showcase.researcher_platform_full_access),

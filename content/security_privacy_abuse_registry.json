@@ -1220,6 +1220,56 @@
       }
     },
     {
+      "operation_id": "auth.list_accounts.get",
+      "method": "GET",
+      "path": "/api/auth/accounts",
+      "object_type": "auth",
+      "action": "read",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "auth.change_account_role.post",
+      "method": "POST",
+      "path": "/api/auth/accounts/<user_id>/role",
+      "object_type": "auth",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "auth.admin_create_account_merge.post",
       "method": "POST",
       "path": "/api/auth/admin-account-merges",
@@ -1716,11 +1766,59 @@
       }
     },
     {
-      "operation_id": "auth.update_me.patch",
-      "method": "PATCH",
+      "operation_id": "auth.update_me.post",
+      "method": "POST",
       "path": "/api/auth/me",
       "object_type": "auth",
-      "action": "update",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "auth.get_owner_claim.get",
+      "method": "GET",
+      "path": "/api/auth/owner-claim",
+      "object_type": "auth",
+      "action": "read",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "auth.claim_owner.post",
+      "method": "POST",
+      "path": "/api/auth/owner-claim",
+      "object_type": "auth",
+      "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
         "parent",

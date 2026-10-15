@@ -133,6 +133,8 @@ const API_ENDPOINTS = {
   authBindPhone: "/api/auth/bind-phone",
   authLogout: "/api/auth/logout",
   authMe: "/api/auth/me",
+  authOwnerClaim: "/api/auth/owner-claim",
+  authAccounts: "/api/auth/accounts",
   authIdentityStatus: "/api/auth/identity-status",
   authIdentityUnbind: "/api/auth/identity-unbind",
   authAccountMerges: "/api/auth/admin-account-merges",
@@ -582,14 +584,47 @@ function createSafeHomeApi(options = {}) {
     },
 
     // 昵称保存到账号，换手机登录也在；头像只存在手机上，不经过这里。
+    // 用 POST：wx.request 和云托管调用都不接受 PATCH。
     updateMyNickname(nickname) {
       return request(API_ENDPOINTS.authMe, {
-        method: "PATCH",
+        method: "POST",
         data: { nickname },
         requiresAuth: true,
       }).then((result) => {
         if (result && result.user) wx.setStorageSync("auth_user", result.user);
         return result;
+      });
+    },
+
+    // 总管理认领：云托管设了认领码、还没人认领时才开放；认领后旧登录失效，换成新的。
+    getOwnerClaim() {
+      return request(API_ENDPOINTS.authOwnerClaim, { requiresAuth: true });
+    },
+
+    claimOwner(code) {
+      return request(API_ENDPOINTS.authOwnerClaim, {
+        method: "POST",
+        data: { code },
+        requiresAuth: true,
+      }).then((result) => {
+        if (result && result.token) {
+          wx.setStorageSync("auth_token", result.token);
+          wx.setStorageSync("auth_user", result.user || null);
+        }
+        return result;
+      });
+    },
+
+    // 总管理给微信登录的账号开、收研究员或督导资格；对方会退出登录，重新登录后生效。
+    listAccounts(params = {}) {
+      return request(`${API_ENDPOINTS.authAccounts}${queryString(params)}`, { requiresAuth: true });
+    },
+
+    changeAccountRole(userId, role) {
+      return request(`${API_ENDPOINTS.authAccounts}/${encodeURIComponent(userId)}/role`, {
+        method: "POST",
+        data: { role },
+        requiresAuth: true,
       });
     },
 

@@ -2866,6 +2866,129 @@ const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "auth.list_accounts.get",
+    "method": "GET",
+    "path": "/api/auth/accounts",
+    "handler": "auth.list_accounts",
+    "module": "routes.auth",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [
+        "limit",
+        "offset",
+        "q",
+        "role"
+      ],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.list_accounts.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "auth.change_account_role.post",
+    "method": "POST",
+    "path": "/api/auth/accounts/<user_id>/role",
+    "handler": "auth.change_account_role",
+    "module": "routes.auth",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "user_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [
+        "role"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.change_account_role.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "conflict",
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "not_found",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "auth.admin_create_account_merge.post",
     "method": "POST",
     "path": "/api/auth/admin-account-merges",
@@ -4086,8 +4209,8 @@ const GENERATED_API_ENDPOINTS = [
     }
   },
   {
-    "operation_id": "auth.update_me.patch",
-    "method": "PATCH",
+    "operation_id": "auth.update_me.post",
+    "method": "POST",
     "path": "/api/auth/me",
     "handler": "auth.update_me",
     "module": "routes.auth",
@@ -4139,6 +4262,132 @@ const GENERATED_API_ENDPOINTS = [
       "internal_error",
       "unauthorized",
       "validation_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "auth.get_owner_claim.get",
+    "method": "GET",
+    "path": "/api/auth/owner-claim",
+    "handler": "auth.get_owner_claim",
+    "module": "routes.auth",
+    "access": {
+      "mode": "authenticated",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.get_owner_claim.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "auth.claim_owner.post",
+    "method": "POST",
+    "path": "/api/auth/owner-claim",
+    "handler": "auth.claim_owner",
+    "module": "routes.auth",
+    "access": {
+      "mode": "authenticated",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [
+        "code"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.claim_owner.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "conflict",
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "owner_already_claimed",
+      "owner_claim_code_invalid",
+      "owner_claim_unavailable",
+      "rate_limit_unavailable",
+      "rate_limited",
+      "unauthorized"
     ],
     "enum_refs": [],
     "deprecation": {

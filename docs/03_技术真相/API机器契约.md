@@ -51,6 +51,8 @@
 | GET | `/api/assessment-results/<result_id>/profile-position` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_active_participant_assignment_or_admin_capability | — | — | active |
 | GET | `/api/assessments` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/assessments/<worksheet_id>` | public:public | not_applicable_or_development_legacy | — | — | active |
+| GET | `/api/auth/accounts` | role:admin | role_scoped | — | — | active |
+| POST | `/api/auth/accounts/<user_id>/role` | role:admin | role_scoped | — | — | active |
 | POST | `/api/auth/admin-account-merges` | role:admin | role_scoped | — | supported | active |
 | GET | `/api/auth/admin-account-merges/<workflow_id>` | role:admin | role_scoped | — | — | active |
 | POST | `/api/auth/admin-account-merges/<workflow_id>/confirm` | role:admin | role_scoped | — | — | active |
@@ -71,7 +73,9 @@
 | POST | `/api/auth/login` | public:public | authenticated_identity_match_before_pending_logout_revoke | — | — | active |
 | POST | `/api/auth/logout` | public:public | optional_bearer_revoke_all_account_tokens_idempotent | — | — | active |
 | GET | `/api/auth/me` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
-| PATCH | `/api/auth/me` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/auth/me` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/auth/owner-claim` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/auth/owner-claim` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/auth/phone-login` | public:public | authenticated_identity_match_before_pending_logout_revoke | — | — | active |
 | POST | `/api/auth/register` | public:public | not_applicable_or_development_legacy | — | — | active |
 | POST | `/api/auth/wechat-login` | public:public | authenticated_identity_match_before_pending_logout_revoke | — | — | active |

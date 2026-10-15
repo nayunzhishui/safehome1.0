@@ -1,0 +1,26 @@
+<view class="staff-accounts">
+  <view class="staff-accounts__head">
+    <text class="p3-item-title">账号资格</text>
+    <text class="p3-meta">给用微信登录过的人开研究员或督导资格。改完对方会被退出登录，重新登录后生效。</text>
+  </view>
+  <view class="staff-accounts__search">
+    <p3-icon name="search" size="24" tone="muted" />
+    <input class="staff-accounts__input" value="{{query}}" bindinput="onQueryInput" placeholder="输入昵称或账号编号" placeholder-class="p3-field__placeholder" confirm-type="search" aria-label="搜索账号" />
+  </view>
+  <view class="staff-accounts__filters">
+    <button wx:for="{{filters}}" wx:key="id" class="p3-chip {{roleFilter === item.id ? 'p3-chip--selected' : ''}}" data-id="{{item.id}}" bindtap="pickFilter">{{item.label}}</button>
+  </view>
+  <text wx:if="{{error}}" class="staff-accounts__error">{{error}}</text>
+  <view wx:if="{{items.length}}" class="p3-group staff-accounts__list">
+    <view wx:for="{{items}}" wx:key="id" class="staff-accounts__row">
+      <text class="staff-accounts__name">{{item.displayName}}</text>
+      <text class="p3-meta">{{item.meta}}</text>
+      <text wx:if="{{item.note}}" class="p3-meta">{{item.note}}</text>
+      <view wx:if="{{item.actions.length}}" class="staff-accounts__actions">
+        <button wx:for="{{item.actions}}" wx:for-item="action" wx:key="role" class="p3-chip" data-id="{{item.id}}" data-role="{{action.role}}" disabled="{{busyId === item.id}}" bindtap="changeRole">{{action.label}}</button>
+      </view>
+    </view>
+  </view>
+  <text wx:elif="{{!loading && !error}}" class="p3-meta">没有找到账号。</text>
+  <button wx:if="{{items.length < total}}" class="p3-btn p3-btn--secondary" bindtap="loadMore" loading="{{loading}}" disabled="{{loading}}">再看 20 个</button>
+</view>

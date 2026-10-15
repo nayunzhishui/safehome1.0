@@ -22,9 +22,18 @@ from services.research_delivery_service import (
 from services.research_work_item_service import WorkItemError, get_work_item_detail, get_work_item_metrics, perform_work_item_action
 from services.research_participant_service import anonymous_id, list_module, participant_summary
 from services.research_group_insights_service import build_group_insights, normalize_window
+from services.research_access_service import sees_all_participants
 
 
 bp = Blueprint("research_workspace", __name__, url_prefix="/api/research")
+
+
+def _assigned_only(actor: dict) -> bool:
+    return actor.get("role") in {"researcher", "supervisor"} and not sees_all_participants(actor)
+
+
+def _scope_label(actor: dict) -> str:
+    return "assigned_participants" if _assigned_only(actor) else "all_participants"
 
 
 def _actor():
@@ -143,7 +152,7 @@ def _allowed_user_clause(actor: dict, alias: str = "u") -> tuple[str, list[str]]
           )
           AND consent_latest.agreed = 0
     )"""
-    if actor.get("role") not in {"researcher", "supervisor"}:
+    if not _assigned_only(actor):
         return consent_clause, []
     return (
         f"""EXISTS (
@@ -163,7 +172,7 @@ def _allowed_user_clause(actor: dict, alias: str = "u") -> tuple[str, list[str]]
 
 
 def _scoped_user_column(actor: dict, column: str) -> tuple[str, list[str]]:
-    if actor.get("role") not in {"researcher", "supervisor"}:
+    if not _assigned_only(actor):
         return "1 = 1", []
     return (
         f"""{column} IN (
@@ -284,7 +293,7 @@ def list_participants():
             "page": page,
             "page_size": page_size,
             "has_more": offset + len(rows) < total,
-            "scope": "assigned_participants" if actor.get("role") in {"researcher", "supervisor"} else "all_participants",
+            "scope": _scope_label(actor),
             "boundary_notice": "研究者仅查看获授权范围内的参与者资料；敏感详情访问会写入审计日志。",
         }
     )
@@ -450,7 +459,7 @@ def get_research_operations():
             "research_operations_viewed",
             actor["id"],
             "research_operations",
-            "assigned" if actor.get("role") == "researcher" else "all",
+            "assigned" if _assigned_only(actor) else "all",
             {
                 "notification_failed": delivery_counts.get("failed", 0),
                 "stage_feedback_pending": int(stage_feedback_count),
@@ -461,7 +470,7 @@ def get_research_operations():
 
     return ok(
         {
-            "scope": "assigned_participants" if actor.get("role") in {"researcher", "supervisor"} else "all_participants",
+            "scope": _scope_label(actor),
             "generated_at": timestamp,
             "notification_preferences": {
                 "accepted": preference_counts.get("accepted", 0),
@@ -603,7 +612,7 @@ def get_research_group_insights():
         return error
     window_days = normalize_window(request.args.get("window_days"))
     scope_clause, params = _scoped_user_column(actor, "d.user_id")
-    scope_label = "assigned_participants" if actor.get("role") in {"researcher", "supervisor"} else "all_participants"
+    scope_label = _scope_label(actor)
     with get_connection() as conn:
         payload = build_group_insights(
             conn,

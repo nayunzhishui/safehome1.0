@@ -13,6 +13,7 @@ from services.relationship_pilot_common import (
     four_layer_profile,
     minimize_claimable_enrollment,
 )
+from services.research_access_service import sees_all_participants
 from services.risk_review_service import create_risk_review_record
 from services.risk_service import check_text_risk
 
@@ -224,10 +225,13 @@ def get_growth(actor: dict, requested_user_id: str = "") -> ServiceResult:
 
 
 def researcher_dashboard(actor: dict) -> ServiceResult:
+    sees_all = sees_all_participants(actor)
     with get_connection() as conn:
         where_clause = ""
         params: tuple = ()
-        if actor.get("role") == "researcher":
+        if sees_all:
+            pass
+        elif actor.get("role") == "researcher":
             where_clause = """
             WHERE (
                 (e.assigned_researcher_id IS NULL AND e.status IN ('enrolled', 'active'))
@@ -267,7 +271,7 @@ def researcher_dashboard(actor: dict) -> ServiceResult:
         write_audit_log(conn, "relationship_research_dashboard_viewed", actor["id"], "relationship_pilot_dashboard", "all", {"records_count": len(rows)})
         conn.commit()
     items = [expand_enrollment(item) for item in rows_to_dicts(rows)]
-    if actor.get("role") == "researcher":
+    if actor.get("role") == "researcher" and not sees_all:
         items = [
             item
             if str(item.get("assigned_researcher_id") or "") == str(actor["id"])

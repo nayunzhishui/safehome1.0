@@ -1,0 +1,74 @@
+/* 账号资格（研究者工作台“管理”页）：胶囊搜索框、角色筛选、账号行；改资格用小号选项按钮。 */
+.staff-accounts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+}
+
+.staff-accounts__head {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.staff-accounts__search {
+  display: flex;
+  align-items: center;
+  gap: var(--p3-tight);
+  min-height: 88rpx;
+  padding: 0 32rpx;
+  border-radius: var(--p3-radius-pill);
+  background: var(--p3-surface);
+  box-shadow: inset 0 0 0 2rpx var(--p3-hairline);
+}
+
+.staff-accounts__input {
+  flex: 1 0 0;
+  min-width: 0;
+  height: 76rpx;
+  color: var(--p3-ink);
+  font-size: 30rpx;
+}
+
+.staff-accounts__filters,
+.staff-accounts__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--p3-tight);
+}
+
+.staff-accounts__list {
+  display: flex;
+  flex-direction: column;
+  padding: 0 32rpx;
+}
+
+.staff-accounts__row {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  padding: 28rpx 0;
+  border-bottom: 2rpx solid var(--p3-hairline);
+}
+
+.staff-accounts__row:last-child {
+  border-bottom: none;
+}
+
+.staff-accounts__actions {
+  margin-top: 8rpx;
+}
+
+.staff-accounts__name {
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.staff-accounts__error {
+  color: var(--p3-risk-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}

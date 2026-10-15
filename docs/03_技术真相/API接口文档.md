@@ -1520,9 +1520,9 @@ Invoke-WebRequest `
 
 请求字段：`current_password`、`new_password`。新密码至少12位并包含大小写字母、数字或符号中的三类，且不能与当前密码相同。成功后清除一次性凭据状态、递增`auth_epoch`、撤销旧token并返回新`token`、`user`与`sessions_revoked=true`。
 
-### `PATCH /api/auth/me`
+### `POST /api/auth/me`
 
-用途：登录用户设置或清除自己的昵称（2026-10-15 起小程序登录后选的微信昵称存在这里，换手机登录也在）。头像不经过本接口，只存在用户手机上。
+用途：登录用户设置或清除自己的昵称（2026-10-15 起小程序登录后选的微信昵称存在这里，换手机登录也在）。头像不经过本接口，只存在用户手机上。用 POST 而不是 PATCH：小程序的 `wx.request` 和云托管调用都不接受 PATCH。
 
 请求字段：只接受 `nickname`，带其他字段返回 `400 validation_error`。`nickname` 为字符串或 `null`：
 - 连续空白合并为一个空格，去掉首尾空白，结果为空时清除昵称。
@@ -1531,7 +1531,38 @@ Invoke-WebRequest `
 
 成功返回 `user`。审计动作 `account_nickname_updated` 只记是否设置和长度，日志和审计都不写昵称本身。
 
-昵称会显示在研究者工作台的参与者列表里，也能被搜索。一次性账号改密码前只能 `GET` 本路径，`PATCH` 返回 `403 password_change_required`。
+昵称会显示在研究者工作台的参与者列表里，也能被搜索。一次性账号改密码前只能 `GET` 本路径，`POST` 返回 `403 password_change_required`。
+
+### `GET /api/auth/owner-claim`、`POST /api/auth/owner-claim`
+
+用途：负责人用自己的微信账号认领总管理（2026-10-15 起）。云托管设了 `OWNER_CLAIM_CODE`（至少 12 个字符）才开放，只能认领一次。
+
+- `GET` 返回 `available`：只有设了认领码、还没人认领、当前账号是微信或手机号快捷登录的 `parent` 账号时为 `true`。小程序“我的”页据此显示认领卡。
+- `POST` 请求字段 `code`。顺序：没设认领码 `404 owner_claim_unavailable`；账号不符合 `403 forbidden`；已认领 `409 owner_already_claimed`；每个账号每小时最多试 5 次，超过 `429 rate_limited`；码不对 `403 owner_claim_code_invalid`，同时记安全事件 `owner_claim_failed`。
+- 成功：账号改为 `admin`，递增 `auth_epoch`（其他设备上的登录失效），返回新 `token` 和 `user`。审计动作 `owner_claimed` 就是“已认领”的标记，记录里不写认领码；同时记安全事件 `owner_claimed`。
+
+认领后应从云托管删除 `OWNER_CLAIM_CODE`。
+
+### `GET /api/auth/accounts`
+
+用途：总管理在研究者工作台“管理”页查找账号，给别人开研究员或督导资格。只认具名 `admin` 账号，不接受 `X-Admin-Token`，展示模式的临时研究权限也不算。
+
+查询字段：`q`（昵称或用户 ID 的一部分，最多 40 个字符）、`role`（`parent`、`researcher`、`supervisor`、`admin`）、`limit`（1–50，默认 20）、`offset`。只列启用中的成人账号，学生账号不出现；排序为总管理、研究员、督导、普通账号，各组内按最近登录倒序。
+
+返回 `items`、`total`、`limit`、`offset`。每项只有 `id`、`nickname`、`role`、`wechat_account`、`grantable`、`created_at`、`last_login_at`，没有手机号、OpenID 或记录内容。审计动作 `account_directory_viewed` 只记结果数、筛选和是否搜索。
+
+### `POST /api/auth/accounts/<user_id>/role`
+
+用途：总管理给账号开、改、收资格。请求字段 `role` 只能是 `researcher`、`supervisor` 或 `parent`（`parent` 即收回资格），其他值 `400 validation_error`。
+
+- 只能改微信或手机号快捷登录建立的账号（`grantable=true`）；不能改自己、总管理、学生或账号密码建立的账号，返回 `403 forbidden`。
+- 账号不存在或未启用 `404 not_found`；同时被别人改过 `409 conflict`。
+- 成功后递增对方的 `auth_epoch`，对方所有设备退出登录，重新登录后按新资格进入；返回 `account` 和 `changed`。角色没变时 `changed=false`，不写记录。
+- 审计动作 `account_role_changed` 记原角色和新角色；安全事件同名。
+
+被开了资格的微信账号仍可用微信或手机号快捷登录；账号密码建立的研究与管理账号仍不能走快捷登录（`403 backend_role_quick_login_forbidden`）。
+
+研究员和督导能看的参与者范围由云托管 `RESEARCH_PARTICIPANT_SCOPE` 决定：`all` 时和总管理看到的范围相同（研究同意等规则不变）；默认 `assigned` 只看分配给自己的试点参与者。
 
 ### `GET /api/auth/admin-accounts/<username>`
 

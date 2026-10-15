@@ -107,6 +107,9 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
         return {"mode": "role", "roles": roles, "legacy_admin_token": True, "showcase_read_bypass": False}
     if path == "/api/auth/admin-create-account":
         return {"mode": "admin", "roles": ["admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
+    if path in {"/api/auth/accounts", "/api/auth/accounts/<user_id>/role"}:
+        # Owner-managed staff roles: named admin only; no legacy token and no showcase elevation.
+        return {"mode": "role", "roles": ["admin"], "legacy_admin_token": False, "showcase_read_bypass": False}
     if path == "/api/research/methodology/public-status":
         return {"mode": "public", "roles": ["public"], "legacy_admin_token": False, "showcase_read_bypass": False}
     if path.startswith("/api/research/methodology"):

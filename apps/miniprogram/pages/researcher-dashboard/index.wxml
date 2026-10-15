@@ -685,6 +685,10 @@
     </view>
   </view>
 
+  <view wx:if="{{activeWorkspace === 'manage'}}" class="workspace-panel">
+    <staff-accounts />
+  </view>
+
   <view wx:if="{{activeWorkspace === 'pilots'}}" class="workspace-panel">
     <view wx:if="{{pilotLoading && !items.length}}" class="safe-card state-card">
       <text class="state-title">正在读取试点项目</text>

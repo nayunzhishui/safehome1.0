@@ -124,6 +124,9 @@ Page({
     logoutBusy: false,
     profileSheetVisible: false,
     profileSheetUserId: "",
+    ownerClaimAvailable: false,
+    ownerClaimCode: "",
+    ownerClaimBusy: false,
   },
 
   onLoad() {
@@ -134,6 +137,7 @@ Page({
     this._hidden = false;
     if (this._readSession && !isCurrentAuthSession(this._readSession)) this.setData({ stats: null, dataClaim: null, identityStatus: null, user: DEFAULT_USER, loggedIn: false, logoutBusy: false });
     this.loadProfile();
+    this.loadOwnerClaim();
   },
 
   onHide() { this._hidden = true; },
@@ -266,6 +270,36 @@ Page({
       return;
     }
     wx.navigateTo({ url: "/pages/login/index?redirect=%2Fpages%2Fresearcher-dashboard%2Findex" });
+  },
+
+  // 总管理认领卡只在云托管设了认领码、还没人认领时，对微信登录的普通账号出现。
+  async loadOwnerClaim() {
+    const storedUser = getAuthUser();
+    const session = captureAuthSession();
+    const available = isLoggedIn() && storedUser && storedUser.role === "parent"
+      ? await api.getOwnerClaim().then((result) => !!(result && result.available)).catch(() => false)
+      : false;
+    if (this._hidden || !isCurrentAuthSession(session)) return;
+    if (available !== this.data.ownerClaimAvailable) this.setData({ ownerClaimAvailable: available, ownerClaimCode: "" });
+  },
+
+  onOwnerClaimInput(event) {
+    this.setData({ ownerClaimCode: String(event.detail.value || "").trim() });
+  },
+
+  async confirmOwnerClaim() {
+    const code = this.data.ownerClaimCode;
+    if (!code || this.data.ownerClaimBusy) return;
+    this.setData({ ownerClaimBusy: true });
+    try {
+      await api.claimOwner(code);
+      this.setData({ ownerClaimAvailable: false, ownerClaimCode: "", ownerClaimBusy: false });
+      wx.showToast({ title: "已成为总管理", icon: "success" });
+      this.loadProfile();
+    } catch (error) {
+      this.setData({ ownerClaimBusy: false });
+      wx.showToast({ title: error.message || "认领没有成功，请稍后再试", icon: "none" });
+    }
   },
 
   dismissDataClaim() {

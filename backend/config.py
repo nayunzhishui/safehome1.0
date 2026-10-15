@@ -87,6 +87,12 @@ class Config:
     # Owner switch: after a production boot passes the database check, copy the deployed
     # scale and training-card definitions into the database (same plan/apply as the admin route).
     CONTENT_SYNC_ON_STARTUP = os.environ.get("CONTENT_SYNC_ON_STARTUP", "0").strip().lower() in {"1", "true", "yes"}
+    # Owner bootstrap: a secret code (12+ characters) the owner enters once in the mini program
+    # to become the admin. It stops working after the first claim; remove it afterwards.
+    OWNER_CLAIM_CODE = os.environ.get("OWNER_CLAIM_CODE", "").strip()
+    # Owner switch: "all" lets researchers and supervisors see every participant (research
+    # consent rules still apply); "assigned" keeps them to their assigned pilot participants.
+    RESEARCH_PARTICIPANT_SCOPE = os.environ.get("RESEARCH_PARTICIPANT_SCOPE", "assigned").strip().lower()
     ALLOWED_ORIGINS = [
         origin.strip()
         for origin in os.environ.get("ALLOWED_ORIGINS", "http://127.0.0.1:5173,http://localhost:5173").split(",")
@@ -293,6 +299,10 @@ class Config:
             raise RuntimeError("生产环境必须配置 OPERATIONS_HEALTH_TOKEN")
         if cls.WECHAT_SUBSCRIBE_MODE not in {"once", "long_term"}:
             raise RuntimeError("WECHAT_SUBSCRIBE_MODE 只能是 once 或 long_term")
+        if cls.RESEARCH_PARTICIPANT_SCOPE not in {"all", "assigned"}:
+            raise RuntimeError("RESEARCH_PARTICIPANT_SCOPE 只能是 all 或 assigned")
+        if cls.OWNER_CLAIM_CODE and len(cls.OWNER_CLAIM_CODE) < 12:
+            raise RuntimeError("OWNER_CLAIM_CODE 不能少于12个字符")
         if cls.AI_QA_PROVIDER not in {"fake", "deepseek", "openai"}:
             raise RuntimeError("AI_QA_PROVIDER 只能是 fake、deepseek 或 openai")
         if cls.AI_QA_PROVIDER != "fake" and not cls.AI_QA_REAL_PROVIDER_ENABLED:

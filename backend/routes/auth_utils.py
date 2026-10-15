@@ -121,7 +121,7 @@ def get_current_actor(allow_legacy_admin: bool = True) -> dict | None:
         return None
     user = verify_auth_token(token)
     # Before the first password change an account may only read itself, change the password or
-    # log out; PATCH /api/auth/me (nickname) waits until the password has been changed.
+    # log out; POST /api/auth/me (nickname) waits until the password has been changed.
     allowed_before_password_change = request.path in {
         "/api/auth/change-password",
         "/api/auth/logout",

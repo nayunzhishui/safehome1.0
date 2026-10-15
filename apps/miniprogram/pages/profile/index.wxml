@@ -64,6 +64,15 @@
       </view>
     </view>
 
+    <view wx:if="{{ownerClaimAvailable}}" class="p3-card profile-claim" aria-label="认领总管理">
+      <text class="profile-account__title">认领总管理</text>
+      <text class="profile-account__body">输入云托管里设的认领码。认领后这个微信账号就是总管理，可以在研究者工作台给别人开研究员或督导资格。认领码只能用一次。</text>
+      <input class="p3-field__input" aria-label="认领码" placeholder-class="p3-field__placeholder" password value="{{ownerClaimCode}}" maxlength="64" placeholder="认领码" bindinput="onOwnerClaimInput" />
+      <view class="profile-account__actions">
+        <button class="p3-btn p3-btn--primary" bindtap="confirmOwnerClaim" loading="{{ownerClaimBusy}}" disabled="{{ownerClaimBusy || !ownerClaimCode}}">认领</button>
+      </view>
+    </view>
+
     <view wx:for="{{entryGroups}}" wx:for-item="group" wx:key="key" class="profile-section">
       <p3-section-header title="{{group.title}}" subtitle="{{group.subtitle}}" />
       <view class="p3-group {{group.tone === 'warm' ? 'p3-group--warm' : ''}}">

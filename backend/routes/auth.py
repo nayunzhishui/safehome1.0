@@ -25,7 +25,7 @@ from routes.auth_utils import (
     require_login,
     require_role,
 )
-from routes.utils import fail, ok, require_admin_token
+from routes.utils import fail, ok, parse_int, require_admin_token
 from services.data_claim_service import claim_preview, claim_records, register_claim_candidate
 from services.redis_service import hash_component
 from services.request_rate_limit_service import rate_limit as database_rate_limit
@@ -60,6 +60,10 @@ _CLOUDBASE_OPENID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{6,128}$")
 # Matches the mini program's limit; counted in code points like Array.from() on the client.
 NICKNAME_MAX_LENGTH = 20
 _NICKNAME_CONTROL_PATTERN = re.compile(r"[\x00-\x1f\x7f]")
+# Accounts created by WeChat or phone quick login; only these can be granted a staff role.
+WECHAT_ACCOUNT_SOURCES = frozenset({"wechat", "wechat_phone"})
+GRANTABLE_ROLES = ("researcher", "supervisor", "parent")
+OWNER_CLAIM_ATTEMPTS_PER_HOUR = 5
 MAX_PASSWORD_FAILURES = 5
 PASSWORD_LOCK_MINUTES = 15
 
@@ -120,13 +124,25 @@ def _apply_pending_logout(conn, row: dict, payload: dict) -> tuple[bool, bool]:
     return True, False
 
 
+def _quick_login_allowed(item: dict) -> bool:
+    if item.get("role") in PARTICIPANT_ROLES:
+        return True
+    # A role the owner granted to a WeChat account keeps WeChat login; password-created
+    # backend accounts still have to use the password login.
+    return item.get("role") in BACKEND_ROLES and item.get("source") in WECHAT_ACCOUNT_SOURCES
+
+
 def _participant_quick_login_row(conn, row):
-    """Resolve only participant identities; never turn a quick login into a backend session."""
+    """Resolve the account for a WeChat or phone quick login.
+
+    Participants log in this way, and so do WeChat accounts the owner granted a staff role;
+    a password-created backend account never turns a quick login into a backend session.
+    """
 
     if row is None:
         return None
     item = row_to_dict(row)
-    if item.get("role") in BACKEND_ROLES:
+    if item.get("role") in BACKEND_ROLES and not _quick_login_allowed(item):
         raise IdentityLifecycleError(
             "backend_role_quick_login_forbidden",
             "研究与管理账号只能使用后台账号方式登录。",
@@ -140,7 +156,7 @@ def _participant_quick_login_row(conn, row):
         if target is None:
             raise IdentityLifecycleError("merged_account_unavailable", "账号关联状态需要人工核对", 409)
         item = row_to_dict(target)
-    if item.get("role") not in PARTICIPANT_ROLES:
+    if not _quick_login_allowed(item):
         raise IdentityLifecycleError(
             "backend_role_quick_login_forbidden",
             "研究与管理账号只能使用后台账号方式登录。",
@@ -1254,12 +1270,13 @@ def me():
     return ok({"user": _public_user(actor["user"])})
 
 
-@bp.patch("/me")
+@bp.post("/me")
 def update_me():
     """Set or clear the signed-in user's own nickname, e.g. the WeChat nickname picked after login.
 
     Only the nickname can change here; the avatar stays on the device. The nickname is shown in
-    the researcher workbench, and is never written to logs or the audit trail.
+    the researcher workbench, and is never written to logs or the audit trail. POST, not PATCH:
+    wx.request and wx.cloud.callContainer do not accept PATCH.
     """
     try:
         actor = require_login(allow_legacy_admin=False)
@@ -1300,6 +1317,245 @@ def update_me():
             (actor["id"],),
         ).fetchone()
     return ok({"user": _public_user(row_to_dict(row))})
+
+
+def _owner_claimed(conn) -> bool:
+    return conn.execute("SELECT id FROM audit_logs WHERE action = 'owner_claimed' LIMIT 1").fetchone() is not None
+
+
+def _owner_claim_eligible(actor: dict) -> bool:
+    return actor.get("role") == "parent" and actor["user"].get("source") in WECHAT_ACCOUNT_SOURCES
+
+
+@bp.get("/owner-claim")
+def get_owner_claim():
+    """Tell the mini program whether to offer the one-time owner claim to this account."""
+
+    try:
+        actor = require_login(allow_legacy_admin=False)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    if not current_app.config.get("OWNER_CLAIM_CODE") or not _owner_claim_eligible(actor):
+        return ok({"available": False})
+    with get_connection() as conn:
+        claimed = _owner_claimed(conn)
+    return ok({"available": not claimed})
+
+
+@bp.post("/owner-claim")
+def claim_owner():
+    """Make the signed-in WeChat account the owner (admin) with the code set in the console.
+
+    It works once: the claim is written to the audit trail and later attempts are refused.
+    """
+
+    try:
+        actor = require_login(allow_legacy_admin=False)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    configured_code = str(current_app.config.get("OWNER_CLAIM_CODE") or "")
+    if not configured_code:
+        return fail("owner_claim_unavailable", "现在没有开放管理员认领。", status=404)
+    if not _owner_claim_eligible(actor):
+        return fail("forbidden", "请用微信登录的普通账号认领。", status=403)
+    with get_connection() as conn:
+        if _owner_claimed(conn):
+            return fail("owner_already_claimed", "管理员已经认领过了。", status=409)
+    rate_decision = database_rate_limit(
+        "owner-claim:" + hash_component(str(actor["id"]), salt="owner-claim"),
+        limit=OWNER_CLAIM_ATTEMPTS_PER_HOUR,
+        window_seconds=3600,
+    )
+    if not rate_decision["allowed"]:
+        if not rate_decision["available"]:
+            return fail("rate_limit_unavailable", "请求保护暂时不可用，请稍后再试", status=503)
+        return fail("rate_limited", "尝试次数太多，请一小时后再试", status=429)
+    payload = request.get_json(silent=True) or {}
+    code = str(payload.get("code") or "").strip()
+    # Compare bytes: compare_digest refuses non-ASCII str.
+    if not hmac.compare_digest(code.encode("utf-8"), configured_code.encode("utf-8")):
+        record_security_event(
+            "owner_claim_failed",
+            "high",
+            actor_id=actor["id"],
+            target_type="user",
+            target_id=actor["id"],
+            metadata={"reason_code": "code_mismatch"},
+        )
+        return fail("owner_claim_code_invalid", "认领码不对。", status=403)
+    with get_connection() as conn:
+        if _owner_claimed(conn):
+            return fail("owner_already_claimed", "管理员已经认领过了。", status=409)
+        cursor = conn.execute(
+            """
+            UPDATE users SET role = 'admin', auth_epoch = COALESCE(auth_epoch, 0) + 1, updated_at = ?
+            WHERE id = ? AND role = 'parent'
+            """,
+            (now_iso(), actor["id"]),
+        )
+        if cursor.rowcount != 1:
+            conn.rollback()
+            return fail("conflict", "账号状态刚有变化，请重新登录后再试", status=409)
+        write_audit_log(conn, "owner_claimed", actor["id"], "user", actor["id"], {"previous_role": "parent"})
+        conn.commit()
+        row = conn.execute(
+            """
+            SELECT id, username, role, nickname, anonymous_id, avatar_url, status,
+                   must_change_password, auth_epoch
+            FROM users WHERE id = ?
+            """,
+            (actor["id"],),
+        ).fetchone()
+    record_security_event(
+        "owner_claimed",
+        "high",
+        actor_id=actor["id"],
+        target_type="user",
+        target_id=actor["id"],
+        metadata={"source": "owner_claim"},
+    )
+    user = _public_user(row_to_dict(row))
+    return ok({"token": generate_auth_token(user), "user": user})
+
+
+def _owner_actor():
+    """Only the admin manages staff roles; showcase elevation never applies to these routes."""
+
+    try:
+        actor = require_login(allow_legacy_admin=False)
+    except AuthError as exc:
+        return None, auth_error_response(exc)
+    if actor.get("role") != "admin":
+        return None, fail("forbidden", "只有总管理可以管理账号资格。", status=403)
+    return actor, None
+
+
+def _account_item(row: dict, actor: dict) -> dict:
+    wechat_account = row.get("source") in WECHAT_ACCOUNT_SOURCES
+    return {
+        "id": row["id"],
+        "nickname": row.get("nickname") or "",
+        "role": row.get("role") or "parent",
+        "wechat_account": wechat_account,
+        "grantable": wechat_account and row.get("role") in GRANTABLE_ROLES and row["id"] != actor["id"],
+        "created_at": row.get("created_at"),
+        "last_login_at": row.get("last_login_at"),
+    }
+
+
+@bp.get("/accounts")
+def list_accounts():
+    """Search adult accounts by nickname or id, staff first, so the owner can grant access."""
+
+    actor, error = _owner_actor()
+    if error:
+        return error
+    query = " ".join(str(request.args.get("q") or "").split()).lower()[:40]
+    role = str(request.args.get("role") or "").strip()
+    if role and role not in {"parent", "researcher", "supervisor", "admin"}:
+        return fail("validation_error", "角色筛选无效", status=400)
+    limit = min(max(parse_int(request.args.get("limit"), 20) or 20, 1), 50)
+    offset = max(parse_int(request.args.get("offset"), 0) or 0, 0)
+    clauses = [
+        "COALESCE(status, 'active') = 'active'",
+        "role IN ('parent', 'researcher', 'supervisor', 'admin')",
+    ]
+    params: list = []
+    if role:
+        clauses.append("role = ?")
+        params.append(role)
+    if query:
+        clauses.append("(LOWER(id) LIKE ? OR LOWER(COALESCE(nickname, '')) LIKE ?)")
+        params.extend([f"%{query}%", f"%{query}%"])
+    where = " AND ".join(clauses)
+    with get_connection() as conn:
+        total = conn.execute(f"SELECT COUNT(*) AS count FROM users WHERE {where}", tuple(params)).fetchone()["count"]
+        rows = conn.execute(
+            f"""
+            SELECT id, nickname, role, source, created_at, last_login_at
+            FROM users WHERE {where}
+            ORDER BY CASE role WHEN 'admin' THEN 0 WHEN 'researcher' THEN 1 WHEN 'supervisor' THEN 2 ELSE 3 END,
+                     COALESCE(last_login_at, created_at) DESC, id
+            LIMIT ? OFFSET ?
+            """,
+            (*params, limit, offset),
+        ).fetchall()
+        write_audit_log(
+            conn,
+            "account_directory_viewed",
+            actor["id"],
+            "user",
+            "directory",
+            {"result_count": len(rows), "role_filter": role or "all", "searched": bool(query)},
+        )
+        conn.commit()
+    return ok(
+        {
+            "items": [_account_item(row_to_dict(row), actor) for row in rows],
+            "total": int(total),
+            "limit": limit,
+            "offset": offset,
+        }
+    )
+
+
+@bp.post("/accounts/<user_id>/role")
+def change_account_role(user_id: str):
+    """Grant or take back researcher or supervisor access for a WeChat account.
+
+    The account is signed out on every device, so the new role applies from its next login.
+    """
+
+    actor, error = _owner_actor()
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    role = str(payload.get("role") or "").strip()
+    if role not in GRANTABLE_ROLES:
+        return fail("validation_error", "只能设为研究员、督导或普通账号", status=400)
+    if user_id == actor["id"]:
+        return fail("forbidden", "不能修改自己的资格", status=403)
+    with get_connection() as conn:
+        row = conn.execute(
+            "SELECT id, nickname, role, source, status, created_at, last_login_at FROM users WHERE id = ?",
+            (user_id,),
+        ).fetchone()
+        target = row_to_dict(row) if row is not None else None
+        if target is None or (target.get("status") or "active") != "active":
+            return fail("not_found", "没有找到这个账号", status=404)
+        if not _account_item(target, actor)["grantable"]:
+            return fail("forbidden", "只能给用微信登录的普通账号、研究员或督导改资格", status=403)
+        if target["role"] == role:
+            return ok({"account": _account_item(target, actor), "changed": False})
+        cursor = conn.execute(
+            """
+            UPDATE users SET role = ?, auth_epoch = COALESCE(auth_epoch, 0) + 1, updated_at = ?
+            WHERE id = ? AND role = ?
+            """,
+            (role, now_iso(), user_id, target["role"]),
+        )
+        if cursor.rowcount != 1:
+            conn.rollback()
+            return fail("conflict", "这个账号的资格刚被改过，请刷新后再试", status=409)
+        write_audit_log(
+            conn,
+            "account_role_changed",
+            actor["id"],
+            "user",
+            user_id,
+            {"from_role": target["role"], "to_role": role},
+        )
+        conn.commit()
+    record_security_event(
+        "account_role_changed",
+        "high",
+        actor_id=actor["id"],
+        target_type="user",
+        target_id=user_id,
+        metadata={"status": role, "source": "owner_console"},
+    )
+    target["role"] = role
+    return ok({"account": _account_item(target, actor), "changed": True})
 
 
 @bp.get("/identity-status")

@@ -241,7 +241,7 @@ def test_update_me_nickname_follows_the_account_and_is_not_logged(tmp_path, monk
     headers = {"Authorization": f"Bearer {login['token']}"}
     assert login["user"]["nickname"] is None
 
-    updated = client.patch("/api/auth/me", headers=headers, json={"nickname": "  合成\t 昵称  "})
+    updated = client.post("/api/auth/me", headers=headers, json={"nickname": "  合成\t 昵称  "})
     assert updated.status_code == 200
     assert updated.get_json()["data"]["user"]["nickname"] == "合成 昵称"
     assert client.get("/api/auth/me", headers=headers).get_json()["data"]["user"]["nickname"] == "合成 昵称"
@@ -249,7 +249,7 @@ def test_update_me_nickname_follows_the_account_and_is_not_logged(tmp_path, monk
     again = client.post("/api/auth/wechat-login", headers=identity, json={}).get_json()["data"]
     assert again["user"]["nickname"] == "合成 昵称"
 
-    cleared = client.patch("/api/auth/me", headers=headers, json={"nickname": " "})
+    cleared = client.post("/api/auth/me", headers=headers, json={"nickname": " "})
     assert cleared.status_code == 200
     assert cleared.get_json()["data"]["user"]["nickname"] is None
 
@@ -270,7 +270,7 @@ def test_update_me_only_accepts_a_short_plain_nickname(tmp_path, monkeypatch):
     token = _register(client, "nickname-user", "parent").get_json()["data"]["token"]
     headers = {"Authorization": f"Bearer {token}"}
 
-    assert client.patch("/api/auth/me", json={"nickname": "未登录"}).status_code == 401
+    assert client.post("/api/auth/me", json={"nickname": "未登录"}).status_code == 401
     for body in [
         {"nickname": "x" * 21},
         {"nickname": 123},
@@ -279,14 +279,14 @@ def test_update_me_only_accepts_a_short_plain_nickname(tmp_path, monkeypatch):
         {"avatar_url": "https://example.invalid/a.png"},
         [],
     ]:
-        response = client.patch("/api/auth/me", headers=headers, json=body)
+        response = client.post("/api/auth/me", headers=headers, json=body)
         assert response.status_code == 400, body
         assert response.get_json()["error"]["code"] == "validation_error"
     user = client.get("/api/auth/me", headers=headers).get_json()["data"]["user"]
     assert user["nickname"] == "测试账号"
     assert user["role"] == "parent"
     # Twenty emoji are twenty characters, the same count the mini program uses.
-    assert client.patch("/api/auth/me", headers=headers, json={"nickname": "😀" * 20}).status_code == 200
+    assert client.post("/api/auth/me", headers=headers, json={"nickname": "😀" * 20}).status_code == 200
 
 
 def test_wechat_login_reuses_identity_and_rejects_disabled_account(tmp_path, monkeypatch):

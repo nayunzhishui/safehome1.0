@@ -20,6 +20,7 @@ from services.research_access_service import (
     ResearchAccessError,
     assert_capability,
     require_object_scope,
+    sees_all_participants,
 )
 
 
@@ -110,7 +111,7 @@ def list_authorized_participants(actor: dict, limit: int) -> dict:
     limit = max(1, min(int(limit), 200))
 
     with get_connection() as conn:
-        if actor.get("role") == "admin":
+        if sees_all_participants(actor):
             rows = conn.execute(
                 """
                 SELECT e.id, e.user_id, e.status, e.review_status,

@@ -155,8 +155,8 @@
     {
       "artifact_type": "capability_registry",
       "path": "content/operations_capability_registry.json",
-      "sha256": "eabd8184811c00739d062e88a1690d44e8b5777a059119e96c1ee5f10299ba02",
-      "size_bytes": 84970
+      "sha256": "e344854b53660d5c65e5e3d675a29d6ef04172975569add12bda84544953a755",
+      "size_bytes": 85113
     }
   ],
   "fixed_replay_suites": [

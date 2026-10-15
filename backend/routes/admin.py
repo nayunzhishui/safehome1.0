@@ -18,6 +18,7 @@ from services.content_sync_service import (
     plan_content_sync,
     restore_content_backup,
 )
+from services.research_access_service import sees_all_participants
 
 bp = Blueprint("admin", __name__, url_prefix="/api/admin")
 
@@ -788,7 +789,7 @@ def list_admin_assessment_results():
     profile_model_id = request.args.get("profile_model_id")
     where = []
     params: list = []
-    if actor.get("role") in {"researcher", "supervisor"}:
+    if actor.get("role") in {"researcher", "supervisor"} and not sees_all_participants(actor):
         where.append(
             """
             user_id IN (

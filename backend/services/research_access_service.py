@@ -6,6 +6,8 @@ import hashlib
 import json
 from datetime import datetime, timedelta, timezone
 
+from flask import current_app
+
 from database import (
     get_connection,
     json_dumps,
@@ -24,6 +26,23 @@ REGISTRY_FILE = "researcher_capability_registry.json"
 ACTIVE_ENROLLMENT_STATUSES = {"enrolled", "active"}
 ASSIGNMENT_ROLES = {"researcher", "supervisor"}
 DEFAULT_ASSIGNMENT_DAYS = 30
+
+
+def researchers_see_all_participants() -> bool:
+    """Owner switch RESEARCH_PARTICIPANT_SCOPE=all: researchers and supervisors see every participant.
+
+    Research-consent rules still apply; without the switch they only see assigned pilot participants.
+    """
+
+    try:
+        return current_app.config.get("RESEARCH_PARTICIPANT_SCOPE") == "all"
+    except RuntimeError:
+        return False
+
+
+def sees_all_participants(actor: dict) -> bool:
+    role = str(actor.get("role") or "")
+    return role == "admin" or (role in ASSIGNMENT_ROLES and researchers_see_all_participants())
 
 
 class ResearchAccessError(Exception):
@@ -117,7 +136,7 @@ def active_assignment(conn, enrollment_id: str, actor_id: str, assignment_role: 
 
 def has_object_scope(conn, actor: dict, enrollment: dict) -> bool:
     role = str(actor.get("role") or "")
-    if role == "admin":
+    if sees_all_participants(actor):
         return True
     if role not in ASSIGNMENT_ROLES:
         return str(actor.get("id")) == str(enrollment.get("user_id"))
@@ -127,7 +146,7 @@ def has_object_scope(conn, actor: dict, enrollment: dict) -> bool:
 
 def participant_scope_clause(actor: dict, column: str) -> tuple[str, list[str]]:
     """SQL scope for internal participant columns, using the active assignment contract."""
-    if actor.get("role") == "admin":
+    if sees_all_participants(actor):
         return "1 = 1", []
     if actor.get("role") not in ASSIGNMENT_ROLES:
         return "1 = 0", []
@@ -154,7 +173,7 @@ def has_participant_scope(conn, actor: dict, participant_user_id: str) -> bool:
         return False
     if actor_id == participant_user_id and role not in ASSIGNMENT_ROLES:
         return True
-    if role == "admin":
+    if sees_all_participants(actor):
         return (
             conn.execute(
                 "SELECT 1 FROM users WHERE id = ? AND COALESCE(status, 'active') != 'deleted'",
