@@ -1,0 +1,86 @@
+/* 头像昵称卡片（P3 弹层，同功能知情说明）：深青遮罩；纸白卡片圆角 24；圆形头像按钮 80；昵称框用共用表单样式。 */
+.wechat-profile-shade {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 40rpx;
+  background: rgba(23, 60, 67, 0.62);
+}
+
+.wechat-profile-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-stack);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 670rpx;
+  padding: 48rpx 40rpx 32rpx;
+  border-radius: var(--p3-radius-card);
+  background: var(--p3-surface);
+  box-shadow: var(--p3-shadow-float);
+  color: var(--p3-ink);
+}
+
+.wechat-profile-title {
+  display: block;
+  font-size: 40rpx;
+  line-height: 56rpx;
+  font-weight: 500;
+  text-align: center;
+}
+
+.wechat-profile-body {
+  display: block;
+  color: var(--p3-muted);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.wechat-profile-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--p3-stack);
+}
+
+.wechat-profile-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 160rpx;
+  height: 160rpx;
+  min-height: 160rpx;
+  margin: 0 auto;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 999rpx;
+  background: var(--p3-soft);
+}
+
+.wechat-profile-avatar__image {
+  width: 100%;
+  height: 100%;
+}
+
+.wechat-profile-avatar__hint {
+  display: block;
+  margin-top: -8rpx;
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+  text-align: center;
+}
+
+.wechat-profile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+}
+
+.wechat-profile-clear {
+  align-self: center;
+}

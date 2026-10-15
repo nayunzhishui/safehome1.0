@@ -3,7 +3,11 @@
     <view wx:if="{{hero.offset > 0}}" class="profile-hero__sky" style="height: {{hero.offset}}px;" aria-hidden="true"></view>
     <image class="profile-hero__art" src="/assets/art/tab-hero.svg" style="top: {{hero.offset}}px;" aria-hidden="true" />
     <view class="profile-hero__user" style="top: {{hero.top}}px;">
-      <view class="profile-hero__avatar" aria-hidden="true">
+      <button wx:if="{{loggedIn}}" class="profile-hero__avatar" aria-label="设置头像和昵称" bindtap="openProfileSheet">
+        <image wx:if="{{user.avatarPath}}" class="profile-hero__avatar-image" src="{{user.avatarPath}}" mode="aspectFill" aria-hidden="true" />
+        <p3-icon wx:else name="person" size="30" tone="primary" />
+      </button>
+      <view wx:else class="profile-hero__avatar" aria-hidden="true">
         <p3-icon name="person" size="30" tone="primary" />
       </view>
       <view class="profile-hero__copy">
@@ -88,4 +92,6 @@
       <button class="p3-link" bindtap="goResearcher">{{isResearcher ? '进入研究者工作台 ›' : '研究者登录 ›'}}</button>
     </view>
   </view>
+
+  <wechat-profile-sheet visible="{{profileSheetVisible}}" user-id="{{profileSheetUserId}}" context="edit" bind:done="onProfileSheetDone" />
 </view>

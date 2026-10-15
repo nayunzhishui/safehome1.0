@@ -52,6 +52,18 @@ page {
   box-shadow: var(--p3-shadow-float);
 }
 
+/* 登录后头像可点，用来设置微信头像和昵称；图片裁成圆形铺满。 */
+button.profile-hero__avatar {
+  min-height: 128rpx;
+  padding: 0;
+  overflow: hidden;
+}
+
+.profile-hero__avatar-image {
+  width: 100%;
+  height: 100%;
+}
+
 .profile-hero__copy {
   flex: 1 0 0;
   min-width: 0;

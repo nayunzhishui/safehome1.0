@@ -5,6 +5,7 @@
     "status-pill": "/components/status-pill/index",
     "p3-icon": "/components/p3-icon/index",
     "p3-section-header": "/components/p3-section-header/index",
-    "p3-group-row": "/components/p3-group-row/index"
+    "p3-group-row": "/components/p3-group-row/index",
+    "wechat-profile-sheet": "/components/wechat-profile-sheet/index"
   }
 }

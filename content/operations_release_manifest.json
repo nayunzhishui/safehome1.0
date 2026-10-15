@@ -41,8 +41,8 @@
     {
       "artifact_type": "content",
       "path": "content/privacy.md",
-      "sha256": "38f90911d23885744763b649c41b6246534845293d87a51820b478dc641d9db9",
-      "size_bytes": 6448
+      "sha256": "c80ab4cc7f0f5dd01016c45fb978bbadbe5021c77931db80f5ce83a52288e7ae",
+      "size_bytes": 6955
     },
     {
       "artifact_type": "rule",

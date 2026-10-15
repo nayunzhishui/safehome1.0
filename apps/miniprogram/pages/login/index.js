@@ -1,6 +1,7 @@
 const { createSafeHomeApi } = require("../../services/api");
 const { getMinorSafeguardStatus } = require("../../services/minorSafeguardsApi");
 const { getCloudConfig } = require("../../services/cloudConfig");
+const { shouldOfferLocalProfile } = require("../../utils/wechatProfile");
 
 const api = createSafeHomeApi();
 const PROTECTION_URL = "/pages/settings-detail/index?type=protection";
@@ -88,6 +89,8 @@ Page({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
+    profileSheetVisible: false,
+    profileSheetUserId: "",
   },
 
   onLoad(options = {}) {
@@ -168,7 +171,7 @@ Page({
       });
   },
 
-  completeLogin(result, toastTitle) {
+  completeLogin(result, toastTitle, offerWechatProfile = false) {
     const app = getApp();
     if (app && app.setAuthSession) {
       app.setAuthSession(result.token, result.user);
@@ -184,7 +187,22 @@ Page({
       return;
     }
     wx.showToast({ title: toastTitle, icon: "success" });
+    // 快捷登录后问一次要不要用微信头像和昵称；学生账号先走参与者保护流程，不在这里问。
+    const user = result.user || {};
+    const userId = user.id ? String(user.id) : "";
+    if (offerWechatProfile && user.role !== "student" && shouldOfferLocalProfile(userId)) {
+      this._pendingAuthUser = result.user;
+      this.setData({ profileSheetVisible: true, profileSheetUserId: userId });
+      return;
+    }
     navigateAfterParticipantGate(result.user, this.data.redirectUrl);
+  },
+
+  onProfileSheetDone() {
+    const user = this._pendingAuthUser;
+    this._pendingAuthUser = null;
+    this.setData({ profileSheetVisible: false });
+    navigateAfterParticipantGate(user, this.data.redirectUrl);
   },
 
   onCurrentPasswordInput(event) {
@@ -240,7 +258,7 @@ Page({
     if (cloudIdentity) {
       this.setData({ wechatLoading: true, status: "loading", message: "正在完成微信登录..." });
       api.wechatLogin({})
-        .then((result) => this.completeLogin(result, "微信登录成功"))
+        .then((result) => this.completeLogin(result, "微信登录成功", true))
         .catch((error) => this.setData({ status: "error", message: error.message || "微信登录暂不可用，请稍后重试。" }))
         .finally(() => this.setData({ wechatLoading: false }));
       return;
@@ -269,7 +287,7 @@ Page({
         }
         api.wechatLogin({ code: loginResult.code })
           .then((result) => {
-            this.completeLogin(result, "微信登录成功");
+            this.completeLogin(result, "微信登录成功", true);
           })
           .catch((error) => {
             this.setData({
@@ -317,7 +335,7 @@ Page({
     });
     api.phoneLogin({ code })
       .then((result) => {
-        this.completeLogin(result, "手机号登录成功");
+        this.completeLogin(result, "手机号登录成功", true);
       })
       .catch((error) => {
         this.setData({

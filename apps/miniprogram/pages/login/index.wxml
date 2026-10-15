@@ -76,4 +76,6 @@
       <button class="p3-btn p3-btn--quiet" bindtap="goRegister">注册新账号</button>
     </view>
   </block>
+
+  <wechat-profile-sheet visible="{{profileSheetVisible}}" user-id="{{profileSheetUserId}}" context="after_login" bind:done="onProfileSheetDone" />
 </view>

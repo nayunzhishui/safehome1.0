@@ -1,6 +1,7 @@
 const { createSafeHomeApi } = require("../../services/api");
 const { getAuthUser, isLoggedIn, logout, requireLogin, captureAuthSession, isCurrentAuthSession } = require("../../utils/authGuard");
 const { navMetrics, FIGMA_NAV_BOTTOM } = require("../../utils/nav-metrics");
+const { localDisplayIdentity } = require("../../utils/wechatProfile");
 
 const api = createSafeHomeApi();
 
@@ -102,6 +103,7 @@ function heroLayout() {
 
 const DEFAULT_USER = {
   nickname: "温暖的家长",
+  avatarPath: "",
   metaText: "试点体验 · 连续记录 0 天",
   growthLevel: "本周待记录",
 };
@@ -120,6 +122,8 @@ Page({
     identityStatus: null,
     identityBusy: false,
     logoutBusy: false,
+    profileSheetVisible: false,
+    profileSheetUserId: "",
   },
 
   onLoad() {
@@ -166,7 +170,7 @@ Page({
         stats,
         loggedIn,
         user: {
-          nickname: storedUser && storedUser.nickname ? storedUser.nickname : DEFAULT_USER.nickname,
+          ...localDisplayIdentity(storedUser, DEFAULT_USER.nickname),
           metaText: `${roleText || "试点体验"} · 连续记录 ${stats.streak_days || 0} 天`,
           growthLevel: stats.weekly_record_count > 0 ? "本周有记录" : "本周待记录",
         },
@@ -183,7 +187,7 @@ Page({
         loggedIn,
         user: {
           ...this.data.user,
-          nickname: storedUser && storedUser.nickname ? storedUser.nickname : DEFAULT_USER.nickname,
+          ...localDisplayIdentity(storedUser, DEFAULT_USER.nickname),
           metaText: storedUser ? `${roleText || "已登录"} · 本次暂时离线` : "试点体验 · 登录后查看记录",
         },
         dataClaim,
@@ -232,6 +236,23 @@ Page({
 
   goLogin() {
     wx.navigateTo({ url: "/pages/login/index?redirect=%2Fpages%2Fprofile%2Findex" });
+  },
+
+  openProfileSheet() {
+    const storedUser = getAuthUser();
+    if (!storedUser || !storedUser.id) return;
+    this.setData({ profileSheetVisible: true, profileSheetUserId: String(storedUser.id) });
+  },
+
+  onProfileSheetDone(event) {
+    const storedUser = getAuthUser();
+    const update = { profileSheetVisible: false };
+    if (event.detail && event.detail.saved && storedUser && String(storedUser.id) === this.data.profileSheetUserId) {
+      const identity = localDisplayIdentity(storedUser, DEFAULT_USER.nickname);
+      update["user.nickname"] = identity.nickname;
+      update["user.avatarPath"] = identity.avatarPath;
+    }
+    this.setData(update);
   },
 
   goRegister() {
