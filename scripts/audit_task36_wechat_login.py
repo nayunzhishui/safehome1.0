@@ -53,7 +53,8 @@ def build_report() -> dict:
             and trust_flag.get("formal_permission_evidence") is False
             and "TRUST_CLOUDBASE_IDENTITY_HEADERS=1" in forbidden
             and 'current_app.config.get("TRUST_CLOUDBASE_IDENTITY_HEADERS", False)' in auth_route
-            and '_CLOUDBASE_MINIPROGRAM_SOURCES = {"wx_devtools", "wx_client"}' in auth_route,
+            and 'request.headers.get("X-WX-SOURCE")' in auth_route
+            and 'reason = "source"' in auth_route,
             ["config/task36_registry.json", "backend/routes/auth.py"],
         ),
         "capability_contract": _check(

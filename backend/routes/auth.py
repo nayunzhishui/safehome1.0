@@ -57,11 +57,6 @@ _WECHAT_USER_CODE_ERRCODES = frozenset({40029, 40163, 40226})
 _WECHAT_RETRYABLE_ERRCODES = frozenset({-1, 45011})
 _WECHAT_INVALID_TOKEN_ERRCODES = frozenset({40001, 40014, 42001})
 _CLOUDBASE_OPENID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{6,128}$")
-_CLOUDBASE_MINIPROGRAM_SOURCES = {"wx_devtools", "wx_client"}
-# WeChat's header contract only promises that X-WX-SOURCE is present for calls from the
-# WeChat ecosystem and documents no values; real-device sessions were rejected with only
-# the two known values, so accept the wx_ family (the old "wx-cloudbase" stays rejected).
-_CLOUDBASE_SOURCE_PATTERN = re.compile(r"^wx_[a-z0-9_]{1,40}$")
 MAX_PASSWORD_FAILURES = 5
 PASSWORD_LOCK_MINUTES = 15
 
@@ -176,7 +171,9 @@ def _trusted_cloudbase_openid() -> str | None:
     reason = ""
     if not _CLOUDBASE_OPENID_PATTERN.fullmatch(openid):
         reason = "openid"
-    elif source not in _CLOUDBASE_MINIPROGRAM_SOURCES and not _CLOUDBASE_SOURCE_PATTERN.fullmatch(source):
+    elif not source:
+        # WeChat's header contract only says X-WX-SOURCE is present on calls from the WeChat
+        # ecosystem and lists no values; real devices send e.g. "other", so check presence.
         reason = "source"
     elif configured_appid and (
         not request_appid or not hmac.compare_digest(configured_appid, request_appid)

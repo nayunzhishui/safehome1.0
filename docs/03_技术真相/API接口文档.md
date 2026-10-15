@@ -1479,7 +1479,7 @@ Invoke-WebRequest `
 
 ### `POST /api/auth/wechat-login`
 
-用途：微信小程序登录或绑定用户。当前生产默认只使用 `code + WECHAT_APPID/WECHAT_SECRET` 调用 `jscode2session`。只有部署显式设置 `TRUST_CLOUDBASE_IDENTITY_HEADERS=1` 时，后端才允许读取 CloudBase 注入的 `X-WX-OPENID`，并同时要求 `X-WX-SOURCE` 为 `wx_devtools`/`wx_client`、OpenID格式合法，以及存在服务端AppID时请求AppID完全匹配。2026-07-22 公网负向探针证明默认公网域名会透传调用者自填的 `X-WX-*` 头，因此只要服务仍开放该公网入口，就必须保持可信头开关为0；AppID匹配不能证明请求来自CloudBase。只有关闭公网入口、改为仅 `callContainer`，或拆分独立的小程序私有服务并重新完成负向验收后，才可考虑开启可信头。开发环境在正式身份路径都不可用时保留稳定兜底 openid。
+用途：微信小程序登录或绑定用户。当前生产默认只使用 `code + WECHAT_APPID/WECHAT_SECRET` 调用 `jscode2session`。只有部署显式设置 `TRUST_CLOUDBASE_IDENTITY_HEADERS=1` 时，后端才允许读取 CloudBase 注入的 `X-WX-OPENID`，并同时要求请求带有 `X-WX-SOURCE` 头（官方只约定该头存在，不约定取值；2026-10-15 真机实测取值为 `other`），OpenID 格式合法，并且在服务端配置了 AppID 时，请求的 AppID 必须完全匹配。被拒时日志记录 `cloudbase_identity_rejected reason=…`，不记录 openid。2026-10-15 起生产已关闭公网访问、开启可信头。2026-07-22 公网负向探针证明默认公网域名会透传调用者自填的 `X-WX-*` 头，因此只要服务仍开放该公网入口，就必须保持可信头开关为0；AppID匹配不能证明请求来自CloudBase。只有关闭公网入口、改为仅 `callContainer`，或拆分独立的小程序私有服务并重新完成负向验收后，才可考虑开启可信头。开发环境在正式身份路径都不可用时保留稳定兜底 openid。
 
 请求字段：
 
