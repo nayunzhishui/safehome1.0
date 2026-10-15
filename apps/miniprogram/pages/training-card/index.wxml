@@ -39,7 +39,6 @@
             <text class="p3-notice__title">这些情况先停下来</text>
             <text class="p3-notice__body">{{primaryCard.stopText}}</text>
           </view>
-          <text class="p3-footnote">{{primaryCard.boundaryNotice}}</text>
         </block>
       </view>
 

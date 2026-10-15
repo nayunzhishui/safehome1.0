@@ -4,6 +4,7 @@ from collections import Counter
 from datetime import date, datetime, timedelta
 
 from database import get_connection, json_loads, rows_to_dicts
+from services.emotion_vocabulary_service import load_emotion_vocabulary
 from services.progress_summary_service import build_training_effectiveness, assessments_comparable
 
 
@@ -198,7 +199,7 @@ def build_weekly_report(user_id: str, week_start: str | None = None) -> dict:
     therapeutic_actions = rows_to_dicts(action_rows)
 
     scene_counts = Counter(item.get("scene") for item in diaries if item.get("scene"))
-    emotion_counts = Counter(item.get("parent_emotion") for item in diaries if item.get("parent_emotion"))
+    emotion_counts = load_emotion_vocabulary().count_words(item.get("parent_emotion") for item in diaries)
     profile_counts = Counter(item.get("profile_name") for item in profiles if item.get("profile_name"))
     pattern_counts = Counter()
     for item in feedback:

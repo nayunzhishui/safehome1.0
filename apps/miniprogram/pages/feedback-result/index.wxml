@@ -60,7 +60,6 @@
       <view wx:else class="p3-card feedback-today" aria-label="今天先做哪一步">
         <text class="feedback-today__kicker">今天先做</text>
         <text class="feedback-today__body">这次记录暂时没有匹配到具体训练卡，可以先暂停几秒，再说出一个最明显的感受。</text>
-        <text class="feedback-today__reason">今日建议只作为支持性练习参考，不构成诊断或治疗方案。</text>
       </view>
     </block>
 
@@ -79,11 +78,9 @@
       </button>
     </view>
 
-    <text wx:if="{{trainingRecommendation && trainingRecommendation.boundary_notice}}" class="p3-footnote">{{trainingRecommendation.boundary_notice}}</text>
-
     <view class="p3-notice">
       <text class="p3-notice__title">怎样理解这份反馈</text>
-      <text class="p3-notice__body">它只整理这一次记录中可观察的情绪、互动和练习位置，不代表固定问题，也不构成诊断、评分或治疗建议。</text>
+      <text class="p3-notice__body">它只整理这一次记录里看得到的情绪、互动和可以练习的地方，不是诊断或评分。</text>
     </view>
 
     <button class="p3-btn p3-btn--quiet" bindtap="saveFeedback">查看保存说明</button>

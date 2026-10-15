@@ -17,7 +17,7 @@
     </view>
 
     <view wx:if="{{progressSummary}}" class="weekly-section">
-      <p3-section-header title="近 7 天阶段反馈" subtitle="整理近 7 天的记录、测评与练习，不构成诊断" />
+      <p3-section-header title="近 7 天阶段反馈" subtitle="整理近 7 天的记录、测评与练习" />
       <view class="weekly-progress">
         <status-pill class="weekly-progress__pill" label="{{progressSummary.statusText}}" tone="{{progressSummary.status === 'low_confidence' ? 'neutral' : 'success'}}" />
         <text class="weekly-progress__summary">{{progressSummary.summaryText}}</text>
@@ -27,13 +27,13 @@
 
     <view class="p3-notice">
       <text class="p3-notice__title">阶段性画像线索</text>
-      <text class="p3-notice__body">{{report.profile_trend && report.profile_trend.profile_count ? '本周画像可作为理解近期压力状态的补充线索，不代表固定判断。' : '本周还没有阶段性画像线索，也不影响你继续记录和练习。'}}</text>
+      <text class="p3-notice__body">{{report.profile_trend && report.profile_trend.profile_count ? '本周画像可以作为理解近期压力状态的补充线索。' : '本周还没有阶段性画像线索，也不影响你继续记录和练习。'}}</text>
       <text wx:if="{{profileTrendNamesText}}" class="p3-notice__body">{{profileTrendNamesText}}</text>
       <text wx:if="{{report.profile_trend && report.profile_trend.requires_review_count}}" class="p3-notice__body">有内容需要人工关注，请优先等待或提交人工支持。</text>
     </view>
 
     <view class="weekly-section">
-      <p3-section-header title="本周测评记录" subtitle="只整理你完成过的测评，不做固定判断" />
+      <p3-section-header title="本周测评记录" subtitle="只整理你完成过的测评" />
       <view class="p3-group weekly-group">
         <block wx:if="{{dimensionGroups.length}}">
           <view wx:for="{{dimensionGroups}}" wx:key="worksheetId" wx:for-item="group" class="weekly-assessment">
@@ -57,13 +57,13 @@
     </view>
 
     <view class="weekly-section">
-      <p3-section-header title="训练效用线索" subtitle="只看练习前后记录，不承诺疗效" />
+      <p3-section-header title="训练效用线索" subtitle="只看练习前后的记录" />
       <text class="weekly-text">{{trainingEffectivenessText}}</text>
       <text class="weekly-text weekly-text--muted">{{completedCardsText ? '已记录练习：' + completedCardsText : '本周还没有练习尝试记录。可以先选择一张容易练的训练卡。'}}</text>
     </view>
 
     <view class="weekly-section">
-      <p3-section-header title="本周常见" subtitle="只看重复出现的位置，不判断好坏" />
+      <p3-section-header title="本周常见" subtitle="看看哪些情况重复出现" />
       <view wx:if="{{commonRows.length}}" class="p3-group weekly-group">
         <view wx:for="{{commonRows}}" wx:key="key" class="weekly-row {{index < commonRows.length - 1 ? 'weekly-row--divided' : ''}}">
           <text class="weekly-row__name">{{item.kind}} · {{item.name}}</text>
@@ -77,6 +77,8 @@
       <text class="weekly-next__kicker">下周可以继续的一小步</text>
       <text class="weekly-next__text">{{report.next_week_suggestion}}</text>
     </view>
+
+    <text class="p3-footnote">这份复盘只用于自己回看，不是诊断或评价。</text>
 
     <view class="weekly-actions">
       <button class="p3-btn p3-btn--secondary" bindtap="refreshReport">刷新复盘</button>

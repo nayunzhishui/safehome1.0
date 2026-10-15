@@ -81,7 +81,8 @@ def test_group_insights_aggregate_consented_adults_without_raw_text_or_small_cel
         user_id, _ = _participant(
             client,
             f"group-insight-{index}",
-            diaries=[("亲子沟通", "着急", 7), ("作业拖延", "担心", 4)],
+            # Statistics count emotion categories: 着急 → 担心焦虑, 失望 → 难过失望, 委屈 → 难过失望.
+            diaries=[("亲子沟通", "着急", 7), ("作业拖延", "失望", 4)],
         )
         user_ids.append(user_id)
     # Two people record a rare emotion: below the three-person cell threshold.
@@ -108,28 +109,43 @@ def test_group_insights_aggregate_consented_adults_without_raw_text_or_small_cel
     assert data["usable_record_count"] == 26
     assert PRIVATE_TEXT not in text
     assert all(user_id not in text for user_id in [*user_ids, withdrawn_id])
-    assert "生气" not in text and "无奈" not in text
+    assert "生气" not in text and "无奈" not in text and "无力疲惫" not in text
     assert data["raw_text_included"] is False and data["individual_results_included"] is False
 
     affect = data["affect"]
     emotions = {item["label"]: item for item in affect["emotions"]}
-    assert set(emotions) == {"着急", "担心"}
-    assert emotions["着急"]["participant_count"] == 12
+    assert set(emotions) == {"担心焦虑", "难过失望"}
+    assert emotions["担心焦虑"]["participant_count"] == 12
     assert affect["emotion_hidden"]["hidden_category_count"] == 1
     assert affect["emotion_hidden"]["hidden_record_count"] == 2
     assert {item["key"] for item in affect["intensity_bands"]} == {"low", "middle", "high"}
     assert affect["weekly_trend"]["items"] and affect["weekly_trend"]["items"][0]["participant_count"] == 14
     pair = affect["parent_child"]["pairs"][0]
-    assert (pair["parent_emotion"], pair["child_emotion"], pair["participant_count"]) == ("着急", "委屈", 12)
+    assert (pair["parent_emotion"], pair["child_emotion"], pair["participant_count"]) == ("担心焦虑", "难过失望", 12)
 
     links = {(item["scene"], item["emotion"]) for item in data["network"]["scene_emotion"]["links"]}
-    assert links == {("亲子沟通", "着急"), ("作业拖延", "担心")}
+    assert links == {("亲子沟通", "担心焦虑"), ("作业拖延", "难过失望")}
     network = data["network"]["emotion_cooccurrence"]
     assert network["node_count"] == 2 and network["edge_count"] == 1
     assert network["density"] == 1.0
-    assert network["strongest_links"] == [{"emotion_a": "担心", "emotion_b": "着急", "participant_count": 12}]
+    assert network["strongest_links"] == [{"emotion_a": "担心焦虑", "emotion_b": "难过失望", "participant_count": 12}]
     assert network["individual_metrics"] is False
     assert network["persistence"]["link_count"] == 1
+
+
+def test_group_insights_link_every_chosen_category_and_count_typed_words_by_their_category(tmp_path, monkeypatch):
+    client = _fresh_app(tmp_path, monkeypatch).test_client()
+    for index in range(10):
+        # 着急 is the main emotion; the typed word 憋屈 was put under 难过失望 by the participant.
+        _participant(client, f"group-multi-{index}", diaries=[("亲子沟通", "着急、憋屈（难过失望）", 6)])
+
+    data = _insights(client, window=30)
+    assert data["availability"] == "available"
+    emotions = {item["label"]: item for item in data["affect"]["emotions"]}
+    assert set(emotions) == {"担心焦虑"}
+    network = data["network"]["emotion_cooccurrence"]
+    assert network["strongest_links"] == [{"emotion_a": "担心焦虑", "emotion_b": "难过失望", "participant_count": 10}]
+    assert "憋屈" not in json.dumps(data, ensure_ascii=False)
 
 
 def test_group_insights_fall_back_to_ninety_days_for_unknown_windows(tmp_path, monkeypatch):

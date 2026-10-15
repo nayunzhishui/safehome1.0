@@ -1,5 +1,5 @@
 {
-  "version": "2026.07-feedback-rules-v3",
+  "version": "2026.10-feedback-rules-v4",
   "rules": [
     {
       "id": "judgmental_language",
@@ -296,7 +296,17 @@
       "match_keywords": [
         "胸口紧",
         "头很胀",
-        "手发抖"
+        "手发抖",
+        "头胀",
+        "头疼",
+        "心跳快",
+        "呼吸急",
+        "肩膀紧",
+        "脖子僵",
+        "喉咙发紧",
+        "胃不舒服",
+        "肚子发紧",
+        "浑身发热"
       ],
       "trigger_tags": [
         "body_awareness",

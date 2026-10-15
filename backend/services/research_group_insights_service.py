@@ -12,6 +12,7 @@ from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
 from statistics import median
 
+from services.emotion_vocabulary_service import EmotionVocabulary, load_emotion_vocabulary
 from services.group_network_analysis_service import (
     _adjacency,
     _average_clustering,
@@ -89,9 +90,12 @@ def _parse_time(value) -> datetime | None:
     return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
 
 
-def _usable_record(row) -> dict | None:
+def _usable_record(row, vocabulary: EmotionVocabulary) -> dict | None:
+    """Emotions are counted by category; the main (first) one carries the intensity."""
+
     scene = str(row["scene"] or "").strip()
-    emotion = str(row["parent_emotion"] or "").strip()
+    emotions = vocabulary.labels(row["parent_emotion"], "parent")
+    emotion = emotions[0] if emotions else ""
     created_at = _parse_time(row["created_at"])
     try:
         intensity = int(row["parent_emotion_intensity"])
@@ -99,7 +103,7 @@ def _usable_record(row) -> dict | None:
         return None
     if not scene or not emotion or created_at is None or not 0 <= intensity <= 10:
         return None
-    child_emotion = str(row["child_emotion"] or "").strip()
+    child_emotion = vocabulary.primary_label(row["child_emotion"], "child")
     try:
         child_intensity = int(row["child_emotion_intensity"])
     except (TypeError, ValueError):
@@ -110,6 +114,7 @@ def _usable_record(row) -> dict | None:
         "user": str(row["user_id"]),
         "scene": scene,
         "emotion": emotion,
+        "emotions": emotions,
         "intensity": intensity,
         "child_emotion": "" if child_emotion in UNCERTAIN_CHILD_EMOTIONS else child_emotion,
         "child_intensity": child_intensity,
@@ -259,9 +264,10 @@ def _scene_emotion_links(records: list[dict]) -> dict:
 
 
 def _emotion_sets(records: list[dict]) -> dict[str, set[str]]:
+    # Every chosen emotion category counts toward the participant's set, not only the main one.
     sets: defaultdict[str, set[str]] = defaultdict(set)
     for item in records:
-        sets[item["user"]].add(item["emotion"])
+        sets[item["user"]].update(item.get("emotions") or [item["emotion"]])
     return sets
 
 
@@ -370,7 +376,8 @@ def build_group_insights(
         """,
         (window_start.isoformat(), *scope_params),
     ).fetchall()
-    records = [record for record in (_usable_record(row) for row in rows) if record is not None]
+    vocabulary = load_emotion_vocabulary()
+    records = [record for record in (_usable_record(row, vocabulary) for row in rows) if record is not None]
     participants = len({record["user"] for record in records})
     base = {
         "schema": "safehome.research-group-insights.v1",

@@ -12,6 +12,7 @@ from routes.utils import (
     require_admin_token,
     require_fields,
 )
+from services.emotion_vocabulary_service import load_emotion_vocabulary
 from services.participant_safeguard_service import ParticipantSafeguardError, assert_participant_capability, safeguards_enforced
 from services.input_validation_service import InputValidationError, validate_diary_payload
 from services.risk_review_service import screen_diary
@@ -39,6 +40,11 @@ def create_diary():
         payload = validate_diary_payload(raw_payload)
     except InputValidationError as exc:
         return fail(exc.code, exc.message, status=400, details={"field": exc.field})
+    vocabulary = load_emotion_vocabulary()
+    for field, role in (("parent_emotion", "parent"), ("child_emotion", "child")):
+        message = vocabulary.validation_error(payload.get(field), role)
+        if message:
+            return fail("validation_error", message, status=400, details={"field": field})
 
     try:
         user_id = resolve_actor_user_id(payload=payload)

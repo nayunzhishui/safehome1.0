@@ -1,4 +1,4 @@
-const VERSION = "2026.10-service-notice-v3";
+const VERSION = "2026.10-service-notice-v4";
 const LOCAL_NOTICE_KEY = "safehome_privacy_notice_seen";
 const LOCAL_NOTICE_VERSION = "2026.10-privacy-notice-v1";
 const PURPOSES = {
@@ -11,7 +11,8 @@ const PURPOSES = {
   relationship: { title: "关系项目参与知情说明", purpose: "relationship_participation", text: "输入内容可能以草稿保存在本机，仅当前账号可恢复。报名与作答将按项目说明保存到账号，用于你选择的关系项目。仍须符合当前项目的年龄、同意与开放条件；本确认不替代监护同意、项目研究同意或其他人的授权。" },
   program: { title: "项目记录知情说明", purpose: "program_entry", text: "输入内容可能以草稿保存在本机，仅当前账号可恢复。你提交的书写、反思和练习感受将保存到当前项目，用于过程复盘、训练建议及必要的人工支持。项目有单独参与条件时，仍需完成原有确认。" },
 };
-const BOUNDARY = "研究、模型训练、AI辅助和关系分析须另行授权，不因点击本按钮一并同意；拒绝可选授权不影响已开放的基础功能。可在隐私中心查看授权、撤回与删除申请。系统不替代诊断、治疗或紧急救助。";
+// 每个功能各自确认；共同的边界只留一句，详细说明在“我的→隐私说明”。
+const BOUNDARY = "研究等其他用途要另外同意，可以在“我的→隐私说明”里查看和撤回。";
 function hasLocalNotice() { return wx.getStorageSync(LOCAL_NOTICE_KEY) === LOCAL_NOTICE_VERSION; }
 function acceptLocalNotice() { wx.setStorageSync(LOCAL_NOTICE_KEY, LOCAL_NOTICE_VERSION); }
 function latest(items, type) {

@@ -2,6 +2,7 @@
 
 from database import load_content_json
 from services.card_service import get_card_ids, list_cards, recommend_cards
+from services.emotion_vocabulary_service import load_emotion_vocabulary
 
 RISK_ORDER = {"low": 0, "medium": 1, "high": 2}
 
@@ -39,7 +40,12 @@ def _intensity_text(value) -> str:
 
 
 def _emotion_overview(payload: dict) -> dict:
-    primary_emotion = str(payload.get("parent_emotion") or payload.get("child_emotion") or "").strip()
+    # Show the chosen words; a typed word's stored category suffix stays out of the feedback text.
+    vocabulary = load_emotion_vocabulary()
+    primary_emotion = (
+        vocabulary.display(payload.get("parent_emotion"), "parent")
+        or vocabulary.display(payload.get("child_emotion"), "child")
+    )
     scene = str(payload.get("scene") or "").strip()
     intensity = payload.get("parent_emotion_intensity")
     if intensity is None:

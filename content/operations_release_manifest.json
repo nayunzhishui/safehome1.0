@@ -47,8 +47,8 @@
     {
       "artifact_type": "rule",
       "path": "content/feedback_rules.json",
-      "sha256": "ec36d030ef471258e1f2b408a51039121f1c0b2cb2c8cfb575e7ac9fbb99d9cc",
-      "size_bytes": 14556
+      "sha256": "83883b91d0ab3cf6ee5829fbaf6e871c164111716ac3fc6942a7b07bff2659c4",
+      "size_bytes": 14772
     },
     {
       "artifact_type": "rule",

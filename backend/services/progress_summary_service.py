@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 from math import sqrt
 
 from database import get_connection, json_loads, rows_to_dicts
+from services.emotion_vocabulary_service import load_emotion_vocabulary
 
 
 RANGE_DAYS = {"7d": 7, "14d": 14, "30d": 30}
@@ -193,7 +194,7 @@ def _checkin_summary(rows: list[dict]) -> dict:
 
 def _diary_summary(rows: list[dict]) -> dict:
     scenes = Counter(item.get("scene") for item in rows if item.get("scene"))
-    emotions = Counter(item.get("parent_emotion") for item in rows if item.get("parent_emotion"))
+    emotions = load_emotion_vocabulary().count_words(item.get("parent_emotion") for item in rows)
     return {
         "count": len(rows),
         "frequent_scenes": scenes.most_common(3),

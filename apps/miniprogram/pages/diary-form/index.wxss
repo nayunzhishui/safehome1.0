@@ -40,6 +40,64 @@ page {
   font-weight: 500;
 }
 
+/* 情绪与身体感觉分组：类名小字在上、词在下；选中的情绪词带顺序号，1 为主要情绪。 */
+.diary-emotion-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.diary-emotion-group__label {
+  color: var(--p3-muted);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.diary-chip-order {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36rpx;
+  height: 36rpx;
+  margin-left: 12rpx;
+  border-radius: 999rpx;
+  background: var(--p3-primary);
+  color: var(--p3-on-primary);
+  font-size: 22rpx;
+  line-height: 36rpx;
+}
+
+/* 自己写一个词：输入框占一行，下一行选最接近的类再加入。 */
+.diary-custom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--p3-tight);
+}
+
+.diary-custom__input {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+.diary-custom__picker {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 88rpx;
+  padding: 0 28rpx;
+  border: 2rpx solid var(--p3-control);
+  border-radius: 28rpx;
+  background: var(--p3-surface);
+  color: var(--p3-ink);
+  font-size: 28rpx;
+  white-space: nowrap;
+}
+
+.diary-custom__add {
+  flex: 0 0 auto;
+}
+
 .diary-slider {
   display: flex;
   flex-direction: column;

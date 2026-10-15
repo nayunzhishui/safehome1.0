@@ -25,7 +25,6 @@
           <text class="training-today__reason-label">{{item.label}}</text>
           <text class="training-today__reason-text">{{item.text}}</text>
         </view>
-        <text wx:if="{{latestRecommendation.boundaryNotice}}" class="training-today__boundary">{{latestRecommendation.boundaryNotice}}</text>
       </view>
       <button class="p3-btn p3-btn--primary" bindtap="openLatestRecommendation">查看练习</button>
     </view>
@@ -39,7 +38,7 @@
     <view wx:if="{{relationshipPilotAvailable}}" class="training-pilot">
       <text class="training-pilot__kicker">项目试点 · 大学生关系探索</text>
       <text class="training-pilot__title">从测一测到评估问题与微行动</text>
-      <text class="training-pilot__desc">聚合阶段性画像、初筛报告、关系绘画、句子补全和连续复盘。它不是治疗或诊断服务。</text>
+      <text class="training-pilot__desc">聚合阶段性画像、初筛报告、关系绘画、句子补全和连续复盘。</text>
       <button class="p3-btn p3-btn--secondary" bindtap="openRelationshipPilot">进入关系探索试点</button>
     </view>
 
@@ -83,6 +82,6 @@
       </block>
     </view>
 
-    <text class="p3-footnote">练习建议只用于自我观察和自助练习，不构成诊断、治疗方案或固定评价。</text>
+    <text class="p3-footnote">练习建议只用于自我观察和自助练习，不是诊断或治疗。</text>
   </view>
 </view>

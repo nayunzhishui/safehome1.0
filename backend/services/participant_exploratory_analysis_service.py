@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 
+from services.emotion_vocabulary_service import load_emotion_vocabulary
 
 MINIMUM_RECORDS = 5
 MAXIMUM_RECORDS = 100
@@ -232,17 +233,19 @@ def build_participant_exploratory_analysis(conn, user_id: str) -> dict:
         (user_id, MAXIMUM_RECORDS),
     ).fetchall()
     record_count = len(rows)
+    # Count by emotion category: the main (first) emotion, with typed words in the category picked.
+    vocabulary = load_emotion_vocabulary()
     usable_rows = []
     for row in rows:
         scene = str(row["scene"] or "").strip()
-        emotion = str(row["parent_emotion"] or "").strip()
+        emotion = vocabulary.primary_label(row["parent_emotion"], "parent")
         try:
             intensity = int(row["parent_emotion_intensity"])
         except (TypeError, ValueError):
             continue
         if not scene or not emotion or not 0 <= intensity <= 10:
             continue
-        child_emotion = str(row["child_emotion"] or "").strip()
+        child_emotion = vocabulary.primary_label(row["child_emotion"], "child")
         try:
             child_intensity = int(row["child_emotion_intensity"])
         except (TypeError, ValueError):
@@ -361,7 +364,7 @@ def build_participant_exploratory_analysis(conn, user_id: str) -> dict:
             "items": affect_items,
             "trend": _intensity_trend(usable_rows),
             "summary_text": (
-                f"{record_count} 条记录中有 {usable_record_count} 条可用于汇总，包含 {len(emotion_counts)} 类自填情绪；"
+                f"{record_count} 条记录中有 {usable_record_count} 条可用于汇总，主要情绪分属 {len(emotion_counts)} 类；"
                 f"整体平均强度 {overall_average_intensity}，范围 {intensity_range['minimum']}—{intensity_range['maximum']}。"
             ),
             "next_check_text": "后续只与本人使用同一记录方式的新记录比较，不自动解释好坏。",

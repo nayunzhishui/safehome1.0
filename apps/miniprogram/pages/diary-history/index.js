@@ -1,5 +1,6 @@
 const { createSafeHomeApi } = require("../../services/api");
 const { requireLogin, captureAuthSession, isCurrentAuthSession } = require("../../utils/authGuard");
+const { displayEmotions } = require("../../utils/emotion-entry");
 
 const api = createSafeHomeApi();
 const PAGE_LIMIT = 50;
@@ -24,10 +25,10 @@ function normalizeIntensity(value) {
   return Math.min(10, Math.max(0, Math.round(numeric)));
 }
 
-// “我：着急 · 孩子：烦躁”；孩子情绪没填时只显示自己的。
+// “我：着急、担心 · 孩子：烦躁”；孩子情绪没填时只显示自己的，自己写的词不显示存的类名。
 function emotionText(item) {
-  const parent = item.parent_emotion ? `我：${item.parent_emotion}` : "";
-  const child = item.child_emotion ? `孩子：${item.child_emotion}` : "";
+  const parent = item.parent_emotion ? `我：${displayEmotions(item.parent_emotion)}` : "";
+  const child = item.child_emotion ? `孩子：${displayEmotions(item.child_emotion)}` : "";
   return [parent, child].filter(Boolean).join(" · ") || "情绪待补充";
 }
 

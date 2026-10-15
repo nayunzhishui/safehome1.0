@@ -1144,9 +1144,10 @@ def test_participant_can_read_own_structured_affect_and_interaction_analysis(tmp
     assert saved_result.status_code == 201
     result_id = saved_result.get_json()["data"]["id"]
 
+    # Counted by emotion category: 生气 → 生气, 担心 → 担心焦虑.
     records = [
-        ("亲子沟通", "着急", 7),
-        ("亲子沟通", "着急", 5),
+        ("亲子沟通", "生气", 7),
+        ("亲子沟通", "生气", 5),
         ("作业拖延", "担心", 6),
         ("作业拖延", "担心", 4),
         ("亲子沟通", "担心", 3),
@@ -1174,12 +1175,12 @@ def test_participant_can_read_own_structured_affect_and_interaction_analysis(tmp
     data = response.get_json()["data"]
     assert data["availability"] == "available"
     assert data["record_count"] == 5
-    assert data["affect"]["items"][0]["label"] == "担心"
+    assert data["affect"]["items"][0]["label"] == "担心焦虑"
     assert data["affect"]["record_count"] == 5
     assert data["affect"]["category_count"] == 2
     assert data["affect"]["overall_average_intensity"] == 5.0
     assert data["affect"]["intensity_range"] == {"minimum": 3, "maximum": 7}
-    assert data["affect"]["most_frequent_labels"] == ["担心"]
+    assert data["affect"]["most_frequent_labels"] == ["担心焦虑"]
     assert "5 条记录" in data["affect"]["summary_text"]
     assert data["interaction_network"]["edges"][0]["support"] == 2
     network_summary = data["interaction_network"]["summary"]
@@ -1507,8 +1508,10 @@ def test_participant_analysis_reports_scene_share_parent_child_pairs_and_trend(t
     parent_child = data["parent_child"]
     assert parent_child["paired_record_count"] == 5
     assert parent_child["causal_interpretation_allowed"] is False
-    first = parent_child["pairs"][0]
-    assert (first["parent_emotion"], first["child_emotion"], first["support"]) == ("生气", "烦躁", 2)
-    assert first["average_parent_intensity"] == 7.0
+    # Pairs are counted by category: 着急 → 担心焦虑, 委屈 → 难过失望; "不确定" is not paired.
+    pairs = {(item["parent_emotion"], item["child_emotion"]): item for item in parent_child["pairs"]}
+    assert pairs[("生气", "烦躁")]["support"] == 2
+    assert pairs[("生气", "烦躁")]["average_parent_intensity"] == 7.0
+    assert pairs[("担心焦虑", "难过失望")]["support"] == 2
     trend = data["affect"]["trend"]
     assert (trend["available"], trend["recent_count"], trend["earlier_count"]) == (True, 3, 3)

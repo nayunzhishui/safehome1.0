@@ -33,46 +33,103 @@
   </view>
 
   <view class="diary-section">
-    <p3-section-header title="我和孩子当时的感受" />
-    <text class="diary-label">我当时的主要情绪</text>
-    <view class="diary-chips" role="radiogroup" aria-label="我当时的主要情绪">
-      <button
-        wx:for="{{parentEmotionOptions}}"
-        wx:key="*this"
-        class="p3-chip {{parentEmotion === item ? 'p3-chip--selected' : ''}}"
-        role="radio"
-        aria-checked="{{parentEmotion === item}}"
-        data-value="{{item}}"
-        bindtap="selectParentEmotion"
-      >{{item}}</button>
+    <p3-section-header title="我当时的情绪" subtitle="最多选 {{maxSelected}} 个，先选的算主要情绪" />
+    <view wx:for="{{parentGroups}}" wx:for-item="group" wx:key="code" class="diary-emotion-group">
+      <text class="diary-emotion-group__label">{{group.label}}</text>
+      <view class="diary-chips" role="group" aria-label="{{group.label}}">
+        <button
+          wx:for="{{group.words}}"
+          wx:key="word"
+          class="p3-chip {{item.order ? 'p3-chip--selected' : ''}}"
+          role="checkbox"
+          aria-checked="{{item.order > 0}}"
+          aria-label="{{item.word}}{{item.order === 1 ? '，主要情绪' : ''}}"
+          data-role="parent"
+          data-word="{{item.word}}"
+          bindtap="toggleEmotion"
+        >{{item.word}}<text wx:if="{{item.order}}" class="diary-chip-order" aria-hidden="true">{{item.order}}</text></button>
+      </view>
+    </view>
+    <view wx:if="{{parentCustom.length}}" class="diary-emotion-group">
+      <text class="diary-emotion-group__label">自己写的</text>
+      <view class="diary-chips" role="group" aria-label="自己写的情绪">
+        <button wx:for="{{parentCustom}}" wx:key="word" class="p3-chip p3-chip--selected" aria-label="{{item.word}}，归为{{item.label}}，点一下移除" data-role="parent" data-word="{{item.word}}" bindtap="removeCustomEmotion">{{item.word}} · {{item.label}}<text class="diary-chip-order" aria-hidden="true">{{item.order}}</text></button>
+      </view>
+    </view>
+    <view class="diary-custom">
+      <input class="p3-field__input diary-custom__input" aria-label="自己写一个我的情绪" placeholder-class="p3-field__placeholder" value="{{customParentWord}}" maxlength="{{customMaxLength}}" placeholder="没有合适的？自己写一个" bindinput="onTextInput" data-key="customParentWord" />
+      <picker mode="selector" range="{{categoryLabels}}" value="{{customParentCategoryIndex}}" data-role="parent" bindchange="onCustomCategoryChange">
+        <view class="diary-custom__picker" role="button" aria-label="选最接近的类：{{customParentCategoryIndex >= 0 ? categoryLabels[customParentCategoryIndex] : '未选'}}">{{customParentCategoryIndex >= 0 ? categoryLabels[customParentCategoryIndex] : '最接近哪一类'}}</view>
+      </picker>
+      <button class="p3-chip diary-custom__add" data-role="parent" bindtap="addCustomEmotion">加入</button>
     </view>
     <view class="diary-slider">
-      <text class="diary-slider__label">强度 {{parentEmotionIntensity}} / 10</text>
-      <p3-intensity-slider min="0" max="10" value="{{parentEmotionIntensity}}" aria-label="我的情绪强度" bind:change="onParentIntensityChange" />
+      <text class="diary-slider__label">{{parentEmotions.length ? '“' + parentEmotions[0].word + '”有多强' : '主要情绪有多强'}}：{{parentIntensitySet ? parentIntensity + ' / 10' : '拖动或点一下'}}</text>
+      <p3-intensity-slider min="0" max="10" value="{{parentIntensity}}" aria-label="我的主要情绪强度" bind:change="onParentIntensityChange" />
     </view>
-    <text class="diary-label">孩子当时看起来的情绪</text>
-    <view class="diary-chips" role="radiogroup" aria-label="孩子当时看起来的情绪">
-      <button
-        wx:for="{{childEmotionOptions}}"
-        wx:key="*this"
-        class="p3-chip {{childEmotion === item ? 'p3-chip--selected' : ''}}"
-        role="radio"
-        aria-checked="{{childEmotion === item}}"
-        data-value="{{item}}"
-        bindtap="selectChildEmotion"
-      >{{item}}</button>
+  </view>
+
+  <view class="diary-section">
+    <p3-section-header title="孩子当时看起来的情绪" subtitle="可选，最多 {{maxSelected}} 个" />
+    <view wx:for="{{childGroups}}" wx:for-item="group" wx:key="code" class="diary-emotion-group">
+      <text class="diary-emotion-group__label">{{group.label}}</text>
+      <view class="diary-chips" role="group" aria-label="孩子的情绪：{{group.label}}">
+        <button
+          wx:for="{{group.words}}"
+          wx:key="word"
+          class="p3-chip {{item.order ? 'p3-chip--selected' : ''}}"
+          role="checkbox"
+          aria-checked="{{item.order > 0}}"
+          aria-label="孩子{{item.word}}{{item.order === 1 ? '，主要情绪' : ''}}"
+          data-role="child"
+          data-word="{{item.word}}"
+          bindtap="toggleEmotion"
+        >{{item.word}}<text wx:if="{{item.order}}" class="diary-chip-order" aria-hidden="true">{{item.order}}</text></button>
+      </view>
     </view>
-    <view class="diary-slider">
-      <text class="diary-slider__label">强度 {{childEmotionIntensity}} / 10</text>
-      <p3-intensity-slider min="0" max="10" value="{{childEmotionIntensity}}" aria-label="孩子的情绪强度" bind:change="onChildIntensityChange" />
+    <view wx:if="{{childCustom.length}}" class="diary-emotion-group">
+      <text class="diary-emotion-group__label">自己写的</text>
+      <view class="diary-chips" role="group" aria-label="自己写的孩子情绪">
+        <button wx:for="{{childCustom}}" wx:key="word" class="p3-chip p3-chip--selected" aria-label="孩子{{item.word}}，归为{{item.label}}，点一下移除" data-role="child" data-word="{{item.word}}" bindtap="removeCustomEmotion">{{item.word}} · {{item.label}}<text class="diary-chip-order" aria-hidden="true">{{item.order}}</text></button>
+      </view>
     </view>
+    <view class="diary-custom">
+      <input class="p3-field__input diary-custom__input" aria-label="自己写一个孩子的情绪" placeholder-class="p3-field__placeholder" value="{{customChildWord}}" maxlength="{{customMaxLength}}" placeholder="没有合适的？自己写一个" bindinput="onTextInput" data-key="customChildWord" />
+      <picker mode="selector" range="{{categoryLabels}}" value="{{customChildCategoryIndex}}" data-role="child" bindchange="onCustomCategoryChange">
+        <view class="diary-custom__picker" role="button" aria-label="选最接近的类：{{customChildCategoryIndex >= 0 ? categoryLabels[customChildCategoryIndex] : '未选'}}">{{customChildCategoryIndex >= 0 ? categoryLabels[customChildCategoryIndex] : '最接近哪一类'}}</view>
+      </picker>
+      <button class="p3-chip diary-custom__add" data-role="child" bindtap="addCustomEmotion">加入</button>
+    </view>
+    <view wx:if="{{childEmotions.length}}" class="diary-slider">
+      <text class="diary-slider__label">孩子“{{childEmotions[0].word}}”看起来有多强：{{childIntensitySet ? childIntensity + ' / 10' : '拖动或点一下，可不选'}}</text>
+      <p3-intensity-slider min="0" max="10" value="{{childIntensity}}" aria-label="孩子的主要情绪强度" bind:change="onChildIntensityChange" />
+    </view>
+  </view>
+
+  <view class="diary-section">
+    <p3-section-header title="身体感觉" subtitle="可选，可以多选" />
+    <view wx:for="{{bodyRegions}}" wx:for-item="region" wx:key="label" class="diary-emotion-group">
+      <text class="diary-emotion-group__label">{{region.label}}</text>
+      <view class="diary-chips" role="group" aria-label="身体感觉：{{region.label}}">
+        <button
+          wx:for="{{region.words}}"
+          wx:key="word"
+          class="p3-chip {{item.selected ? 'p3-chip--selected' : ''}}"
+          role="checkbox"
+          aria-checked="{{item.selected}}"
+          data-word="{{item.word}}"
+          bindtap="toggleBody"
+        >{{item.word}}</button>
+      </view>
+    </view>
+    <input class="p3-field__input" aria-label="自己写身体感觉" placeholder-class="p3-field__placeholder" value="{{bodySensationNote}}" maxlength="{{bodyNoteMaxLength}}" placeholder="也可以自己写一句身体感觉，可不填" bindinput="onTextInput" data-key="bodySensationNote" />
   </view>
 
   <view class="diary-more">
     <button class="diary-more__toggle" aria-expanded="{{showMoreFields}}" bindtap="toggleMoreFields">
       <view class="diary-more__text">
         <text class="diary-more__title">{{showMoreFields ? '收起可选内容' : '还有什么想记录的？（可选）'}}</text>
-        <text class="diary-more__subtitle">想法与做法 · 身体感觉 · 孩子后来的反应 · 当下结果</text>
+        <text class="diary-more__subtitle">想法与做法 · 孩子后来的反应 · 当下结果</text>
       </view>
       <view class="diary-more__chevron {{showMoreFields ? 'diary-more__chevron--open' : ''}}" aria-hidden="true">
         <p3-icon name="chevron-down" size="20" tone="muted" />
@@ -89,20 +146,7 @@
         <textarea class="p3-field__input p3-field__input--multi" aria-label="我当时的做法" placeholder-class="p3-field__placeholder" value="{{behavior}}" placeholder="例如：我提醒了几次，后来声音提高了一些。" bindinput="onTextInput" data-key="behavior" />
       </view>
 
-      <p3-section-header title="身体与后续（可选）" />
-      <text class="diary-label">身体感觉</text>
-      <view class="diary-chips" role="radiogroup" aria-label="身体感觉">
-        <button
-          wx:for="{{bodySensationOptions}}"
-          wx:key="*this"
-          class="p3-chip {{bodySensation === item ? 'p3-chip--selected' : ''}}"
-          role="radio"
-          aria-checked="{{bodySensation === item}}"
-          data-value="{{item}}"
-          bindtap="selectBodySensation"
-        >{{item}}</button>
-      </view>
-      <input class="p3-field__input" aria-label="补充身体感觉" placeholder-class="p3-field__placeholder" value="{{bodySensationNote}}" placeholder="也可以补充一句身体感觉，可不填" bindinput="onTextInput" data-key="bodySensationNote" />
+      <p3-section-header title="后续（可选）" />
       <view class="p3-field">
         <text class="p3-field__label">孩子后来的反应</text>
         <textarea class="p3-field__input p3-field__input--multi" aria-label="孩子后来的反应" placeholder-class="p3-field__placeholder" value="{{childReaction}}" placeholder="孩子后来有什么反应？例如：沉默、争辩、哭了，或暂时离开。" bindinput="onTextInput" data-key="childReaction" />
@@ -122,7 +166,7 @@
     <text wx:if="{{errorMessage}}" class="p3-form-message p3-form-message--error" role="alert">{{errorMessage}}</text>
     <view class="diary-save__note">
       <text aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
-      <text> · 保存后进入支持性反馈和训练卡推荐，只用于观察和练习，不做诊断。</text>
+      <text> · 保存后查看反馈和练习建议</text>
     </view>
     <text wx:if="{{slowSubmitting}}" class="p3-form-message">网络响应较慢，请保持页面打开；草稿仍在本机，不需要重复填写。</text>
     <button class="p3-btn p3-btn--primary" bindtap="submitDiary" disabled="{{submitting}}">{{submitting ? '提交中...' : '保存并查看反馈'}}</button>

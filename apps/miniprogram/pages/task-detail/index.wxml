@@ -72,10 +72,6 @@
   </view>
 
   <view class="task-section">
-    <view class="p3-notice">
-      <text class="p3-notice__title">练习说明</text>
-      <text class="p3-notice__body">{{task.boundaryNotice}}</text>
-    </view>
     <view wx:if="{{task.stopText}}" class="p3-notice p3-notice--warm">
       <text class="p3-notice__title">何时暂停</text>
       <text class="p3-notice__body">{{task.stopText}}</text>
