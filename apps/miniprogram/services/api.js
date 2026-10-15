@@ -312,6 +312,12 @@ function createSafeHomeApi(options = {}) {
       ? options.authToken
       : wx.getStorageSync("auth_token") || "";
     const authHeader = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+    // wx.request 和云托管调用都不接受 PATCH：改用 POST 发，后端按这个头当 PATCH 处理。
+    const wireMethod = method === "PATCH" ? "POST" : method;
+    const extraHeader = {
+      ...(method === "PATCH" ? { "X-HTTP-Method-Override": "PATCH" } : {}),
+      ...(options.idempotencyKey ? { "Idempotency-Key": options.idempotencyKey } : {}),
+    };
 
     return new Promise((resolve, reject) => {
       if (options.requiresAuth && !authToken) {
@@ -333,12 +339,13 @@ function createSafeHomeApi(options = {}) {
       if (useLocalHttp) {
         wx.request({
           url: `${localHttpBaseUrl}${path}`,
-          method,
+          method: wireMethod,
           data: options.data || {},
           header: {
             "content-type": "application/json",
             ...authHeader,
             ...defaultHeaders,
+            ...extraHeader,
             ...(options.header || {}),
           },
           success(res) {
@@ -381,12 +388,13 @@ function createSafeHomeApi(options = {}) {
           env: cloudEnvId,
         },
         path,
-        method,
+        method: wireMethod,
         data: options.data || {},
         header: {
           "content-type": "application/json",
           ...authHeader,
           ...defaultHeaders,
+          ...extraHeader,
           ...(options.header || {}),
           "X-WX-SERVICE": containerService,
         },

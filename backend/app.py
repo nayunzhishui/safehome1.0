@@ -198,6 +198,23 @@ def operational_backlog() -> dict:
         return {"ok": False, "risk_review_pending": None, "risk_review_high_priority": None}
 
 
+class PatchOverrideMiddleware:
+    """Route POST + `X-HTTP-Method-Override: PATCH` as PATCH.
+
+    wx.request and wx.cloud.callContainer do not accept PATCH, so the mini program sends
+    PATCH calls this way. Only POST can become PATCH; the routes still do all auth checks.
+    """
+
+    def __init__(self, wsgi_app):
+        self.wsgi_app = wsgi_app
+
+    def __call__(self, environ, start_response):
+        override = str(environ.get("HTTP_X_HTTP_METHOD_OVERRIDE") or "").strip().upper()
+        if environ.get("REQUEST_METHOD") == "POST" and override == "PATCH":
+            environ["REQUEST_METHOD"] = "PATCH"
+        return self.wsgi_app(environ, start_response)
+
+
 def apply_config_overrides(config_class: type[Config], config_overrides: dict | None) -> None:
     if not config_overrides:
         return
@@ -452,6 +469,7 @@ def create_app(
         payload = build_readiness_payload(app)
         return jsonify(payload), 200 if payload["ok"] else 503
 
+    app.wsgi_app = PatchOverrideMiddleware(app.wsgi_app)
     return app
 
 
