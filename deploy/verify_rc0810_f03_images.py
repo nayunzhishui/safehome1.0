@@ -83,22 +83,21 @@ def guard_runtime(profile: str) -> list[str]:
     if os.environ.get("APP_ENV") != expected_env:
         errors.append(f"{profile}: APP_ENV must remain {expected_env}")
     if profile == "production":
+        # Owner decision 2026-10-15: research work-item writes, the case lifecycle view, offline
+        # benchmarks and analysis jobs may be switched on through the CloudBase environment for
+        # the field test (the image still defaults them to 0). Every flag below stays locked.
         for flag in (
             "PRODUCTION_FEATURES_UNLOCKED",
             "CONTENT_GOVERNANCE_PUBLISH_ENABLED",
             "PRIVACY_EXECUTION_ENABLED",
             "PRIVACY_PRODUCTION_EXECUTION_ENABLED",
-            "RESEARCH_OPERATIONS_WRITE_ENABLED",
             "AI_QA_ENABLED",
             "AI_QA_SANDBOX_ENABLED",
             "AI_QA_REAL_PROVIDER_ENABLED",
-            "THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED",
-            "OFFLINE_BENCHMARK_ENABLED",
             "OFFLINE_EXTERNAL_INGEST_ENABLED",
             "OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED",
             "RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED",
             "RESEARCH_OUTCOME_ANALYSIS_ALLOWED",
-            "RESEARCH_ANALYSIS_JOB_EXECUTION_ENABLED",
             "SECURITY_SCAN_EXECUTION_ENABLED",
             "RELIABILITY_JOB_EXECUTION_ENABLED",
             "RELIABILITY_FAULT_INJECTION_ENABLED",

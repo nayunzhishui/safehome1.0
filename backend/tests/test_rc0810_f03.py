@@ -86,11 +86,9 @@ def test_f03_images_package_database_profile_contract():
 def test_f03_production_runtime_override_is_rejected():
     execution_flags = [
         "AI_QA_ENABLED",
-        "THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED",
-        "OFFLINE_BENCHMARK_ENABLED",
+        "PRODUCTION_FEATURES_UNLOCKED",
         "RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED",
         "RESEARCH_OUTCOME_ANALYSIS_ALLOWED",
-        "RESEARCH_ANALYSIS_JOB_EXECUTION_ENABLED",
         "SECURITY_SCAN_EXECUTION_ENABLED",
         "RELIABILITY_JOB_EXECUTION_ENABLED",
         "RELIABILITY_GRADUAL_RELEASE_ENABLED",
@@ -120,6 +118,41 @@ def test_f03_production_runtime_override_is_rejected():
         assert result.returncode == 78, flag
         assert f"runtime override rejected for {flag}" in result.stdout
         assert "must-not-run" not in result.stdout
+
+
+def test_f03_production_runtime_accepts_owner_opened_research_flags():
+    environment = os.environ.copy()
+    environment.update(
+        {
+            "APP_ENV": "production",
+            "RESEARCH_OPERATIONS_WRITE_ENABLED": "1",
+            "THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED": "1",
+            "OFFLINE_BENCHMARK_ENABLED": "1",
+            "RESEARCH_ANALYSIS_JOB_EXECUTION_ENABLED": "1",
+        }
+    )
+    for flag in ("PRODUCTION_FEATURES_UNLOCKED", "AI_QA_ENABLED", "PRIVACY_EXECUTION_ENABLED"):
+        environment.pop(flag, None)
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(VERIFY),
+            "--entrypoint",
+            "--profile",
+            "production",
+            "--",
+            sys.executable,
+            "-c",
+            "print('production-ready')",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        env=environment,
+    )
+    assert result.returncode == 0, result.stdout
+    assert result.stdout.strip() == "production-ready"
 
 
 def test_f03_validation_runtime_executes_allowed_command():
