@@ -7,6 +7,7 @@
     "staff-accounts": "/components/staff-accounts/index",
     "privacy-review": "/components/privacy-review/index",
     "research-export": "/components/research-export/index",
-    "research-methods": "/components/research-methods/index"
+    "research-methods": "/components/research-methods/index",
+    "content-browser": "/components/content-browser/index"
   }
 }

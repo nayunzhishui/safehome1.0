@@ -707,6 +707,7 @@
     <staff-accounts wx:if="{{isOwner}}" />
     <privacy-review />
     <research-export wx:if="{{isOwner}}" />
+    <content-browser />
   </view>
 
   <view wx:if="{{activeWorkspace === 'projects' && projectView === 'pilots'}}" class="workspace-panel">

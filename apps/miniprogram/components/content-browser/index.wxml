@@ -1,0 +1,19 @@
+<view class="content-browser">
+  <view class="content-browser__head">
+    <text class="p3-item-title">内容</text>
+    <text class="p3-meta">训练卡、量表、规则等内容的当前版本和审核状态。改内容要走三方专业审核，生产环境的发布开关也锁着，这里只能看。</text>
+  </view>
+  <text wx:if="{{error}}" class="p3-meta">{{error}}</text>
+  <view class="content-browser__chips">
+    <button wx:for="{{types}}" wx:key="id" class="p3-chip {{type === item.id ? 'p3-chip--selected' : ''}}" data-id="{{item.id}}" bindtap="pickType">{{item.label}}</button>
+  </view>
+  <view wx:if="{{shown.length}}" class="p3-group content-browser__list">
+    <view wx:for="{{shown}}" wx:key="key" class="content-browser__row">
+      <text class="content-browser__title">{{item.title}}</text>
+      <text class="p3-meta">{{item.meta}}</text>
+      <text wx:if="{{item.summary}}" class="p3-meta">{{item.summary}}</text>
+    </view>
+  </view>
+  <text wx:elif="{{!loading && !error}}" class="p3-meta">这一类没有内容。</text>
+  <button wx:if="{{shown.length < items.length}}" class="p3-btn p3-btn--secondary" bindtap="showMore">再看 20 个</button>
+</view>

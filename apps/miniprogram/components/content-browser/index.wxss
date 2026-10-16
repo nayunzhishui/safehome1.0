@@ -1,0 +1,43 @@
+/* 内容浏览（研究者工作台“管理”页）：类型筛选与内容行。 */
+.content-browser,
+.content-browser__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+}
+
+.content-browser {
+  gap: var(--p3-stack);
+}
+
+.content-browser__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--p3-tight);
+}
+
+.content-browser__list {
+  display: flex;
+  flex-direction: column;
+  padding: 0 32rpx;
+}
+
+.content-browser__row {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  padding: 28rpx 0;
+  border-bottom: 2rpx solid var(--p3-hairline);
+  word-break: break-all;
+}
+
+.content-browser__row:last-child {
+  border-bottom: none;
+}
+
+.content-browser__title {
+  color: var(--p3-ink);
+  font-size: 30rpx;
+  line-height: 46rpx;
+  font-weight: 500;
+}

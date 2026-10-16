@@ -163,6 +163,7 @@ const API_ENDPOINTS = {
   researchWorkItemMetrics: "/api/research/work-items/metrics",
   researchDeliveries: "/api/research/deliveries",
   contentGovernanceActive: "/api/content-review/active",
+  contentGovernanceInventory: "/api/content-review/inventory",
   aiQaConfig: "/api/ai-qa/config",
   aiQaReleaseStatus: "/api/ai-qa/release/status",
   aiQaReleaseTransition: "/api/ai-qa/release/transition",
@@ -2107,6 +2108,11 @@ function createSafeHomeApi(options = {}) {
 
     getGroupNetworkAnalysisPolicy() {
       return request(`${API_ENDPOINTS.offlineBenchmarks}/network-policy`, { requiresAuth: true });
+    },
+
+    // 内容清单（只读）：训练卡、量表、规则等的当前版本和审核状态。
+    getContentInventory() {
+      return request(API_ENDPOINTS.contentGovernanceInventory, { requiresAuth: true });
     },
 
     getResearchMethodologyConfig() {
