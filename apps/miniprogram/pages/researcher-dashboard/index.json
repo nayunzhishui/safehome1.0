@@ -6,6 +6,7 @@
     "p3-icon": "/components/p3-icon/index",
     "staff-accounts": "/components/staff-accounts/index",
     "privacy-review": "/components/privacy-review/index",
-    "research-export": "/components/research-export/index"
+    "research-export": "/components/research-export/index",
+    "research-methods": "/components/research-methods/index"
   }
 }

@@ -1,0 +1,20 @@
+<view class="safe-card workspace-card research-methods">
+  <text class="section-eyebrow">研究方法</text>
+  <text class="section-title">方法登记与自检</text>
+  <text wx:if="{{error}}" class="p3-meta">{{error}}</text>
+  <block wx:elif="{{config}}">
+    <text class="p3-meta">{{config.statusText}} · 登记版本 {{config.registry_version}} · {{config.measure_count}} 个量表 · 还有 {{config.unresolved_blocker_count}} 个待解决的问题</text>
+    <text class="p3-meta">没有读取真实结局数据；现在不能做验证性分析。</text>
+    <view class="research-methods__actions">
+      <button wx:if="{{owner}}" class="p3-chip" bindtap="sync" disabled="{{!!busy}}">同步登记版本</button>
+      <button class="p3-chip" bindtap="runChecks" disabled="{{!!busy || !versionId}}">运行自检</button>
+    </view>
+    <text wx:if="{{!versionId}}" class="p3-meta">还没有登记版本，需要总管理先同步一次。</text>
+    <block wx:if="{{result}}">
+      <text class="detail-line">{{result.passedText}} · {{result.statusText}}</text>
+      <text wx:for="{{result.failed}}" wx:key="*this" class="p3-meta">没通过：{{item}}</text>
+      <text wx:for="{{result.blockers}}" wx:key="*this" class="p3-meta">待解决：{{item}}</text>
+    </block>
+    <text class="boundary-line">自检只查结构，不代表正式冻结或签字。</text>
+  </block>
+</view>

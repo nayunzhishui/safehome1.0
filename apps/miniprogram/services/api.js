@@ -2109,6 +2109,22 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.offlineBenchmarks}/network-policy`, { requiresAuth: true });
     },
 
+    getResearchMethodologyConfig() {
+      return request(`${API_ENDPOINTS.researchMethodology}/config`, { requiresAuth: true });
+    },
+
+    listResearchMethodologyVersions() {
+      return request(`${API_ENDPOINTS.researchMethodology}/versions`, { requiresAuth: true });
+    },
+
+    syncResearchMethodologyVersion() {
+      return request(`${API_ENDPOINTS.researchMethodology}/versions/sync`, { method: "POST", data: {}, requiresAuth: true });
+    },
+
+    runResearchMethodologyChecks(versionId) {
+      return request(`${API_ENDPOINTS.researchMethodology}/checks/run`, { method: "POST", data: { version_id: versionId }, requiresAuth: true });
+    },
+
     getResearchMethodologyPublicStatus() {
       return request(`${API_ENDPOINTS.researchMethodology}/public-status`);
     },

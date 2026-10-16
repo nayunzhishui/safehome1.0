@@ -699,6 +699,8 @@
       <text class="boundary-line">结果只作为聚合研究线索，不构成诊断、标签或个体自动决策。</text>
       </view>
     </view>
+
+    <research-methods owner="{{isOwner}}" />
   </view>
 
   <view wx:if="{{activeWorkspace === 'manage'}}" class="workspace-panel">

@@ -1,0 +1,12 @@
+/* 研究方法卡片（研究者工作台“分析”页）：沿用工作台卡片样式，只补按钮行。 */
+.research-methods {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+}
+
+.research-methods__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--p3-tight);
+}
