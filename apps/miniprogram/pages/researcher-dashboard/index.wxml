@@ -7,7 +7,7 @@
       </view>
       <text class="sync-action">重新同步</text>
     </view>
-    <text wx:if="{{activeWorkspace === 'pending'}}" class="workbench-boundary">移动端用于查看摘要、处理提醒和进入试点；完整研究配置与批量工作仍在 Web 完成。{{capabilityScope ? '当前身份：' + (roleText || '研究角色') + ' · 查看范围：' + (scopeText || '授权范围内') + '。' : ''}}</text>
+    <text wx:if="{{capabilityScope}}" class="workbench-boundary">{{roleText || '研究人员'}} · 能看：{{scopeText || '分配给我的参与者'}}</text>
     <scroll-view scroll-x enhanced show-scrollbar="{{false}}" class="workspace-tabs" aria-label="研究者工作区导航">
       <view class="chip-row">
         <button wx:for="{{workspaces}}" wx:key="id" class="p3-chip workspace-tab {{activeWorkspace === item.id ? 'p3-chip--selected active' : ''}}" data-id="{{item.id}}" bindtap="switchWorkspace" aria-label="{{item.label}}{{item.badge ? '，' + item.badge + ' 项待处理' : ''}}">{{item.label}}<text wx:if="{{item.badge}}" class="tab-badge">{{item.badge}}</text></button>
@@ -45,28 +45,10 @@
   </view>
 
   <view wx:if="{{activeWorkspace === 'pending' && !errorMessage}}" class="workspace-panel">
-    <view wx:if="{{assessmentQueueRuntime || publicationCandidateSummary || assessmentLifecycleSummary}}" class="rd-group status-group" aria-label="运行状态">
-      <view wx:if="{{assessmentQueueRuntime}}" class="status-row {{assessmentQueueRuntime.paused ? 'status-row--paused' : 'status-row--ok'}}">
-        <text class="status-row__eyebrow">协作式评估人工队列</text>
-        <text class="status-row__title">{{assessmentQueueRuntime.paused ? '当前已暂停领取' : '值守与队列正常'}}</text>
-        <text class="status-row__meta">待处理 {{assessmentQueueRuntime.pending_count}} · 超时 {{assessmentQueueRuntime.overdue_count}} · 无人值守紧急项 {{assessmentQueueRuntime.unattended_urgent_count}} · {{assessmentDutyShifts.length}} 个可见班次</text>
-      </view>
-      <view wx:if="{{publicationCandidateSummary}}" class="status-row">
-        <text class="status-row__eyebrow">服务端统一核对</text>
-        <text class="status-row__title">五道门发布流水线</text>
-        <text class="status-row__meta">待发布 {{publicationCandidateSummary.approved}} · 已发布 {{publicationCandidateSummary.published}} · 已拦截 {{publicationCandidateSummary.blocked}}</text>
-      </view>
-      <view wx:if="{{assessmentLifecycleSummary}}" class="status-row">
-        <text class="status-row__eyebrow">反馈生命周期</text>
-        <text class="status-row__title">{{assessmentLifecycleSummary.enabled ? '流程记录可用' : '本模块已关闭'}}</text>
-        <text class="status-row__meta">协作记录 {{assessmentLifecycleSummary.process_quality.case_count || 0}} · 交付回执 {{assessmentLifecycleSummary.process_quality.delivery_receipt_count || 0}} · 撤回传播异常 {{assessmentLifecycleSummary.implementation_quality.withdrawal_propagation_failures || 0}} · 事件 {{assessmentLifecycleSummary.harm_incidents.open || 0}}</text>
-      </view>
-    </view>
-
     <view class="summary-grid">
       <view class="summary-card">
         <text class="summary-value">{{pendingTotal}}</text>
-        <text class="summary-label">待处理事项</text>
+        <text class="summary-label">待办</text>
       </view>
       <view class="summary-card">
         <text class="summary-value {{urgentCount ? 'summary-value--urgent' : ''}}">{{urgentCount}}</text>
@@ -74,7 +56,7 @@
       </view>
       <view class="summary-card">
         <text class="summary-value">{{operations.notification_deliveries.failed || 0}}</text>
-        <text class="summary-label">消息待恢复</text>
+        <text class="summary-label">发送失败的消息</text>
       </view>
     </view>
 
@@ -84,8 +66,8 @@
         <button class="rd-link" bindtap="loadWorkbench" aria-label="刷新待处理列表">刷新</button>
       </view>
       <view wx:if="{{!pendingVisibleItems.length}}" class="rd-group rd-empty">
-        <text class="p3-item-title">暂时没有待处理事项</text>
-        <text class="p3-meta">可以稍后回来，或进入“试点项目”查看已分配内容。</text>
+        <text class="p3-item-title">暂时没有待办</text>
+        <text class="p3-meta">可以稍后回来，或到“项目与评估”看关系试点。</text>
       </view>
       <view wx:else class="rd-group">
         <view wx:for="{{pendingVisibleItems}}" wx:key="workItemId" class="queue-item queue-item--{{item.priority}} {{workItem && workItem.id === item.workItemId ? 'queue-item--active' : ''}} {{index < pendingVisibleItems.length - 1 ? 'rd-row--divided' : ''}}" data-id="{{item.workItemId}}" data-label="{{item.queueLabel}}" bindtap="openWorkItem" role="button" aria-label="处理{{item.queueLabel}}待办，{{item.priorityText}}，已等待{{item.waitText}}">
@@ -98,7 +80,7 @@
         </view>
       </view>
       <button wx:if="{{pendingHasMore}}" class="p3-btn p3-btn--quiet list-more" bindtap="showMorePending">继续查看</button>
-      <text class="p3-meta">此处仅显示队列类型、优先级和等待时间，不展示参与者填写原文。点开一条可以领取和处理。</text>
+      <text class="p3-meta">点开一条可以领取和处理。这里只显示类型、紧急程度和等了多久，不显示参与者写的原文。</text>
     </view>
 
     <view wx:if="{{workItemLoading || workItem || workItemError}}" class="rd-card work-item-panel">
@@ -116,16 +98,16 @@
         <view class="work-item-actions">
           <button wx:if="{{workItem.canClaim}}" class="p3-chip small-action primary" data-action="claim" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">领取</button>
           <block wx:if="{{workItem.canWork}}">
-            <button class="p3-chip small-action" data-action="start_processing" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">处理中</button>
+            <button class="p3-chip small-action" data-action="start_processing" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">开始处理</button>
             <button class="p3-chip small-action" data-action="wait" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">等待补充</button>
-            <button class="p3-chip small-action" data-action="renew" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">续租</button>
-            <button class="p3-chip small-action" data-action="return" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">退回队列</button>
+            <button class="p3-chip small-action" data-action="renew" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">延长处理时间</button>
+            <button class="p3-chip small-action" data-action="return" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">放回待办</button>
           </block>
           <button wx:if="{{workItem.canClose}}" class="p3-chip small-action" data-action="close" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">关闭</button>
           <button wx:if="{{workItem.canReopen}}" class="p3-chip small-action" data-action="reopen" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">重新打开</button>
           <block wx:if="{{workItem.isNotification}}">
-            <button class="p3-chip small-action" data-action="retry_notification" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">安排重试</button>
-            <button wx:if="{{workItem.canRecover}}" class="p3-chip small-action" data-action="recover_notification" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">恢复死信</button>
+            <button class="p3-chip small-action" data-action="retry_notification" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">重新发送</button>
+            <button wx:if="{{workItem.canRecover}}" class="p3-chip small-action" data-action="recover_notification" bindtap="runWorkItemAction" disabled="{{workItemBusy}}">恢复这条消息</button>
           </block>
         </view>
         <view class="p3-field">
@@ -183,11 +165,32 @@
         <text wx:if="{{workItem.boundaryNotice}}" class="p3-meta">{{workItem.boundaryNotice}}</text>
       </block>
     </view>
+
+    <block wx:if="{{assessmentQueueRuntime || publicationCandidateSummary || assessmentLifecycleSummary}}">
+      <button class="engineering-toggle" bindtap="toggleEngineering" aria-label="{{showEngineering ? '收起运行状态' : '展开运行状态'}}">{{showEngineering ? '收起运行状态' : '运行状态（技术检查用）'}}</button>
+      <view wx:if="{{showEngineering}}" class="rd-group status-group" aria-label="运行状态">
+        <view wx:if="{{assessmentQueueRuntime}}" class="status-row {{assessmentQueueRuntime.paused ? 'status-row--paused' : 'status-row--ok'}}">
+          <text class="status-row__eyebrow">评估人工队列</text>
+          <text class="status-row__title">{{assessmentQueueRuntime.paused ? '已暂停领取' : '值班和队列正常'}}</text>
+          <text class="status-row__meta">待处理 {{assessmentQueueRuntime.pending_count}} · 超时 {{assessmentQueueRuntime.overdue_count}} · 没人值班的紧急项 {{assessmentQueueRuntime.unattended_urgent_count}} · {{assessmentDutyShifts.length}} 个班次</text>
+        </view>
+        <view wx:if="{{publicationCandidateSummary}}" class="status-row">
+          <text class="status-row__eyebrow">发给参与者前的核对</text>
+          <text class="status-row__title">消息和反馈的发布核对</text>
+          <text class="status-row__meta">待发布 {{publicationCandidateSummary.approved}} · 已发布 {{publicationCandidateSummary.published}} · 已拦下 {{publicationCandidateSummary.blocked}}</text>
+        </view>
+        <view wx:if="{{assessmentLifecycleSummary}}" class="status-row">
+          <text class="status-row__eyebrow">评估反馈流程</text>
+          <text class="status-row__title">{{assessmentLifecycleSummary.enabled ? '流程记录可用' : '这个模块已关闭'}}</text>
+          <text class="status-row__meta">协作记录 {{assessmentLifecycleSummary.process_quality.case_count || 0}} · 送达回执 {{assessmentLifecycleSummary.process_quality.delivery_receipt_count || 0}} · 撤回没同步到的 {{assessmentLifecycleSummary.implementation_quality.withdrawal_propagation_failures || 0}} · 未结事件 {{assessmentLifecycleSummary.harm_incidents.open || 0}}</text>
+        </view>
+      </view>
+    </block>
   </view>
 
   <view wx:if="{{activeWorkspace === 'participants'}}" class="workspace-panel">
     <view class="rd-search">
-      <text class="p3-meta">授权范围内</text>
+      <text class="p3-meta">{{scopeText || '分配给我的参与者'}}</text>
       <text class="p3-item-title">查找参与者</text>
       <view class="search-box">
         <p3-icon name="search" size="24" tone="muted" />
@@ -227,12 +230,30 @@
     <view wx:if="{{participantDossier}}" class="rd-card participant-dossier-panel">
       <view class="rd-section__head rd-section__head--top">
         <view class="rd-titles">
-          <text class="p3-meta">按需档案</text>
+          <text class="p3-meta">参与者档案{{dossierPilot ? ' · 关系试点' : ''}}</text>
           <text class="p3-item-title">{{participantDossier.participant.nickname || '匿名参与者'}}</text>
           <text class="p3-meta">{{participantDossier.participant.anonymous_id}}</text>
         </view>
         <button class="rd-link" bindtap="closeParticipantDossier" aria-label="关闭参与者档案">关闭</button>
       </view>
+      <view wx:if="{{dossierPilot}}" class="dossier-tools">
+        <view class="chip-row">
+          <button class="p3-chip {{dossierComposer === 'message' ? 'p3-chip--selected active' : ''}}" data-composer="message" bindtap="toggleDossierComposer">发消息</button>
+          <button class="p3-chip {{dossierComposer === 'note' ? 'p3-chip--selected active' : ''}}" data-composer="note" bindtap="toggleDossierComposer">写备注</button>
+        </view>
+        <view wx:if="{{dossierComposer === 'message'}}" class="dossier-composer">
+          <input class="p3-field__input" value="{{dossierMessageTitle}}" data-key="dossierMessageTitle" bindinput="onDossierInput" maxlength="60" placeholder="标题（60 字以内）" placeholder-class="p3-field__placeholder" aria-label="消息标题" />
+          <textarea class="p3-field__input p3-field__input--multi" value="{{dossierMessageBody}}" data-key="dossierMessageBody" bindinput="onDossierInput" maxlength="2000" placeholder="参与者会在“我的 → 消息”里看到" placeholder-class="p3-field__placeholder" aria-label="消息正文"></textarea>
+          <button class="p3-btn p3-btn--primary" loading="{{dossierBusy === 'message'}}" disabled="{{!!dossierBusy}}" bindtap="sendDossierMessage">发送</button>
+        </view>
+        <view wx:if="{{dossierComposer === 'note'}}" class="dossier-composer">
+          <text class="p3-meta">备注只有研究团队能看到，参与者看不到。</text>
+          <text wx:for="{{dossierNotes}}" wx:key="id" class="detail-line">{{item.timeText}} · {{item.note}}</text>
+          <textarea class="p3-field__input p3-field__input--multi" value="{{dossierNote}}" data-key="dossierNote" bindinput="onDossierInput" maxlength="1000" placeholder="写下要核对的问题或访谈线索" placeholder-class="p3-field__placeholder" aria-label="研究备注"></textarea>
+          <button class="p3-btn p3-btn--secondary" loading="{{dossierBusy === 'note'}}" disabled="{{!!dossierBusy || !dossierNote}}" bindtap="saveDossierNote">保存备注</button>
+        </view>
+      </view>
+      <text wx:else class="p3-meta">直接发消息和写备注只对关系试点参与者开放，他们报名时同意了研究人员联系。其他参与者发来的人工支持请求，在“待办”里回复。</text>
       <scroll-view scroll-x enhanced show-scrollbar="{{false}}" class="dossier-tabs" aria-label="参与者档案标签">
         <view class="chip-row">
           <button wx:for="{{participantDossier.modules}}" wx:key="key" class="p3-chip dossier-tab {{participantModule && participantModule.module === item.key ? 'p3-chip--selected active' : ''}}" data-key="{{item.key}}" bindtap="loadParticipantModule">{{item.label}} {{item.count}}</button>
@@ -241,9 +262,13 @@
       <text wx:if="{{participantModuleLoading}}" class="p3-meta">正在按需读取当前标签…</text>
       <view wx:elif="{{participantModule}}" class="module-result-list">
         <text class="rd-label">{{participantModule.module_label}}</text>
-        <text wx:if="{{!participantModule.items.length}}" class="p3-meta">当前标签暂无记录。</text>
+        <text wx:if="{{!participantModule.items.length}}" class="p3-meta">这一类还没有记录。</text>
         <view wx:for="{{participantModule.items}}" wx:for-item="record" wx:key="id" class="module-result-card">
-          <view wx:if="{{record.exploratoryAnalysis}}" class="participant-analysis-result">
+          <view wx:if="{{record.timeline}}" class="timeline-row" data-key="{{record.module}}" bindtap="loadParticipantModule" role="button" aria-label="查看{{record.module_label}}">
+            <text class="module-line module-line--lead">{{record.module_label}}</text>
+            <text class="participant-meta">{{record.timeText}} · 点开看这一类</text>
+          </view>
+          <view wx:elif="{{record.exploratoryAnalysis}}" class="participant-analysis-result">
             <view class="participant-analysis-head">
               <text class="participant-analysis-status">{{record.statusText}}</text>
               <text class="participant-meta">{{record.record_count}} 条结构化记录</text>
@@ -285,26 +310,12 @@
     </view>
   </view>
 
-  <view wx:if="{{activeWorkspace === 'feedback'}}" class="workspace-panel">
-    <view class="summary-grid summary-grid--two">
-      <view class="summary-card summary-card--primary">
-        <text class="summary-value">{{operations.backlog.stage_feedback || 0}}</text>
-        <text class="summary-label">阶段反馈</text>
-      </view>
-      <view class="summary-card">
-        <text class="summary-value">{{operations.backlog.supervision || 0}}</text>
-        <text class="summary-label">人工支持</text>
-      </view>
-    </view>
-    <view class="safe-card workspace-card">
-      <text class="section-eyebrow">移动端轻处理</text>
-      <text class="section-title">反馈与消息</text>
-      <text class="detail-line">进入“试点项目”选择参与者后，可继续撰写阶段性反馈或发送站内消息。草稿按参与者保存在本机，切换页面不会丢失。</text>
-      <button class="safe-primary-button" data-id="pilots" bindtap="switchWorkspace">进入试点项目</button>
-    </view>
+  <view wx:if="{{activeWorkspace === 'projects'}}" class="chip-row project-switch" aria-label="项目与评估">
+    <button class="p3-chip {{projectView === 'pilots' ? 'p3-chip--selected active' : ''}}" data-view="pilots" bindtap="switchProjectView">关系试点</button>
+    <button class="p3-chip {{projectView === 'assessment' ? 'p3-chip--selected active' : ''}}" data-view="assessment" bindtap="switchProjectView">评估证据</button>
   </view>
 
-  <view wx:if="{{activeWorkspace === 'assessment'}}" class="workspace-panel">
+  <view wx:if="{{activeWorkspace === 'projects' && projectView === 'assessment'}}" class="workspace-panel">
     <view class="safe-card workspace-card">
       <view class="section-heading">
         <view>
@@ -364,7 +375,7 @@
         </view>
         <view wx:if="{{!assessmentWorkbench.evidence_items.length}}" class="empty-state">
           <text class="state-title">当前条件下没有证据</text>
-          <text class="state-copy">可在 Web 工作台补充资料或调整过滤条件。</text>
+          <text class="state-copy">可以换一个筛选条件看看。</text>
         </view>
         <view wx:for="{{assessmentWorkbench.evidence_items}}" wx:key="id" class="assessment-evidence-card">
           <view class="analysis-job-heading">
@@ -398,7 +409,7 @@
         <button class="safe-primary-button" loading="{{assessmentSaving}}" disabled="{{assessmentSaving || !assessmentAuthorization.authorized}}" bindtap="saveAssessmentDraft">保存工作台草稿</button>
       </view>
       <button class="safe-outline-button" bindtap="openAssessmentQuality">进入质量抽检与修复</button>
-      <text class="boundary-line">移动端与 Web 使用同一证据和草稿契约；工作台不生成诊断或疗效分数。</text>
+      <text class="boundary-line">工作台不生成诊断或疗效分数。</text>
     </view>
   </view>
 
@@ -425,7 +436,7 @@
       <block wx:elif="{{groupInsights}}">
         <view wx:if="{{!groupInsights.available}}" class="empty-state">
           <text class="empty-symbol">○</text>
-          <text class="state-title">{{groupInsights.windowText}}暂不展示群体结果</text>
+          <text class="state-title">{{groupInsights.windowText}}人数还不够，暂不显示</text>
           <text class="state-copy">{{groupInsights.reason}}</text>
         </view>
         <block wx:else>
@@ -515,12 +526,12 @@
     <view class="safe-card workspace-card">
       <view class="section-heading">
         <view>
-          <text class="section-eyebrow">研究者分析工作台</text>
-          <text class="section-title">已审核资料与工程状态</text>
+          <text class="section-eyebrow">资料与技术检查</text>
+          <text class="section-title">已审核资料</text>
         </view>
         <button class="icon-refresh" bindtap="loadAnalysisJobs">刷新</button>
       </view>
-      <button class="engineering-toggle" bindtap="toggleEngineering" aria-label="{{showEngineering ? '收起工程验收状态' : '展开工程验收状态'}}">{{showEngineering ? '收起工程验收状态' : '展开工程验收状态（合成数据）'}}</button>
+      <button class="engineering-toggle" bindtap="toggleEngineering" aria-label="{{showEngineering ? '收起技术检查' : '展开技术检查'}}">{{showEngineering ? '收起技术检查' : '技术检查（合成数据，不是真实结果）'}}</button>
       <view wx:if="{{showEngineering}}" class="analysis-section analysis-section--status">
         <view class="analysis-section-heading">
           <text class="analysis-section-kicker">运行护栏</text>
@@ -551,7 +562,7 @@
             <text class="participant-meta">{{item.createdText}} · 不含原文</text>
           </view>
         </view>
-        <text wx:else class="state-copy">尚无影子运行；请在 Web 受控工作台登记版本并执行。</text>
+        <text wx:else class="state-copy">还没有影子运行记录。</text>
         <text class="boundary-line">人工复核队列 {{affectShadowReviewCount}} 条，仅显示合成案例代号，不显示原文。</text>
         <view wx:if="{{affectMonitoring}}" class="analysis-gate">
           <text>模型运行：{{affectMonitoring.runtime_control.mode}} · 控制版本 {{affectMonitoring.runtime_control.version}}</text>
@@ -637,7 +648,7 @@
             <text class="participant-meta">{{item.rawTextText}}</text>
           </view>
         </view>
-        <text wx:else class="state-copy">尚无基准运行；请在 Web 受控工作台执行合成情感或网络基准。</text>
+        <text wx:else class="state-copy">还没有基准运行记录。</text>
         <text class="boundary-line">基准运行不能替代真实参与者研究证据，也不会改变参与者端反馈。</text>
         </view>
       </view>
@@ -673,23 +684,11 @@
     </view>
   </view>
 
-  <view wx:if="{{activeWorkspace === 'mine'}}" class="workspace-panel">
-    <view class="safe-card workspace-card">
-      <text class="section-eyebrow">我的工作范围</text>
-      <text class="section-title">{{roleText || '研究角色'}} · {{scopeText || '授权范围内'}}</text>
-      <view class="mine-row"><text>能力数量</text><text>{{capabilityScope.capability_ids.length}} 项</text></view>
-      <view class="mine-row"><text>待处理事项</text><text>{{pendingTotal}} 项</text></view>
-      <view class="mine-row"><text>最后同步</text><text>{{lastSyncText}}</text></view>
-      <button class="safe-outline-button" bindtap="loadWorkbench">重新同步</button>
-      <text class="boundary-line">开发全权限仅用于联调，所有操作仍记录原始账号；不代表普通账号获得正式研究角色。</text>
-    </view>
-  </view>
-
   <view wx:if="{{activeWorkspace === 'manage'}}" class="workspace-panel">
     <staff-accounts />
   </view>
 
-  <view wx:if="{{activeWorkspace === 'pilots'}}" class="workspace-panel">
+  <view wx:if="{{activeWorkspace === 'projects' && projectView === 'pilots'}}" class="workspace-panel">
     <view wx:if="{{pilotLoading && !items.length}}" class="safe-card state-card">
       <text class="state-title">正在读取试点项目</text>
     </view>
@@ -704,8 +703,8 @@
     </view>
     <view wx:elif="{{!items.length}}" class="safe-card empty-state">
       <text class="empty-symbol">○</text>
-      <text class="state-title">当前没有可查看的试点</text>
-      <text class="state-copy">请确认研究授权、角色分配或开发展示开关。</text>
+      <text class="state-title">还没有关系试点参与者</text>
+      <text class="state-copy">还没有人报名关系试点，或者还没有分给你。</text>
     </view>
     <view wx:else class="dashboard-layout">
       <scroll-view scroll-x enhanced show-scrollbar="{{false}}" class="dossier-tabs">

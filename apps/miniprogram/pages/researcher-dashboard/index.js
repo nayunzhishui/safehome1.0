@@ -6,22 +6,23 @@ const api = createSafeHomeApi({
   defaultHeaders: { "X-SafeHome-Researcher-Workspace": "1" },
 });
 
+// 四个分区：待办、参与者、分析、项目与评估；“管理”只给总管理，在 onLoad 里另加。
 const WORKSPACES = [
-  { id: "pending", label: "待处理", capability: "research.dashboard.read" },
+  { id: "pending", label: "待办", capability: "research.dashboard.read" },
   { id: "participants", label: "参与者", capability: "research.participant.read" },
-  { id: "feedback", label: "反馈与消息", capability: "research.feedback.write" },
-  { id: "analysis", label: "群体分析", capability: "research.analysis.read" },
-  { id: "assessment", label: "评估证据", capability: "research.dashboard.read" },
-  { id: "pilots", label: "试点项目", capability: "research.dashboard.read" },
-  { id: "mine", label: "我的工作", capability: "research.dashboard.read" },
+  { id: "analysis", label: "分析", capability: "research.analysis.read" },
+  { id: "projects", label: "项目与评估", capability: "research.dashboard.read" },
 ];
+const PROJECT_VIEWS = ["pilots", "assessment"];
+// 关系试点报名时同意了研究人员联系，所以只有他们能在档案里直接发消息、写备注。
+const PILOT_CONTACT_STATUSES = ["enrolled", "active"];
 
 const QUEUES = [
   { id: "risk_review", label: "风险信号复核" },
   { id: "supervision", label: "人工支持" },
   { id: "stage_feedback", label: "阶段性反馈" },
   { id: "feedback_review", label: "不适反馈复核" },
-  { id: "notification_failed", label: "消息发送恢复" },
+  { id: "notification_failed", label: "发送失败的消息" },
 ];
 
 const PRIORITY_ORDER = { urgent: 0, attention: 1, routine: 2 };
@@ -38,7 +39,7 @@ const MODULE_FIELD_LABELS = {
   status: "状态",
   created_at: "时间",
 };
-const ROLE_LABELS = { researcher: "研究员", supervisor: "督导", admin: "管理员" };
+const ROLE_LABELS = { researcher: "研究员", supervisor: "督导", admin: "总管理" };
 const SCOPE_LABELS = { assigned_participants: "分配给我的参与者", all_participants: "全部参与者" };
 const VISIBILITY_LABELS = { participant: "参与者", research_team: "研究团队", supervisor: "督导" };
 const EVIDENCE_REVIEW_LABELS = {
@@ -100,8 +101,11 @@ function windowLabel(days) {
   return Number(days) === 365 ? "近一年" : `近 ${days} 天`;
 }
 
-function moduleRows(items) {
+function moduleRows(items, moduleKey = "") {
   return (items || []).map((item) => {
+    if (moduleKey === "timeline") {
+      return { ...item, timeline: true, timeText: localTime(item.created_at) };
+    }
     if (item.schema === "safehome.participant-exploratory-analysis.v1") {
       return {
         ...item,
@@ -204,15 +208,15 @@ const WORK_ITEM_STATUS_LABELS = {
 };
 const WORK_ITEM_ACTION_LABELS = {
   claim: "领取",
-  renew: "续租",
-  return: "退回队列",
+  renew: "延长处理时间",
+  return: "放回待办",
   transfer: "转交",
   start_processing: "开始处理",
   wait: "等待补充",
   add_note: "内部说明",
   send_participant_message: "发送参与者消息",
-  retry_notification: "安排重试",
-  recover_notification: "恢复死信",
+  retry_notification: "重新发送",
+  recover_notification: "恢复这条消息",
   complete: "标记完成",
   close: "关闭",
   reopen: "重新打开",
@@ -556,6 +560,14 @@ Page({
     participantDossier: null,
     participantModule: null,
     participantModuleLoading: false,
+    dossierPilot: null,
+    dossierComposer: "",
+    dossierMessageTitle: "",
+    dossierMessageBody: "",
+    dossierNote: "",
+    dossierNotes: [],
+    dossierBusy: "",
+    projectView: "pilots",
     pilotLoading: false,
     pilotError: "",
     pilotDiagnostic: null,
@@ -689,8 +701,10 @@ Page({
       if (this.data.participantDossier && this.data.participantModule) return this.loadParticipantModule({ currentTarget: { dataset: { key: this.data.participantModule.module, page: 1 } } });
       return this.loadParticipants(true);
     }
-    if (this.data.activeWorkspace === "pilots") return Promise.all([this.loadWorkbench(), this.loadDashboard()]);
-    if (this.data.activeWorkspace === "assessment") return this.loadAssessmentCases();
+    if (this.data.activeWorkspace === "projects") {
+      if (this.data.projectView === "assessment") return this.loadAssessmentCases();
+      return Promise.all([this.loadWorkbench(), this.loadDashboard()]);
+    }
     if (this.data.activeWorkspace === "analysis") return Promise.all([this.loadGroupInsights(), this.loadAnalysisJobs()]);
     return this.loadWorkbench();
   },
@@ -700,10 +714,22 @@ Page({
     if (!this.data.workspaces.some((item) => item.id === id)) return;
     this.setData({ activeWorkspace: id });
     if (id === "participants" && !this.data.participantItems.length) await this.loadParticipants(true);
-    if (id === "pilots" && !this.data.items.length) await this.loadDashboard();
+    if (id === "projects") await this.loadProjectView(this.data.projectView);
     if (id === "analysis" && !this.data.groupInsights) this.loadGroupInsights();
     if (id === "analysis" && !this.data.analysisJobs.length) await this.loadAnalysisJobs();
-    if (id === "assessment" && !this.data.assessmentCases.length) await this.loadAssessmentCases();
+  },
+
+  // “项目与评估”里分关系试点和评估证据两块，各自第一次打开时才读取。
+  async switchProjectView(event) {
+    const view = event.currentTarget.dataset.view;
+    if (!PROJECT_VIEWS.includes(view) || view === this.data.projectView) return;
+    this.setData({ projectView: view });
+    await this.loadProjectView(view);
+  },
+
+  async loadProjectView(view) {
+    if (view === "pilots" && !this.data.items.length) await this.loadDashboard();
+    if (view === "assessment" && !this.data.assessmentCases.length) await this.loadAssessmentCases();
   },
 
   async loadGroupInsights(windowDays = this.data.groupWindow) {
@@ -1195,19 +1221,118 @@ Page({
   retryParticipants() { return this.loadParticipants(true); },
   loadMoreParticipants() { return this.loadParticipants(false); },
 
+  // 档案以时间线为中心：打开先看时间线，点一条跳到对应标签；试点参与者可在这里直接发消息、写备注。
   async selectParticipantDossier(event) {
     const userId = event.currentTarget.dataset.id;
-    this.setData({ participantLoading: true, participantError: "", participantDossier: null, participantModule: null });
+    this.setData({ participantLoading: true, participantError: "", participantDossier: null, participantModule: null, ...this.emptyDossierTools() });
     try {
-      const participantDossier = await api.getResearchParticipant(userId);
-      this.setData({ participantLoading: false, participantDossier });
+      const dossier = await api.getResearchParticipant(userId);
+      const modules = dossier.modules || [];
+      const enrollment = dossier.enrollment;
+      this.setData({
+        participantLoading: false,
+        participantDossier: {
+          ...dossier,
+          modules: [...modules.filter((item) => item.key === "timeline"), ...modules.filter((item) => item.key !== "timeline")],
+        },
+        dossierPilot: enrollment && PILOT_CONTACT_STATUSES.includes(enrollment.status) ? enrollment : null,
+      });
+      if (modules.some((item) => item.key === "timeline")) {
+        await this.loadParticipantModule({ currentTarget: { dataset: { key: "timeline", page: 1 } } });
+      }
     } catch (error) {
       this.setData({ participantLoading: false, participantError: error.message || "参与者档案暂时无法读取。", participantDiagnostic: buildErrorDiagnostic(error) });
     }
   },
 
   closeParticipantDossier() {
-    this.setData({ participantDossier: null, participantModule: null });
+    this.setData({ participantDossier: null, participantModule: null, ...this.emptyDossierTools() });
+  },
+
+  emptyDossierTools() {
+    return { dossierPilot: null, dossierComposer: "", dossierMessageTitle: "", dossierMessageBody: "", dossierNote: "", dossierNotes: [], dossierBusy: "" };
+  },
+
+  toggleDossierComposer(event) {
+    const composer = event.currentTarget.dataset.composer;
+    const next = this.data.dossierComposer === composer ? "" : composer;
+    this.setData({ dossierComposer: next });
+    if (next === "note") this.loadDossierNotes();
+  },
+
+  onDossierInput(event) {
+    const key = event.currentTarget.dataset.key;
+    if (!["dossierMessageTitle", "dossierMessageBody", "dossierNote"].includes(key)) return;
+    this.setData({ [key]: event.detail.value || "" });
+  },
+
+  async sendDossierMessage() {
+    const pilot = this.data.dossierPilot;
+    const title = this.data.dossierMessageTitle.trim();
+    const body = this.data.dossierMessageBody.trim();
+    if (!pilot || this.data.dossierBusy) return;
+    if (!title || !body) {
+      wx.showToast({ title: "请填写标题和正文", icon: "none" });
+      return;
+    }
+    const confirmed = await new Promise((resolve) => {
+      wx.showModal({
+        title: "发送消息",
+        content: "参与者会在“我的 → 消息”里看到，发出后不能撤回。确定发送吗？",
+        confirmText: "发送",
+        success: (result) => resolve(Boolean(result.confirm)),
+        fail: () => resolve(false),
+      });
+    });
+    if (!confirmed) return;
+    this.setData({ dossierBusy: "message" });
+    try {
+      await api.sendResearcherMessage({
+        enrollment_id: pilot.id,
+        title,
+        body,
+        idempotency_key: `dossier-message-${pilot.id}-${Date.now()}`,
+      });
+      this.setData({ dossierMessageTitle: "", dossierMessageBody: "", dossierComposer: "" });
+      wx.showToast({ title: "已发送", icon: "success" });
+    } catch (error) {
+      wx.showToast({ title: error.message || "没有发出去，请稍后再试", icon: "none" });
+    } finally {
+      this.setData({ dossierBusy: "" });
+    }
+  },
+
+  async loadDossierNotes() {
+    const pilot = this.data.dossierPilot;
+    if (!pilot) return;
+    try {
+      const detail = await api.getRelationshipEnrollment(pilot.id);
+      if (!this.data.dossierPilot || this.data.dossierPilot.id !== pilot.id) return;
+      this.setData({
+        dossierNotes: (detail.research_notes || [])
+          .map((item) => ({ id: item.id, note: item.note, timeText: localTime(item.created_at) }))
+          .reverse(),
+      });
+    } catch (error) {
+      wx.showToast({ title: error.message || "备注暂时读不出来", icon: "none" });
+    }
+  },
+
+  async saveDossierNote() {
+    const pilot = this.data.dossierPilot;
+    const note = this.data.dossierNote.trim();
+    if (!pilot || !note || this.data.dossierBusy) return;
+    this.setData({ dossierBusy: "note" });
+    try {
+      await api.createRelationshipResearchNote(pilot.id, { note });
+      this.setData({ dossierNote: "" });
+      await this.loadDossierNotes();
+      wx.showToast({ title: "备注已保存", icon: "success" });
+    } catch (error) {
+      wx.showToast({ title: error.message || "备注没有保存成功", icon: "none" });
+    } finally {
+      this.setData({ dossierBusy: "" });
+    }
   },
 
   async loadParticipantModule(event) {
@@ -1217,7 +1342,7 @@ Page({
     this.setData({ participantModuleLoading: true, participantError: "" });
     try {
       const payload = await api.getResearchParticipantModule(this.data.participantDossier.participant.user_id, moduleKey, { page: requestedPage, page_size: 10 });
-      const items = moduleRows(payload.items);
+      const items = moduleRows(payload.items, moduleKey);
       this.setData({
         participantModuleLoading: false,
         participantModule: requestedPage > 1 && this.data.participantModule && this.data.participantModule.module === moduleKey

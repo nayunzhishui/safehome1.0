@@ -1006,3 +1006,24 @@
 .work-item-error {
   display: block;
 }
+
+/* 档案里的发消息、写备注；项目与评估的二级切换；时间线一行可点开对应标签。 */
+.dossier-tools,
+.dossier-composer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+}
+
+.project-switch {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.timeline-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4rpx;
+  min-height: 88rpx;
+}

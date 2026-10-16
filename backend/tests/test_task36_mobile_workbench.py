@@ -69,7 +69,7 @@ def test_participant_matrix_rejects_bad_pages_and_requires_auth(tmp_path, monkey
     assert client.get("/api/research/participants?page=1&page_size=10").status_code == 401
 
 
-def test_mobile_workbench_static_contract_covers_five_workspaces_and_recovery():
+def test_mobile_workbench_static_contract_covers_four_workspaces_and_recovery():
     page_root = PROJECT_ROOT / "apps" / "miniprogram" / "pages" / "researcher-dashboard"
     js = (page_root / "index.js").read_text(encoding="utf-8")
     wxml = (page_root / "index.wxml").read_text(encoding="utf-8")
@@ -77,7 +77,8 @@ def test_mobile_workbench_static_contract_covers_five_workspaces_and_recovery():
     page_json = (page_root / "index.json").read_text(encoding="utf-8")
     api_js = (PROJECT_ROOT / "apps" / "miniprogram" / "services" / "api.js").read_text(encoding="utf-8")
 
-    for label in ("待处理", "参与者", "反馈与消息", "试点项目", "我的工作"):
+    # 2026-10-15 负责人定：分区合并为待办、参与者、分析、项目与评估（管理只给总管理）。
+    for label in ("待办", "参与者", "分析", "项目与评估"):
         assert label in js
     assert "Promise.allSettled" in js
     assert "wx.onNetworkStatusChange" in js
