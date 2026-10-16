@@ -1046,6 +1046,17 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.adminExport}${queryString(params)}`, { requiresAuth: true, rawText: true });
     },
 
+    // 人工支持请求（督导和总管理）：看原文和联系方式、接单、回复参与者、结束。
+    getSupervisionForReviewer(requestId) {
+      return request(`${API_ENDPOINTS.supervision}/${encodeURIComponent(requestId)}/reviewer`, { requiresAuth: true });
+    },
+
+    actOnSupervision(requestId, action, data = {}) {
+      return request(`${API_ENDPOINTS.supervision}/${encodeURIComponent(requestId)}/${action}`, {
+        method: "POST", data, requiresAuth: true,
+      });
+    },
+
     // 删除申请审核（督导和总管理）：受理、退回、预览范围、批准、试运行和正式执行。
     listPrivacyRequestsForReview(params = {}) {
       return request(`${API_ENDPOINTS.privacyAdminRequests}${queryString(params)}`, { requiresAuth: true });

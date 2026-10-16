@@ -235,6 +235,17 @@ const RISK_REVIEW_OPTIONS = [
   { status: "closed", label: "处理完成并关闭" },
 ];
 const MESSAGE_QUEUES = ["stage_feedback", "supervision", "feedback_review"];
+const SUPERVISION_STATUS_LABELS = { pending: "待接单", acknowledged: "已接单", replied: "已回复", resolved: "已结束", closed: "已关闭" };
+const SUPERVISION_ACTIONS = ["acknowledge", "reply", "resolve"];
+
+function supervisionView(item) {
+  return {
+    ...item,
+    statusText: SUPERVISION_STATUS_LABELS[item.status] || item.status,
+    createdText: localTime(item.created_at),
+    open: !["resolved", "closed"].includes(item.status),
+  };
+}
 const ACTIVE_WORK_STATUSES = ["claimed", "processing", "waiting"];
 
 function shortTime(value) {
@@ -644,6 +655,9 @@ Page({
     riskReviewIndex: 0,
     riskReviewLabels: RISK_REVIEW_OPTIONS.map((option) => option.label),
     riskReviewAction: "",
+    supervisionCase: null,
+    supervisionReply: "",
+    supervisionBusy: "",
   },
 
   async onLoad() {
@@ -1082,9 +1096,12 @@ Page({
       workItemMessageBody: "",
       riskReviewAction: "",
     });
+    this.setData({ supervisionCase: null, supervisionReply: "" });
     try {
       const detail = await api.getResearchWorkItem(id);
-      this.setData({ workItem: buildWorkItemView(detail, label, this.canManageSensitiveWorkItems(), this.currentUserId()) });
+      const workItem = buildWorkItemView(detail, label, this.canManageSensitiveWorkItems(), this.currentUserId());
+      this.setData({ workItem });
+      if (workItem.queueType === "supervision" && workItem.privileged && workItem.sourceId) this.loadSupervisionCase(workItem.sourceId);
     } catch (error) {
       this.setData({ workItem: null, workItemError: error.message || "待办详情暂时无法读取。" });
     } finally {
@@ -1093,7 +1110,45 @@ Page({
   },
 
   closeWorkItem() {
-    this.setData({ workItem: null, workItemError: "", workItemNote: "" });
+    this.setData({ workItem: null, workItemError: "", workItemNote: "", supervisionCase: null, supervisionReply: "" });
+  },
+
+  // 人工支持待办里直接处理请求本身：看原文、接单、回复（参与者在人工支持页和消息里看到）、结束。
+  async loadSupervisionCase(requestId) {
+    try {
+      const item = await api.getSupervisionForReviewer(requestId);
+      if (!this.data.workItem || this.data.workItem.sourceId !== requestId) return;
+      this.setData({ supervisionCase: supervisionView(item), supervisionReply: item.supervisor_reply || "" });
+    } catch (error) {
+      this.setData({ supervisionCase: null });
+    }
+  },
+
+  onSupervisionReplyInput(event) {
+    this.setData({ supervisionReply: event.detail.value || "" });
+  },
+
+  async runSupervisionAction(event) {
+    const action = event.currentTarget.dataset.action;
+    const item = this.data.supervisionCase;
+    if (!item || !SUPERVISION_ACTIONS.includes(action) || this.data.supervisionBusy) return;
+    const reply = this.data.supervisionReply.trim();
+    if (action === "reply" && !reply) {
+      wx.showToast({ title: "请先写回复", icon: "none" });
+      return;
+    }
+    const data = action === "reply" ? { supervisor_reply: reply } : action === "resolve" ? { resolution_code: "support_completed" } : {};
+    this.setData({ supervisionBusy: action });
+    try {
+      const updated = await api.actOnSupervision(item.id, action, data);
+      this.setData({ supervisionCase: supervisionView({ ...item, ...updated }) });
+      wx.showToast({ title: { acknowledge: "已接单", reply: "回复已发出", resolve: "已结束" }[action], icon: "success" });
+      this.loadWorkbench();
+    } catch (error) {
+      wx.showToast({ title: error.message || "没有成功，请稍后再试", icon: "none" });
+    } finally {
+      this.setData({ supervisionBusy: "" });
+    }
   },
 
   onWorkItemInput(event) {

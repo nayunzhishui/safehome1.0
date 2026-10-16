@@ -150,6 +150,23 @@
           </block>
         </view>
 
+        <view wx:if="{{supervisionCase}}" class="work-item-section">
+          <text class="rd-label">人工支持请求 · {{supervisionCase.statusText}}</text>
+          <text class="p3-meta">提交于 {{supervisionCase.createdText}}{{supervisionCase.source_title ? ' · 关于：' + supervisionCase.source_title : ''}}</text>
+          <text class="detail-line">{{supervisionCase.message}}</text>
+          <text wx:if="{{supervisionCase.contact}}" class="p3-meta">联系方式：{{supervisionCase.contact}}</text>
+          <text wx:if="{{supervisionCase.risk_hint}}" class="p3-meta">风险提示：{{supervisionCase.risk_hint}}</text>
+          <block wx:if="{{supervisionCase.open}}">
+            <textarea class="p3-field__input p3-field__input--multi" value="{{supervisionReply}}" bindinput="onSupervisionReplyInput" maxlength="2000" placeholder="写给参与者的回复，他会在人工支持页和消息里看到" placeholder-class="p3-field__placeholder" aria-label="回复参与者"></textarea>
+            <view class="work-item-actions">
+              <button wx:if="{{supervisionCase.status === 'pending'}}" class="p3-chip small-action" data-action="acknowledge" bindtap="runSupervisionAction" disabled="{{!!supervisionBusy}}">接单</button>
+              <button class="p3-chip small-action primary" data-action="reply" bindtap="runSupervisionAction" disabled="{{!!supervisionBusy}}">发送回复</button>
+              <button class="p3-chip small-action" data-action="resolve" bindtap="runSupervisionAction" disabled="{{!!supervisionBusy}}">结束请求</button>
+            </view>
+          </block>
+          <text wx:if="{{supervisionCase.supervisor_reply && !supervisionCase.open}}" class="p3-meta">已回复：{{supervisionCase.supervisor_reply}}</text>
+        </view>
+
         <view wx:if="{{workItem.canMessage}}" class="work-item-section">
           <text class="rd-label">发送参与者可见消息</text>
           <input class="p3-field__input" value="{{workItemMessageTitle}}" data-key="workItemMessageTitle" bindinput="onWorkItemInput" maxlength="60" placeholder="标题（60字以内）" placeholder-class="p3-field__placeholder" />
