@@ -154,6 +154,7 @@ const API_ENDPOINTS = {
   productEvents: "/api/product-events",
   privacyRequests: "/api/privacy/requests",
   privacyDeleteMyData: "/api/privacy/delete-my-data",
+  privacyAdminRequests: "/api/privacy/admin/requests",
   researchParticipants: "/api/research/participants",
   researchOperations: "/api/research/operations",
   researchGroupInsights: "/api/research/group-insights",
@@ -1011,6 +1012,37 @@ function createSafeHomeApi(options = {}) {
         data,
         header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
         requiresAuth: true,
+      });
+    },
+
+    // 删除申请审核（督导和总管理）：受理、退回、预览范围、批准、试运行和正式执行。
+    listPrivacyRequestsForReview(params = {}) {
+      return request(`${API_ENDPOINTS.privacyAdminRequests}${queryString(params)}`, { requiresAuth: true });
+    },
+
+    getPrivacyRequestForReview(requestId) {
+      return request(`${API_ENDPOINTS.privacyAdminRequests}/${encodeURIComponent(requestId)}`, { requiresAuth: true });
+    },
+
+    transitionPrivacyRequest(requestId, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.privacyAdminRequests}/${encodeURIComponent(requestId)}/transition`, {
+        method: "POST", data, idempotencyKey, requiresAuth: true,
+      });
+    },
+
+    previewPrivacyRequest(requestId) {
+      return request(`${API_ENDPOINTS.privacyAdminRequests}/${encodeURIComponent(requestId)}/preview`, { requiresAuth: true });
+    },
+
+    approvePrivacyRequest(requestId, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.privacyAdminRequests}/${encodeURIComponent(requestId)}/approvals`, {
+        method: "POST", data, idempotencyKey, requiresAuth: true,
+      });
+    },
+
+    executePrivacyRequest(requestId, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.privacyAdminRequests}/${encodeURIComponent(requestId)}/execute`, {
+        method: "POST", data, idempotencyKey, requiresAuth: true,
       });
     },
 

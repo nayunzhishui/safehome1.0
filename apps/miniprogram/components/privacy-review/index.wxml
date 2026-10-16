@@ -1,0 +1,66 @@
+<view class="privacy-review">
+  <view class="privacy-review__head">
+    <text class="p3-item-title">删除申请</text>
+    <text class="p3-meta">参与者在“我的 → 隐私说明”里提交的删除申请。受理后先预览，再批准和执行。</text>
+  </view>
+
+  <block wx:if="{{!detail}}">
+    <view class="privacy-review__chips">
+      <button wx:for="{{filters}}" wx:key="id" class="p3-chip {{status === item.id ? 'p3-chip--selected' : ''}}" data-id="{{item.id}}" bindtap="pickFilter">{{item.label}}</button>
+    </view>
+    <text wx:if="{{error}}" class="privacy-review__error">{{error}}</text>
+    <view wx:if="{{items.length}}" class="p3-group privacy-review__list">
+      <view wx:for="{{items}}" wx:key="id" class="privacy-review__row" data-id="{{item.id}}" bindtap="openRequest" role="button" aria-label="查看这条删除申请">
+        <text class="privacy-review__title">{{item.statusText}} · 账号尾号 {{item.shortId}}</text>
+        <text class="p3-meta">提交于 {{item.createdText}}</text>
+      </view>
+    </view>
+    <text wx:elif="{{!loading && !error}}" class="p3-meta">这里还没有申请。</text>
+    <button wx:if="{{items.length < total}}" class="p3-btn p3-btn--secondary" bindtap="loadMore" loading="{{loading}}" disabled="{{loading}}">再看 20 条</button>
+  </block>
+
+  <view wx:else class="p3-group privacy-review__detail">
+    <view class="privacy-review__row">
+      <text class="privacy-review__title">{{detail.statusText}} · 提交于 {{detail.createdText}}</text>
+      <text class="p3-meta">账号：{{detail.request.user_id}}</text>
+      <text class="p3-meta">本人填的原因：{{detail.request.reason || '没有填'}}</text>
+      <text wx:if="{{detail.scopeText}}" class="p3-meta">删除范围：{{detail.scopeText}}</text>
+      <text wx:if="{{detail.approvalCount}}" class="p3-meta">已有 {{detail.approvalCount}} 人批准</text>
+      <text wx:for="{{detail.trail}}" wx:key="*this" class="p3-meta">{{item}}</text>
+      <text wx:for="{{detail.executionRows}}" wx:key="*this" class="p3-meta">{{item}}</text>
+    </view>
+
+    <view wx:if="{{detail.request.status === 'pending'}}" class="privacy-review__section">
+      <text class="p3-meta">选择要删除的范围（默认全选）：</text>
+      <view class="privacy-review__chips">
+        <button wx:for="{{scopes}}" wx:key="key" class="p3-chip {{item.selected ? 'p3-chip--selected' : ''}}" data-key="{{item.key}}" bindtap="toggleScope">{{item.label}}</button>
+      </view>
+    </view>
+
+    <view wx:if="{{detail.request.status === 'pending' || detail.request.status === 'processing'}}" class="privacy-review__section">
+      <textarea class="p3-field__input p3-field__input--multi" value="{{note}}" bindinput="onNoteInput" maxlength="1000" placeholder="退回或放回时写原因；受理可以不写" placeholder-class="p3-field__placeholder" aria-label="处理备注"></textarea>
+      <view class="privacy-review__chips">
+        <button wx:if="{{detail.request.status === 'pending'}}" class="p3-chip" data-action="start_processing" bindtap="transition" disabled="{{!!busy}}">受理</button>
+        <button wx:if="{{detail.request.status === 'processing'}}" class="p3-chip" data-action="return_to_pending" bindtap="transition" disabled="{{!!busy}}">放回待受理</button>
+        <button class="p3-chip" data-action="reject" bindtap="transition" disabled="{{!!busy}}">退回</button>
+      </view>
+    </view>
+
+    <view wx:if="{{detail.request.status === 'processing'}}" class="privacy-review__section">
+      <button class="p3-btn p3-btn--secondary" bindtap="loadPreview" loading="{{busy === 'preview'}}" disabled="{{!!busy}}">预览会删除哪些数据</button>
+      <block wx:if="{{preview}}">
+        <text wx:for="{{preview.rows}}" wx:key="*this" class="p3-meta">{{item}}</text>
+        <text class="p3-meta">合计 {{preview.total_affected}} 条。{{preview.irreversible_notice}}</text>
+        <view class="privacy-review__chips">
+          <button class="p3-chip" bindtap="approve" disabled="{{!!busy}}">批准</button>
+          <button class="p3-chip" data-mode="dry_run" bindtap="execute" disabled="{{!!busy}}">试运行</button>
+          <button class="p3-chip" data-mode="execute" bindtap="execute" disabled="{{!!busy}}">正式执行</button>
+        </view>
+      </block>
+      <text wx:if="{{resultText}}" class="privacy-review__result">{{resultText}}</text>
+      <text class="p3-meta">正式删除要等负责人确认数据保存期限、在服务器打开执行开关；生产环境还要两人批准，其中一人是总管理。在那之前可以受理、预览和试运行。</text>
+    </view>
+
+    <button class="p3-btn p3-btn--quiet" bindtap="closeDetail">返回列表</button>
+  </view>
+</view>

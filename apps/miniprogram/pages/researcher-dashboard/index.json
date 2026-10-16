@@ -4,6 +4,7 @@
   "backgroundTextStyle": "dark",
   "usingComponents": {
     "p3-icon": "/components/p3-icon/index",
-    "staff-accounts": "/components/staff-accounts/index"
+    "staff-accounts": "/components/staff-accounts/index",
+    "privacy-review": "/components/privacy-review/index"
   }
 }

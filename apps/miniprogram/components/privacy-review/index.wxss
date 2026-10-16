@@ -1,0 +1,55 @@
+/* 删除申请审核（研究者工作台“管理”页）：状态筛选、申请行、详情里的范围选择与操作。 */
+.privacy-review,
+.privacy-review__head,
+.privacy-review__section,
+.privacy-review__detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+}
+
+.privacy-review {
+  gap: var(--p3-stack);
+}
+
+.privacy-review__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--p3-tight);
+}
+
+.privacy-review__list,
+.privacy-review__detail {
+  padding: 0 32rpx;
+}
+
+.privacy-review__detail {
+  padding-bottom: 24rpx;
+}
+
+.privacy-review__row {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  padding: 28rpx 0;
+  border-bottom: 2rpx solid var(--p3-hairline);
+  word-break: break-all;
+}
+
+.privacy-review__list .privacy-review__row:last-child {
+  border-bottom: none;
+}
+
+.privacy-review__title {
+  color: var(--p3-ink);
+  font-size: 32rpx;
+  line-height: 48rpx;
+  font-weight: 500;
+}
+
+.privacy-review__error,
+.privacy-review__result {
+  color: var(--p3-risk-ink);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
