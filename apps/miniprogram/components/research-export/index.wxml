@@ -1,0 +1,17 @@
+<view class="research-export">
+  <view class="research-export__head">
+    <text class="p3-item-title">数据导出</text>
+    <text class="p3-meta">生成表格后发到微信，再到电脑上打开。每次导出都记在审计里；发出后手机里的文件会删掉。</text>
+  </view>
+  <text class="p3-meta">导出哪一类</text>
+  <view class="research-export__chips">
+    <button wx:for="{{types}}" wx:key="id" class="p3-chip {{type === item.id ? 'p3-chip--selected' : ''}}" data-id="{{item.id}}" bindtap="pickType">{{item.label}}</button>
+  </view>
+  <text class="p3-meta">最多导出</text>
+  <view class="research-export__chips">
+    <button wx:for="{{limits}}" wx:key="*this" class="p3-chip {{limit === item ? 'p3-chip--selected' : ''}}" data-limit="{{item}}" bindtap="pickLimit">{{item}} 行</button>
+  </view>
+  <button class="p3-btn p3-btn--secondary" bindtap="generate" loading="{{busy}}" disabled="{{busy}}">生成表格</button>
+  <button wx:if="{{file}}" class="p3-btn p3-btn--primary" bindtap="share">发到微信</button>
+  <text wx:if="{{message}}" class="p3-meta">{{message}}</text>
+</view>

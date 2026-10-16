@@ -342,6 +342,7 @@ function createSafeHomeApi(options = {}) {
           url: `${localHttpBaseUrl}${path}`,
           method: wireMethod,
           data: options.data || {},
+          dataType: options.rawText ? "text" : "json",
           header: {
             "content-type": "application/json",
             ...authHeader,
@@ -350,7 +351,8 @@ function createSafeHomeApi(options = {}) {
             ...(options.header || {}),
           },
           success(res) {
-            handleResponse(res, resolve, reject, path, method, debug, authToken);
+            if (options.rawText) settleText(res, resolve, reject, path, method, debug, authToken);
+            else handleResponse(res, resolve, reject, path, method, debug, authToken);
           },
           fail(err) {
             reject({
@@ -391,6 +393,7 @@ function createSafeHomeApi(options = {}) {
         path,
         method: wireMethod,
         data: options.data || {},
+        dataType: options.rawText ? "text" : "json",
         header: {
           "content-type": "application/json",
           ...authHeader,
@@ -400,7 +403,8 @@ function createSafeHomeApi(options = {}) {
           "X-WX-SERVICE": containerService,
         },
         success(res) {
-          handleResponse(res, resolve, reject, path, method, debug, authToken);
+          if (options.rawText) settleText(res, resolve, reject, path, method, debug, authToken);
+          else handleResponse(res, resolve, reject, path, method, debug, authToken);
         },
         fail(err) {
           const debugMessage = `云托管调用失败，请检查云环境 ID、云托管服务名和服务状态。当前 env=${cloudEnvId}，service=${containerService}，path=${path}。`;
@@ -420,6 +424,28 @@ function createSafeHomeApi(options = {}) {
         },
       });
     });
+  }
+
+  // 导出这类 CSV 接口成功时直接返回文本；出错时仍是 JSON 错误信封。
+  function settleText(res, resolve, reject, path, method, debug, authToken) {
+    const statusCode = res.statusCode || 0;
+    if (statusCode >= 200 && statusCode < 300 && typeof res.data === "string") {
+      if (authToken !== (wx.getStorageSync("auth_token") || "")) {
+        reject({ code: "auth_session_changed", message: "登录状态已变化，请重新打开页面。", status: 409, retryable: false, path, method });
+        return;
+      }
+      resolve(res.data);
+      return;
+    }
+    let payload = res.data;
+    if (typeof payload === "string") {
+      try {
+        payload = JSON.parse(payload);
+      } catch (error) {
+        payload = null;
+      }
+    }
+    handleResponse({ ...res, data: payload }, resolve, reject, path, method, debug, authToken);
   }
 
   function handleResponse(res, resolve, reject, path, method, debug, authToken) {
@@ -1013,6 +1039,11 @@ function createSafeHomeApi(options = {}) {
         header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
         requiresAuth: true,
       });
+    },
+
+    // 导出研究数据（只有总管理）：返回 CSV 文本，页面写成文件后用微信发出去。
+    exportResearchCsv(params = {}) {
+      return request(`${API_ENDPOINTS.adminExport}${queryString(params)}`, { requiresAuth: true, rawText: true });
     },
 
     // 删除申请审核（督导和总管理）：受理、退回、预览范围、批准、试运行和正式执行。

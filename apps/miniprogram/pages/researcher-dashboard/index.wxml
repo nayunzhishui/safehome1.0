@@ -687,6 +687,7 @@
   <view wx:if="{{activeWorkspace === 'manage'}}" class="workspace-panel">
     <staff-accounts wx:if="{{isOwner}}" />
     <privacy-review />
+    <research-export wx:if="{{isOwner}}" />
   </view>
 
   <view wx:if="{{activeWorkspace === 'projects' && projectView === 'pilots'}}" class="workspace-panel">

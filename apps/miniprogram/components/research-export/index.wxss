@@ -1,0 +1,13 @@
+/* 数据导出（研究者工作台“管理”页）：类型与行数选择、生成和转发按钮。 */
+.research-export,
+.research-export__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p3-tight);
+}
+
+.research-export__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--p3-tight);
+}
