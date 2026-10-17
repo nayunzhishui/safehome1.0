@@ -156,6 +156,7 @@ const API_ENDPOINTS = {
   privacyDeleteMyData: "/api/privacy/delete-my-data",
   privacyAdminRequests: "/api/privacy/admin/requests",
   researchParticipants: "/api/research/participants",
+  researchAssessmentCatalog: "/api/research/assessment-catalog",
   researchOperations: "/api/research/operations",
   researchGroupInsights: "/api/research/group-insights",
   researchQueues: "/api/research/queues",
@@ -1312,6 +1313,27 @@ function createSafeHomeApi(options = {}) {
 
     getResearchParticipantModule(userId, moduleKey, params = {}) {
       return request(`${API_ENDPOINTS.researchParticipants}/${encodeURIComponent(userId)}/modules/${encodeURIComponent(moduleKey)}${queryString(params)}`, { requiresAuth: true });
+    },
+
+    // 和测一测给用户看的是同一份量表清单，加了量表这里自动跟着多。
+    getResearchAssessmentCatalog() {
+      return request(API_ENDPOINTS.researchAssessmentCatalog, { requiresAuth: true });
+    },
+
+    getResearchParticipantAssessment(userId, resultId) {
+      return request(`${API_ENDPOINTS.researchParticipants}/${encodeURIComponent(userId)}/assessments/${encodeURIComponent(resultId)}`, { requiresAuth: true });
+    },
+
+    listResearchAssessmentInvitations(userId) {
+      return request(`${API_ENDPOINTS.researchParticipants}/${encodeURIComponent(userId)}/assessment-invitations`, { requiresAuth: true });
+    },
+
+    sendResearchAssessmentInvitation(userId, worksheetId) {
+      return request(`${API_ENDPOINTS.researchParticipants}/${encodeURIComponent(userId)}/assessment-invitations`, {
+        method: "POST",
+        data: { worksheet_id: worksheetId },
+        requiresAuth: true,
+      });
     },
 
     listResearchAssignments(params = {}) {

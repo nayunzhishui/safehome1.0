@@ -616,6 +616,11 @@ def _option_score_bounds(question: dict) -> tuple[int | float, int | float] | No
     return (min(scores), max(scores)) if scores else None
 
 
+def effective_item_score(question: dict | None, score: int | float) -> int | float:
+    """An item's score as it counts toward totals (reverse-scored items flipped)."""
+    return _effective_score(question, score)
+
+
 def _effective_score(question: dict | None, score: int | float) -> int | float:
     if question and question.get("reverse_scored"):
         bounds = _option_score_bounds(question)

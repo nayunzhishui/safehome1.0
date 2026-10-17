@@ -2,6 +2,13 @@ const { createSafeHomeApi } = require("../../services/api");
 
 const api = createSafeHomeApi();
 
+// 消息带来源时底部按钮的文字；以后加新的来源类型，在这里和 openSource 各补一处。
+const SOURCE_BUTTON_LABELS = {
+  relationship_screening_report: "查看关系探索报告",
+  relationship_narrative: "查看已确认探索手记",
+  assessment_worksheet: "去填写",
+};
+
 // 来源行用“10月9日 20:15”；不是今年的消息保留年份。
 function messageTimeText(value) {
   const matched = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2})/);
@@ -45,8 +52,8 @@ Page({
         messageTime: messageTimeText(message.created_at),
         // 正文按换行分段显示（Figma 670:3177 两段之间留 12 的间距）。
         bodyParagraphs: String(message.body || "暂无更多内容。").split(/\n+/).map((line) => line.trim()).filter(Boolean),
-        canOpenSource: ["relationship_screening_report", "relationship_narrative"].includes(message.source_type) && !!message.source_id,
-        sourceButtonLabel: message.source_type === "relationship_screening_report" ? "查看关系探索报告" : "查看已确认探索手记",
+        canOpenSource: Object.prototype.hasOwnProperty.call(SOURCE_BUTTON_LABELS, message.source_type) && !!message.source_id && !message.is_withdrawn,
+        sourceButtonLabel: SOURCE_BUTTON_LABELS[message.source_type] || "",
         canEvaluate: ["researcher_message", "relationship_stage_feedback", "supervision_feedback", "relationship_report"].includes(message.message_type),
       });
     } catch (error) {
@@ -71,6 +78,11 @@ Page({
 
   openSource() {
     const message = this.data.message;
+    // 研究者发来的量表邀请：直接打开测一测里的那份量表。
+    if (message && message.source_type === "assessment_worksheet" && message.source_id) {
+      wx.navigateTo({ url: `/pages/assessment-detail/index?id=${encodeURIComponent(message.source_id)}` });
+      return;
+    }
     if (message && message.source_type === "relationship_screening_report" && message.source_id) {
       wx.navigateTo({ url: `/pages/relationship-report/index?id=${encodeURIComponent(message.source_id)}` });
       return;

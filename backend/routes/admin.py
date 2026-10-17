@@ -10,6 +10,8 @@ from flask import Blueprint, Response, request
 from database import get_connection, json_dumps, json_loads, load_content_json, now_iso, write_audit_log
 from routes.auth_utils import AuthError, auth_error_response, require_capability, require_role
 from services.privacy_request_service import research_revoked_filter
+from services.research_assessment_service import item_export_rows, wide_export_rows
+from routes.assessments import worksheets_by_id
 from routes.utils import fail, ok, parse_bool, parse_int
 from services.content_loader import ContentLoadError, load_parent_scales, load_student_scales
 from services.content_sync_service import (
@@ -34,6 +36,8 @@ EXPORT_TABLES = {
 }
 
 PROFILE_EXPORT_TYPES = {"profile", "student_profiles"}
+# assessment_items: one row per answered question; assessment_wide: one row per answer sheet of one worksheet.
+ASSESSMENT_DETAIL_EXPORT_TYPES = {"assessment_items", "assessment_wide"}
 DEFAULT_EXPORT_LIMIT = 1000
 MAX_EXPORT_LIMIT = 5000
 CSV_FORMULA_PREFIXES = ("=", "+", "-", "@", "\t", "\r")
@@ -888,6 +892,12 @@ def export_csv():
     confirmed_high_risk_export = parse_bool(request.args.get("confirm_high_risk"), False)
     contains_high_risk = False
     row_count_before_limit = 0
+    # Scale exports with questions and scores. Worksheets are read before the
+    # export connection opens because loading them uses a connection of its own.
+    worksheet_id = str(request.args.get("worksheet_id") or "").strip()
+    worksheets = worksheets_by_id() if export_type in ASSESSMENT_DETAIL_EXPORT_TYPES else {}
+    if export_type == "assessment_wide" and worksheet_id not in worksheets:
+        return fail("validation_error", "按量表导出需要先选一份量表。", status=400)
     try:
         with get_connection() as conn:
             if export_type in PROFILE_EXPORT_TYPES:
@@ -1015,6 +1025,27 @@ def export_csv():
                 if len(rows) > limit:
                     row_count_before_limit = len(rows)
                     rows = rows[:limit]
+            elif export_type in ASSESSMENT_DETAIL_EXPORT_TYPES:
+                # The limit counts answer sheets; the long table has one row per answered question.
+                where_clauses = []
+                params = []
+                _append_research_consent_filter(conn, where_clauses, params)
+                if user_id:
+                    where_clauses.append("user_id = ?")
+                    params.append(user_id)
+                scoped_ids = [worksheet_id] if worksheet_id else list(worksheets)
+                where_clauses.append(f"worksheet_id IN ({', '.join('?' for _ in scoped_ids) or 'NULL'})")
+                params.extend(scoped_ids)
+                rows, row_count_before_limit = _fetch_limited_rows(
+                    conn,
+                    f"SELECT * FROM assessment_results WHERE {' AND '.join(where_clauses)} ORDER BY created_at DESC",
+                    params,
+                    limit,
+                )
+                if export_type == "assessment_wide":
+                    rows = wide_export_rows(rows, worksheets[worksheet_id], worksheets.get, _anonymous_id)
+                else:
+                    rows = item_export_rows(rows, worksheets.get, _anonymous_id)
             elif export_type == "codebook":
                 rows = _codebook_rows()
                 row_count_before_limit = len(rows)
@@ -1024,7 +1055,7 @@ def export_csv():
                 if table is None:
                     return fail(
                         "invalid_export_type",
-                        "支持的 type：goals, diaries, feedback, checkins, assessments, profile, student_profiles, records, student_followups, sandplay, parent_assessments, raw_wide, long, codebook, reports, supervision, cards",
+                        "支持的 type：goals, diaries, feedback, checkins, assessments, assessment_items, assessment_wide, profile, student_profiles, records, student_followups, sandplay, parent_assessments, raw_wide, long, codebook, reports, supervision, cards",
                     )
                 where_clauses = []
                 params = []
@@ -1080,6 +1111,7 @@ def export_csv():
                     "type": export_type,
                     "user_id_filter": user_id,
                     "module_type_filter": module_type,
+                    "worksheet_id_filter": worksheet_id or None,
                     "row_count": len(rows),
                     "limit": limit,
                     "row_count_before_limit": row_count_before_limit,

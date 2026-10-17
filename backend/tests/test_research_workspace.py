@@ -152,7 +152,6 @@ def test_researcher_miniprogram_opens_read_only_knowledge_and_network_benchmark_
 def test_researcher_analysis_workspace_has_explicit_content_sections():
     markup = (PROJECT_ROOT / "apps/miniprogram/pages/researcher-dashboard/index.wxml").read_text(encoding="utf-8")
 
-    assert "研究者分析工作台" in markup
     assert "analysis-section--status" in markup
     assert "analysis-section--evidence" in markup
     assert "analysis-section--quality" in markup

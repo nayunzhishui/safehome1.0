@@ -173,6 +173,20 @@ def _find_worksheet(worksheet_id: str, include_disabled: bool = False, include_u
     return None
 
 
+def user_visible_worksheets() -> list[dict]:
+    """The worksheets 测一测 currently offers to participants.
+
+    Researcher scale invitations reuse this exact list, so a worksheet added or
+    enabled in content becomes sendable without touching research code.
+    """
+    return [item for item in _worksheets() if _is_governed_for_user(item)]
+
+
+def worksheets_by_id() -> dict[str, dict]:
+    """Every known worksheet, including disabled ones, for reading old results."""
+    return {item["id"]: item for item in _worksheets() if item.get("id")}
+
+
 def _summarize_worksheet(worksheet: dict) -> dict:
     return {
         "id": worksheet.get("id"),
@@ -226,8 +240,7 @@ def list_assessments():
     include_unapproved = _reviewer_preview_requested()
     items = [
         _summarize_worksheet(item)
-        for item in _worksheets()
-        if include_unapproved or _is_governed_for_user(item)
+        for item in (_worksheets() if include_unapproved else user_visible_worksheets())
     ]
     if category:
         items = [item for item in items if item.get("category") == category]

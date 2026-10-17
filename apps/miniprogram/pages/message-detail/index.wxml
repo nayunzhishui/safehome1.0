@@ -4,9 +4,9 @@
   <block wx:else>
     <view class="detail-letter {{message.is_withdrawn ? 'detail-letter--withdrawn' : ''}}">
       <view class="detail-head">
-        <text class="detail-kicker">{{message.message_type === 'supervision_feedback' ? '人工补充反馈' : '消息提醒'}}</text>
+        <text class="detail-kicker">{{message.message_type === 'supervision_feedback' ? '人工补充反馈' : message.message_type === 'assessment_invitation' ? '填写邀请' : '消息提醒'}}</text>
         <text class="p3-serif-title p3-serif-title--open detail-title" role="heading" aria-level="1">{{message.title}}</text>
-        <text class="p3-meta">{{message.sender_role ? '来源：研究者补充 · ' : ''}}{{messageTime}}{{message.delivery_version ? ' · 第 ' + message.delivery_version + ' 版' : ''}}</text>
+        <text class="p3-meta">{{message.message_type === 'assessment_invitation' ? '来源：研究团队 · ' : message.sender_role ? '来源：研究者补充 · ' : ''}}{{messageTime}}{{message.delivery_version ? ' · 第 ' + message.delivery_version + ' 版' : ''}}</text>
       </view>
       <view class="p3-divider" aria-hidden="true"></view>
       <text wx:if="{{message.is_withdrawn}}" class="detail-body">研究者已撤回这条内容，请忽略此前版本。</text>

@@ -1695,7 +1695,7 @@
       "feature_flags": [],
       "version": "2026-08-26.f24",
       "tests": [
-        "backend/tests (operation coverage: 17)",
+        "backend/tests (operation coverage: 21)",
         "shared/contracts/api-contract.json"
       ],
       "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
@@ -1705,9 +1705,12 @@
       "operation_ids": [
         "research_workspace.act_on_research_work_item.post",
         "research_workspace.confirm_research_delivery.post",
+        "research_workspace.create_participant_assessment_invitation.post",
         "research_workspace.create_research_delivery.post",
+        "research_workspace.get_participant_assessment_result.get",
         "research_workspace.get_participant_dossier.get",
         "research_workspace.get_participant_module.get",
+        "research_workspace.get_research_assessment_catalog.get",
         "research_workspace.get_research_deliveries.get",
         "research_workspace.get_research_delivery.get",
         "research_workspace.get_research_group_insights.get",
@@ -1715,6 +1718,7 @@
         "research_workspace.get_research_queue.get",
         "research_workspace.get_research_work_item.get",
         "research_workspace.get_research_work_item_metric_snapshot.get",
+        "research_workspace.list_participant_assessment_invitations.get",
         "research_workspace.list_participants.get",
         "research_workspace.preview_research_delivery.post",
         "research_workspace.send_research_delivery.post",

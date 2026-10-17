@@ -266,7 +266,8 @@
           "limit",
           "module_type",
           "type",
-          "user_id"
+          "user_id",
+          "worksheet_id"
         ],
         "body_fields": [],
         "headers": [],
@@ -298,7 +299,8 @@
         "http_error",
         "internal_error",
         "invalid_export_type",
-        "unauthorized"
+        "unauthorized",
+        "validation_error"
       ],
       "enum_refs": [],
       "deprecation": {
@@ -15201,6 +15203,65 @@
       }
     },
     {
+      "operation_id": "research_workspace.get_research_assessment_catalog.get",
+      "method": "GET",
+      "path": "/api/research/assessment-catalog",
+      "handler": "research_workspace.get_research_assessment_catalog",
+      "module": "routes.research_workspace",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
+      "request": {
+        "content_type": null,
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.research_workspace.get_research_assessment_catalog.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "unauthorized"
+      ],
+      "enum_refs": [
+        "assessment_status"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
       "operation_id": "offline_benchmarks.adjudication_queue.get",
       "method": "GET",
       "path": "/api/research/benchmarks/adjudication-queue",
@@ -18459,7 +18520,8 @@
           "limit",
           "page",
           "page_size",
-          "q"
+          "q",
+          "worksheet_id"
         ],
         "body_fields": [],
         "headers": [],
@@ -18570,6 +18632,197 @@
         "unauthorized"
       ],
       "enum_refs": [],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "research_workspace.list_participant_assessment_invitations.get",
+      "method": "GET",
+      "path": "/api/research/participants/<user_id>/assessment-invitations",
+      "handler": "research_workspace.list_participant_assessment_invitations",
+      "module": "routes.research_workspace",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
+      "request": {
+        "content_type": null,
+        "path_parameters": [
+          "user_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.research_workspace.list_participant_assessment_invitations.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "not_found",
+        "unauthorized"
+      ],
+      "enum_refs": [
+        "assessment_status"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "research_workspace.create_participant_assessment_invitation.post",
+      "method": "POST",
+      "path": "/api/research/participants/<user_id>/assessment-invitations",
+      "handler": "research_workspace.create_participant_assessment_invitation",
+      "module": "routes.research_workspace",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [
+          "user_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [
+          "worksheet_id"
+        ],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.research_workspace.create_participant_assessment_invitation.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "formal_role_required",
+        "http_error",
+        "internal_error",
+        "not_found",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "assessment_status"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "research_workspace.get_participant_assessment_result.get",
+      "method": "GET",
+      "path": "/api/research/participants/<user_id>/assessments/<result_id>",
+      "handler": "research_workspace.get_participant_assessment_result",
+      "module": "routes.research_workspace",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
+      "request": {
+        "content_type": null,
+        "path_parameters": [
+          "result_id",
+          "user_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.research_workspace.get_participant_assessment_result.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "not_found",
+        "unauthorized"
+      ],
+      "enum_refs": [
+        "assessment_status"
+      ],
       "deprecation": {
         "status": "active",
         "remove_after": null,

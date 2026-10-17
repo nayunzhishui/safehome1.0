@@ -249,6 +249,7 @@
 | POST | `/api/research/analysis/jobs/<job_id>/recover` | role:admin | analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation | — | — | active |
 | POST | `/api/research/analysis/jobs/<job_id>/suspend` | role:admin | analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation | — | — | active |
 | POST | `/api/research/analysis/snapshots` | role:researcher,supervisor,admin | analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation | — | — | active |
+| GET | `/api/research/assessment-catalog` | role:researcher,supervisor,admin | active_unexpired_assignment_for_researcher_supervisor_full_for_admin | — | — | active |
 | GET | `/api/research/benchmarks/adjudication-queue` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | GET | `/api/research/benchmarks/agreement` | role:supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | GET | `/api/research/benchmarks/annotation-governance` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
@@ -302,6 +303,9 @@
 | GET | `/api/research/operations` | role:researcher,supervisor,admin | active_unexpired_assignment_for_researcher_supervisor_full_for_admin | — | — | active |
 | GET | `/api/research/participants` | role:researcher,supervisor,admin | active_unexpired_assignment_for_researcher_supervisor_full_for_admin | page/page_size | — | active |
 | GET | `/api/research/participants/<user_id>` | role:researcher,supervisor,admin | active_unexpired_assignment_for_researcher_supervisor_full_for_admin | — | — | active |
+| GET | `/api/research/participants/<user_id>/assessment-invitations` | role:researcher,supervisor,admin | active_unexpired_assignment_for_researcher_supervisor_full_for_admin | — | — | active |
+| POST | `/api/research/participants/<user_id>/assessment-invitations` | role:researcher,supervisor,admin | active_unexpired_assignment_for_researcher_supervisor_full_for_admin | — | — | active |
+| GET | `/api/research/participants/<user_id>/assessments/<result_id>` | role:researcher,supervisor,admin | active_unexpired_assignment_for_researcher_supervisor_full_for_admin | — | — | active |
 | GET | `/api/research/participants/<user_id>/modules/<module_key>` | role:researcher,supervisor,admin | active_unexpired_assignment_for_researcher_supervisor_full_for_admin | page/page_size | — | active |
 | GET | `/api/research/queues` | role:researcher,supervisor,admin | active_unexpired_assignment_for_researcher_supervisor_full_for_admin | page/page_size | — | active |
 | GET | `/api/research/work-items/<work_item_id>` | role:researcher,supervisor,admin | active_unexpired_assignment_for_researcher_supervisor_full_for_admin | — | — | active |

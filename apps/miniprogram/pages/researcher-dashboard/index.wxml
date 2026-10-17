@@ -1,3 +1,16 @@
+<!-- 一份量表的答卷：档案里的“支持性测评”和“发过的量表”两处共用。 -->
+<template name="assessment-answers">
+  <view class="assessment-answers">
+    <text wx:if="{{totalText}}" class="module-line module-line--lead">{{totalText}}</text>
+    <text wx:if="{{summary}}" class="detail-line">{{summary}}</text>
+    <text wx:for="{{dimensionRows}}" wx:key="*this" class="detail-line">{{item}}</text>
+    <view wx:for="{{answerRows}}" wx:key="key" class="answer-row">
+      <text class="answer-row__prompt">{{item.indexText}} {{item.prompt}}</text>
+      <text class="answer-row__value">{{item.answer}}</text>
+    </view>
+  </view>
+</template>
+
 <view class="p3-page researcher-dashboard-page">
   <view class="rd-head">
     <view class="sync-row" bindtap="refreshActiveWorkspace" role="button" aria-label="刷新当前工作区">
@@ -21,7 +34,7 @@
   </view>
   <view wx:if="{{developmentFullAccess}}" class="p3-notice p3-notice--warm development-access-banner">
     <text class="p3-notice__title">开发全权限模式</text>
-    <text class="p3-notice__body">测试账号临时开放研究能力；正式发布前必须关闭。</text>
+    <text class="p3-notice__body">测试账号临时开放研究能力；正式发布前必须关闭。所有操作仍记录原始账号。</text>
   </view>
 
   <view wx:if="{{loading && !operations}}" class="safe-card state-card">
@@ -213,7 +226,13 @@
         <p3-icon name="search" size="24" tone="muted" />
         <input class="search-input" value="{{participantQuery}}" bindinput="onParticipantQueryInput" placeholder="输入昵称或用户 ID" placeholder-class="p3-field__placeholder" confirm-type="search" aria-label="搜索参与者" />
       </view>
-      <text class="p3-meta">列表仅展示最小活动摘要。</text>
+      <picker mode="selector" range="{{scaleFilterLabels}}" value="{{scaleFilterIndex}}" bindchange="onScaleFilterChange" aria-label="按量表筛选参与者">
+        <view class="scale-picker">
+          <text class="scale-picker__text">{{scaleFilterIndex ? '只看做过《' + scaleFilterLabels[scaleFilterIndex] + '》的人' : '按量表筛选：全部量表'}}</text>
+          <text class="p3-meta" aria-hidden="true">▾</text>
+        </view>
+      </picker>
+      <text class="p3-meta">列表只显示活动摘要；搜索也能找到还没留下记录的新用户。</text>
     </view>
     <view wx:if="{{participantError}}" class="safe-card error-card">
       <text class="error-title">参与者列表暂时无法读取</text>
@@ -237,7 +256,7 @@
           <view class="participant-avatar" aria-hidden="true">{{item.displayInitial}}</view>
           <view class="participant-main">
             <text class="participant-name">{{item.displayName}}</text>
-            <text class="participant-meta">{{item.anonymousId}} · {{item.activityCount}} 条活动摘要 · {{item.relationship_count}} 个关系试点</text>
+            <text class="participant-meta">{{item.anonymousId}} · 量表 {{item.assessment_count}} 份 · 共 {{item.activityCount}} 条记录{{item.relationship_count ? ' · 关系试点' : ''}}</text>
           </view>
           <text wx:if="{{item.unread_message_count}}" class="participant-count">{{item.unread_message_count}} 未读</text>
         </view>
@@ -253,10 +272,29 @@
         </view>
         <button class="rd-link" bindtap="closeParticipantDossier" aria-label="关闭参与者档案">关闭</button>
       </view>
-      <view wx:if="{{dossierPilot}}" class="dossier-tools">
+      <view wx:if="{{dossierPilot || canInvite}}" class="dossier-tools">
         <view class="chip-row">
-          <button class="p3-chip {{dossierComposer === 'message' ? 'p3-chip--selected active' : ''}}" data-composer="message" bindtap="toggleDossierComposer">发消息</button>
-          <button class="p3-chip {{dossierComposer === 'note' ? 'p3-chip--selected active' : ''}}" data-composer="note" bindtap="toggleDossierComposer">写备注</button>
+          <button wx:if="{{canInvite}}" class="p3-chip {{dossierComposer === 'invite' ? 'p3-chip--selected active' : ''}}" data-composer="invite" bindtap="toggleDossierComposer">发量表</button>
+          <button wx:if="{{dossierPilot}}" class="p3-chip {{dossierComposer === 'message' ? 'p3-chip--selected active' : ''}}" data-composer="message" bindtap="toggleDossierComposer">发消息</button>
+          <button wx:if="{{dossierPilot}}" class="p3-chip {{dossierComposer === 'note' ? 'p3-chip--selected active' : ''}}" data-composer="note" bindtap="toggleDossierComposer">写备注</button>
+        </view>
+        <view wx:if="{{dossierComposer === 'invite'}}" class="dossier-composer">
+          <text class="p3-meta">从测一测目前开放的量表里选。对方会在“我的 → 消息”收到，点开就能填。</text>
+          <picker mode="selector" range="{{inviteLabels}}" value="{{inviteIndex}}" bindchange="onInviteScaleChange" disabled="{{!inviteLabels.length}}" aria-label="选择要发送的量表">
+            <view class="scale-picker">
+              <text class="scale-picker__text">{{inviteLabels.length ? inviteLabels[inviteIndex] : '量表清单还没读出来，下拉刷新再试'}}</text>
+              <text class="p3-meta" aria-hidden="true">▾</text>
+            </view>
+          </picker>
+          <button class="p3-btn p3-btn--primary" loading="{{dossierBusy === 'invite'}}" disabled="{{!!dossierBusy || !inviteLabels.length}}" bindtap="sendAssessmentInvitation">发送</button>
+          <text wx:if="{{dossierInvitations.length}}" class="rd-label">发过的量表</text>
+          <view wx:for="{{dossierInvitations}}" wx:key="id" class="invite-row">
+            <view class="invite-row__head" data-id="{{item.result_id}}" bindtap="toggleAssessmentResult">
+              <text class="detail-line">{{item.worksheet_title}} · {{item.stateText}} · {{item.timeText}}</text>
+              <text wx:if="{{item.result_id}}" class="answer-toggle">{{assessmentDetail.id === item.result_id ? '收起' : '看答卷'}}</text>
+            </view>
+            <block wx:if="{{item.result_id && assessmentDetail.id === item.result_id}}"><template is="assessment-answers" data="{{...assessmentDetail}}" /></block>
+          </view>
         </view>
         <view wx:if="{{dossierComposer === 'message'}}" class="dossier-composer">
           <input class="p3-field__input" value="{{dossierMessageTitle}}" data-key="dossierMessageTitle" bindinput="onDossierInput" maxlength="60" placeholder="标题（60 字以内）" placeholder-class="p3-field__placeholder" aria-label="消息标题" />
@@ -270,7 +308,8 @@
           <button class="p3-btn p3-btn--secondary" loading="{{dossierBusy === 'note'}}" disabled="{{!!dossierBusy || !dossierNote}}" bindtap="saveDossierNote">保存备注</button>
         </view>
       </view>
-      <text wx:else class="p3-meta">直接发消息和写备注只对关系试点参与者开放，他们报名时同意了研究人员联系。其他参与者发来的人工支持请求，在“待办”里回复。</text>
+      <text wx:if="{{!canInvite}}" class="p3-meta">发量表需要正式的研究人员账号（总管理在“管理”里授予），展示模式下只能查看。</text>
+      <text wx:if="{{!dossierPilot}}" class="p3-meta">发消息和写备注只对关系试点参与者开放，他们报名时同意了研究人员联系。其他参与者发来的人工支持请求，在“待办”里回复。</text>
       <scroll-view scroll-x enhanced show-scrollbar="{{false}}" class="dossier-tabs" aria-label="参与者档案标签">
         <view class="chip-row">
           <button wx:for="{{participantDossier.modules}}" wx:key="key" class="p3-chip dossier-tab {{participantModule && participantModule.module === item.key ? 'p3-chip--selected active' : ''}}" data-key="{{item.key}}" bindtap="loadParticipantModule">{{item.label}} {{item.count}}</button>
@@ -315,6 +354,13 @@
             </view>
             <text class="boundary-line">{{record.boundary_notice}}</text>
           </view>
+          <block wx:elif="{{record.assessmentResult}}">
+            <view class="timeline-row" data-id="{{record.id}}" bindtap="toggleAssessmentResult" role="button" aria-label="展开或收起这份量表的答卷">
+              <text wx:for="{{record.displayLines}}" wx:for-item="line" wx:key="*this" class="module-line {{index === 0 ? 'module-line--lead' : ''}}">{{line}}</text>
+              <text class="answer-toggle">{{assessmentDetail.id === record.id ? '收起' : '看答卷'}}</text>
+            </view>
+            <block wx:if="{{assessmentDetail.id === record.id}}"><template is="assessment-answers" data="{{...assessmentDetail}}" /></block>
+          </block>
           <block wx:else>
             <text wx:for="{{record.displayLines}}" wx:for-item="line" wx:key="*this" class="module-line {{index === 0 ? 'module-line--lead' : ''}}">{{line}}</text>
           </block>

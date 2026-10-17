@@ -1054,8 +1054,9 @@ X-Admin-Token: safehome-local-admin-token
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
-| `type` | string | 否 | 默认 `diaries`。支持：`goals`、`diaries`、`feedback`、`checkins`、`assessments`、`profile`、`student_profiles`、`records`、`student_followups`、`sandplay`、`parent_assessments`、`raw_wide`、`long`、`codebook`、`reports`、`supervision`、`cards` |
+| `type` | string | 否 | 默认 `diaries`。支持：`goals`、`diaries`、`feedback`、`checkins`、`assessments`、`assessment_items`、`assessment_wide`、`profile`、`student_profiles`、`records`、`student_followups`、`sandplay`、`parent_assessments`、`raw_wide`、`long`、`codebook`、`reports`、`supervision`、`cards` |
 | `user_id` | string | 否 | 除 `cards`、`codebook`、`raw_wide`、`long` 外，可按用户筛选 |
+| `worksheet_id` | string | 否 | `assessment_items` 可选（只导这份量表），`assessment_wide` 必填（缺少或不认识返回 `400`） |
 | `module_type` | string | 否 | `type=records` 时可按模块筛选，例如 `student_profile` |
 | `confirm_high_risk` | boolean | 否 | 当 `profile`、`student_profiles` 或 `records` 导出含高风险/需复核记录时，必须为 `true` |
 | `limit` | number | 否 | 默认 `1000`，最大 `5000`；超过最大值返回 `400 invalid_export_limit` |
@@ -1069,7 +1070,10 @@ X-Admin-Token: safehome-local-admin-token
 - 当前不支持 `format` 参数。
 - `type=profile` 会从 `student_profiles` 中导出学生画像摘要，默认使用匿名 ID，不导出真实 `user_id`、自由文本原文和联系方式。
 - `type=records` 会从 `records` 导出统一研究摘要，可按 `module_type` 筛选。
-- `type=assessments` 只导出当前 `content/assessment_worksheets.json` 中仍保留的测评 ID；旧版自建 UP 工作表和附录示例的历史残留记录不会导出。
+- `type=assessments` 只导出当前 `content/assessment_worksheets.json` 中仍保留的测评 ID；旧版自建 UP 工作表和附录示例的历史残留记录不会导出。它每份答卷一行，只有量表和总分。
+- `type=assessment_items`（2026-10-17）：每道已答题一行，列为 `result_id, anonymous_id, worksheet_id, worksheet_title, question_no, question_id, question_text, dimension, answer_value, answer_label, raw_score, scored_value, total_score, created_at`。`raw_score` 是所选选项分，`scored_value` 是计入总分的分（反向题已翻转）。题目文字取提交时的内容快照。
+- `type=assessment_wide`（2026-10-17）：一份量表、每份答卷一行，列为 `result_id, anonymous_id, created_at, total_score`、每个维度 `维度:<名称>`、每道题 `Q<序号> <题目前 40 字>`（格子是所选选项分）。列由量表定义生成，新量表不用改代码。
+- 这两类的 `limit` 按答卷份数算；文字作答只导出字数（`（文字作答 N 字，不导出原文）`），与其他导出一致；已撤回研究授权的参与者不导出；`created_at` 为 UTC。
 - 如果画像或 records 导出包含 `risk_level=high` 或 `requires_review=true`，未带 `confirm_high_risk=true` 会返回 `409 high_risk_export_confirmation_required`。
 - 导出审计会记录 `contains_high_risk`、`confirmed_high_risk_export`、`limit`、`row_count_before_limit` 和 `row_count_exported`。
 - `type=profile` / `student_profiles` 导出包含 `research_authorization_status` 和 `consent_summary_json`。
@@ -2029,6 +2033,8 @@ relationship_initiation_intention_action
 
 用途：研究工作台参与者矩阵，支持 `q` 按用户 ID/昵称检索；支持 `page`、`page_size` 分页，`page_size` 最大 100。旧客户端的 `limit` 参数继续作为 `page_size` 兼容输入。
 
+2026-10-17 起：带 `q` 搜索时也返回还没有任何业务记录的新账号（便于给新用户发第一份量表），不带 `q` 浏览时仍只列有记录的参与者；`worksheet_id` 只返回做过该量表的参与者。
+
 权限：
 
 - `researcher` 只返回 `relationship_pilot_enrollments.assigned_researcher_id` 分配给自己的参与者；
@@ -2048,6 +2054,19 @@ relationship_initiation_intention_action
 - 原始填写只读，研究者反馈与备注另存；
 - 敏感详情访问写入 `audit_logs`；
 - 内部状态由前端映射为中文，不直接展示数据库枚举。
+
+### 量表答卷与定向发量表（2026-10-17）
+
+可发送和可筛选的量表清单与测一测给参与者看的是同一份（`routes/assessments.py` 的 `user_visible_worksheets()`），内容里新增或开放量表后自动出现，研究端不用改代码。权限范围与参与者档案相同（`researcher`/`supervisor`/`admin`，按 `RESEARCH_PARTICIPANT_SCOPE` 决定看分配的还是全部）。
+
+| 接口 | 说明 |
+|---|---|
+| `GET /api/research/assessment-catalog` | 量表清单：`id`、`title`、`category`、`question_count` |
+| `GET /api/research/participants/<user_id>/assessments/<result_id>` | 一份答卷：总分、结果摘要、各维度分（含分数范围）、每题题目和所选答案；题目按提交时保存的内容快照显示；写审计 `research_participant_assessment_viewed` |
+| `GET /api/research/participants/<user_id>/assessment-invitations` | 发给该参与者的量表邀请及状态：`sent` 未读、`read` 已读未填、`completed` 已填（附 `result_id`、`completed_at`）、`withdrawn` |
+| `POST /api/research/participants/<user_id>/assessment-invitations` | 请求体 `{"worksheet_id"}`；发到参与者消息中心，201 返回消息。同一量表已发且未填写时 `409 assessment_invitation_pending`；不在清单里 `400`；展示模式临时提权的账号 `403 formal_role_required`（必须是正式授予的研究人员）；写审计 `research_assessment_invitation_sent` |
+
+邀请不新建表：存为 `messages`（`message_type=assessment_invitation`、`source_type=assessment_worksheet`、`source_id=量表 ID`），正文为固定文案；是否填写由 `assessment_results` 推出（同一人、同一量表、晚于邀请的提交）。参与者在消息详情点“去填写”打开测一测对应量表。
 
 ### `GET /api/growth/overview`
 

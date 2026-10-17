@@ -7,9 +7,16 @@
   <view class="research-export__chips">
     <button wx:for="{{types}}" wx:key="id" class="p3-chip {{type === item.id ? 'p3-chip--selected' : ''}}" data-id="{{item.id}}" bindtap="pickType">{{item.label}}</button>
   </view>
+  <text wx:if="{{typeHint}}" class="p3-meta">{{typeHint}}</text>
+  <picker wx:if="{{type === 'assessment_items' || type === 'assessment_wide'}}" mode="selector" range="{{scaleLabels}}" value="{{scaleIndex}}" bindchange="pickScale" aria-label="选择要导出的量表">
+    <view class="research-export__picker">
+      <text>{{scaleIndex ? scaleLabels[scaleIndex] : (type === 'assessment_wide' ? '请选一份量表' : '全部量表')}}</text>
+      <text class="p3-meta" aria-hidden="true">▾</text>
+    </view>
+  </picker>
   <text class="p3-meta">最多导出</text>
   <view class="research-export__chips">
-    <button wx:for="{{limits}}" wx:key="*this" class="p3-chip {{limit === item ? 'p3-chip--selected' : ''}}" data-limit="{{item}}" bindtap="pickLimit">{{item}} 行</button>
+    <button wx:for="{{limits}}" wx:key="*this" class="p3-chip {{limit === item ? 'p3-chip--selected' : ''}}" data-limit="{{item}}" bindtap="pickLimit">{{item}} {{type === 'assessment_items' || type === 'assessment_wide' ? '份答卷' : '行'}}</button>
   </view>
   <button class="p3-btn p3-btn--secondary" bindtap="generate" loading="{{busy}}" disabled="{{busy}}">生成表格</button>
   <button wx:if="{{file}}" class="p3-btn p3-btn--primary" bindtap="share">发到微信</button>

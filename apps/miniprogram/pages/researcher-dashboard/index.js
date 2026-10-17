@@ -101,10 +101,44 @@ function windowLabel(days) {
   return Number(days) === 365 ? "近一年" : `近 ${days} 天`;
 }
 
+const INVITATION_STATE_LABELS = { sent: "未读", read: "已读，还没填", completed: "已填写", withdrawn: "已撤回" };
+
+function hasValue(value) {
+  return value !== undefined && value !== null && value !== "";
+}
+
+function assessmentDetailView(detail) {
+  const rangeText = (range) => (range && hasValue(range.minimum) ? `（${range.minimum}–${range.maximum}）` : "");
+  return {
+    id: detail.id,
+    totalText: hasValue(detail.total_score) ? `总分 ${detail.total_score}` : "",
+    summary: detail.result_summary || "",
+    dimensionRows: (detail.dimensions || []).map((item) => `${item.label}：${item.score}${rangeText(item.score_range)}`),
+    answerRows: (detail.answers || []).map((item, index) => ({
+      key: `${index}-${item.question_id}`,
+      indexText: `${index + 1}.`,
+      prompt: item.prompt,
+      answer: item.answer || "未作答",
+    })),
+  };
+}
+
 function moduleRows(items, moduleKey = "") {
   return (items || []).map((item) => {
     if (moduleKey === "timeline") {
       return { ...item, timeline: true, timeText: localTime(item.created_at) };
+    }
+    if (moduleKey === "assessments") {
+      return {
+        ...item,
+        assessmentResult: true,
+        displayLines: [
+          `量表：${item.worksheet_title || item.worksheet_id}`,
+          ...(hasValue(item.total_score) ? [`总分：${item.total_score}`] : []),
+          ...(item.result_summary ? [`结果：${String(item.result_summary).slice(0, 80)}`] : []),
+          `时间：${localTime(item.created_at)}`,
+        ],
+      };
     }
     if (item.schema === "safehome.participant-exploratory-analysis.v1") {
       return {
@@ -578,6 +612,14 @@ Page({
     dossierNote: "",
     dossierNotes: [],
     dossierBusy: "",
+    dossierInvitations: [],
+    assessmentDetail: null,
+    assessmentCatalog: [],
+    scaleFilterLabels: ["全部量表"],
+    scaleFilterIndex: 0,
+    inviteLabels: [],
+    inviteIndex: 0,
+    canInvite: false,
     projectView: "pilots",
     pilotLoading: false,
     pilotError: "",
@@ -675,6 +717,8 @@ Page({
     this.setData({
       developmentFullAccess: Boolean(showcase.researcher_platform_full_access),
       isOwner,
+      // 发量表会写进别人的消息中心，只给正式授予的研究人员；展示模式只能看。
+      canInvite: Boolean(user && ["researcher", "supervisor", "admin"].includes(user.role)),
       capabilityScope,
       roleText: formalRole ? (ROLE_LABELS[formalRole] || formalRole) : "",
       workspaces,
@@ -1253,10 +1297,17 @@ Page({
       this.setData({ participantError: "当前离线，联网后再搜索参与者。" });
       return;
     }
+    if (!this.catalogRequested) this.loadAssessmentCatalog();
     const page = reset ? 1 : this.data.participantPage + 1;
+    const scale = this.data.assessmentCatalog[this.data.scaleFilterIndex - 1];
     this.setData({ participantLoading: true, participantError: "", participantDiagnostic: null });
     try {
-      const payload = await api.getResearchParticipants({ q: this.data.participantQuery.trim(), page, page_size: 10 });
+      const payload = await api.getResearchParticipants({
+        q: this.data.participantQuery.trim(),
+        worksheet_id: scale ? scale.id : "",
+        page,
+        page_size: 10,
+      });
       const incoming = (payload.items || []).map((item) => ({
         ...item,
         displayName: item.nickname || item.user_id || "匿名参与者",
@@ -1307,7 +1358,17 @@ Page({
   },
 
   emptyDossierTools() {
-    return { dossierPilot: null, dossierComposer: "", dossierMessageTitle: "", dossierMessageBody: "", dossierNote: "", dossierNotes: [], dossierBusy: "" };
+    return {
+      dossierPilot: null,
+      dossierComposer: "",
+      dossierMessageTitle: "",
+      dossierMessageBody: "",
+      dossierNote: "",
+      dossierNotes: [],
+      dossierBusy: "",
+      dossierInvitations: [],
+      assessmentDetail: null,
+    };
   },
 
   toggleDossierComposer(event) {
@@ -1315,6 +1376,93 @@ Page({
     const next = this.data.dossierComposer === composer ? "" : composer;
     this.setData({ dossierComposer: next });
     if (next === "note") this.loadDossierNotes();
+    if (next === "invite") this.loadDossierInvitations();
+  },
+
+  // 量表清单就是测一测给用户看的那一份：以后加了量表，这里的筛选和发送选项自动跟着多，不用改小程序。
+  async loadAssessmentCatalog() {
+    this.catalogRequested = true;
+    try {
+      const items = (await api.getResearchAssessmentCatalog()).items || [];
+      this.setData({
+        assessmentCatalog: items,
+        scaleFilterLabels: ["全部量表", ...items.map((item) => item.title)],
+        inviteLabels: items.map((item) => `${item.title}（${item.question_count} 题）`),
+      });
+    } catch (error) {
+      this.catalogRequested = false;
+    }
+  },
+
+  onScaleFilterChange(event) {
+    this.setData({ scaleFilterIndex: Number(event.detail.value) || 0 });
+    this.loadParticipants(true);
+  },
+
+  onInviteScaleChange(event) {
+    this.setData({ inviteIndex: Number(event.detail.value) || 0 });
+  },
+
+  async loadDossierInvitations() {
+    const dossier = this.data.participantDossier;
+    if (!dossier) return;
+    const userId = dossier.participant.user_id;
+    try {
+      const payload = await api.listResearchAssessmentInvitations(userId);
+      if (!this.data.participantDossier || this.data.participantDossier.participant.user_id !== userId) return;
+      this.setData({
+        dossierInvitations: (payload.items || []).map((item) => ({
+          ...item,
+          stateText: INVITATION_STATE_LABELS[item.state] || item.state,
+          timeText: localTime(item.state === "completed" ? item.completed_at : item.created_at),
+        })),
+      });
+    } catch (error) {
+      wx.showToast({ title: error.message || "发送记录暂时读不出来", icon: "none" });
+    }
+  },
+
+  async sendAssessmentInvitation() {
+    const dossier = this.data.participantDossier;
+    const scale = this.data.assessmentCatalog[this.data.inviteIndex];
+    if (!dossier || !scale || this.data.dossierBusy) return;
+    const confirmed = await new Promise((resolve) => {
+      wx.showModal({
+        title: "发送量表",
+        content: `《${scale.title}》会发到对方的“我的 → 消息”，点开就能填，填不填由对方决定。确定发送吗？`,
+        confirmText: "发送",
+        success: (result) => resolve(Boolean(result.confirm)),
+        fail: () => resolve(false),
+      });
+    });
+    if (!confirmed) return;
+    this.setData({ dossierBusy: "invite" });
+    try {
+      await api.sendResearchAssessmentInvitation(dossier.participant.user_id, scale.id);
+      wx.showToast({ title: "已发送", icon: "success" });
+      await this.loadDossierInvitations();
+    } catch (error) {
+      wx.showToast({ title: error.message || "没有发出去，请稍后再试", icon: "none" });
+    } finally {
+      this.setData({ dossierBusy: "" });
+    }
+  },
+
+  // 点一份量表结果，展开看每道题选了什么；再点一次收起。
+  async toggleAssessmentResult(event) {
+    const resultId = event.currentTarget.dataset.id;
+    const dossier = this.data.participantDossier;
+    if (!resultId || !dossier) return;
+    if (this.data.assessmentDetail && this.data.assessmentDetail.id === resultId) {
+      this.setData({ assessmentDetail: null });
+      return;
+    }
+    try {
+      const detail = await api.getResearchParticipantAssessment(dossier.participant.user_id, resultId);
+      this.setData({ assessmentDetail: assessmentDetailView(detail) });
+    } catch (error) {
+      wx.showToast({ title: error.message || "这份结果暂时打不开", icon: "none" });
+    }
   },
 
   onDossierInput(event) {

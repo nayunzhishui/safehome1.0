@@ -23,6 +23,17 @@ from services.research_work_item_service import WorkItemError, get_work_item_det
 from services.research_participant_service import anonymous_id, list_module, participant_summary
 from services.research_group_insights_service import build_group_insights, normalize_window
 from services.research_access_service import sees_all_participants
+from services.research_assessment_service import (
+    INVITATION_SENDER_ROLES,
+    PARTICIPANT_ROLES,
+    ResearchAssessmentError,
+    assessment_result_detail,
+    catalog_item,
+    list_assessment_invitations,
+    load_assessment_result,
+    send_assessment_invitation,
+)
+from routes.assessments import user_visible_worksheets, worksheets_by_id
 
 
 bp = Blueprint("research_workspace", __name__, url_prefix="/api/research")
@@ -189,6 +200,14 @@ def _scoped_user_column(actor: dict, column: str) -> tuple[str, list[str]]:
     )
 
 
+def _participant_in_scope(conn, actor: dict, user_id: str):
+    allowed_clause, params = _allowed_user_clause(actor)
+    return conn.execute(
+        f"SELECT id, role FROM users u WHERE u.id = ? AND COALESCE(u.status, 'active') != 'deleted' AND ({allowed_clause})",
+        tuple([user_id, *params]),
+    ).fetchone()
+
+
 def _research_authorized_column(column: str) -> str:
     return f"""NOT EXISTS (
         SELECT 1 FROM consent_records consent_latest
@@ -225,16 +244,15 @@ def list_participants():
     page_size = legacy_limit if page_size is None else page_size
     if page < 1 or page_size < 1 or page_size > 100:
         return fail("validation_error", "page 需大于等于1，page_size 需为1至100。", status=400)
+    worksheet_id = str(request.args.get("worksheet_id") or "").strip()
     allowed_clause, params = _allowed_user_clause(actor)
     search_clause = ""
     if query:
         search_clause = "AND (LOWER(u.id) LIKE ? OR LOWER(COALESCE(u.nickname, '')) LIKE ?)"
         params.extend([f"%{query}%", f"%{query}%"])
-    participant_clause = f"""
-        u.role IN ('parent', 'student', 'user')
-        AND COALESCE(u.status, 'active') != 'deleted'
-        AND ({allowed_clause})
-        {search_clause}
+    # Browsing hides empty accounts; a search also finds new users who have no
+    # records yet, so a researcher can send them a first scale.
+    activity_clause = "" if query else """
         AND (
             EXISTS (SELECT 1 FROM assessment_results a WHERE a.user_id = u.id)
             OR EXISTS (SELECT 1 FROM emotion_diaries d WHERE d.user_id = u.id)
@@ -243,6 +261,18 @@ def list_participants():
             OR EXISTS (SELECT 1 FROM relationship_pilot_enrollments e WHERE e.user_id = u.id)
             OR EXISTS (SELECT 1 FROM supervision_requests s WHERE s.user_id = u.id)
         )
+    """
+    worksheet_clause = ""
+    if worksheet_id:
+        worksheet_clause = "AND EXISTS (SELECT 1 FROM assessment_results wf WHERE wf.user_id = u.id AND wf.worksheet_id = ?)"
+        params.append(worksheet_id)
+    participant_clause = f"""
+        u.role IN ('parent', 'student', 'user')
+        AND COALESCE(u.status, 'active') != 'deleted'
+        AND ({allowed_clause})
+        {search_clause}
+        {activity_clause}
+        {worksheet_clause}
     """
     offset = (page - 1) * page_size
     with get_connection() as conn:
@@ -279,7 +309,7 @@ def list_participants():
             actor["id"],
             "research_participant_matrix",
             "filtered" if query else "all",
-            {"result_count": len(rows), "query_used": bool(query), "page": page, "page_size": page_size},
+            {"result_count": len(rows), "query_used": bool(query), "worksheet_filter": bool(worksheet_id), "page": page, "page_size": page_size},
         )
         conn.commit()
     items = rows_to_dicts(rows)
@@ -304,13 +334,8 @@ def get_participant_dossier(user_id: str):
     actor, error = _actor()
     if error:
         return error
-    allowed_clause, params = _allowed_user_clause(actor)
     with get_connection() as conn:
-        user = conn.execute(
-            f"SELECT id FROM users u WHERE u.id = ? AND COALESCE(u.status, 'active') != 'deleted' AND ({allowed_clause})",
-            tuple([user_id, *params]),
-        ).fetchone()
-        if user is None:
+        if _participant_in_scope(conn, actor, user_id) is None:
             return fail("not_found", "没有找到可访问的参与者档案。", status=404)
         summary = participant_summary(conn, user_id)
         write_audit_log(
@@ -336,13 +361,8 @@ def get_participant_module(user_id: str, module_key: str):
     page_size = 20 if page_size is None else page_size
     if page < 1 or page_size < 1 or page_size > 100:
         return fail("validation_error", "page 需大于等于1，page_size 需为1至100。", status=400)
-    allowed_clause, params = _allowed_user_clause(actor)
     with get_connection() as conn:
-        user = conn.execute(
-            f"SELECT id FROM users u WHERE u.id = ? AND COALESCE(u.status, 'active') != 'deleted' AND ({allowed_clause})",
-            tuple([user_id, *params]),
-        ).fetchone()
-        if user is None:
+        if _participant_in_scope(conn, actor, user_id) is None:
             return fail("not_found", "没有找到可访问的参与者档案。", status=404)
         try:
             payload = list_module(
@@ -381,6 +401,79 @@ def get_participant_module(user_id: str, module_key: str):
         conn.commit()
     payload["boundary_notice"] = "仅按当前标签读取必要资料；联系方式、登录凭据和无关敏感字段不会返回。"
     return ok(payload)
+
+
+@bp.get("/assessment-catalog")
+def get_research_assessment_catalog():
+    """Scales a researcher can filter by or send: exactly what 测一测 offers participants."""
+    actor, error = _actor()
+    if error:
+        return error
+    return ok({"items": [catalog_item(item) for item in user_visible_worksheets()]})
+
+
+@bp.get("/participants/<user_id>/assessments/<result_id>")
+def get_participant_assessment_result(user_id: str, result_id: str):
+    actor, error = _actor()
+    if error:
+        return error
+    with get_connection() as conn:
+        if _participant_in_scope(conn, actor, user_id) is None:
+            return fail("not_found", "没有找到可访问的参与者档案。", status=404)
+        row = load_assessment_result(conn, user_id, result_id)
+        if row is None:
+            return fail("not_found", "没有找到这份量表结果。", status=404)
+        write_audit_log(
+            conn,
+            "research_participant_assessment_viewed",
+            actor["id"],
+            "assessment_result",
+            result_id,
+            {"user_id": user_id, "worksheet_id": row.get("worksheet_id")},
+        )
+        conn.commit()
+    return ok(assessment_result_detail(row, worksheets_by_id().get))
+
+
+@bp.get("/participants/<user_id>/assessment-invitations")
+def list_participant_assessment_invitations(user_id: str):
+    actor, error = _actor()
+    if error:
+        return error
+    titles = {item.get("id"): catalog_item(item)["title"] for item in user_visible_worksheets()}
+    with get_connection() as conn:
+        if _participant_in_scope(conn, actor, user_id) is None:
+            return fail("not_found", "没有找到可访问的参与者档案。", status=404)
+        items = list_assessment_invitations(conn, user_id)
+    for item in items:
+        item["worksheet_title"] = titles.get(item["worksheet_id"]) or item["title"]
+    return ok({"items": items})
+
+
+@bp.post("/participants/<user_id>/assessment-invitations")
+def create_participant_assessment_invitation(user_id: str):
+    actor, error = _actor()
+    if error:
+        return error
+    # Showcase mode only previews the workbench; writing to a real user's
+    # message center needs a formally granted staff role.
+    if (actor.get("original_role") or actor.get("role")) not in INVITATION_SENDER_ROLES:
+        return fail("formal_role_required", "发送量表需要正式的研究人员账号；展示模式下只能查看。", status=403)
+    payload = request.get_json(silent=True) or {}
+    worksheet_id = str(payload.get("worksheet_id") or "").strip()
+    worksheet = next((item for item in user_visible_worksheets() if item.get("id") == worksheet_id), None)
+    if worksheet is None:
+        return fail("validation_error", "请从测一测目前开放的量表里选择。", status=400)
+    with get_connection() as conn:
+        target = _participant_in_scope(conn, actor, user_id)
+        if target is None or target["role"] not in PARTICIPANT_ROLES:
+            return fail("not_found", "没有找到可访问的参与者档案。", status=404)
+        try:
+            message = send_assessment_invitation(conn, actor, user_id, worksheet)
+        except ResearchAssessmentError as exc:
+            return fail(exc.code, str(exc), status=exc.status)
+        conn.commit()
+    return ok(message, status=201)
 
 
 @bp.get("/operations")
