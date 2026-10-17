@@ -1,22 +1,33 @@
 <view class="research-export">
   <view class="research-export__head">
     <text class="p3-item-title">数据导出</text>
-    <text class="p3-meta">生成表格后发到微信，再到电脑上打开。每次导出都记在审计里；发出后手机里的文件会删掉。</text>
+    <text class="p3-meta">生成表格后发到微信，再到电脑上用 Excel 打开。每次导出都记在审计里；发出后手机里的文件会删掉。</text>
   </view>
-  <text class="p3-meta">导出哪一类</text>
-  <view class="research-export__chips">
-    <button wx:for="{{types}}" wx:key="id" class="p3-chip {{type === item.id ? 'p3-chip--selected' : ''}}" data-id="{{item.id}}" bindtap="pickType">{{item.label}}</button>
-  </view>
-  <text wx:if="{{typeHint}}" class="p3-meta">{{typeHint}}</text>
-  <picker wx:if="{{type === 'assessment_items' || type === 'assessment_wide'}}" mode="selector" range="{{scaleLabels}}" value="{{scaleIndex}}" bindchange="pickScale" aria-label="选择要导出的量表">
+  <block wx:for="{{groups}}" wx:for-item="group" wx:key="title">
+    <text class="p3-meta">{{group.title}}</text>
+    <view class="research-export__chips">
+      <button wx:for="{{group.types}}" wx:key="id" class="p3-chip {{type === item.id ? 'p3-chip--selected' : ''}}" data-id="{{item.id}}" bindtap="pickType">{{item.label}}</button>
+    </view>
+  </block>
+  <text wx:if="{{typeInfo.hint}}" class="p3-meta">{{typeInfo.hint}}</text>
+  <picker wx:if="{{typeInfo.scales === 'one' || typeInfo.scales === 'optional'}}" mode="selector" range="{{scaleLabels}}" value="{{scaleIndex}}" bindchange="pickScale" aria-label="选择要导出的量表">
     <view class="research-export__picker">
-      <text>{{scaleIndex ? scaleLabels[scaleIndex] : (type === 'assessment_wide' ? '请选一份量表' : '全部量表')}}</text>
+      <text>{{scaleIndex ? scaleLabels[scaleIndex] : (typeInfo.scales === 'one' ? '请选一份量表' : '全部量表')}}</text>
+      <text class="p3-meta" aria-hidden="true">▾</text>
+    </view>
+  </picker>
+  <view wx:if="{{typeInfo.scales === 'multi'}}" class="research-export__chips" aria-label="选择要并排的量表，不选就是全部">
+    <button wx:for="{{scaleOptions}}" wx:key="id" class="p3-chip {{item.checked ? 'p3-chip--selected' : ''}}" data-index="{{index}}" bindtap="toggleScale">{{item.title}}</button>
+  </view>
+  <picker wx:if="{{typeInfo.sources}}" mode="selector" range="{{sourceLabels}}" value="{{sourceIndex}}" bindchange="pickSource" aria-label="选择要导出的文字">
+    <view class="research-export__picker">
+      <text>{{sourceLabels[sourceIndex]}}</text>
       <text class="p3-meta" aria-hidden="true">▾</text>
     </view>
   </picker>
   <text class="p3-meta">最多导出</text>
   <view class="research-export__chips">
-    <button wx:for="{{limits}}" wx:key="*this" class="p3-chip {{limit === item ? 'p3-chip--selected' : ''}}" data-limit="{{item}}" bindtap="pickLimit">{{item}} {{type === 'assessment_items' || type === 'assessment_wide' ? '份答卷' : '行'}}</button>
+    <button wx:for="{{limits}}" wx:key="*this" class="p3-chip {{limit === item ? 'p3-chip--selected' : ''}}" data-limit="{{item}}" bindtap="pickLimit">{{item}} {{typeInfo.unit || '行'}}</button>
   </view>
   <button class="p3-btn p3-btn--secondary" bindtap="generate" loading="{{busy}}" disabled="{{busy}}">生成表格</button>
   <button wx:if="{{file}}" class="p3-btn p3-btn--primary" bindtap="share">发到微信</button>

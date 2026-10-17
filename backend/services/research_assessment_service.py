@@ -6,12 +6,13 @@ source_id=<worksheet id>. Whether an invitation was answered is derived from
 assessment_results (same participant and worksheet, submitted after the
 invitation), so there is no second status to keep in sync.
 
-The in-app answer sheet and both CSV exports read answers through
+The in-app answer sheet and the scale CSV exports read answers through
 answered_items(), so a new worksheet needs no changes here.
 """
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 from typing import Callable
 
 from database import json_loads, new_id, row_to_dict, rows_to_dicts, write_audit_log
@@ -161,6 +162,20 @@ def item_export_rows(rows, lookup: WorksheetLookup, anonymize: Callable[[str], s
     return export
 
 
+_BEIJING = timezone(timedelta(hours=8))
+
+
+def beijing_time(value) -> str:
+    """'2026-10-17 13:21' in Beijing time, for labels people read in Excel."""
+    try:
+        parsed = datetime.fromisoformat(str(value))
+    except ValueError:
+        return str(value or "")
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(_BEIJING).strftime("%Y-%m-%d %H:%M")
+
+
 def _unique(name: str, taken: set[str]) -> str:
     candidate, suffix = name, 2
     while candidate in taken:
@@ -169,28 +184,48 @@ def _unique(name: str, taken: set[str]) -> str:
     return candidate
 
 
-def wide_export_rows(rows, worksheet: dict, lookup: WorksheetLookup, anonymize: Callable[[str], str]) -> list[dict]:
-    """Wide table for one worksheet: one row per answer sheet.
+def _dimension_key(item: dict) -> str:
+    return str(item.get("key") or item.get("label") or "")
 
-    Columns are total, every dimension score, then every question (header =
-    number and wording, cell = the chosen option's score), all taken from the
-    worksheet definition so a new scale exports without code changes.
+
+def _scale_columns(prefix: str, worksheet: dict, rows: list[dict], taken: set[str]) -> tuple[dict, dict]:
+    """Column names for one block of a scale: dimension scores, then every question.
+
+    Built from the worksheet definition and the scores actually stored, so a
+    new scale exports without code changes.
     """
-    rows = [dict(item) for item in rows]
-    taken = {"result_id", "anonymous_id", "created_at", "total_score"}
     dimension_columns: dict[str, str] = {}
     for row in rows:
         for item in _dimension_scores(row):
-            key = str(item.get("key") or item.get("label") or "")
+            key = _dimension_key(item)
             if key and key not in dimension_columns:
-                dimension_columns[key] = _unique(f"维度:{item.get('label') or key}", taken)
+                dimension_columns[key] = _unique(f"{prefix}维度:{item.get('label') or key}", taken)
+    questions = [item for item in worksheet.get("questions") or [] if isinstance(item, dict) and item.get("id")]
     question_columns = {
-        question["id"]: _unique(f"Q{number} {str(question.get('prompt') or '').strip()[:40]}".strip(), taken)
-        for number, question in enumerate(
-            [item for item in worksheet.get("questions") or [] if isinstance(item, dict) and item.get("id")],
-            start=1,
-        )
+        question["id"]: _unique(f"{prefix}Q{number} {str(question.get('prompt') or '').strip()[:40]}".strip(), taken)
+        for number, question in enumerate(questions, start=1)
     }
+    return dimension_columns, question_columns
+
+
+def _fill_scale(line: dict, row: dict | None, columns: tuple[dict, dict], lookup: WorksheetLookup) -> None:
+    """Dimension scores and each question's option score (typed answers: length only)."""
+    dimension_columns, question_columns = columns
+    scores = {_dimension_key(item): item.get("score") for item in _dimension_scores(row)} if row else {}
+    answers = {
+        item["question_id"]: item["raw_score"] if item["raw_score"] != "" else item["answer_label"]
+        for item in answered_items(row, result_worksheet(row, lookup), include_free_text=False)
+    } if row else {}
+    for key, column in dimension_columns.items():
+        line[column] = scores.get(key, "")
+    for question_id, column in question_columns.items():
+        line[column] = answers.get(question_id, "")
+
+
+def wide_export_rows(rows, worksheet: dict, lookup: WorksheetLookup, anonymize: Callable[[str], str]) -> list[dict]:
+    """One worksheet, one row per answer sheet: total, dimensions, then one column per question."""
+    rows = [dict(item) for item in rows]
+    columns = _scale_columns("", worksheet, rows, {"result_id", "anonymous_id", "created_at", "total_score"})
     export = []
     for row in rows:
         line = {
@@ -199,15 +234,49 @@ def wide_export_rows(rows, worksheet: dict, lookup: WorksheetLookup, anonymize: 
             "created_at": row.get("created_at"),
             "total_score": row.get("total_score"),
         }
-        scores = {str(item.get("key") or item.get("label") or ""): item.get("score") for item in _dimension_scores(row)}
-        for key, column in dimension_columns.items():
-            line[column] = scores.get(key, "")
-        answers = {
-            item["question_id"]: item["raw_score"] if item["raw_score"] != "" else item["answer_label"]
-            for item in answered_items(row, result_worksheet(row, lookup), include_free_text=False)
-        }
-        for question_id, column in question_columns.items():
-            line[column] = answers.get(question_id, "")
+        _fill_scale(line, row, columns, lookup)
+        export.append(line)
+    return export
+
+
+def person_wide_export_rows(rows, worksheet_order: list[str], lookup: WorksheetLookup, anonymize: Callable[[str], str]) -> list[dict]:
+    """One row per person with several scales side by side.
+
+    Every answer sheet is kept: a scale filled three times gets three column
+    groups labelled 第1次/第2次/第3次 (oldest first) with their Beijing fill-in
+    time. Expects rows ordered oldest first.
+    """
+    rows = [dict(item) for item in rows]
+    sheets: dict[str, dict[str, list[dict]]] = {}
+    for row in rows:
+        sheets.setdefault(str(row["user_id"]), {}).setdefault(str(row["worksheet_id"]), []).append(row)
+    present = {str(row["worksheet_id"]) for row in rows}
+    order = [item for item in worksheet_order if item in present] + sorted(present - set(worksheet_order))
+    taken = {"anonymous_id"}
+    blocks = []
+    for worksheet_id in order:
+        by_person = [person[worksheet_id] for person in sheets.values() if worksheet_id in person]
+        worksheet = lookup(worksheet_id) or result_worksheet(by_person[0][0], lookup)
+        title = catalog_item(worksheet)["title"] if worksheet else worksheet_id
+        for number in range(1, max(len(items) for items in by_person) + 1):
+            prefix = f"{title}·第{number}次·"
+            kth = [items[number - 1] for items in by_person if len(items) >= number]
+            blocks.append((
+                worksheet_id,
+                number,
+                _unique(f"{prefix}填写时间(北京)", taken),
+                _unique(f"{prefix}总分", taken),
+                _scale_columns(prefix, worksheet, kth, taken),
+            ))
+    export = []
+    for user_id, person in sheets.items():
+        line = {"anonymous_id": anonymize(user_id)}
+        for worksheet_id, number, time_column, total_column, columns in blocks:
+            items = person.get(worksheet_id, [])
+            row = items[number - 1] if len(items) >= number else None
+            line[time_column] = beijing_time(row.get("created_at")) if row else ""
+            line[total_column] = row.get("total_score") if row else ""
+            _fill_scale(line, row, columns, lookup)
         export.append(line)
     return export
 

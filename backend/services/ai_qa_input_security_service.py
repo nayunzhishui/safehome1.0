@@ -179,6 +179,20 @@ def validate_message_payload(
     return {key: deepcopy(payload[key]) for key in allowed if key in payload}
 
 
+def mask_identifiers(text: object) -> tuple[str, int]:
+    """Mask phone numbers, emails, ID numbers and IP addresses; returns (text, masked count).
+
+    Same patterns as deidentify_text, without its length limit, for research
+    text exports. Names and schools cannot be recognised this way.
+    """
+    masked = str(text or "")
+    total = 0
+    for _category, pattern, replacement in _PII_PATTERNS:
+        masked, count = pattern.subn(replacement, masked)
+        total += count
+    return masked, total
+
+
 def deidentify_text(text: object, *, max_length: int) -> dict[str, Any]:
     normalized = str(text or "").strip()
     if not normalized or len(normalized) > max_length:

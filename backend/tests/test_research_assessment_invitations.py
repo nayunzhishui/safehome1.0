@@ -88,9 +88,9 @@ def test_researcher_sends_a_catalog_scale_and_reads_the_answers(tmp_path, monkey
     # Exports carry every question with its answer and score; typed answers stay out.
     open_sheet = next(item for item in offered if item["id"] == "attribution_style_student_36")
     open_questions = client.get(f"/api/assessments/{open_sheet['id']}", headers=participant_headers).get_json()["data"]["questions"]
-    secret = "合成私密原因-不应导出"
+    typed_cause = "合成的原因描述"
     open_answers = [
-        {"question_id": question["id"], "value": question["options"][0]["value"] if question.get("options") else secret}
+        {"question_id": question["id"], "value": question["options"][0]["value"] if question.get("options") else typed_cause}
         for question in open_questions
     ]
     assert client.post("/api/assessment-results", headers=participant_headers, json={"worksheet_id": open_sheet["id"], "answers": open_answers}).status_code == 201
@@ -100,10 +100,36 @@ def test_researcher_sends_a_catalog_scale_and_reads_the_answers(tmp_path, monkey
     assert lines[0].startswith("result_id,anonymous_id,worksheet_id,worksheet_title,question_no,question_id,question_text")
     assert len(lines) - 1 == len(worksheet["questions"]) + len(open_questions)
     assert worksheet["questions"][0]["prompt"] in items_csv
-    assert secret not in items_csv and participant["id"] not in items_csv
+    assert typed_cause not in items_csv and participant["id"] not in items_csv
 
     wide_csv = client.get(f"/api/admin/export?type=assessment_wide&worksheet_id={worksheet_id}", headers=owner).get_data(as_text=True)
     wide_lines = wide_csv.lstrip("﻿").splitlines()
     assert wide_lines[0].startswith("result_id,anonymous_id,created_at,total_score") and "Q1 " in wide_lines[0]
     assert len(wide_lines) == 2
     assert client.get("/api/admin/export?type=assessment_wide", headers=owner).status_code == 400
+
+    # One row per person; a scale filled twice keeps both, labelled 第1次/第2次.
+    assert client.post("/api/assessment-results", headers=participant_headers, json={"worksheet_id": worksheet_id, "answers": answers}).status_code == 201
+    person_csv = client.get(
+        f"/api/admin/export?type=assessment_person_wide&worksheet_ids={worksheet_id},{open_sheet['id']}", headers=owner
+    ).get_data(as_text=True)
+    person_lines = person_csv.lstrip("﻿").splitlines()
+    assert len(person_lines) == 2 and person_lines[0].startswith("anonymous_id,")
+    assert "·第1次·总分" in person_lines[0] and "·第2次·填写时间(北京)" in person_lines[0]
+    assert person_lines[0].index(worksheet["display_title"]) < person_lines[0].index(open_sheet["display_title"])
+
+    # Participants' own text needs a confirmation every time and comes out with identifiers masked.
+    diary = client.post(
+        "/api/diaries",
+        headers=participant_headers,
+        json={"scene": "家里", "event_description": "合成日记，联系我 13800000000", "parent_emotion": "着急"},
+    )
+    assert diary.status_code == 201, diary.get_json()
+    unconfirmed = client.get("/api/admin/export?type=texts&source=diaries", headers=owner)
+    assert unconfirmed.status_code == 409
+    assert unconfirmed.get_json()["error"]["code"] == "raw_text_export_confirmation_required"
+    diary_csv = client.get("/api/admin/export?type=texts&source=diaries&confirm_raw_text=1", headers=owner).get_data(as_text=True)
+    assert "合成日记" in diary_csv and "[手机号已去标识]" in diary_csv
+    assert "13800000000" not in diary_csv and participant["id"] not in diary_csv
+    typed_csv = client.get("/api/admin/export?type=texts&source=assessment_answers&confirm_raw_text=1", headers=owner).get_data(as_text=True)
+    assert typed_cause in typed_csv

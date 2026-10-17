@@ -10,7 +10,14 @@ from flask import Blueprint, Response, request
 from database import get_connection, json_dumps, json_loads, load_content_json, now_iso, write_audit_log
 from routes.auth_utils import AuthError, auth_error_response, require_capability, require_role
 from services.privacy_request_service import research_revoked_filter
-from services.research_assessment_service import item_export_rows, wide_export_rows
+from services.research_assessment_service import item_export_rows, person_wide_export_rows, wide_export_rows
+from services.research_text_export_service import (
+    ASSESSMENT_TEXT_SOURCE,
+    TEXT_SOURCES,
+    assessment_text_rows,
+    is_text_source,
+    record_text_rows,
+)
 from routes.assessments import worksheets_by_id
 from routes.utils import fail, ok, parse_bool, parse_int
 from services.content_loader import ContentLoadError, load_parent_scales, load_student_scales
@@ -36,8 +43,12 @@ EXPORT_TABLES = {
 }
 
 PROFILE_EXPORT_TYPES = {"profile", "student_profiles"}
-# assessment_items: one row per answered question; assessment_wide: one row per answer sheet of one worksheet.
-ASSESSMENT_DETAIL_EXPORT_TYPES = {"assessment_items", "assessment_wide"}
+# Scale exports with questions and scores. assessment_items: one row per answered question;
+# assessment_wide: one worksheet, one row per answer sheet; assessment_person_wide: one row per
+# person with several worksheets side by side and every answer sheet kept.
+ASSESSMENT_DETAIL_EXPORT_TYPES = {"assessment_items", "assessment_wide", "assessment_person_wide"}
+# What participants wrote, identifiers masked; needs confirm_raw_text=1 every time.
+TEXT_EXPORT_TYPE = "texts"
 DEFAULT_EXPORT_LIMIT = 1000
 MAX_EXPORT_LIMIT = 5000
 CSV_FORMULA_PREFIXES = ("=", "+", "-", "@", "\t", "\r")
@@ -895,9 +906,23 @@ def export_csv():
     # Scale exports with questions and scores. Worksheets are read before the
     # export connection opens because loading them uses a connection of its own.
     worksheet_id = str(request.args.get("worksheet_id") or "").strip()
-    worksheets = worksheets_by_id() if export_type in ASSESSMENT_DETAIL_EXPORT_TYPES else {}
+    worksheet_ids = [item.strip() for item in str(request.args.get("worksheet_ids") or "").split(",") if item.strip()]
+    text_source = str(request.args.get("source") or "").strip()
+    needs_worksheets = export_type in ASSESSMENT_DETAIL_EXPORT_TYPES or (
+        export_type == TEXT_EXPORT_TYPE and text_source == ASSESSMENT_TEXT_SOURCE
+    )
+    worksheets = worksheets_by_id() if needs_worksheets else {}
     if export_type == "assessment_wide" and worksheet_id not in worksheets:
         return fail("validation_error", "按量表导出需要先选一份量表。", status=400)
+    if export_type == TEXT_EXPORT_TYPE:
+        if not is_text_source(text_source):
+            return fail("validation_error", "请选择要导出的文字来源。", status=400)
+        if not parse_bool(request.args.get("confirm_raw_text"), False):
+            return fail(
+                "raw_text_export_confirmation_required",
+                "这次导出包含用户写的原文：手机号、邮箱、证件号和 IP 会自动遮盖，人名等无法自动识别。确认用途后再导出。",
+                status=409,
+            )
     try:
         with get_connection() as conn:
             if export_type in PROFILE_EXPORT_TYPES:
@@ -1026,26 +1051,74 @@ def export_csv():
                     row_count_before_limit = len(rows)
                     rows = rows[:limit]
             elif export_type in ASSESSMENT_DETAIL_EXPORT_TYPES:
-                # The limit counts answer sheets; the long table has one row per answered question.
                 where_clauses = []
                 params = []
                 _append_research_consent_filter(conn, where_clauses, params)
                 if user_id:
                     where_clauses.append("user_id = ?")
                     params.append(user_id)
-                scoped_ids = [worksheet_id] if worksheet_id else list(worksheets)
+                if export_type == "assessment_person_wide":
+                    scoped_ids = worksheet_ids or list(worksheets)
+                else:
+                    scoped_ids = [worksheet_id] if worksheet_id else list(worksheets)
                 where_clauses.append(f"worksheet_id IN ({', '.join('?' for _ in scoped_ids) or 'NULL'})")
                 params.extend(scoped_ids)
+                filters = " AND ".join(where_clauses)
+                if export_type == "assessment_person_wide":
+                    # The limit counts people (most recently active first); all their answer sheets are kept.
+                    row_count_before_limit = conn.execute(
+                        f"SELECT COUNT(DISTINCT user_id) AS count FROM assessment_results WHERE {filters}", params
+                    ).fetchone()["count"]
+                    people = (
+                        "SELECT user_id FROM (SELECT user_id, MAX(created_at) AS last_at FROM assessment_results "
+                        f"WHERE {filters} GROUP BY user_id ORDER BY last_at DESC LIMIT ?) AS chosen"
+                    )
+                    rows = conn.execute(
+                        f"SELECT * FROM assessment_results WHERE {filters} AND user_id IN ({people}) ORDER BY created_at ASC, id ASC",
+                        [*params, *params, limit],
+                    ).fetchall()
+                    rows = person_wide_export_rows(rows, scoped_ids, worksheets.get, _anonymous_id)
+                else:
+                    # The limit counts answer sheets; the long table has one row per answered question.
+                    rows, row_count_before_limit = _fetch_limited_rows(
+                        conn,
+                        f"SELECT * FROM assessment_results WHERE {filters} ORDER BY created_at DESC",
+                        params,
+                        limit,
+                    )
+                    if export_type == "assessment_wide":
+                        rows = wide_export_rows(rows, worksheets[worksheet_id], worksheets.get, _anonymous_id)
+                    else:
+                        rows = item_export_rows(rows, worksheets.get, _anonymous_id)
+            elif export_type == TEXT_EXPORT_TYPE:
+                where_clauses = []
+                params = []
+                _append_research_consent_filter(conn, where_clauses, params)
+                if user_id:
+                    where_clauses.append("user_id = ?")
+                    params.append(user_id)
+                if text_source == ASSESSMENT_TEXT_SOURCE:
+                    # Only worksheets with typed questions, so the limit is not spent on option-only sheets.
+                    table = "assessment_results"
+                    typed_ids = [
+                        key for key, item in worksheets.items()
+                        if any(isinstance(question, dict) and not question.get("options") for question in item.get("questions") or [])
+                    ]
+                    where_clauses.append(f"worksheet_id IN ({', '.join('?' for _ in typed_ids) or 'NULL'})")
+                    params.extend(typed_ids)
+                else:
+                    table = TEXT_SOURCES[text_source].table
+                where_sql = f" WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
                 rows, row_count_before_limit = _fetch_limited_rows(
                     conn,
-                    f"SELECT * FROM assessment_results WHERE {' AND '.join(where_clauses)} ORDER BY created_at DESC",
+                    f"SELECT * FROM {table}{where_sql} ORDER BY created_at DESC",
                     params,
                     limit,
                 )
-                if export_type == "assessment_wide":
-                    rows = wide_export_rows(rows, worksheets[worksheet_id], worksheets.get, _anonymous_id)
+                if text_source == ASSESSMENT_TEXT_SOURCE:
+                    rows = assessment_text_rows(rows, worksheets.get, _anonymous_id)
                 else:
-                    rows = item_export_rows(rows, worksheets.get, _anonymous_id)
+                    rows = record_text_rows(TEXT_SOURCES[text_source], rows, _anonymous_id)
             elif export_type == "codebook":
                 rows = _codebook_rows()
                 row_count_before_limit = len(rows)
@@ -1055,7 +1128,7 @@ def export_csv():
                 if table is None:
                     return fail(
                         "invalid_export_type",
-                        "支持的 type：goals, diaries, feedback, checkins, assessments, assessment_items, assessment_wide, profile, student_profiles, records, student_followups, sandplay, parent_assessments, raw_wide, long, codebook, reports, supervision, cards",
+                        "支持的 type：goals, diaries, feedback, checkins, assessments, assessment_items, assessment_wide, assessment_person_wide, texts, profile, student_profiles, records, student_followups, sandplay, parent_assessments, raw_wide, long, codebook, reports, supervision, cards",
                     )
                 where_clauses = []
                 params = []
@@ -1112,6 +1185,9 @@ def export_csv():
                     "user_id_filter": user_id,
                     "module_type_filter": module_type,
                     "worksheet_id_filter": worksheet_id or None,
+                    "worksheet_ids_filter": worksheet_ids or None,
+                    "text_source": text_source if export_type == TEXT_EXPORT_TYPE else None,
+                    "raw_text_included": export_type == TEXT_EXPORT_TYPE,
                     "row_count": len(rows),
                     "limit": limit,
                     "row_count_before_limit": row_count_before_limit,

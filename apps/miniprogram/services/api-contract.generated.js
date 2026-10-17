@@ -254,11 +254,14 @@ const GENERATED_API_ENDPOINTS = [
       "path_parameters": [],
       "query_parameters": [
         "confirm_high_risk",
+        "confirm_raw_text",
         "limit",
         "module_type",
+        "source",
         "type",
         "user_id",
-        "worksheet_id"
+        "worksheet_id",
+        "worksheet_ids"
       ],
       "body_fields": [],
       "headers": [],
@@ -290,6 +293,7 @@ const GENERATED_API_ENDPOINTS = [
       "http_error",
       "internal_error",
       "invalid_export_type",
+      "raw_text_export_confirmation_required",
       "unauthorized",
       "validation_error"
     ],

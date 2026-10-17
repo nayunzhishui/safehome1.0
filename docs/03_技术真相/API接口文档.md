@@ -1054,9 +1054,12 @@ X-Admin-Token: safehome-local-admin-token
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
-| `type` | string | 否 | 默认 `diaries`。支持：`goals`、`diaries`、`feedback`、`checkins`、`assessments`、`assessment_items`、`assessment_wide`、`profile`、`student_profiles`、`records`、`student_followups`、`sandplay`、`parent_assessments`、`raw_wide`、`long`、`codebook`、`reports`、`supervision`、`cards` |
+| `type` | string | 否 | 默认 `diaries`。支持：`goals`、`diaries`、`feedback`、`checkins`、`assessments`、`assessment_items`、`assessment_wide`、`assessment_person_wide`、`texts`、`profile`、`student_profiles`、`records`、`student_followups`、`sandplay`、`parent_assessments`、`raw_wide`、`long`、`codebook`、`reports`、`supervision`、`cards` |
 | `user_id` | string | 否 | 除 `cards`、`codebook`、`raw_wide`、`long` 外，可按用户筛选 |
 | `worksheet_id` | string | 否 | `assessment_items` 可选（只导这份量表），`assessment_wide` 必填（缺少或不认识返回 `400`） |
+| `worksheet_ids` | string | 否 | `assessment_person_wide` 用，逗号分隔，决定并排哪些量表及先后；不传为全部 |
+| `source` | string | `texts` 必填 | `diaries`、`checkins`、`thermometer`、`assessment_answers` |
+| `confirm_raw_text` | boolean | `texts` 必填 | 没带时返回 `409 raw_text_export_confirmation_required`，每次导出都要确认 |
 | `module_type` | string | 否 | `type=records` 时可按模块筛选，例如 `student_profile` |
 | `confirm_high_risk` | boolean | 否 | 当 `profile`、`student_profiles` 或 `records` 导出含高风险/需复核记录时，必须为 `true` |
 | `limit` | number | 否 | 默认 `1000`，最大 `5000`；超过最大值返回 `400 invalid_export_limit` |
@@ -1074,6 +1077,9 @@ X-Admin-Token: safehome-local-admin-token
 - `type=assessment_items`（2026-10-17）：每道已答题一行，列为 `result_id, anonymous_id, worksheet_id, worksheet_title, question_no, question_id, question_text, dimension, answer_value, answer_label, raw_score, scored_value, total_score, created_at`。`raw_score` 是所选选项分，`scored_value` 是计入总分的分（反向题已翻转）。题目文字取提交时的内容快照。
 - `type=assessment_wide`（2026-10-17）：一份量表、每份答卷一行，列为 `result_id, anonymous_id, created_at, total_score`、每个维度 `维度:<名称>`、每道题 `Q<序号> <题目前 40 字>`（格子是所选选项分）。列由量表定义生成，新量表不用改代码。
 - 这两类的 `limit` 按答卷份数算；文字作答只导出字数（`（文字作答 N 字，不导出原文）`），与其他导出一致；已撤回研究授权的参与者不导出；`created_at` 为 UTC。
+- `type=assessment_person_wide`（2026-10-17）：每人一行（`anonymous_id`），按 `worksheet_ids` 的顺序把几份量表并排；同一量表填过几次就有几组列，列名形如 `<量表>·第1次·填写时间(北京)`、`<量表>·第1次·总分`、`<量表>·第1次·维度:<名称>`、`<量表>·第1次·Q<序号> <题目前 40 字>`，第1次是最早的一次。`limit` 按人数算（最近有填写的人优先），选中的人的所有答卷都保留。
+- `type=texts`（2026-10-17）：用户自己写的原文，每条记录一行，列为上下文字段、各文字字段和 `identifiers_masked`（本行遮盖了几处）。手机号、邮箱、证件号、IP 自动替换为“[…已去标识]”，人名、学校名无法自动识别。来源清单在 `backend/services/research_text_export_service.py` 的 `TEXT_SOURCES`，与离线文本分析的用户文本来源一致；系统和督导写的文字、联系方式、人工支持请求不导出。审计额外记录 `text_source` 和 `raw_text_included=true`。
+- 以上几类都只排除撤回研究授权的人（与其他导出相同，负责人 10-17 确认）；隐私说明里“研究用途需单独同意”的表述与此不一致，正式发布前需统一。
 - 如果画像或 records 导出包含 `risk_level=high` 或 `requires_review=true`，未带 `confirm_high_risk=true` 会返回 `409 high_risk_export_confirmation_required`。
 - 导出审计会记录 `contains_high_risk`、`confirmed_high_risk_export`、`limit`、`row_count_before_limit` 和 `row_count_exported`。
 - `type=profile` / `student_profiles` 导出包含 `research_authorization_status` 和 `consent_summary_json`。
