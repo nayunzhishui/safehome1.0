@@ -10,6 +10,7 @@
       <button class="thermo-step" aria-label="情绪强度减一" bindtap="decreaseIntensity">−</button>
       <button class="thermo-step" aria-label="情绪强度加一" bindtap="increaseIntensity">＋</button>
     </view>
+    <thermometer-anchor-note value="{{intensityLevel}}" />
   </view>
 
   <view class="thermo-section">

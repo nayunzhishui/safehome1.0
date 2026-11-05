@@ -12,12 +12,12 @@
 
   <view class="checkin-section">
     <view class="checkin-slider">
-      <text class="checkin-slider__label">练习前情绪强度 {{emotionBefore}} / 10</text>
-      <p3-intensity-slider min="0" max="10" value="{{emotionBefore}}" aria-label="练习前情绪强度" bind:change="onEmotionBeforeChange" />
+      <text class="checkin-slider__label">练习前情绪强度 {{beforeText}}</text>
+      <p3-intensity-slider min="0" max="10" value="{{emotionBefore}}" unset="{{!beforeSet}}" aria-label="练习前情绪强度" bind:change="onEmotionBeforeChange" />
     </view>
     <view class="checkin-slider">
-      <text class="checkin-slider__label">练习后情绪强度 {{emotionAfter}} / 10</text>
-      <p3-intensity-slider min="0" max="10" value="{{emotionAfter}}" aria-label="练习后情绪强度" bind:change="onEmotionAfterChange" />
+      <text class="checkin-slider__label">练习后情绪强度 {{afterText}}</text>
+      <p3-intensity-slider min="0" max="10" value="{{emotionAfter}}" unset="{{!afterSet}}" aria-label="练习后情绪强度" bind:change="onEmotionAfterChange" />
     </view>
   </view>
 

@@ -1,8 +1,8 @@
-<view class="anchor-note">
-  <view wx:for="{{bands}}" wx:key="min" class="anchor-note__band {{index === activeIndex ? 'anchor-note__band--on' : ''}}">
-    <text class="anchor-note__range">{{item.min}}–{{item.max}} 分</text>
+<view class="anchor-note" aria-label="分数参考">
+  <view wx:for="{{shownBands}}" wx:key="min" class="anchor-note__band {{index === activeIndex ? 'anchor-note__band--on' : ''}}">
+    <text class="anchor-note__range">{{item.min === item.max ? item.min : item.min + '–' + item.max}} 分</text>
     <text class="anchor-note__label">{{item.label}}</text>
   </view>
   <view wx:for="{{mine}}" wx:key="level" class="anchor-note__mine">我的 {{item.level}} 分：{{item.text}}</view>
-  <button class="p3-link anchor-note__edit" bindtap="onEditMine">写下我自己的 8 分</button>
+  <button wx:if="{{editable}}" class="p3-link anchor-note__edit" bindtap="onEditMine">写下我自己的 8 分</button>
 </view>

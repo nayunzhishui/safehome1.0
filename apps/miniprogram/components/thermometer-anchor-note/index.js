@@ -11,12 +11,16 @@ Component({
     bands: { type: Array, value: DEFAULT_BANDS },
     mine: { type: Array, value: [] }, // [{ level, text }]
     value: { type: Number, value: 0 },
+    // 量表最低分：温度计页是 1，接口返回的 0 分“平静”只在 0–10 的滑块上显示。
+    scaleMin: { type: Number, value: 1 },
+    // “写下我自己的 8 分”要等 PUT /api/thermometer-anchors/me 做好（B2-后端）再打开。
+    editable: { type: Boolean, value: false },
   },
-  data: { activeIndex: -1 },
+  data: { shownBands: DEFAULT_BANDS, activeIndex: -1 },
   observers: {
-    "bands, value"(bands, value) {
-      const list = Array.isArray(bands) ? bands : [];
-      this.setData({ activeIndex: list.findIndex((band) => value >= band.min && value <= band.max) });
+    "bands, value, scaleMin"(bands, value, scaleMin) {
+      const list = (Array.isArray(bands) ? bands : []).filter((band) => band.max >= scaleMin);
+      this.setData({ shownBands: list, activeIndex: list.findIndex((band) => value >= band.min && value <= band.max) });
     },
   },
   methods: {

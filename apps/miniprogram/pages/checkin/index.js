@@ -7,6 +7,13 @@ const api = createSafeHomeApi();
 
 const REFLECTION_PROMPTS = ["这次做到哪一步？", "练习前后情绪有什么变化？", "下次想轻一点尝试什么？"];
 
+// 前后分数不给默认值：没拖过滑块就不记分（负责人 11-05 定）；0 分写“平静”。
+const UNSET_SCORE_TEXT = "还没选，拖一下滑块";
+function scoreText(isSet, value) {
+  if (!isSet) return UNSET_SCORE_TEXT;
+  return `${value} / 10${Number(value) === 0 ? "（平静）" : ""}`;
+}
+
 Page({
   retryServiceEntry() { return this.onLoad(this._entryOptions || {}); },
   returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
@@ -18,6 +25,10 @@ Page({
     sourceRecommendationId: "",
     emotionBefore: 5,
     emotionAfter: 5,
+    beforeSet: false,
+    afterSet: false,
+    beforeText: UNSET_SCORE_TEXT,
+    afterText: UNSET_SCORE_TEXT,
     helpfulnessOptions: [
       { label: "有帮助", value: "helpful" },
       { label: "一般", value: "neutral" },
@@ -51,17 +62,20 @@ Page({
     }
     this.draftController = createResilientForm({
       storageKey: `safehome:resilientDraft:checkin:${cardId}:${diaryId || "none"}`,
-      fields: ["emotionBefore", "emotionAfter", "helpfulnessRating", "skipReason", "reflection"],
+      fields: ["emotionBefore", "emotionAfter", "beforeSet", "afterSet", "helpfulnessRating", "skipReason", "reflection"],
       submissionPrefix: "checkin",
-      hasContent: (values) => Boolean(String(values.reflection || "").trim() || String(values.skipReason || "").trim() || values.helpfulnessRating || values.emotionBefore !== 5 || values.emotionAfter !== 5),
+      hasContent: (values) => Boolean(String(values.reflection || "").trim() || String(values.skipReason || "").trim() || values.helpfulnessRating || values.beforeSet || values.afterSet),
     });
     const restored = this.draftController.restore();
+    const values = restored ? restored.values : {};
     this.setData({
       cardId,
       diaryId,
       cardTitle,
       sourceRecommendationId: selectedCard && selectedCard.id === cardId ? selectedCard.sourceRecommendationId || "" : "",
-      ...(restored ? restored.values : {}),
+      ...values,
+      beforeText: scoreText(values.beforeSet, values.emotionBefore),
+      afterText: scoreText(values.afterSet, values.emotionAfter),
       saveStatus: restored ? restored.saveStatus : "尚未填写",
       draftRestored: Boolean(restored),
     });
@@ -77,11 +91,13 @@ Page({
   },
 
   onEmotionBeforeChange(event) {
-    this.setData({ emotionBefore: Number(event.detail.value), successMessage: "", errorMessage: "" }, () => this.scheduleDraftSave());
+    const value = Number(event.detail.value);
+    this.setData({ emotionBefore: value, beforeSet: true, beforeText: scoreText(true, value), successMessage: "", errorMessage: "" }, () => this.scheduleDraftSave());
   },
 
   onEmotionAfterChange(event) {
-    this.setData({ emotionAfter: Number(event.detail.value), successMessage: "", errorMessage: "" }, () => this.scheduleDraftSave());
+    const value = Number(event.detail.value);
+    this.setData({ emotionAfter: value, afterSet: true, afterText: scoreText(true, value), successMessage: "", errorMessage: "" }, () => this.scheduleDraftSave());
   },
 
   onReflectionInput(event) {
@@ -116,8 +132,8 @@ Page({
         card_id: this.data.cardId,
         diary_id: this.data.diaryId || undefined,
         completed: true,
-        emotion_before: this.data.emotionBefore,
-        emotion_after: this.data.emotionAfter,
+        emotion_before: this.data.beforeSet ? this.data.emotionBefore : undefined,
+        emotion_after: this.data.afterSet ? this.data.emotionAfter : undefined,
         reflection: this.data.reflection.trim(),
         helpfulness_rating: this.data.helpfulnessRating || undefined,
         skip_reason: this.data.skipReason.trim() || undefined,

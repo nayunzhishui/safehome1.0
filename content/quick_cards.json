@@ -28,32 +28,32 @@
     "three_second_pause": {
       "file_id": "",
       "duration_seconds": null,
-      "script_status": "not_started"
+      "script_status": "draft_written"
     },
     "parent_body_signal_check": {
       "file_id": "",
       "duration_seconds": null,
-      "script_status": "not_started"
+      "script_status": "draft_written"
     },
     "parent_body_grounding": {
       "file_id": "",
       "duration_seconds": null,
-      "script_status": "not_started"
+      "script_status": "draft_written"
     },
     "emotion_naming": {
       "file_id": "",
       "duration_seconds": null,
-      "script_status": "not_started"
+      "script_status": "draft_written"
     },
     "parent_after_conflict_repair": {
       "file_id": "",
       "duration_seconds": null,
-      "script_status": "not_started"
+      "script_status": "draft_written"
     },
     "parent_repair_question": {
       "file_id": "",
       "duration_seconds": null,
-      "script_status": "not_started"
+      "script_status": "draft_written"
     }
   }
 }

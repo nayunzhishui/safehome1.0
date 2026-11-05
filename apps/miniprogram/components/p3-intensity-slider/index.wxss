@@ -42,6 +42,11 @@
   pointer-events: none;
 }
 
+.p3-slider__knob--unset {
+  opacity: 0.35;
+  box-shadow: none;
+}
+
 /* 原生 slider 去掉默认外边距，与可见轨道等宽，透明但仍可拖动和读屏。 */
 .p3-slider__native {
   position: absolute;

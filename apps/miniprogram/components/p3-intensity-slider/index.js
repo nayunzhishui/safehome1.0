@@ -7,6 +7,8 @@ Component({
     min: { type: Number, value: 0 },
     max: { type: Number, value: 10 },
     ariaLabel: { type: String, value: "" },
+    // 还没选分数时为 true：不画液柱，圆点变淡，提示用户自己拖一下。
+    unset: { type: Boolean, value: false },
   },
   data: { percent: 0, level: 0 },
   lifetimes: {
