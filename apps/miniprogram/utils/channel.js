@@ -14,14 +14,46 @@ function parseChannel(options = {}) {
   return CHANNELS.includes(ch) ? ch : "";
 }
 
-function rememberChannel(ch) {
-  // TODO(A3-前端): 只记第一次的渠道和时间；本地存储的读写都用 try/catch 包住
+function readSaved() {
+  try {
+    const saved = wx.getStorageSync(STORAGE_KEY);
+    return saved && saved.ch ? saved : null;
+  } catch (error) {
+    return null;
+  }
 }
 
+function writeSaved(saved) {
+  try {
+    wx.setStorageSync(STORAGE_KEY, saved);
+  } catch (error) {
+    // 存不进去就算了，渠道统计少一条，不影响使用。
+  }
+}
+
+// 北京日期 YYYY-MM-DD，用来拼 client_event_id。
+function beijingDate(iso) {
+  const time = new Date(iso).getTime();
+  const shifted = new Date((Number.isNaN(time) ? Date.now() : time) + 8 * 3600 * 1000);
+  return shifted.toISOString().slice(0, 10);
+}
+
+function rememberChannel(ch) {
+  if (!ch || readSaved()) return; // 只记第一次的渠道
+  writeSaved({ ch, firstSeenAt: new Date().toISOString(), reported: false });
+}
+
+// 登录后补报一次 app_entry；后端还没放行这个事件时会失败，下次启动再试。
 function flushChannelEvent(api) {
-  // TODO(A3-前端): 登录后用 services/api.js 里提交产品事件的方法补报：
-  // event_name "app_entry"，client_event_id `app_entry:${ch}:${北京日期}`，metadata { channel: ch }
-  return Promise.resolve(false);
+  const saved = readSaved();
+  if (!saved || saved.reported || !api || !api.trackProductEvent) return Promise.resolve(false);
+  const clientEventId = `app_entry:${saved.ch}:${beijingDate(saved.firstSeenAt)}`;
+  return api.trackProductEvent("app_entry", { channel: saved.ch }, clientEventId)
+    .then(() => {
+      writeSaved({ ...saved, reported: true });
+      return true;
+    })
+    .catch(() => false);
 }
 
 module.exports = { STORAGE_KEY, CHANNELS, parseChannel, rememberChannel, flushChannelEvent };

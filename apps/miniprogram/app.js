@@ -1,5 +1,24 @@
 const { getCloudConfig, migrateLegacyCloudConfig } = require("./services/cloudConfig");
 const { loadDisplayFonts } = require("./utils/display-font");
+const { parseChannel, rememberChannel, flushChannelEvent } = require("./utils/channel");
+
+// A3 渠道标记：记下第一次进来的渠道，登录后补报一次（docs/11_商业化开发/开发框架.md 第 2 节）。
+function noteChannel(options) {
+  try {
+    rememberChannel(parseChannel(options || {}));
+  } catch (error) {
+    // 渠道统计出错不能影响启动。
+  }
+}
+
+function reportChannel() {
+  try {
+    const { createSafeHomeApi } = require("./services/api");
+    flushChannelEvent(createSafeHomeApi());
+  } catch (error) {
+    // 同上。
+  }
+}
 
 App({
   globalData: {
@@ -8,7 +27,8 @@ App({
     cloudConfigError: null,
   },
 
-  onLaunch() {
+  onLaunch(options) {
+    noteChannel(options);
     loadDisplayFonts();
     migrateLegacyCloudConfig();
     if (wx.cloud && wx.cloud.init) {
@@ -30,6 +50,11 @@ App({
     }
     this.globalData.token = wx.getStorageSync("auth_token") || "";
     this.globalData.user = wx.getStorageSync("auth_user") || null;
+    if (this.globalData.token) reportChannel();
+  },
+
+  onShow(options) {
+    noteChannel(options);
   },
 
   setAuthSession(token, user) {
@@ -39,6 +64,7 @@ App({
       wx.setStorageSync("auth_token", token);
       wx.setStorageSync("auth_user", user || null);
       wx.removeStorageSync("safehome_anonymous_user_id");
+      reportChannel();
     }
   },
 
