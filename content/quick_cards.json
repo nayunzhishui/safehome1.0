@@ -27,33 +27,39 @@
   "audio": {
     "three_second_pause": {
       "file_id": "",
-      "duration_seconds": null,
-      "script_status": "draft_written"
+      "duration_seconds": 44.9,
+      "script_status": "internal_preview_audio",
+      "note": "内部试听版：edge-tts 晓晓；正式发布前换有商用授权的语音服务"
     },
     "parent_body_signal_check": {
       "file_id": "",
-      "duration_seconds": null,
-      "script_status": "draft_written"
+      "duration_seconds": 60.4,
+      "script_status": "internal_preview_audio",
+      "note": "内部试听版：edge-tts 晓晓；正式发布前换有商用授权的语音服务"
     },
     "parent_body_grounding": {
       "file_id": "",
-      "duration_seconds": null,
-      "script_status": "draft_written"
+      "duration_seconds": 70.3,
+      "script_status": "internal_preview_audio",
+      "note": "内部试听版：edge-tts 晓晓；正式发布前换有商用授权的语音服务"
     },
     "emotion_naming": {
       "file_id": "",
-      "duration_seconds": null,
-      "script_status": "draft_written"
+      "duration_seconds": 63.5,
+      "script_status": "internal_preview_audio",
+      "note": "内部试听版：edge-tts 晓晓；正式发布前换有商用授权的语音服务"
     },
     "parent_after_conflict_repair": {
       "file_id": "",
-      "duration_seconds": null,
-      "script_status": "draft_written"
+      "duration_seconds": 44.6,
+      "script_status": "internal_preview_audio",
+      "note": "内部试听版：edge-tts 晓晓；正式发布前换有商用授权的语音服务"
     },
     "parent_repair_question": {
       "file_id": "",
-      "duration_seconds": null,
-      "script_status": "draft_written"
+      "duration_seconds": 53.2,
+      "script_status": "internal_preview_audio",
+      "note": "内部试听版：edge-tts 晓晓；正式发布前换有商用授权的语音服务"
     }
   }
 }
