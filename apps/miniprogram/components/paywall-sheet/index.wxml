@@ -1,0 +1,12 @@
+<page-container show="{{show}}" position="bottom" round bind:afterleave="onClose">
+  <view class="paywall">
+    <view wx:for="{{skus}}" wx:key="id" class="paywall__sku">
+      <view class="paywall__name">{{item.name}}</view>
+      <!-- TODO(B5-前端): 包含什么、有效期、价格（price_fen 换算成元） -->
+      <button wx:if="{{purchasable}}" class="p3-btn" data-sku="{{item.id}}" bindtap="onBuy">购买</button>
+    </view>
+    <view wx:if="{{!purchasable}}" class="paywall__note">暂不支持在这台设备上购买</view>
+    <view class="paywall__note">这些报告帮你找规律，不能代替就医。退款说明见用户协议。</view>
+    <button class="p3-btn p3-btn--secondary" bindtap="onClose">先不用</button>
+  </view>
+</page-container>

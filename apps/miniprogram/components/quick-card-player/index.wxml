@@ -1,0 +1,38 @@
+<page-container show="{{show}}" position="bottom" round bind:afterleave="onClose">
+  <view class="qc">
+    <view class="qc__title">{{cards[index].title}}</view>
+
+    <block wx:if="{{phase === 'before'}}">
+      <view class="qc__ask">现在几分？0 是平静，10 是快控制不住</view>
+      <view class="qc__scores">
+        <button wx:for="{{scores}}" wx:key="*this" class="qc__score {{emotionBefore === item ? 'qc__score--on' : ''}}" data-score="{{item}}" bindtap="onPickBefore">{{item}}</button>
+      </view>
+      <button class="p3-btn" disabled="{{emotionBefore < 0}}" bindtap="onStart">开始</button>
+    </block>
+
+    <block wx:elif="{{phase === 'playing'}}">
+      <view class="qc__hint">听不到声音的话，打开声音或戴上耳机</view>
+      <!-- TODO(B1-前端): 文字步骤 cardTexts[cards[index].id].steps；语音失败时一定显示 -->
+      <button class="p3-btn" bindtap="onFinishPractice">做完了</button>
+      <button class="p3-link" bindtap="onSwitchCard">换一张</button>
+    </block>
+
+    <block wx:elif="{{phase === 'after'}}">
+      <view class="qc__ask">现在几分？</view>
+      <view class="qc__scores">
+        <button wx:for="{{scores}}" wx:key="*this" class="qc__score {{emotionAfter === item ? 'qc__score--on' : ''}}" data-score="{{item}}" bindtap="onPickAfter">{{item}}</button>
+      </view>
+      <button class="p3-btn" disabled="{{emotionAfter < 0}}" bindtap="onSubmit">看看前后</button>
+    </block>
+
+    <block wx:else>
+      <before-after-badge before="{{emotionBefore}}" after="{{emotionAfter}}" />
+      <view wx:if="{{!loggedIn}}" class="qc__hint">登录后可以保存这次记录，也可以先不保存</view>
+      <button class="p3-btn p3-btn--secondary" bindtap="onClose">关闭</button>
+    </block>
+
+    <view class="qc__safety" bindtap="onOpenEmergency">
+      <safety-action-row marker="!" text="紧急求助" showDivider="{{false}}" />
+    </view>
+  </view>
+</page-container>

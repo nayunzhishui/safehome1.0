@@ -1,0 +1,58 @@
+{
+  "version": "2026.11-skus-v1",
+  "updated_at": "2026-11-05",
+  "review_status": "draft_owner_review",
+  "notice": "价格单位是分。价格和有效期第 4 周按价格四问的区间定，定之前保持 null，on_sale 保持 false。见 docs/11_商业化开发/开发框架.md 第 7.4 节。",
+  "skus": [
+    {
+      "id": "deep_report_single",
+      "name": "深度报告（单次）",
+      "price_fen": null,
+      "on_sale": false,
+      "platforms": [
+        "android"
+      ],
+      "entitlements": [
+        {
+          "type": "deep_report",
+          "valid_days": null
+        }
+      ]
+    },
+    {
+      "id": "four_week_plan",
+      "name": "4 周方案",
+      "price_fen": null,
+      "on_sale": false,
+      "platforms": [
+        "android"
+      ],
+      "entitlements": [
+        {
+          "type": "four_week_plan",
+          "valid_days": null
+        },
+        {
+          "type": "deep_report",
+          "valid_days": null
+        },
+        {
+          "type": "full_courses",
+          "valid_days": null
+        }
+      ]
+    }
+  ],
+  "always_free_pages": [
+    "pages/emergency-guide/index",
+    "pages/emergency-resources/index",
+    "pages/supervision/index"
+  ],
+  "free_by_decision": [
+    "温度计",
+    "日记",
+    "急救卡",
+    "测一测的基础结果",
+    "本周复盘"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "version": "2026.11-anchors-v1",
+  "updated_at": "2026-11-05",
+  "review_status": "draft_owner_review",
+  "notice": "温度计刻度说明。参照物是她自己，不提供常模，借用主观痛苦评分让每个人用自己的经历定锚的做法（Wolpe, 1969）。0 分要不要写“平静”由负责人定。见 docs/11_商业化开发/开发框架.md 第 4 节。",
+  "bands": [
+    {
+      "min": 1,
+      "max": 3,
+      "label": "有点不舒服，还能好好说话"
+    },
+    {
+      "min": 4,
+      "max": 7,
+      "label": "明显着急，声音开始变大"
+    },
+    {
+      "min": 8,
+      "max": 10,
+      "label": "快控制不住了"
+    }
+  ],
+  "personal_anchor": {
+    "max_items": 3,
+    "max_text_length": 40,
+    "prompt": "写下你自己的 8 分是什么样"
+  }
+}

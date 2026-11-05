@@ -59,6 +59,12 @@ from routes.supportive_review import bp as supportive_review_bp
 from routes.text_analysis import bp as text_analysis_bp
 from routes.training_plan import bp as training_plan_bp
 from routes.therapeutic_assessment import bp as therapeutic_assessment_bp
+# 商业化功能骨架（docs/11_商业化开发/开发框架.md）
+from routes.insights import bp as insights_bp
+from routes.thermometer_anchors import bp as thermometer_anchors_bp
+from routes.deep_report import bp as deep_report_bp
+from routes.commerce import bp as commerce_bp
+from routes.content_map import bp as content_map_bp
 from services.runtime_metrics import record_response, snapshot as runtime_metrics_snapshot
 from services.reliability_service import record_request_event
 from services.operations_reliability_service import (
@@ -350,6 +356,11 @@ def create_app(
     app.register_blueprint(therapeutic_assessment_bp)
     app.register_blueprint(supportive_review_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(insights_bp)
+    app.register_blueprint(thermometer_anchors_bp)
+    app.register_blueprint(deep_report_bp)
+    app.register_blueprint(commerce_bp)
+    app.register_blueprint(content_map_bp)
 
     @app.before_request
     def begin_request_trace():

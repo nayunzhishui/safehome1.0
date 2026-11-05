@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "safety-action-row": "/components/safety-action-row/index",
+    "before-after-badge": "/components/before-after-badge/index"
+  }
+}

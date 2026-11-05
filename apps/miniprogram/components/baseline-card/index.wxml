@@ -1,0 +1,7 @@
+<view wx:if="{{baseline}}" class="baseline-card">
+  <block wx:if="{{baseline.available}}">
+    <view class="baseline-card__main">你平时大概 {{baseline.median}} 分</view>
+    <view class="baseline-card__sub">近 {{baseline.window_days}} 天，多数时候在 {{baseline.q1}} 到 {{baseline.q3}} 分之间（{{baseline.record_count}} 条记录）</view>
+  </block>
+  <view wx:else class="baseline-card__sub">{{waitingText}}</view>
+</view>

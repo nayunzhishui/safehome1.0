@@ -1,0 +1,6 @@
+.anchor-note { margin-top: 16rpx; }
+.anchor-note__band { display: flex; gap: 16rpx; padding: 8rpx 0; font-size: 26rpx; color: var(--p3-muted); }
+.anchor-note__band--on { color: var(--p3-ink); }
+.anchor-note__range { width: 140rpx; flex-shrink: 0; }
+.anchor-note__mine { font-size: 26rpx; color: var(--p3-ink); padding: 8rpx 0; }
+.anchor-note__edit { margin-top: 8rpx; font-size: 26rpx; }

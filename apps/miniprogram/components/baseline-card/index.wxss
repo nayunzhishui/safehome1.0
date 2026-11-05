@@ -1,0 +1,3 @@
+.baseline-card { padding: 24rpx; border-radius: 24rpx; background: var(--p3-surface); }
+.baseline-card__main { font-size: 34rpx; color: var(--p3-ink); }
+.baseline-card__sub { margin-top: 8rpx; font-size: 26rpx; color: var(--p3-muted); }

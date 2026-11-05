@@ -1,0 +1,28 @@
+{
+  "version": "2026.11-content-map-v1",
+  "updated_at": "2026-11-05",
+  "review_status": "draft_owner_review",
+  "notice": "内容地图：训练卡以外的内容和它们的下一步。条目由内容盘点表生成，负责人补标签。见 docs/11_商业化开发/开发框架.md 第 8 节。",
+  "steps": {
+    "1": "知道",
+    "2": "理解",
+    "3": "会做",
+    "4": "一起做",
+    "5": "个别辅导"
+  },
+  "scenes": [
+    "作业拖延",
+    "睡前冲突",
+    "手机使用",
+    "出门准备",
+    "亲子沟通",
+    "其他"
+  ],
+  "eco_layers": {
+    "family": "家庭内",
+    "family_school": "家校之间",
+    "parent_work": "父母工作",
+    "wider_environment": "更大的环境"
+  },
+  "items": []
+}

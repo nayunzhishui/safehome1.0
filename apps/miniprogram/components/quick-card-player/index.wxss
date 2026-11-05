@@ -1,0 +1,8 @@
+.qc { padding: 40rpx 32rpx 56rpx; background: var(--p3-surface); }
+.qc__title { font-size: 36rpx; color: var(--p3-ink); margin-bottom: 24rpx; }
+.qc__ask, .qc__hint { font-size: 28rpx; color: var(--p3-muted); margin: 16rpx 0; }
+.qc__scores { display: flex; flex-wrap: wrap; gap: 12rpx; margin-bottom: 24rpx; }
+.qc__score { width: 88rpx; margin: 0; padding: 12rpx 0; font-size: 28rpx; background: var(--p3-soft); color: var(--p3-ink); }
+.qc__score::after { border: none; }
+.qc__score--on { background: var(--p3-primary); color: var(--p3-surface); }
+.qc__safety { margin-top: 32rpx; color: var(--p3-risk-ink); }

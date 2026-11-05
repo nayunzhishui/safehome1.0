@@ -1,0 +1,4 @@
+.deep-report__notice { font-size: 26rpx; color: var(--p3-muted); }
+.deep-report__support { margin: 12rpx 0 24rpx; font-size: 26rpx; color: var(--p3-risk-ink); }
+.deep-report__section { padding: 24rpx 0; border-top: 1rpx solid var(--p3-hairline); }
+.deep-report__h { font-size: 30rpx; color: var(--p3-ink); }

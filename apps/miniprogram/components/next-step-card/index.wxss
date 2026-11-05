@@ -1,0 +1,3 @@
+.next-step { padding: 24rpx; border-radius: 24rpx; background: var(--p3-soft); }
+.next-step__h { font-size: 26rpx; color: var(--p3-muted); }
+.next-step__item { margin-top: 12rpx; font-size: 30rpx; color: var(--p3-ink); }

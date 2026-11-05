@@ -1,0 +1,10 @@
+<view class="quick-entry">
+  <button
+    wx:for="{{groups}}"
+    wx:key="key"
+    class="quick-entry__btn"
+    data-key="{{item.key}}"
+    aria-label="{{item.label}}，开始一段短练习"
+    bindtap="onTapGroup"
+  >{{item.label}}</button>
+</view>

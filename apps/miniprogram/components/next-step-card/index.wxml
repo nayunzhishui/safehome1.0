@@ -1,0 +1,4 @@
+<view wx:if="{{items.length}}" class="next-step">
+  <view class="next-step__h">下一步</view>
+  <view wx:for="{{items}}" wx:key="id" class="next-step__item" data-id="{{item.id}}" bindtap="onOpen">{{item.title}}</view>
+</view>

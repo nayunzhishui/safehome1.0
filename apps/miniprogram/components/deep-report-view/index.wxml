@@ -1,0 +1,37 @@
+<view class="deep-report">
+  <view class="deep-report__notice">这是你自己的记录，帮你找规律，不是疗效证明，也不能代替就医。</view>
+  <view class="deep-report__support" bindtap="onOpenSupport">需要帮助时，点这里看紧急安全指引</view>
+
+  <block wx:if="{{report}}">
+    <view wx:if="{{report.safety.show_support_first}}" class="deep-report__section">
+      <!-- TODO(B4-前端): “先照顾好自己”的支持信息和求助入口；这种情况下不出现任何购买引导 -->
+    </view>
+    <view wx:if="{{report.sections.scene_time.available}}" class="deep-report__section">
+      <view class="deep-report__h">什么时候、什么场景最容易起冲突</view>
+    </view>
+    <view wx:if="{{report.sections.scene_words.available}}" class="deep-report__section">
+      <view class="deep-report__h">每个场景里常出现的感受</view>
+    </view>
+    <view wx:if="{{report.sections.scene_cards.available}}" class="deep-report__section">
+      <view class="deep-report__h">在各个场景里，哪张卡练完降得多</view>
+    </view>
+    <view wx:if="{{report.sections.worksheet_compare.available}}" class="deep-report__section">
+      <view class="deep-report__h">同一份问卷，前后两次</view>
+    </view>
+    <view wx:if="{{report.sections.vs_previous.available}}" class="deep-report__section">
+      <view class="deep-report__h">和前 30 天比</view>
+    </view>
+    <view wx:if="{{report.sections.own_words.available}}" class="deep-report__section">
+      <view class="deep-report__h">你自己写下的话</view>
+    </view>
+    <button class="p3-btn p3-btn--secondary" bindtap="onExportImage">保存为长图</button>
+  </block>
+
+  <block wx:elif="{{preview}}">
+    <view wx:if="{{!preview.eligible}}" class="deep-report__section">再记录几次就能生成：现在 {{preview.record_count}} 条，需要 {{preview.threshold}} 条</view>
+    <block wx:else>
+      <!-- TODO(B4-前端): 列出 preview.sections_available 对应的节名，让她知道能生成哪几节 -->
+      <button wx:if="{{!preview.entitled}}" class="p3-btn" bindtap="onPurchase">看看能生成哪些内容</button>
+    </block>
+  </block>
+</view>

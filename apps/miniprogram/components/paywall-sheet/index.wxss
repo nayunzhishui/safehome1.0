@@ -1,0 +1,4 @@
+.paywall { padding: 40rpx 32rpx 56rpx; background: var(--p3-surface); }
+.paywall__sku { padding: 24rpx 0; border-bottom: 1rpx solid var(--p3-hairline); }
+.paywall__name { font-size: 32rpx; color: var(--p3-ink); margin-bottom: 16rpx; }
+.paywall__note { margin: 16rpx 0; font-size: 26rpx; color: var(--p3-muted); }

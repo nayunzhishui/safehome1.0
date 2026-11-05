@@ -1,0 +1,1 @@
+.ba-badge { padding: 20rpx 24rpx; border-radius: 20rpx; background: var(--p3-soft); color: var(--p3-ink); font-size: 30rpx; }

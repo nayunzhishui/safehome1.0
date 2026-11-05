@@ -1,0 +1,59 @@
+{
+  "version": "2026.11-quick-cards-v1",
+  "updated_at": "2026-11-05",
+  "review_status": "draft_owner_review",
+  "notice": "急救卡配置：只写分组、顺序和音频，卡片正文在 training_cards.json。见 docs/11_商业化开发/开发框架.md 第 3 节。",
+  "ai_notice": "以下语音由 AI 合成",
+  "groups": [
+    {
+      "key": "heat",
+      "label": "我现在很火",
+      "card_ids": [
+        "three_second_pause",
+        "parent_body_signal_check",
+        "parent_body_grounding",
+        "emotion_naming"
+      ]
+    },
+    {
+      "key": "after",
+      "label": "刚吵完",
+      "card_ids": [
+        "parent_after_conflict_repair",
+        "parent_repair_question"
+      ]
+    }
+  ],
+  "audio": {
+    "three_second_pause": {
+      "file_id": "",
+      "duration_seconds": null,
+      "script_status": "not_started"
+    },
+    "parent_body_signal_check": {
+      "file_id": "",
+      "duration_seconds": null,
+      "script_status": "not_started"
+    },
+    "parent_body_grounding": {
+      "file_id": "",
+      "duration_seconds": null,
+      "script_status": "not_started"
+    },
+    "emotion_naming": {
+      "file_id": "",
+      "duration_seconds": null,
+      "script_status": "not_started"
+    },
+    "parent_after_conflict_repair": {
+      "file_id": "",
+      "duration_seconds": null,
+      "script_status": "not_started"
+    },
+    "parent_repair_question": {
+      "file_id": "",
+      "duration_seconds": null,
+      "script_status": "not_started"
+    }
+  }
+}
