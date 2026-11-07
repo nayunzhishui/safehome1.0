@@ -30,6 +30,12 @@
       </view>
     </view>
 
+    <view class="home-quick" aria-label="急救卡">
+      <text class="home-quick__title">急救卡</text>
+      <text class="home-quick__hint">不用登录，点一下就能开始一段一到四分钟的练习</text>
+      <quick-card-entry bind:open="openQuickCard" />
+    </view>
+
     <page-state
       wx:if="{{homeOverviewError}}"
       kind="error"
@@ -132,5 +138,7 @@
     </view>
   </view>
 </view>
+
+<quick-card-player show="{{quickCard.show}}" group="{{quickCard.group}}" cards="{{quickCard.cards}}" loggedIn="{{quickCard.loggedIn}}" saveMessage="{{quickCard.saveMessage}}" bind:close="closeQuickCard" bind:started="onQuickCardStarted" bind:completed="onQuickCardCompleted" bind:login="loginForQuickCard" />
 
 <onboarding-guide visible="{{tourVisible}}" step="{{tourStep}}" index="{{tourIndex}}" total="{{tourTotal}}" rect="{{tourRect}}" position="{{tourPosition}}" bind:next="nextGuide" bind:previous="previousGuide" bind:skip="endGuide" />

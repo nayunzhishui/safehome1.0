@@ -3,19 +3,49 @@
 const STORAGE_KEY = "safehome.quickCard.pending";
 const MAX_PENDING = 20;
 
+function read() {
+  try {
+    const list = wx.getStorageSync(STORAGE_KEY);
+    return Array.isArray(list) ? list : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function write(list) {
+  try {
+    wx.setStorageSync(STORAGE_KEY, list);
+  } catch (error) {
+    // 存不进去就丢掉这条，不影响练习本身
+  }
+}
+
 function listPending() {
-  // TODO(B1-前端)
-  return [];
+  return read();
 }
 
+// record = { client_submission_id, card_id, emotion_before, emotion_after, completed }
 function addPending(record) {
-  // TODO(B1-前端): record = { client_submission_id, card_id, emotion_before, emotion_after, completed }；
-  // 超过 MAX_PENDING 条时丢掉最早的
+  const list = read();
+  list.push(record);
+  while (list.length > MAX_PENDING) list.shift(); // 超过上限丢掉最早的
+  write(list);
 }
 
-function uploadPending(api) {
-  // TODO(B1-前端): 逐条 api.createCheckin(record)，成功一条删一条；返回上传成功的条数
-  return Promise.resolve(0);
+// 逐条上传，遇到失败就停，下次再试；返回上传成功的条数
+async function uploadPending(api) {
+  if (!api || !api.createCheckin) return 0;
+  let uploaded = 0;
+  for (const record of read()) {
+    try {
+      await api.createCheckin(record);
+    } catch (error) {
+      break;
+    }
+    uploaded += 1;
+    write(read().filter((item) => item.client_submission_id !== record.client_submission_id));
+  }
+  return uploaded;
 }
 
 module.exports = { STORAGE_KEY, MAX_PENDING, listPending, addPending, uploadPending };

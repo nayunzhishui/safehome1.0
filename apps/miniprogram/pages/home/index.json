@@ -6,6 +6,8 @@
     "onboarding-guide": "/components/onboarding-guide/index",
     "p3-icon": "/components/p3-icon/index",
     "p3-section-header": "/components/p3-section-header/index",
-    "p3-thermometer": "/components/p3-thermometer/index"
+    "p3-thermometer": "/components/p3-thermometer/index",
+    "quick-card-entry": "/components/quick-card-entry/index",
+    "quick-card-player": "/components/quick-card-player/index"
   }
 }

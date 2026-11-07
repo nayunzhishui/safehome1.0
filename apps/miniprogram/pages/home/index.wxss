@@ -326,3 +326,8 @@ page {
 .dev-entry-section {
   display: flex;
 }
+
+/* B1 急救卡入口 */
+.home-quick { margin: 8rpx 0 32rpx; }
+.home-quick__title { display: block; font-size: 32rpx; font-weight: 600; color: var(--p3-ink); }
+.home-quick__hint { display: block; margin: 8rpx 0 20rpx; font-size: 26rpx; color: var(--p3-muted); }

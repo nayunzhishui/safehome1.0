@@ -1,5 +1,7 @@
 const { createSafeHomeApi } = require("../../services/api");
-const { captureAuthSession, isCurrentAuthSession, isLoggedIn } = require("../../utils/authGuard");
+const { captureAuthSession, isCurrentAuthSession, isLoggedIn, requireLogin } = require("../../utils/authGuard");
+const { loadQuickCards } = require("../../utils/quickCards");
+const quickCardStore = require("../../utils/quickCardStore");
 const { buildGreeting } = require("../../utils/greeting");
 const { navMetrics } = require("../../utils/nav-metrics");
 
@@ -190,6 +192,8 @@ Page({
     todayJourney: null,
     todayJourneyLoading: true,
     todayJourneyError: "",
+    // B1 急救卡浮层（docs/11_商业化开发/开发框架.md 第 3 节）
+    quickCard: { show: false, group: "heat", cards: [], loggedIn: false, saveMessage: "" },
   },
 
   onLoad() {
@@ -212,6 +216,8 @@ Page({
     const privacyNoticeVisible = wx.getStorageSync(PRIVACY_NOTICE_KEY) !== PRIVACY_NOTICE_VERSION;
     this.setData({ privacyNoticeVisible });
     this.refreshHomeData();
+    // 没登录时做过的急救卡记录，登录后在这里补传
+    if (isLoggedIn()) quickCardStore.uploadPending(api).catch(() => {});
     if (!privacyNoticeVisible && !this.data.tourVisible && wx.getStorageSync(HOME_TOUR_KEY) !== HOME_TOUR_VERSION) this.startGuide();
   },
 
@@ -221,6 +227,52 @@ Page({
     if (this.data.tourVisible) { this.setData({ tourVisible: false }); if (wx.showTabBar) wx.showTabBar({ animation: false }); }
   },
   onUnload() { this._homeDisposed = true; },
+
+  // 急救卡：第一次点击打开浮层，第二次点分数就开始。没登录也能做，记录先存在手机上。
+  openQuickCard(event) {
+    const group = (event.detail && event.detail.group) || "heat";
+    this.setData({ quickCard: { show: true, group, cards: [], loggedIn: isLoggedIn(), saveMessage: "" } });
+    loadQuickCards(api, group, (cards) => {
+      if (this.data.quickCard.show && this.data.quickCard.group === group) this.setData({ "quickCard.cards": cards });
+    });
+  },
+
+  closeQuickCard() {
+    if (this.data.quickCard.show) this.setData({ "quickCard.show": false });
+  },
+
+  onQuickCardStarted(event) {
+    // 产品事件要登录；后端放行 quick_card_started 以前会失败，不影响练习
+    if (isLoggedIn()) api.trackProductEvent("quick_card_started", { quick_group: event.detail.group }).catch(() => {});
+  },
+
+  onQuickCardCompleted(event) {
+    const detail = event.detail || {};
+    const record = {
+      card_id: detail.card_id,
+      completed: true,
+      emotion_before: detail.emotion_before,
+      emotion_after: detail.emotion_after,
+      client_submission_id: `quick:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`,
+    };
+    if (!isLoggedIn()) {
+      quickCardStore.addPending(record);
+      this.setData({ "quickCard.saveMessage": "这次记录先存在手机上，登录后会自动保存。" });
+      return;
+    }
+    api.trackProductEvent("quick_card_completed", { quick_group: detail.group }).catch(() => {});
+    api.createCheckin(record)
+      .then(() => this.setData({ "quickCard.saveMessage": "已保存到练习记录。" }))
+      .catch(() => {
+        quickCardStore.addPending(record);
+        this.setData({ "quickCard.saveMessage": "网络不太好，这次记录先存在手机上，下次打开会自动补上。" });
+      });
+  },
+
+  loginForQuickCard() {
+    this.setData({ "quickCard.show": false });
+    requireLogin({ redirectUrl: "/pages/home/index", message: "登录后保存这次练习" });
+  },
 
   openPrivacyNotice() { wx.navigateTo({ url: "/pages/settings-detail/index?type=privacy" }); },
 

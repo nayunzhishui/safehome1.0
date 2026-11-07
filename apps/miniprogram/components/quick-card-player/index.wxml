@@ -1,34 +1,51 @@
 <page-container show="{{show}}" position="bottom" round bind:afterleave="onClose">
-  <view class="qc">
-    <view class="qc__title">{{cards[index].title}}</view>
-
-    <block wx:if="{{phase === 'before'}}">
-      <view class="qc__ask">现在几分？0 是平静，10 是快控制不住</view>
-      <view class="qc__scores">
-        <button wx:for="{{scores}}" wx:key="*this" class="qc__score {{emotionBefore === item ? 'qc__score--on' : ''}}" data-score="{{item}}" bindtap="onPickBefore">{{item}}</button>
-      </view>
-      <button class="p3-btn" disabled="{{emotionBefore < 0}}" bindtap="onStart">开始</button>
-    </block>
-
-    <block wx:elif="{{phase === 'playing'}}">
-      <view class="qc__hint">听不到声音的话，打开声音或戴上耳机</view>
-      <!-- TODO(B1-前端): 文字步骤 cardTexts[cards[index].id].steps；语音失败时一定显示 -->
-      <button class="p3-btn" bindtap="onFinishPractice">做完了</button>
-      <button class="p3-link" bindtap="onSwitchCard">换一张</button>
-    </block>
-
-    <block wx:elif="{{phase === 'after'}}">
-      <view class="qc__ask">现在几分？</view>
-      <view class="qc__scores">
-        <button wx:for="{{scores}}" wx:key="*this" class="qc__score {{emotionAfter === item ? 'qc__score--on' : ''}}" data-score="{{item}}" bindtap="onPickAfter">{{item}}</button>
-      </view>
-      <button class="p3-btn" disabled="{{emotionAfter < 0}}" bindtap="onSubmit">看看前后</button>
+  <view class="qc" aria-label="急救卡练习">
+    <block wx:if="{{!cards.length}}">
+      <view class="qc__title">正在准备练习…</view>
+      <view class="qc__hint">等的时候，可以先慢慢呼气三次。</view>
     </block>
 
     <block wx:else>
-      <before-after-badge before="{{emotionBefore}}" after="{{emotionAfter}}" />
-      <view wx:if="{{!loggedIn}}" class="qc__hint">登录后可以保存这次记录，也可以先不保存</view>
-      <button class="p3-btn p3-btn--secondary" bindtap="onClose">关闭</button>
+      <view class="qc__title">{{cards[index].title}}</view>
+      <view wx:if="{{cards[index].duration_minutes}}" class="qc__meta">大约 {{cards[index].duration_minutes}} 分钟</view>
+
+      <block wx:if="{{phase === 'before'}}">
+        <view class="qc__ask">先给现在的情绪打个分，点一下就开始。0 是平静，10 是快控制不住。</view>
+        <view class="qc__scores">
+          <button wx:for="{{scores}}" wx:for-index="i" wx:key="*this" class="qc__score" data-score="{{item}}" aria-label="{{item}} 分，开始练习" bindtap="onPickBefore">{{item}}</button>
+        </view>
+        <button class="p3-link qc__skip" bindtap="onStartWithoutScore">不打分，直接开始</button>
+      </block>
+
+      <block wx:elif="{{phase === 'playing'}}">
+        <view wx:if="{{hasAudio && !audioFailed}}" class="qc__hint">听不到声音的话，打开声音或戴上耳机。</view>
+        <view class="qc__steps">
+          <view wx:for="{{cards[index].steps}}" wx:for-index="stepNo" wx:key="*this" class="qc__step">
+            <text class="qc__step-no">{{stepNo + 1}}</text>
+            <text class="qc__step-text">{{item}}</text>
+          </view>
+        </view>
+        <view wx:if="{{cards[index].example}}" class="qc__example">比如：{{cards[index].example}}</view>
+        <view wx:if="{{cards[index].stopRule}}" class="qc__stop">{{cards[index].stopRule}}</view>
+        <button class="p3-btn p3-btn--primary" bindtap="onFinishPractice">做完了</button>
+        <button wx:if="{{cards.length > 1}}" class="p3-link qc__skip" bindtap="onSwitchCard">换一张</button>
+      </block>
+
+      <block wx:elif="{{phase === 'after'}}">
+        <view class="qc__ask">现在几分？点一下看看前后。</view>
+        <view class="qc__scores">
+          <button wx:for="{{scores}}" wx:for-index="i" wx:key="*this" class="qc__score" data-score="{{item}}" aria-label="{{item}} 分" bindtap="onPickAfter">{{item}}</button>
+        </view>
+        <button class="p3-link qc__skip" bindtap="onFinishWithoutScore">不打分</button>
+      </block>
+
+      <block wx:else>
+        <before-after-badge before="{{emotionBefore}}" after="{{emotionAfter}}" />
+        <view class="qc__done">这次练习做完了。</view>
+        <view wx:if="{{saveMessage}}" class="qc__hint" role="status">{{saveMessage}}</view>
+        <button wx:if="{{!loggedIn}}" class="p3-btn p3-btn--secondary" bindtap="onLogin">登录后保存</button>
+        <button class="p3-btn p3-btn--primary" bindtap="onClose">关闭</button>
+      </block>
     </block>
 
     <view class="qc__safety" bindtap="onOpenEmergency">

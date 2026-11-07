@@ -5,30 +5,30 @@
     {
       "file": "backend/app.py",
       "profile": "application_boot_profile",
-      "source_sha256": "42532cddbb6e64b2e49cd3a7f9f46064492ca9c06481fe1d5c8971f593654d58",
+      "source_sha256": "276d760bdc42dbdbd5ed40f587d3123732bd612e3f53784a9e386162df40455b",
       "reads": [
         {
-          "line": 79,
+          "line": 85,
           "name": "SERVICE_VERSION",
           "access": "os.environ.get"
         },
         {
-          "line": 227,
+          "line": 233,
           "name": "LOG_LEVEL",
           "access": "os.environ.get"
         },
         {
-          "line": 235,
+          "line": 241,
           "name": "LOG_FILE",
           "access": "os.environ.get"
         },
         {
-          "line": 508,
+          "line": 519,
           "name": "PORT",
           "access": "os.environ.get"
         },
         {
-          "line": 509,
+          "line": 520,
           "name": "FLASK_DEBUG",
           "access": "os.environ.get"
         }
